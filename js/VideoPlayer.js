@@ -35,7 +35,7 @@ var fluid = fluid || {};
     };
     
     var renderCaptionArea = function (that) {
-        var captionArea = $("<div class='flc-videoPlayer-captionArea'></div>");
+        var captionArea = $("<div class='flc-videoPlayer-captionArea fl-player-caption'></div>");
         that.locate("controller").before(captionArea);
         return captionArea;
     };
@@ -92,7 +92,7 @@ var fluid = fluid || {};
     };
     
     var renderControllerContainer = function (that) {
-        var controller = $("<div class='flc-videoPlayer-controller'></div>");
+        var controller = $("<div class='flc-videoPlayer-controller fl-col-mixed'></div>");
         that.locate("video").after(controller);
         return controller;
     };
@@ -251,7 +251,7 @@ var fluid = fluid || {};
 (function ($) {
 
     var renderScrubber = function (that) {
-        var scrubber = $("<div class='flc-videoPlayer-controller-scrubber'></div>");
+        var scrubber = $("<div class='flc-videoPlayer-controller-scrubber fl-col-flex fl-player-scrubber'></div>");
         that.container.append(scrubber);
         return scrubber;
     };
@@ -291,7 +291,7 @@ var fluid = fluid || {};
     
     var setupController = function (that) {
         if (that.locate("playButton").length === 0) {
-            var playButton = $("<button class='flc-videoPlayer-controller-play'></button>");
+            var playButton = $("<button class='flc-videoPlayer-controller-play fl-col-fixed fl-force-left'></button>");
             playButton.text(that.options.strings.play);
             that.container.append(playButton);   
         }

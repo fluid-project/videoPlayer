@@ -1,0 +1,11 @@
+.fl-player-scrubber {
+	margin-top:5px;
+	margin-right:10px;
+}
+.fl-player-caption {
+	height:1em;
+	padding:.25em 0;
+	color:#666;
+	font:normal 1em Arial, Helvetica, sans-serif;
+	text-align:center;
+}
