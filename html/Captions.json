@@ -1,0 +1,33 @@
+[
+    {
+        "inTime": "00:00:02.678",
+        "inTimeMilli": 2678,
+        "outTime": "00:00:07.342",
+        "outTimeMilli": 7342,
+        "name": "Clip 1",
+        "durationMilli": 4664,
+        "duration": "00:00:04.664",
+        "caption_text": "first clip caption text"
+    },
+    {
+        "inTime": "00:00:09.635",
+        "inTimeMilli": 9635,
+        "outTime": "00:00:13.992",
+        "outTimeMilli": 13992,
+        "name": "Clip 2",
+        "durationMilli": 4357,
+        "duration": "00:00:04.357",
+        "caption_text": "second clip"
+    },
+    {
+        "inTime": "00:00:15.562",
+        "inTimeMilli": 15562,
+        "outTime": "00:00:19.663",
+        "outTimeMilli": 19663,
+        "name": "Clip 3",
+        "durationMilli": 4101,
+        "duration": "00:00:04.101",
+        "caption_text": "third clip"
+    }
+]
+        

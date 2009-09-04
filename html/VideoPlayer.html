@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Video Player Demo</title>
+        
+        <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
+        
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/ui.core.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/ui.slider.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/json/js/json2.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/Fluid.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer.js"></script>
+    </head>
+    <body>
+	    <h1>Infusion HTML 5 Video Player Demo</h1>
+
+        <div class="videoPlayer">
+            <video class="flc-videoPlayer-video" alt="A video demonstrating the Infusion video player">
+                Anything you want to show if the user doesn't have an HTML 5-compatible browser goes here.
+            </video>
+        </div>
+        
+        
+        <script type="text/javascript">
+            var vp = fluid.videoPlayer(".videoPlayer", {
+                sources: [
+                    {
+                        src: "../media/Cursor.mov",
+                        type: "video/mp4"
+                    },
+                    {
+                        src: "../media/Cursor.ogg",
+                        type: "video/ogg"
+                    }
+                ],
+                
+                captions: "Captions.json"
+            });
+        </script>
+	</body>
+</html>
