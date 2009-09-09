@@ -261,9 +261,11 @@ var fluid = fluid || {};
         var scrubber = that.locate("scrubber");
         
         // Setup the controller when the video is ready.
+        
         $(that.video).bind("load", function () {
-            scrubber.slider("option", "min", that.video.startTime);
-            scrubber.slider("option", "max", that.video.duration + that.video.startTime);
+            var startTime = that.video.startTime || 0; // FF doesn't implement startTime from the HTML 5 spec.
+            scrubber.slider("option", "min", startTime);
+            scrubber.slider("option", "max", that.video.duration + startTime);
             scrubber.slider("enable");
         });
         
@@ -301,7 +303,7 @@ var fluid = fluid || {};
         if (scrubber.length === 0) {
             scrubber = renderScrubber(that);
         }
-        scrubber.slider().slider("disable");
+        scrubber.slider({unittext: " seconds"}).slider("disable");
         
         bindDOMEvents(that);
     };
