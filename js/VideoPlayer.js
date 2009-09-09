@@ -98,10 +98,12 @@ var fluid = fluid || {};
     };
     
     var setupVideoPlayer = function (that) {
-        // Render the video element.
-        if (that.options.clearVideoContainer) {
-            that.locate("video").empty();
+        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up.
+        if (typeof(window.HTMLMediaElement) === "undefined") {
+            return;
         }
+        
+        // Render the video element.
         that.video = renderVideoTag(that);
         
         // Add the controller if required.
@@ -164,8 +166,7 @@ var fluid = fluid || {};
         },
         
         controllerType: "html", // "native", "html", "none" (or null)    
-        showCaptions: true,
-        clearVideoContainer: true
+        showCaptions: true
     });
 })(jQuery);
 
