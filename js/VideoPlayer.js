@@ -40,6 +40,16 @@ var fluid = fluid || {};
         return captionArea;
     };
     
+    // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
+    // time is in the format hh:mm:ss:mmm
+    var convertToMilli = function (time) {
+        var splitTime = time.split(":");
+        var hours = parseFloat(splitTime[0]);
+        var mins = parseFloat(splitTime[1]) + (hours * 60);
+        var secs = parseFloat(splitTime[2]) + (mins * 60);
+        return secs * 1000;
+    };
+    
     var loadCaptions = function (that) {
         var caps = that.options.captions;
         
@@ -56,7 +66,17 @@ var fluid = fluid || {};
         
         var successfulLoadCallback = function (data) {
             that.captions = JSON.parse(data);
-            
+            // TODO: This is temporary to work around the difference between capscribe web and capscribe desktop captions
+            for (var i = 0; i < that.captions.length; i++) {
+                var theCaption = that.captions[i];
+                if (!theCaption.inTimeMilli) {
+                    theCaption.inTimeMilli = convertToMilli(theCaption.inTime);
+                }
+                if (!theCaption.outTimeMilli) {
+                    theCaption.outTimeMilli = convertToMilli(theCaption.outTime);
+                }
+            }
+
             // Render the caption area if necessary
             var captionArea = that.locate("captionArea");
             captionArea = captionArea.length === 0 ? renderCaptionArea(that) : captionArea;
