@@ -47,7 +47,7 @@ var fluid = fluid || {};
         var hours = parseFloat(splitTime[0]);
         var mins = parseFloat(splitTime[1]) + (hours * 60);
         var secs = parseFloat(splitTime[2]) + (mins * 60);
-        return secs * 1000;
+        return Math.round(secs * 1000);
     };
     
     var loadCaptions = function (that) {
@@ -204,7 +204,7 @@ var fluid = fluid || {};
         that.currentCaption = null;
     };
     
-    var findCaptionForTime = function (that, timeInMillis) {
+    var findCaptionForTime = function (that, timeInMillis) {     
         // TODO: This algorithm is totally evil and incorrect.
         var timeRange = {
             lower: timeInMillis - 333,
@@ -214,7 +214,9 @@ var fluid = fluid || {};
         for (var x = timeRange.lower; x <= timeRange.upper; x++) {
             var match = that.captions[x];
             if (match) {
-                return match;
+                if (match.inTimeMilli <= x && match.outTimeMilli >= x) {
+                    return match; 
+                }      
             }
         }
         
