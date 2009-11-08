@@ -305,31 +305,54 @@ var fluid = fluid || {};
         var playButton = that.locate("playButton");
         playButton.click(function () {
             if (that.video.paused) {
-                playButton.text(that.options.strings.pause);
                 that.video.play();
             } else {
-                playButton.text(that.options.strings.play);
                 that.video.pause();
             }
+        });
+        
+        // Bind the Play/Pause button's text status to the HTML 5 video events.
+        jVideo.bind("play", function () {
+            playButton.text(that.options.strings.pause);
+        });
+        jVideo.bind("pause", function () {
+            playButton.text(that.options.strings.play);
+        });
+        
+        // Enable the Play/Pause button when the video can start playing.
+        jVideo.bind("canplay", function () {
+            playButton.removeAttr("disabled");
         });
     };
     
     var setupController = function (that) {
-        if (that.locate("playButton").length === 0) {
+        // Render the play button if it's not already there.
+        var playButton = that.locate("playButton");
+        if (playButton.length === 0) {
             var playButton = $("<button class='flc-videoPlayer-controller-play fl-col-fixed fl-force-left'></button>");
             playButton.text(that.options.strings.play);
             that.container.append(playButton);   
         }
 
+        // Render the scrubber if it's not already there.
         var scrubber = that.locate("scrubber");
         if (scrubber.length === 0) {
             scrubber = renderScrubber(that);
         }
+                
+        // Initially disable the play button and scrubber until the video is ready to go.
+        playButton.attr("disabled", "disabled");
         scrubber.slider({unittext: " seconds"}).slider("disable");
         
         bindDOMEvents(that);
     };
     
+    /**
+     * PlayAndScrubController is a simple video controller containing a play button and a time scrubber.
+     * 
+     * @param {Object} container the container which this component is rooted
+     * @param {Object} options configuration options for the component
+     */
     fluid.videoPlayer.playAndScrubController = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
         that.video = fluid.unwrap(that.options.video);
