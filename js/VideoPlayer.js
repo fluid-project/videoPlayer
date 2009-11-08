@@ -281,10 +281,10 @@ var fluid = fluid || {};
     
     var bindDOMEvents = function (that) {
         var scrubber = that.locate("scrubber");
+        var jVideo = $(that.video);
         
-        // Setup the controller when the video is ready.
-        
-        $(that.video).bind("load", function () {
+        // Setup the scrubber when we know the duration of the video.
+        jVideo.bind("durationchange", function () {
             var startTime = that.video.startTime || 0; // FF doesn't implement startTime from the HTML 5 spec.
             scrubber.slider("option", "min", startTime);
             scrubber.slider("option", "max", that.video.duration + startTime);
@@ -292,7 +292,7 @@ var fluid = fluid || {};
         });
         
         // Bind to the video's timeupdate event so we can programmatically update the slider.
-        $(that.video).bind("timeupdate", function () {
+        jVideo.bind("timeupdate", function () {
             scrubber.slider("value", that.video.currentTime);    
         });
         
