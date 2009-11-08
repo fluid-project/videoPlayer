@@ -1,3 +1,16 @@
+/*
+Copyright 2009 University of Toronto
+
+Licensed under the Educational Community License (ECL), Version 2.0 or the New
+BSD license. You may not use this file except in compliance with one these
+Licenses.
+
+You may obtain a copy of the ECL 2.0 License and BSD License at
+https://source.fluidproject.org/svn/LICENSE.txt
+*/
+
+/*global jQuery, window*/
+
 var fluid = fluid || {};
 
 (function ($) {
@@ -49,7 +62,20 @@ var fluid = fluid || {};
         var secs = parseFloat(splitTime[2]) + (mins * 60);
         return Math.round(secs * 1000);
     };
-    
+     
+    var normalizeInOutTimes = function (captions) {
+        // TODO: This is temporary to work around the difference between capscribe web and capscribe desktop captions
+        for (var i = 0; i < captions.length; i++) {
+            var cap = captions[i];
+            if (!cap.inTimeMilli) {
+                cap.inTimeMilli = convertToMilli(cap.inTime);
+            }
+            if (!cap.outTimeMilli) {
+                cap.outTimeMilli = convertToMilli(cap.outTime);
+            }
+        }
+    };
+        
     var loadCaptions = function (that) {
         var caps = that.options.captions;
         
@@ -58,45 +84,12 @@ var fluid = fluid || {};
             return;
         }
         
-        // If the captions option isn't a String, we'll assume it consists of the captions themselves.
-        if (typeof(caps) !== "string") {
-            that.captions = caps;
-            return;
-        }
-        
-        var successfulLoadCallback = function (data) {
-            that.captions = JSON.parse(data);
-            // TODO: This is temporary to work around the difference between capscribe web and capscribe desktop captions
-            for (var i = 0; i < that.captions.length; i++) {
-                var theCaption = that.captions[i];
-                if (!theCaption.inTimeMilli) {
-                    theCaption.inTimeMilli = convertToMilli(theCaption.inTime);
-                }
-                if (!theCaption.outTimeMilli) {
-                    theCaption.outTimeMilli = convertToMilli(theCaption.outTime);
-                }
-            }
-
-            // Render the caption area if necessary
-            var captionArea = that.locate("captionArea");
-            captionArea = captionArea.length === 0 ? renderCaptionArea(that) : captionArea;
-            
-            // Instantiate the caption view component.
-            that.captionView = fluid.initSubcomponent(that, "captionView", [
-                captionArea, 
-                {
-                    video: that.video,
-                    captions: that.captions
-                }
-            ]);
-        };
-        
         // Otherwise go and fetch the captions.
         $.ajax({
             type: "GET",
             dataType: "text",
             url: caps,
-            success: successfulLoadCallback
+            success: that.setCaptions
         });
     };
     
@@ -164,6 +157,25 @@ var fluid = fluid || {};
             } else {
                 that.pause();
             }
+        };
+        
+        that.setCaptions = function (captions) {
+            // If the captions option isn't a String, we'll assume it consists of the captions themselves.
+            that.captions = (typeof(captions) === "string") ? JSON.parse(captions) : captions;
+            normalizeInOutTimes(that.captions);
+
+            // Render the caption area if necessary
+            var captionArea = that.locate("captionArea");
+            captionArea = captionArea.length === 0 ? renderCaptionArea(that) : captionArea;
+            
+            // Instantiate the caption view component.
+            that.captionView = fluid.initSubcomponent(that, "captionView", [
+                captionArea, 
+                {
+                    video: that.video,
+                    captions: that.captions
+                }
+            ]);
         };
         
         setupVideoPlayer(that);
@@ -329,7 +341,7 @@ var fluid = fluid || {};
         // Render the play button if it's not already there.
         var playButton = that.locate("playButton");
         if (playButton.length === 0) {
-            var playButton = $("<button class='flc-videoPlayer-controller-play fl-col-fixed fl-force-left'></button>");
+            playButton = $("<button class='flc-videoPlayer-controller-play fl-col-fixed fl-force-left'></button>");
             playButton.text(that.options.strings.play);
             that.container.append(playButton);   
         }
