@@ -24,6 +24,18 @@ var fluid = fluid || {};
         return video;
     };
     
+    var renderSources = function (that, video) {
+        $.each(that.options.sources, function (idx, source) {
+            var renderer = that.options.mediaRenderers[source.type];
+            
+            if ($.isFunction(renderer)) {
+                renderer.apply(that, video, source);
+            } else {
+                fluid.invokeGlobalFunction(renderer, [that, video, source]);
+            }
+        });
+    };
+    
     var renderVideoTag = function (that) {
         var video = that.locate("video");
         
@@ -37,12 +49,9 @@ var fluid = fluid || {};
         if (that.options.controllerType === "native") {
             video.attr("controls", "true"); 
         }
-        
-        $.each(that.options.sources, function (idx, source) {
-            var sourceTag = $("<source />");
-            sourceTag.attr(source);
-            video.append(sourceTag);
-        });
+
+        // Render each media source with its custom renderer, registered by type.
+        renderSources(that, video);
         
         return video;
     };
@@ -111,13 +120,13 @@ var fluid = fluid || {};
     };
     
     var setupVideoPlayer = function (that) {
-        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up.
+        // Render the video element.
+        that.video = renderVideoTag(that);
+        
+        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
         if (typeof(window.HTMLMediaElement) === "undefined") {
             return;
         }
-        
-        // Render the video element.
-        that.video = renderVideoTag(that);
         
         // Add the controller if required.
         if (that.options.controllerType === "html") {
@@ -197,9 +206,35 @@ var fluid = fluid || {};
             controller: ".flc-videoPlayer-controller"
         },
         
+        mediaRenderers: {
+            "video/mp4": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
+            "video/ogg": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
+            "youtube": "fluid.videoPlayer.mediaRenderers.youTubePlayer"
+        },
+        
         controllerType: "html", // "native", "html", "none" (or null)    
         showCaptions: true
     });
+    
+    fluid.videoPlayer.mediaRenderers = {
+        html5SourceTag: function (videoPlayer, video, mediaSource) {
+            var sourceTag = $("<source />");
+            sourceTag.attr(mediaSource);
+            video.append(sourceTag);
+        },
+        
+        youTubePlayer: function (videoPlayer, video, mediaSource) {
+            var youTubePlayer = $("<object width='425' height='344'>" +
+                "<param name='allowFullScreen' value='true'></param>" + 
+                "<param name='allowscriptaccess' value='always'></param>" +
+                "<embed src='http://www.youtube.com/v/8hIMdTjLk_U&hl=en&fs=1&'" +
+                " type='application/x-shockwave-flash' allowscriptaccess='always'" + 
+                " allowfullscreen='true' width='425' height='344'></embed>" + 
+            "</object>");
+            youTubePlayer.prepend("<param name='movie' value=" + mediaSource.src + "></param>");
+            video.append(youTubePlayer);
+        }
+    };
 })(jQuery);
 
 (function ($) {
