@@ -321,7 +321,7 @@ var fluid = fluid || {};
 (function ($) {
 
     var renderScrubber = function (that) {
-        var scrubber = $("<div class='flc-videoPlayer-controller-scrubber fl-col-flex fl-player-scrubber'></div>");
+        var scrubber = $("<div class='flc-videoPlayer-controller-scrubber fl-player-scrubber'></div>");
         that.container.append(scrubber);
         return scrubber;
     };
@@ -377,7 +377,7 @@ var fluid = fluid || {};
         var playButton = that.locate("playButton");
         if (playButton.length === 0) {
             playButton = $("<button class='flc-videoPlayer-controller-play'/>").text(that.options.strings.play);
-            var wrapper = $("<div class='fl-col-fixed fl-force-left'></div>").append(playButton);
+            var wrapper = $("<div class='fl-force-left'></div>").append(playButton);
             that.container.append(wrapper);   
         }
 
