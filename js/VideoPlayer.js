@@ -227,7 +227,7 @@ var fluid = fluid || {};
             var youTubePlayer = $("<object width='425' height='344'>" +
                 "<param name='allowFullScreen' value='true'></param>" + 
                 "<param name='allowscriptaccess' value='always'></param>" +
-                "<embed src='http://www.youtube.com/v/8hIMdTjLk_U&hl=en&fs=1&'" +
+                "<embed src='" + mediaSource.src +"'" +
                 " type='application/x-shockwave-flash' allowscriptaccess='always'" + 
                 " allowfullscreen='true' width='425' height='344'></embed>" + 
             "</object>");
