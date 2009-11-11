@@ -224,15 +224,10 @@ var fluid = fluid || {};
         },
         
         youTubePlayer: function (videoPlayer, video, mediaSource) {
-            var youTubePlayer = $("<object width='425' height='344'>" +
-                "<param name='allowFullScreen' value='true'></param>" + 
-                "<param name='allowscriptaccess' value='always'></param>" +
-                "<embed src='" + mediaSource.src +"'" +
-                " type='application/x-shockwave-flash' allowscriptaccess='always'" + 
-                " allowfullscreen='true' width='425' height='344'></embed>" + 
-            "</object>");
-            youTubePlayer.prepend("<param name='movie' value=" + mediaSource.src + "></param>");
-            video.append(youTubePlayer);
+            var placeholder = $("<div/>"),
+                id = fluid.allocateSimpleId(placeholder);
+            swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
+            video.append(placeholder);
         }
     };
 })(jQuery);
