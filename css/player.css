@@ -1,3 +1,16 @@
+.fl-videoPlayer {
+    position: relative;    
+}
+
+.fl-videoPlayer-controller {
+    height:30px;
+    overflow:hidden;
+    position:absolute;
+    bottom:3em;
+    width:100%;
+    background-color:rgba(0,0,0,0.5);
+}
+
 .fl-player-scrubber {
 	margin-top:5px;
 	margin-right:10px;
