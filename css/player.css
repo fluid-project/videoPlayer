@@ -3,12 +3,13 @@
 }
 
 .fl-videoPlayer-controller {
+    background-color:rgba(0, 0, 0, 0.5);
+    bottom:0;
     height:30px;
     overflow:hidden;
+    padding:10px 0;
     position:absolute;
-    bottom:3em;
     width:100%;
-    background-color:rgba(0,0,0,0.5);
 }
 
 .fl-player-scrubber {
