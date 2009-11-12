@@ -1,31 +1,53 @@
 .fl-videoPlayer {
     position: relative;    
+    width:640px;
 }
 
 .fl-videoPlayer-controller {
     background-color:rgba(0, 0, 0, 0.65);
     bottom:0;
-    height:25px;
-    overflow:hidden;
-    padding:10px 0;
-    position:absolute;
     width:100%;
-	margin:-1px;
-	border:1px solid #999;
-	
+    padding:10px 0;
+    overflow:hidden;
+    position:absolute;
 }
 .fl-videoPlayer-controller button {
-	margin-left:10px;
+    background:transparent url(../images/play.png) no-repeat center center;
+    width:16px;
+    height:16px;
+    padding:10px 20px;
+	margin:-3px 0 0 10px;
+    border:none;
+    text-indent:-2000px;
+    float:left;
+    cursor:pointer;
+    -moz-border-radius:4px;
 }
 .fl-player-scrubber {
-	margin-top:5px;
 	margin-right:10px;
-	margin-left:100px;
+	margin-left:50px;    
 }
 .fl-player-caption {
-	height:2em;
+	width:100%;
+    bottom:36px;
 	padding:.25em 0;
-	color:#666;
-	font:normal 1em Arial, Helvetica, sans-serif;
+	color:#fff;
+	font:bold 1.25em Tahoma, Arial, Helvetica, sans-serif;
 	text-align:center;
+    position:absolute;
+    text-shadow:1px 1px 2px #000000;
+}
+
+/* Mods for the slider to look more like a scrubber */
+.fl-theme-coal .ui-corner-all {
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;
+}
+.fl-theme-coal .ui-slider-horizontal .ui-slider-handle {
+    margin-left:0;
+    top:-0.05em;
+}
+.fl-theme-coal .ui-slider .ui-slider-handle {
+    height:0.7em;
+    width:0.7em;
 }

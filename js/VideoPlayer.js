@@ -118,7 +118,7 @@ var fluid = fluid || {};
     };
     
     var renderControllerContainer = function (that) {
-        var controller = $("<div class='flc-videoPlayer-controller fl-videoPlayer-controller fl-col-mixed'></div>");
+        var controller = $("<div class='flc-videoPlayer-controller fl-videoPlayer-controller'></div>");
         that.locate("video").after(controller);
         return controller;
     };
@@ -376,8 +376,7 @@ var fluid = fluid || {};
         var playButton = that.locate("playButton");
         if (playButton.length === 0) {
             playButton = $("<button class='flc-videoPlayer-controller-play'/>").text(that.options.strings.play);
-            var wrapper = $("<div class='fl-force-left'></div>").append(playButton);
-            that.container.append(wrapper);   
+            that.container.append(playButton);   
         }
 
         // Render the scrubber if it's not already there.
