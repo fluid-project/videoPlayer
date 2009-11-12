@@ -51,7 +51,11 @@ var fluid = fluid || {};
         }
 
         // Render each media source with its custom renderer, registered by type.
-        renderSources(that, video);
+        // TODO: There is a problem with IE throwing an error while rendering the <source> tags.
+        // This is a temporary workaround.
+        if (!$.browser.msie) {
+            renderSources(that, video);
+        }
         
         return video;
     };
