@@ -12,7 +12,6 @@
     position:absolute;
 }
 .fl-videoPlayer-controller button {
-    background:transparent url(../images/play.png) no-repeat center center;
     width:16px;
     height:16px;
     padding:10px 20px;
@@ -23,6 +22,14 @@
     cursor:pointer;
     -moz-border-radius:4px;
 }
+
+.fl-videoPlayer-state-play {
+    background:transparent url(../images/play.png) no-repeat center center;
+}
+.fl-videoPlayer-state-pause {
+    background:transparent url(../images/pause.png) no-repeat center center;
+}
+
 .fl-player-scrubber {
 	margin-right:10px;
 	margin-left:50px;    
@@ -35,7 +42,7 @@
 	font:bold 1.25em Tahoma, Arial, Helvetica, sans-serif;
 	text-align:center;
     position:absolute;
-    text-shadow:1px 1px 2px #000000;
+    text-shadow:1px 1px 4px #000000;
 }
 
 /* Mods for the slider to look more like a scrubber */

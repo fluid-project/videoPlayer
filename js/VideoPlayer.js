@@ -360,9 +360,11 @@ var fluid = fluid || {};
         // Bind the Play/Pause button's text status to the HTML 5 video events.
         jVideo.bind("play", function () {
             playButton.text(that.options.strings.pause);
+            playButton.removeClass("fl-videoPlayer-state-play").addClass("fl-videoPlayer-state-pause");
         });
         jVideo.bind("pause", function () {
             playButton.text(that.options.strings.play);
+            playButton.removeClass("fl-videoPlayer-state-pause").addClass("fl-videoPlayer-state-play");
         });
         
         // Enable the Play/Pause button when the video can start playing.
@@ -375,7 +377,7 @@ var fluid = fluid || {};
         // Render the play button if it's not already there.
         var playButton = that.locate("playButton");
         if (playButton.length === 0) {
-            playButton = $("<button class='flc-videoPlayer-controller-play'/>").text(that.options.strings.play);
+            playButton = $("<button class='flc-videoPlayer-controller-play fl-videoPlayer-state-play'/>").text(that.options.strings.play);
             that.container.append(playButton);   
         }
 
