@@ -4,17 +4,17 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<title>Video Player Demo</title>
         
-		<link type="text/css" href="../../infusion/src/webapp/framework/fss/css/fss-layout.css" rel="stylesheet" />
-        <link type="text/css" href="../../infusion/src/webapp/lib/jquery/ui/css/fl-theme-coal/coal.css" rel="stylesheet" />
+        <link type="text/css" href="../../fluid-all/fluid-infusion/src/webapp/framework/fss/css/fss-layout.css" rel="stylesheet" />
+        <link type="text/css" href="../../fluid-all/fluid-infusion/src/webapp/lib/jquery/ui/css/fl-theme-coal/coal.css" rel="stylesheet" />
         <link type="text/css" href="../css/player.css" rel="stylesheet" />
 		
-        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
-        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/ui.core.js"></script>
+        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/jquery/ui/js/ui.core.js"></script>
         <script type="text/javascript" src="../js/ui.a11y.slider.js"></script>
-        <script type="text/javascript" src="../../infusion/src/webapp/lib/json/js/json2.js"></script>
-        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/Fluid.js"></script>
-        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
-        <script type="text/javascript" src="../../infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
+        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/json/js/json2.js"></script>
+        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/framework/core/js/Fluid.js"></script>
+        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
+        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
     </head>
     <body>
@@ -31,11 +31,11 @@
             var vp = fluid.videoPlayer(".videoPlayer", {
                 sources: [
                     {
-                        src: "../media/Cursor.mov",
+                        src: "../media/CC-ASharedCulture-Clip.m4v",
                         type: "video/mp4"
                     },
                     {
-                        src: "../media/test.ogv",
+                        src: "../media/CC-ASharedCulture-Clip.ogv",
                         type: "video/ogg"
                     },
                     {
@@ -44,7 +44,7 @@
                     }
                 ],
                 
-                captions: "Captions.json"
+                captions: "InlineEditScreenCastCaptions.json"
             });
         </script>
 	</body>

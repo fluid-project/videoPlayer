@@ -15,46 +15,41 @@ var fluid = fluid || {};
 
 (function ($) {
     
-    var replaceWithVideo = function(elementToReplace){
-        var contents = elementToReplace.contents();
-        var video = $("<video class='flc-videoPlayer-video'></video>");
-        video.append(contents);
-        elementToReplace.after(video);
-        elementToReplace.remove();
-        return video;
-    };
-    
-    var renderSources = function (that, video) {
+    var renderSources = function (that) {
         $.each(that.options.sources, function (idx, source) {
             var renderer = that.options.mediaRenderers[source.type];
-            
+
             if ($.isFunction(renderer)) {
-                renderer.apply(that, video, source);
+                renderer.apply(that, source);
             } else {
-                fluid.invokeGlobalFunction(renderer, [that, video, source]);
-            }
+                fluid.invokeGlobalFunction(renderer, [that, source]); 
+            }                                      
         });
     };
     
-    var renderVideoTag = function (that) {
+    var injectVideo = function (container, video) {
+        video.addClass("flc-videoPlayer-video");
+        container.append(video);
+    };
+
+    var renderVideo = function (that) {
         var video = that.locate("video");
         
-        // If we're not given a video tag, replace it with one.
-        if (!video.is("video")) {
-            video = replaceWithVideo(video);
+        if ($.browser.msie) {
+            // IE is blatantly hostile to the video tag. 
+            // If one is found, remove it and replace it with something less awesome.
+            video.remove();
+            video = $("<div/>")
+            injectVideo(that.container, video);
+        } else if (video.length === 0) {
+            video = $("<video/>");
+            injectVideo(that.container, video);
         }
 
         // Safari seems to show controls if the attribute is present at all, 
         // regardless of its value.
         if (that.options.controllerType === "native") {
             video.attr("controls", "true"); 
-        }
-
-        // Render each media source with its custom renderer, registered by type.
-        // TODO: There is a problem with IE throwing an error while rendering the <source> tags.
-        // This is a temporary workaround.
-        if (!$.browser.msie) {
-            renderSources(that, video);
         }
         
         return video;
@@ -125,10 +120,13 @@ var fluid = fluid || {};
     
     var setupVideoPlayer = function (that) {
         // Render the video element.
-        that.video = renderVideoTag(that);
+        that.video = renderVideo(that);
+        
+        // Render each media source with its custom renderer, registered by type.
+        renderSources(that);
         
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
-        if (typeof(window.HTMLMediaElement) === "undefined") {
+        if (!document.createElement('video').canPlayType) {
             return;
         }
         
@@ -221,17 +219,19 @@ var fluid = fluid || {};
     });
     
     fluid.videoPlayer.mediaRenderers = {
-        html5SourceTag: function (videoPlayer, video, mediaSource) {
+        html5SourceTag: function (videoPlayer, mediaSource) {
             var sourceTag = $("<source />");
             sourceTag.attr(mediaSource);
-            video.append(sourceTag);
+            videoPlayer.video.append(sourceTag);
+            return sourceTag;
         },
         
-        youTubePlayer: function (videoPlayer, video, mediaSource) {
+        youTubePlayer: function (videoPlayer, mediaSource) {
             var placeholder = $("<div/>"),
                 id = fluid.allocateSimpleId(placeholder);
+            videoPlayer.video.append(placeholder);
             swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
-            video.append(placeholder);
+            return placeholder;
         }
     };
 })(jQuery);
