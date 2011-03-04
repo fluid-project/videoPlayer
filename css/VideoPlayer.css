@@ -55,6 +55,7 @@
     top:-0.05em;
 }
 .fl-theme-coal .ui-slider .ui-slider-handle {
-    height:0.7em;
-    width:0.7em;
+    height: 0.6em;
+    width: 0.6em;
+    margin-top: 0.06em;
 }
