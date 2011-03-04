@@ -110,6 +110,10 @@ var fluid = fluid || {};
         
         that.video.click(playHandler);
         that.video.fluid("activatable", playHandler);
+        
+        that.video.bind("loadedmetadata", function () {
+            that.container.css("width", that.video[0].videoWidth);
+        });
     };
     
     var renderControllerContainer = function (that) {

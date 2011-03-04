@@ -4,17 +4,11 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<title>Video Player Demo</title>
         
-        <link type="text/css" href="../../fluid-all/fluid-infusion/src/webapp/framework/fss/css/fss-layout.css" rel="stylesheet" />
-        <link type="text/css" href="../../fluid-all/fluid-infusion/src/webapp/lib/jquery/ui/css/fl-theme-coal/coal.css" rel="stylesheet" />
+        <link type="text/css" href="../lib/infusion/framework/fss/css/fss-layout.css" rel="stylesheet" />
+        <link type="text/css" href="../lib/infusion/framework/fss/css/fss-theme-coal.css" rel="stylesheet" />
         <link type="text/css" href="../css/player.css" rel="stylesheet" />
 		
-        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
-        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/jquery/ui/js/ui.core.js"></script>
-        <script type="text/javascript" src="../js/ui.a11y.slider.js"></script>
-        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/json/js/json2.js"></script>
-        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/framework/core/js/Fluid.js"></script>
-        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
-        <script type="text/javascript" src="../../fluid-all/fluid-infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
+        <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
     </head>
     <body>
@@ -26,24 +20,24 @@
             </video>
         </div>
         
-        
         <script type="text/javascript">
             var vp = fluid.videoPlayer(".videoPlayer", {
                 sources: [
                     {
-                        src: "../media/CC-ASharedCulture-Clip.m4v",
+                        src: "http://a15.video2.blip.tv/10390000798504/Commonscreative-ASharedCulture944.mov",
                         type: "video/mp4"
                     },
                     {
-                        src: "../media/CC-ASharedCulture-Clip.ogv",
+                        src: "http://a32.video2.blip.tv/3550000338230/Commonscreative-ASharedCulture211.ogv",
                         type: "video/ogg"
                     },
                     {
-                        src: "http://www.youtube.com/v/atnNJw6j0kE&hl=en&fs=1&",
+                        src: "http://www.youtube.com/v/1DKm96Ftfko&hl=en&fs=1",
                         type: "youtube"
                     }
                 ],
                 
+                // TODO: These captions don't match the video!
                 captions: "InlineEditScreenCastCaptions.json"
             });
         </script>
