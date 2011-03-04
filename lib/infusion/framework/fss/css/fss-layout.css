@@ -239,10 +239,10 @@ input.fl-icon {padding-left:16px;}
 
 
 /* Common widget sub-components */
-.fl-widget .menu 	{margin:0;}
+.fl-widget .menu    {margin:0;}
 .fl-widget .toggle  {width:32px;}
-.fl-widget .on 		{background-position:left top;}
-.fl-widget .off 	{background-position:left bottom;}
+.fl-widget .on      {background-position:left top;}
+.fl-widget .off     {background-position:left bottom;}
 
 /*
  * Forms and Form Controls
@@ -279,5 +279,3 @@ input.fl-icon {padding-left:16px;}
 
 /* hide text for screen readers. */
 .fl-offScreen-hidden {position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;}
-
-
