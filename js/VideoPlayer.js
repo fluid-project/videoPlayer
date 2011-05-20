@@ -331,24 +331,45 @@ var fluid = fluid || {};
     
     var bindDOMEvents = function (that) {
         var scrubber = that.locate("scrubber");
+        var currentTime = that.locate("currentTime");
+        var totalTime = that.locate("totalTime");
+        
         var jVideo = $(that.video);
         
+        //returns the time in format hh:mm:ss from a time in seconds 
+        var formatTime= function(time) {
+            var fullTime = Math.floor(time);
+            var sec = fullTime % 60;
+            fullTime = Math.floor(fullTime / 60);
+            var min = fullTime % 60;
+            fullTime = Math.floor(fullTime / 60);
+            var ret = "";
+            if (fullTime /= 0) {
+            	ret = fullTime + ":";
+            }
+            return ret + min + ":" + sec;
+        }
         // Setup the scrubber when we know the duration of the video.
         jVideo.bind("durationchange", function () {
             var startTime = that.video.startTime || 0; // FF doesn't implement startTime from the HTML 5 spec.
             scrubber.slider("option", "min", startTime);
             scrubber.slider("option", "max", that.video.duration + startTime);
             scrubber.slider("enable");
+            currentTime.text(formatTime(startTime));
+            totalTime.text(formatTime(that.video.duration));
         });
         
         // Bind to the video's timeupdate event so we can programmatically update the slider.
+        //TODO get time in hh:mm:ss
         jVideo.bind("timeupdate", function () {
-            scrubber.slider("value", that.video.currentTime);    
+            scrubber.slider("value", that.video.currentTime);  
+            currentTime.text(formatTime(that.video.currentTime));
         });
         
         // Bind the scrubbers slide event to change the video's time.
         that.locate("scrubber").bind("slide", function (evt, ui) {
             that.video.currentTime = ui.value;
+            currentTime.text(formatTime(that.video.currentTime));
         });
         
         // Bind the play button.
@@ -360,6 +381,8 @@ var fluid = fluid || {};
                 that.video.pause();
             }
         });
+        
+
         
         // Bind the Play/Pause button's text status to the HTML 5 video events.
         jVideo.bind("play", function () {
@@ -385,12 +408,28 @@ var fluid = fluid || {};
             that.container.append(playButton);   
         }
 
+        // Render the currentTime indicator if it's not already there.
+        var currentTime = that.locate("currentTime");
+        if (currentTime.length === 0) {
+            currentTime = $("<span class='flc-videoPlayer-controller-currentTime'/>").text(that.options.strings.currentTime);
+            that.container.append(currentTime);   
+        }
+
+
         // Render the scrubber if it's not already there.
         var scrubber = that.locate("scrubber");
         if (scrubber.length === 0) {
             scrubber = renderScrubber(that);
         }
-                
+
+        // Render the total Time indicator if it's not already there.
+        var totalTime = that.locate("totalTime");
+        if (totalTime.length === 0) {
+            totalTime = $("<span class='flc-videoPlayer-controller-totalTime'/>").text(that.options.strings.totalTime);
+            that.container.append(totalTime);   
+        }
+
+               
         // Initially disable the play button and scrubber until the video is ready to go.
         playButton.attr("disabled", "disabled");
         scrubber.slider({unittext: " seconds"}).slider("disable");
@@ -417,12 +456,16 @@ var fluid = fluid || {};
         
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
-            scrubber: ".flc-videoPlayer-controller-scrubber"
+            scrubber: ".flc-videoPlayer-controller-scrubber",
+            totalTime: ".flc-videoPlayer-controller-totalTime",
+            currentTime: ".flc-videoPlayer-controller-currentTime"
         },
         
         strings: {
             play: "Play",
-            pause: "Pause"
+            pause: "Pause",
+            totalTime: "Total time",
+            currentTime: "Current time"
         }
     });
 
