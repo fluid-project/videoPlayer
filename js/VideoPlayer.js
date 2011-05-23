@@ -411,7 +411,7 @@ var fluid = fluid || {};
         // Render the currentTime indicator if it's not already there.
         var currentTime = that.locate("currentTime");
         if (currentTime.length === 0) {
-            currentTime = $("<span class='flc-videoPlayer-controller-currentTime'/>").text(that.options.strings.currentTime);
+            currentTime = $("<div class='flc-videoPlayer-controller-time flc-videoPlayer-controller-current'/>").text(that.options.strings.currentTime);
             that.container.append(currentTime);   
         }
 
@@ -425,7 +425,7 @@ var fluid = fluid || {};
         // Render the total Time indicator if it's not already there.
         var totalTime = that.locate("totalTime");
         if (totalTime.length === 0) {
-            totalTime = $("<span class='flc-videoPlayer-controller-totalTime'/>").text(that.options.strings.totalTime);
+            totalTime = $("<div class='flc-videoPlayer-controller-time flc-videoPlayer-controller-total'/>").text(that.options.strings.totalTime);
             that.container.append(totalTime);   
         }
 
@@ -457,8 +457,8 @@ var fluid = fluid || {};
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
             scrubber: ".flc-videoPlayer-controller-scrubber",
-            totalTime: ".flc-videoPlayer-controller-totalTime",
-            currentTime: ".flc-videoPlayer-controller-currentTime"
+            totalTime: ".flc-videoPlayer-controller-total",
+            currentTime: ".flc-videoPlayer-controller-current"
         },
         
         strings: {
