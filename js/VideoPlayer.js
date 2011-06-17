@@ -197,6 +197,21 @@ var fluid = fluid || {};
         return that;    
     };
     
+    //returns the time in format hh:mm:ss from a time in seconds 
+    fluid.videoPlayer.formatTime = function(time) {
+        var fullTime = Math.floor(time);
+        var sec = fullTime % 60;
+        sec = sec < 10 ? String.concat(0,sec) : sec;
+        fullTime = Math.floor(fullTime / 60);
+        var min = fullTime % 60;
+        fullTime = Math.floor(fullTime / 60);
+        var ret = "";
+        if (fullTime /= 0) {
+            ret = fullTime + ":";
+        }
+        return ret + min + ":" + sec;
+    }
+
     fluid.defaults("fluid.videoPlayer", {
         captionView: {
             type: "fluid.videoPlayer.singleCaptionView"
@@ -336,40 +351,27 @@ var fluid = fluid || {};
         
         var jVideo = $(that.video);
         
-        //returns the time in format hh:mm:ss from a time in seconds 
-        var formatTime= function(time) {
-            var fullTime = Math.floor(time);
-            var sec = fullTime % 60;
-            fullTime = Math.floor(fullTime / 60);
-            var min = fullTime % 60;
-            fullTime = Math.floor(fullTime / 60);
-            var ret = "";
-            if (fullTime /= 0) {
-            	ret = fullTime + ":";
-            }
-            return ret + min + ":" + sec;
-        }
         // Setup the scrubber when we know the duration of the video.
         jVideo.bind("durationchange", function () {
             var startTime = that.video.startTime || 0; // FF doesn't implement startTime from the HTML 5 spec.
             scrubber.slider("option", "min", startTime);
             scrubber.slider("option", "max", that.video.duration + startTime);
             scrubber.slider("enable");
-            currentTime.text(formatTime(startTime));
-            totalTime.text(formatTime(that.video.duration));
+            currentTime.text(fluid.videoPlayer.formatTime(startTime));
+            totalTime.text(fluid.videoPlayer.formatTime(that.video.duration));
         });
         
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         //TODO get time in hh:mm:ss
         jVideo.bind("timeupdate", function () {
             scrubber.slider("value", that.video.currentTime);  
-            currentTime.text(formatTime(that.video.currentTime));
+            currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
         });
         
         // Bind the scrubbers slide event to change the video's time.
         that.locate("scrubber").bind("slide", function (evt, ui) {
             that.video.currentTime = ui.value;
-            currentTime.text(formatTime(that.video.currentTime));
+            currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
         });
         
         // Bind the play button.
