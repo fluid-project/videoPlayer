@@ -25,7 +25,7 @@ var fluid = fluid || {};
         var renderAttributes = function (values) {
             var ret = "";
             fluid.each(values, function (val, key) {
-                ret = String.concat(ret, fluid.stringTemplate(" %name='%value' ", {name: key, value: val}));
+                ret += fluid.stringTemplate(" %name='%value' ", {name: key, value: val});
             });
             return ret;
         };
@@ -34,7 +34,7 @@ var fluid = fluid || {};
             if (jQuery.isArray(elt)) {
                 var ret = "";
                 fluid.each(elt, function (value) {
-                    ret = String.concat(ret, create(value));
+                    ret += create(value);
                 });
                 return ret;
             } else if (typeof (elt) === "string") {
@@ -44,22 +44,22 @@ var fluid = fluid || {};
             }
         };
         
-        var renderClasses = function (elt) {
-            var ret = " class='"; 
+        var renderClasses = function (elt, selector) {
+            var ret = " class=' " + selector + " "; 
             if (typeof (elt) === "object" && elt) {
                 fluid.each(elt, function (value) {
-                    ret = String.concat(ret, " ", value);
+                    ret += " " + value;
                 });
             } else {
-                ret = String.concat(ret, elt);
+                ret += elt;
             }
-            return String.concat(ret, "' ");           
+            return ret + "' ";
         };
         
         create = function (values) {
             var data = {
                 tag: values.tag,
-                classes: (values.classes || 0) ? renderClasses(values.classes) : "",
+                classes: (values.classes || values.selector || 0) ? renderClasses(values.classes, values.selector) : "",
                 attributes: (values.attributes || 0) ? renderAttributes(values.attributes) : "",
                 content: (values.content || 0) ? renderContent(values.content) : ""
             };
@@ -71,7 +71,8 @@ var fluid = fluid || {};
         * @param {array || string} all the data that will be inject into the container
         * Compulsory shape of the tree parameter (it can be an array or a single object):
         * {
-        *   tag: "name of the html tag", (compulsory)
+        *   tag: "name of the html tag", (compulsory),
+        *   selector: "name of the selector", (only one name),
         *   classes: "an string or array of class names",
         *   attributes: "an object containing the name and the value of each attribute",
         *   content: "either another object describing a child or an array of children or a string containing the data",

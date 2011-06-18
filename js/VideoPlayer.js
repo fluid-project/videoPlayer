@@ -196,21 +196,6 @@ var fluid = fluid || {};
         setupVideoPlayer(that);
         return that;    
     };
-    
-    //returns the time in format hh:mm:ss from a time in seconds 
-    fluid.videoPlayer.formatTime = function(time) {
-        var fullTime = Math.floor(time);
-        var sec = fullTime % 60;
-        sec = sec < 10 ? String.concat(0,sec) : sec;
-        fullTime = Math.floor(fullTime / 60);
-        var min = fullTime % 60;
-        fullTime = Math.floor(fullTime / 60);
-        var ret = "";
-        if (fullTime /= 0) {
-            ret = fullTime + ":";
-        }
-        return ret + min + ":" + sec;
-    }
 
     fluid.defaults("fluid.videoPlayer", {
         captionView: {
@@ -218,7 +203,7 @@ var fluid = fluid || {};
         },
         
         controller: {
-            type: "fluid.videoPlayer.playAndScrubController"
+            type: "fluid.videoPlayer.controllers"
         },
         
         selectors: {
@@ -237,6 +222,21 @@ var fluid = fluid || {};
         showCaptions: true
     });
     
+    //returns the time in format hh:mm:ss from a time in seconds 
+    fluid.videoPlayer.formatTime = function(time) {
+        var fullTime = Math.floor(time);
+        var sec = fullTime % 60;
+        sec = sec < 10 ? String.concat(0,sec) : sec;
+        fullTime = Math.floor(fullTime / 60);
+        var min = fullTime % 60;
+        fullTime = Math.floor(fullTime / 60);
+        var ret = "";
+        if (fullTime /= 0) {
+            ret = fullTime + ":";
+        }
+        return ret + min + ":" + sec;
+    };
+
     fluid.videoPlayer.mediaRenderers = {
         html5SourceTag: function (videoPlayer, mediaSource) {
             var sourceTag = $("<source />");
@@ -255,220 +255,3 @@ var fluid = fluid || {};
     };
 })(jQuery);
 
-(function ($) {
-    var indexCaptions = function (captions) {
-        var indexedCaptions = [];
-        $.each(captions, function (idx, caption) {
-            indexedCaptions[caption.inTimeMilli] = caption; 
-        });
-        return indexedCaptions;
-    };
-    
-    var clearCurrentCaption = function (that) {
-        that.container.empty();
-        that.currentCaption = null;
-    };
-    
-    var findCaptionForTime = function (that, timeInMillis) {     
-        // TODO: This algorithm is totally evil and incorrect.
-        var timeRange = {
-            lower: timeInMillis - 333,
-            upper: timeInMillis + 333
-        };
-        
-        for (var x = timeRange.lower; x <= timeRange.upper; x++) {
-            var match = that.captions[x];
-            if (match) {
-                if (match.inTimeMilli <= x && match.outTimeMilli >= x) {
-                    return match; 
-                }      
-            }
-        }
-        
-        return null;
-    };
-    
-    var displayCaption = function (that, caption) {
-        that.currentCaption = caption;
-        that.container.text(caption.caption_text);
-    };
-    
-    var setupCaptionView = function (that) {
-        that.captions = indexCaptions(that.options.captions);
-        
-        that.video.bind("timeupdate", function () {
-            var timeInMillis = Math.round(this.currentTime * 1000);
-            that.timeUpdate(timeInMillis);
-        });
-    };
-    
-    /**
-     * SingleCaptionView is responsible for displaying captions in a one-at-a-time style.
-     * 
-     * @param {Object} container the container in which the captions should be displayed
-     * @param {Object} options configuration options for the component
-     */
-    fluid.videoPlayer.singleCaptionView = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer.singleCaptionView", container, options);
-        that.video = that.options.video;
-        that.currentCaption = null;
-        
-        that.timeUpdate = function (timeInMillis) {
-            // Clear out any caption that has hit its end time.
-            if (that.currentCaption && timeInMillis >= that.currentCaption.outTimeMilli) {
-                clearCurrentCaption(that);
-            }
-            
-            // Display a new caption.
-            var nextCaption = findCaptionForTime(that, timeInMillis);
-            if (nextCaption) {
-                displayCaption(that, nextCaption);
-            }
-        };
-        
-        setupCaptionView(that);
-        return that;
-    };
-    
-    fluid.defaults("fluid.videoPlayer.singleCaptionView", {
-        video: null,
-        captions: null
-    });
-})(jQuery);
-
-(function ($) {
-
-    var renderScrubber = function (that) {
-        var scrubber = $("<div class='flc-videoPlayer-controller-scrubber fl-player-scrubber'></div>");
-        that.container.append(scrubber);
-        return scrubber;
-    };
-    
-    var bindDOMEvents = function (that) {
-        var scrubber = that.locate("scrubber");
-        var currentTime = that.locate("currentTime");
-        var totalTime = that.locate("totalTime");
-        
-        var jVideo = $(that.video);
-        
-        // Setup the scrubber when we know the duration of the video.
-        jVideo.bind("durationchange", function () {
-            var startTime = that.video.startTime || 0; // FF doesn't implement startTime from the HTML 5 spec.
-            scrubber.slider("option", "min", startTime);
-            scrubber.slider("option", "max", that.video.duration + startTime);
-            scrubber.slider("enable");
-            currentTime.text(fluid.videoPlayer.formatTime(startTime));
-            totalTime.text(fluid.videoPlayer.formatTime(that.video.duration));
-        });
-        
-        // Bind to the video's timeupdate event so we can programmatically update the slider.
-        //TODO get time in hh:mm:ss
-        jVideo.bind("timeupdate", function () {
-            scrubber.slider("value", that.video.currentTime);  
-            currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
-        });
-        
-        // Bind the scrubbers slide event to change the video's time.
-        that.locate("scrubber").bind("slide", function (evt, ui) {
-            that.video.currentTime = ui.value;
-            currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
-        });
-        
-        // Bind the play button.
-        var playButton = that.locate("playButton");
-        playButton.click(function () {
-            if (that.video.paused) {
-                that.video.play();
-            } else {
-                that.video.pause();
-            }
-        });
-        
-
-        
-        // Bind the Play/Pause button's text status to the HTML 5 video events.
-        jVideo.bind("play", function () {
-            playButton.text(that.options.strings.pause);
-            playButton.removeClass("fl-videoPlayer-state-play").addClass("fl-videoPlayer-state-pause");
-        });
-        jVideo.bind("pause", function () {
-            playButton.text(that.options.strings.play);
-            playButton.removeClass("fl-videoPlayer-state-pause").addClass("fl-videoPlayer-state-play");
-        });
-        
-        // Enable the Play/Pause button when the video can start playing.
-        jVideo.bind("canplay", function () {
-            playButton.removeAttr("disabled");
-        });
-    };
-    
-    var setupController = function (that) {
-        // Render the play button if it's not already there.
-        var playButton = that.locate("playButton");
-        if (playButton.length === 0) {
-            playButton = $("<button class='flc-videoPlayer-controller-play fl-videoPlayer-state-play'/>").text(that.options.strings.play);
-            that.container.append(playButton);   
-        }
-
-        // Render the currentTime indicator if it's not already there.
-        var currentTime = that.locate("currentTime");
-        if (currentTime.length === 0) {
-            currentTime = $("<div class='flc-videoPlayer-controller-time flc-videoPlayer-controller-current'/>").text(that.options.strings.currentTime);
-            that.container.append(currentTime);   
-        }
-
-
-        // Render the scrubber if it's not already there.
-        var scrubber = that.locate("scrubber");
-        if (scrubber.length === 0) {
-            scrubber = renderScrubber(that);
-        }
-
-        // Render the total Time indicator if it's not already there.
-        var totalTime = that.locate("totalTime");
-        if (totalTime.length === 0) {
-            totalTime = $("<div class='flc-videoPlayer-controller-time flc-videoPlayer-controller-total'/>").text(that.options.strings.totalTime);
-            that.container.append(totalTime);   
-        }
-
-               
-        // Initially disable the play button and scrubber until the video is ready to go.
-        playButton.attr("disabled", "disabled");
-        scrubber.slider({unittext: " seconds"}).slider("disable");
-        
-        bindDOMEvents(that);
-    };
-    
-    /**
-     * PlayAndScrubController is a simple video controller containing a play button and a time scrubber.
-     * 
-     * @param {Object} container the container which this component is rooted
-     * @param {Object} options configuration options for the component
-     */
-    fluid.videoPlayer.playAndScrubController = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
-        that.video = fluid.unwrap(that.options.video);
-        
-        setupController(that);
-        return that;
-    };
-    
-    fluid.defaults("fluid.videoPlayer.playAndScrubController", {        
-        video: null,
-        
-        selectors: {
-            playButton: ".flc-videoPlayer-controller-play",
-            scrubber: ".flc-videoPlayer-controller-scrubber",
-            totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current"
-        },
-        
-        strings: {
-            play: "Play",
-            pause: "Pause",
-            totalTime: "Total time",
-            currentTime: "Current time"
-        }
-    });
-
-})(jQuery);
