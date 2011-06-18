@@ -56,7 +56,7 @@ var fluid = fluid || {};
     };
     
     var renderCaptionArea = function (that) {
-        var captionArea = $("<div class='flc-videoPlayer-captionArea fl-player-caption'></div>");
+        var captionArea = $("<div class='flc-videoPlayer-captionArea fl-videoPlayer-captionArea'></div>");
         that.locate("controller").before(captionArea);
         return captionArea;
     };
@@ -226,7 +226,7 @@ var fluid = fluid || {};
     fluid.videoPlayer.formatTime = function(time) {
         var fullTime = Math.floor(time);
         var sec = fullTime % 60;
-        sec = sec < 10 ? String.concat(0,sec) : sec;
+        sec = sec < 10 ? "0" + sec : sec;
         fullTime = Math.floor(fullTime / 60);
         var min = fullTime % 60;
         fullTime = Math.floor(fullTime / 60);

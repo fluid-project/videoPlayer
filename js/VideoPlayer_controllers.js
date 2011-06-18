@@ -116,7 +116,7 @@
         
         styles: {
             time: "fl-videoPlayer-controller-time",
-            scrubber: "fl-videoPlayer-controller-time", 
+            scrubber: "fl-videoPlayer-controller-scrubber", 
         },
         
         states: {
