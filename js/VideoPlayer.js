@@ -55,11 +55,7 @@ var fluid = fluid || {};
         return video;
     };
     
-    var renderCaptionArea = function (that) {
-        var captionArea = $("<div class='flc-videoPlayer-captionArea fl-videoPlayer-captionArea'></div>");
-        that.locate("controller").before(captionArea);
-        return captionArea;
-    };
+    
     
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
     // time is in the format hh:mm:ss:mmm
@@ -99,6 +95,7 @@ var fluid = fluid || {};
             url: caps,
             success: that.setCaptions
         });
+        return that.options.selectors.captionArea;
     };
     
     var bindDOMEvents = function (that) {
@@ -122,10 +119,19 @@ var fluid = fluid || {};
         return controller;
     };
     
+    var renderCaptionAreaContainer = function (that) {
+        var captionArea = $("<div class='flc-videoPlayer-captionArea fl-videoPlayer-captionArea'></div>");
+        that.locate("controller").before(captionArea);
+        return captionArea;
+    };
+    
     var setupVideoPlayer = function (that) {
         // Render the video element.
         that.video = renderVideo(that);
-        
+        // Load and render the caption view.
+        if (that.options.captionsAvailable === true) {
+            loadCaptions(that);
+        }
         // Render each media source with its custom renderer, registered by type.
         renderSources(that);
         
@@ -139,12 +145,13 @@ var fluid = fluid || {};
             var controller = that.locate("controller");
             controller = (controller.length === 0) ? renderControllerContainer(that) : controller;
             that.controller = fluid.initSubcomponent(that, "controller", [controller, {
-                video: that.video
+                video: that.video,
+                selectors: {
+                    captionArea: that.options.selectors.captionArea
+                }
             }]);
         }
         
-        // Load and render the caption view.
-        loadCaptions(that);
         
         bindDOMEvents(that);
     };
@@ -181,7 +188,7 @@ var fluid = fluid || {};
 
             // Render the caption area if necessary
             var captionArea = that.locate("captionArea");
-            captionArea = captionArea.length === 0 ? renderCaptionArea(that) : captionArea;
+            captionArea = captionArea.length === 0 ? renderCaptionAreaContainer(that) : captionArea;
             
             // Instantiate the caption view component.
             that.captionView = fluid.initSubcomponent(that, "captionView", [
@@ -219,7 +226,8 @@ var fluid = fluid || {};
         },
         
         controllerType: "html", // "native", "html", "none" (or null)    
-        showCaptions: true
+        displayCaptions: true,
+        captionsAvailable: true
     });
     
     //returns the time in format hh:mm:ss from a time in seconds 

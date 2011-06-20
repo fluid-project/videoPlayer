@@ -31,6 +31,20 @@
             currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
         });
         
+        var captionButton = that.locate("captionButton");
+        captionButton.click(function () {
+            if ($(that.options.selectors.captionArea).css("display") === "none") { 
+                $(that.options.selectors.captionArea).fadeIn("fast","linear");
+                captionButton.text(that.options.strings.captionOn);
+                captionButton.removeClass(that.options.states.captionOff).addClass(that.options.states.captionOn);
+            } else {
+                $(that.options.selectors.captionArea).fadeOut("fast","linear");
+                captionButton.text(that.options.strings.captionOff);
+                captionButton.removeClass(that.options.states.captionOn).addClass(that.options.states.captionOff);
+
+            }
+        });
+        
         // Bind the play button.
         var playButton = that.locate("playButton");
         playButton.click(function () {
@@ -45,11 +59,11 @@
         // Bind the Play/Pause button's text status to the HTML 5 video events.
         jVideo.bind("play", function () {
             playButton.text(that.options.strings.pause);
-            playButton.removeClass("fl-videoPlayer-state-play").addClass("fl-videoPlayer-state-pause");
+            playButton.removeClass(that.options.states.play).addClass(that.options.states.pause);
         });
         jVideo.bind("pause", function () {
             playButton.text(that.options.strings.play);
-            playButton.removeClass("fl-videoPlayer-state-pause").addClass("fl-videoPlayer-state-play");
+            playButton.removeClass(that.options.states.pause).addClass(that.options.states.play);
         });
         
         // Enable the Play/Pause button when the video can start playing.
@@ -81,7 +95,17 @@
             tag: "div",
             selector: "flc-videoPlayer-controller-total",
             classes: that.options.styles.time,
-            content: that.options.strings.currentTime
+            content: that.options.strings.totalTime
+        },{
+            tag: "button",
+            selector: "flc-videoPlayer-controller-volume",
+            classes: that.options.styles.volume,
+            content: that.options.strings.volume
+        },{
+            tag: "button",
+            selector: "flc-videoPlayer-controller-caption",
+            classes: that.options.states.captionOn,
+            content: that.options.strings.captionOn
         }]);
                
         // Initially disable the play button and scrubber until the video is ready to go.
@@ -106,22 +130,28 @@
     
     fluid.defaults("fluid.videoPlayer.playAndScrubController", {        
         video: null,
+        captions: null,
         
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
+            captionButton: ".flc-videoPlayer-controller-caption",
             scrubber: ".flc-videoPlayer-controller-scrubber",
             totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current"
+            currentTime: ".flc-videoPlayer-controller-current",
+            volume: ".flc-videoPlayer-controller-volume"
         },
         
         styles: {
             time: "fl-videoPlayer-controller-time",
-            scrubber: "fl-videoPlayer-controller-scrubber", 
+            scrubber: "fl-videoPlayer-controller-scrubber",
+            volume: "fl-videoPlayer-controller-volume"
         },
         
         states: {
             play: "fl-videoPlayer-state-play",
             pause: "fl-videoPlayer-state-pause",
+            captionOn: "fl-videoPlayer-state-captionOn",
+            captionOff: "fl-videoPlayer-state-captionOff"
         },
         
         strings: {
@@ -129,7 +159,10 @@
             pause: "Pause",
             scrubber: "Scrubber",
             totalTime: "Total time",
-            currentTime: "Current time"
+            currentTime: "Current time",
+            volume: "Volume",
+            captionOn: "Captions On",
+            captionOff: "Captions Off",
         }
     });
 

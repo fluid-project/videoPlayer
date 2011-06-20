@@ -51,8 +51,22 @@
 
 .fl-videoPlayer-controller-scrubber {
     float:left;
-    width: 80%;
+    width: 70%;
     text-indent: -1000px;
+}
+
+.fl-videoPlayer-controller-volume {
+    background:transparent url(../images/volume3.png) no-repeat center center;
+
+}
+
+.fl-videoPlayer-state-captionOn {
+    background:transparent url(../images/captionOff.png) no-repeat center center;
+}
+
+
+.fl-videoPlayer-state-captionOff {
+    background:transparent url(../images/captionOn.png) no-repeat center center;
 }
 
 /*
