@@ -29,7 +29,7 @@
 }
 .fl-videoPlayer-controller button {
     float:left;
-    width:5%;
+    width:4%;
     border : none;
     text-indent:-1000px;
     cursor:pointer;
@@ -39,34 +39,54 @@
 .fl-videoPlayer-state-play {
     background:transparent url(../images/play.png) no-repeat center center;
 }
+
 .fl-videoPlayer-state-pause {
     background:transparent url(../images/pause.png) no-repeat center center;
+}
+
+.fl-videoPlayer-state-fullscreenOn {
+    background:transparent url(../images/fullscreen.png) no-repeat center center;
+}
+
+.fl-videoPlayer-state-fullscreenOff {
+    background:transparent url(../images/fullscreen.png) no-repeat center center;
 }
 
 .fl-videoPlayer-controller-time {
     float:left;
     text-align:center;
-    width:7%;
+    width:5%;
+    padding: auto;
 }
 
 .fl-videoPlayer-controller-scrubber {
     float:left;
     width: 70%;
     text-indent: -1000px;
+    overflow: hidden;
 }
 
 .fl-videoPlayer-controller-volume {
-    background:transparent url(../images/volume3.png) no-repeat center center;
+    background:transparent no-repeat center center;
+    background-image: url(../images/volume2.png);
+}
 
+.fl-videoPlayer-controller-volumeControl {
+    float: left;
+    margin-top: -90px;
+    text-indent: -1000px;
+    display: none;
+    opacity: 0.5;
+    cursor: pointer;
 }
 
 .fl-videoPlayer-state-captionOn {
-    background:transparent url(../images/captionOff.png) no-repeat center center;
+    background:transparent url(../images/captionOn.png) no-repeat center center;
 }
 
 
 .fl-videoPlayer-state-captionOff {
-    background:transparent url(../images/captionOn.png) no-repeat center center;
+    background:transparent url(../images/captionOff.png) no-repeat center center;
 }
 
 /*
@@ -84,11 +104,21 @@
 * mods to the coal theme
 */
 .fl-theme-coal .ui-corner-all {
-    -moz-border-radius:10px;
-    -webkit-border-radius:10px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
 }
 
-.fl-theme-coal .ui-slider .ui-slider-handle {
-    position: absolute;
-    width:2.5%;
+.fl-theme-coal .fl-videoPlayer-controller-scrubber .ui-slider-handle {
+ /*   position: absolute;
+    width: 2%;
+    margin-left: -0.2%;
+    height: 100%;
+    margin-top: -0.2%;*/
+}
+
+.fl-theme-coal .fl-videoPlayer-controller-volumeControl .ui-slider-handle {
+ /*   left: 0;
+    height:15.5%;
+    position:absolute;
+    width:90.5%;*/
 }

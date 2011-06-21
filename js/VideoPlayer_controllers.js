@@ -30,18 +30,68 @@
             that.video.currentTime = ui.value;
             currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
         });
+        var volumeButton = that.locate("volume");
+        var volumeControl = that.locate("volumeControl");       
+        // Bind the volume Control slide event to change the video's volume and its image.
+        volumeControl.bind("slide", function (evt, ui) {
+            that.video.volume = ui.value/100.0;
+            if (ui.value > 66) {
+                $(volumeButton).css("background-image","url(../images/volume3.png)");
+            } else if( ui.value > 33 ) {
+                $(volumeButton).css("background-image","url(../images/volume2.png)");
+            } else if( ui.value /= 0) {
+                $(volumeButton).css("background-image", "url(../images/volume1.png)");
+            } else {
+                $(volumeButton).css("background-image", "url(../images/volume0.png)");
+            }
+            
+        });
+
+        //destroy the volume slider when the mouse leave the slider
+        volumeControl.mouseleave( function (evt, ui) {
+            if ($(volumeControl).css("display") !== "none") {
+                $(volumeControl).hide();
+                $(volumeButton).fadeIn("fast","linear");            
+            }
+            
+        });
+
+        
+        // Display the volume slider when the button is clicked
+        volumeButton.click(function () {
+            if ($(volumeControl).css("display") === "none") { 
+                $(volumeButton).hide();
+                $(volumeControl).fadeIn("fast","linear");
+            } else {
+                $(volumeControl).fadeOut("fast","linear");
+                $(volumeButton).show();
+            }
+        });
+        
+
         
         var captionButton = that.locate("captionButton");
         captionButton.click(function () {
-            if ($(that.options.selectors.captionArea).css("display") === "none") { 
-                $(that.options.selectors.captionArea).fadeIn("fast","linear");
+            var captionArea = $(that.options.selectors.captionArea);
+            if (captionArea.css("display") === "none") { 
+                captionArea.fadeIn("fast","linear");
                 captionButton.text(that.options.strings.captionOn);
                 captionButton.removeClass(that.options.states.captionOff).addClass(that.options.states.captionOn);
             } else {
-                $(that.options.selectors.captionArea).fadeOut("fast","linear");
+                captionArea.fadeOut("fast","linear");
                 captionButton.text(that.options.strings.captionOff);
                 captionButton.removeClass(that.options.states.captionOn).addClass(that.options.states.captionOff);
-
+            }
+        });
+        
+        var fullscreenButton = that.locate("fullscreenButton");
+        fullscreenButton.click(function () {
+            if (fullscreenButton.hasClass(that.options.states.fullscreenOn)) {
+                that.fullscreen(true);
+                fullscreenButton.removeClass(that.options.states.fullscreenOn).addClass(that.options.states.fullscreenOff);
+            } else {   
+                that.fullscreen(false);
+                fullscreenButton.removeClass(that.options.states.fullscreenOff).addClass(that.options.states.fullscreenOn);
             }
         });
         
@@ -102,15 +152,33 @@
             classes: that.options.styles.volume,
             content: that.options.strings.volume
         },{
+            tag: "div",
+            selector: "flc-videoPlayer-controller-volumeControl",
+            classes: that.options.styles.volumeControl
+        },{
             tag: "button",
             selector: "flc-videoPlayer-controller-caption",
             classes: that.options.states.captionOn,
             content: that.options.strings.captionOn
+        },{
+            tag: "button",
+            selector: "flc-videoPlayer-controller-fullscreen",
+            classes: that.options.states.fullscreenOn,
+            content: that.options.strings.fullscreen
         }]);
                
         // Initially disable the play button and scrubber until the video is ready to go.
         that.locate("scrubber").slider({unittext: " seconds"}).slider("disable");
-        
+        that.locate("volumeControl").slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: 60
+        });
+        /*scrubber.slider("option", "min", startTime);
+            scrubber.slider("option", "max", that.video.duration + startTime);
+            scrubber.slider("enable");*/
         bindDOMEvents(that);
     };
     
@@ -123,10 +191,13 @@
     fluid.videoPlayer.controllers = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
         that.video = fluid.unwrap(that.options.video);
+        that.fullscreen = fluid.unwrap(that.options.fullscreen);
         
         setupController(that);
         return that;
     };
+    
+    fluid.demands("playAndScrubController","fluid.videoPlayer", {funcName: "fullscreen", args: ["bool"]});
     
     fluid.defaults("fluid.videoPlayer.playAndScrubController", {        
         video: null,
@@ -138,20 +209,25 @@
             scrubber: ".flc-videoPlayer-controller-scrubber",
             totalTime: ".flc-videoPlayer-controller-total",
             currentTime: ".flc-videoPlayer-controller-current",
-            volume: ".flc-videoPlayer-controller-volume"
+            volume: ".flc-videoPlayer-controller-volume",
+            volumeControl: ".flc-videoPlayer-controller-volumeControl",
+            fullscreenButton: ".flc-videoPlayer-controller-fullscreen"
         },
         
         styles: {
             time: "fl-videoPlayer-controller-time",
             scrubber: "fl-videoPlayer-controller-scrubber",
-            volume: "fl-videoPlayer-controller-volume"
+            volume: "fl-videoPlayer-controller-volume",
+            volumeControl: "fl-videoPlayer-controller-volumeControl"
         },
         
         states: {
             play: "fl-videoPlayer-state-play",
             pause: "fl-videoPlayer-state-pause",
             captionOn: "fl-videoPlayer-state-captionOn",
-            captionOff: "fl-videoPlayer-state-captionOff"
+            captionOff: "fl-videoPlayer-state-captionOff",
+            fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
+            fullscreenOff: "fl-videoPlayer-state-fullscreenOff"
         },
         
         strings: {
@@ -163,6 +239,7 @@
             volume: "Volume",
             captionOn: "Captions On",
             captionOff: "Captions Off",
+            fullscreen: "Fullscreen"
         }
     });
 

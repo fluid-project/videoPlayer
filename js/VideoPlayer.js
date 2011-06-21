@@ -139,13 +139,13 @@ var fluid = fluid || {};
         if (!document.createElement('video').canPlayType) {
             return;
         }
-        
         // Add the controller if required.
         if (that.options.controllerType === "html") {
             var controller = that.locate("controller");
             controller = (controller.length === 0) ? renderControllerContainer(that) : controller;
             that.controller = fluid.initSubcomponent(that, "controller", [controller, {
                 video: that.video,
+                fullscreen: that.fullscreen,
                 selectors: {
                     captionArea: that.options.selectors.captionArea
                 }
@@ -178,6 +178,30 @@ var fluid = fluid || {};
                 that.play();
             } else {
                 that.pause();
+            }
+        };
+        
+        that.fullscreen = function (bool) {
+            if (bool) {
+                that.videoWidth = that.container.css("width");
+                that.videoHeight = that.container.css("height");
+                that.container.css({
+                    width: window.innerWidth + "px",
+                    height: window.innerHeight + "px",
+                    left: 0,
+                    top: 0,
+                    position: "fixed"
+                });
+                that.video.css({
+                    width: "100%",
+                    height: "100%"
+                });
+            } else {
+                that.container.css({
+                    width: that.videoWidth,
+                    height: that.videoHeight,
+                    position: "relative"
+                });
             }
         };
         
