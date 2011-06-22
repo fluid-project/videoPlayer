@@ -203,7 +203,7 @@ var fluid = fluid || {};
 
     fluid.defaults("fluid.videoPlayer", {
         captionView: {
-            type: "fluid.videoPlayer.singleCaptionView"
+            type: "fluid.videoPlayer.captionner"
         },
         
         controller: {
