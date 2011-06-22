@@ -30,6 +30,7 @@
             that.video.currentTime = ui.value;
             currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
         });
+        
         var volumeButton = that.locate("volume");
         var volumeControl = that.locate("volumeControl");       
         // Bind the volume Control slide event to change the video's volume and its image.
@@ -47,16 +48,14 @@
             
         });
 
-        //destroy the volume slider when the mouse leave the slider
+        //destroy the volume slider when the mouse leaves the slider
         volumeControl.mouseleave( function (evt, ui) {
             if ($(volumeControl).css("display") !== "none") {
                 $(volumeControl).hide();
                 $(volumeButton).fadeIn("fast","linear");            
-            }
-            
+            }         
         });
 
-        
         // Display the volume slider when the button is clicked
         volumeButton.click(function () {
             if ($(volumeControl).css("display") === "none") { 
@@ -84,6 +83,7 @@
             }
         });
         
+        //toggle from fullscreen to normal view...
         var fullscreenButton = that.locate("fullscreenButton");
         fullscreenButton.click(function () {
             if (fullscreenButton.hasClass(that.options.states.fullscreenOn)) {
@@ -174,7 +174,7 @@
             range: "min",
             min: 0,
             max: 100,
-            value: 60
+            value: 0
         });
         /*scrubber.slider("option", "min", startTime);
             scrubber.slider("option", "max", that.video.duration + startTime);

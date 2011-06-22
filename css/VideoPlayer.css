@@ -4,8 +4,8 @@
 
 .fl-videoPlayer {
     position: relative;
-    color:white;
-    font:bold Tahoma,Arial,Helvetica,sans-serif;
+    color: white;
+    font: bold Tahoma,Arial,Helvetica,sans-serif;
 }
 
 /*
@@ -56,7 +56,6 @@
     float:left;
     text-align:center;
     width:5%;
-    padding: auto;
 }
 
 .fl-videoPlayer-controller-scrubber {
@@ -98,6 +97,10 @@
     position: absolute;
     text-align:center;
     width:100%;
+}
+
+.fl-videoPlayer-caption-captionText {
+    display: none;
 }
 
 /*

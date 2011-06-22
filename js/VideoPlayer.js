@@ -54,31 +54,6 @@ var fluid = fluid || {};
         
         return video;
     };
-    
-    
-    
-    // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
-    // time is in the format hh:mm:ss:mmm
-    var convertToMilli = function (time) {
-        var splitTime = time.split(":");
-        var hours = parseFloat(splitTime[0]);
-        var mins = parseFloat(splitTime[1]) + (hours * 60);
-        var secs = parseFloat(splitTime[2]) + (mins * 60);
-        return Math.round(secs * 1000);
-    };
-     
-    var normalizeInOutTimes = function (captions) {
-        // TODO: This is temporary to work around the difference between capscribe web and capscribe desktop captions
-        for (var i = 0; i < captions.length; i++) {
-            var cap = captions[i];
-            if (!cap.inTimeMilli) {
-                cap.inTimeMilli = convertToMilli(cap.inTime);
-            }
-            if (!cap.outTimeMilli) {
-                cap.outTimeMilli = convertToMilli(cap.outTime);
-            }
-        }
-    };
         
     var loadCaptions = function (that) {
         var caps = that.options.captions;
@@ -114,13 +89,15 @@ var fluid = fluid || {};
     };
     
     var renderControllerContainer = function (that) {
-        var controller = $("<div class='flc-videoPlayer-controller fl-videoPlayer-controller'></div>");
+        var controller = $("<div class='flc-videoPlayer-controller'></div>");
+        controller.addClass(that.options.styles.controller);
         that.locate("video").after(controller);
         return controller;
     };
     
     var renderCaptionAreaContainer = function (that) {
-        var captionArea = $("<div class='flc-videoPlayer-captionArea fl-videoPlayer-captionArea'></div>");
+        var captionArea = $("<div class='flc-videoPlayer-captionArea'></div>");
+        captionArea.addClass(that.options.styles.captionArea);
         that.locate("controller").before(captionArea);
         return captionArea;
     };
@@ -206,10 +183,6 @@ var fluid = fluid || {};
         };
         
         that.setCaptions = function (captions) {
-            // If the captions option isn't a String, we'll assume it consists of the captions themselves.
-            that.captions = (typeof(captions) === "string") ? JSON.parse(captions) : captions;
-            normalizeInOutTimes(that.captions);
-
             // Render the caption area if necessary
             var captionArea = that.locate("captionArea");
             captionArea = captionArea.length === 0 ? renderCaptionAreaContainer(that) : captionArea;
@@ -219,7 +192,7 @@ var fluid = fluid || {};
                 captionArea, 
                 {
                     video: that.video,
-                    captions: that.captions
+                    captions: captions
                 }
             ]);
         };
@@ -241,6 +214,11 @@ var fluid = fluid || {};
             video: ".flc-videoPlayer-video",
             captionArea: ".flc-videoPlayer-captionArea",
             controller: ".flc-videoPlayer-controller"
+        },
+        
+        styles : {
+            controller: "fl-videoPlayer-controller",
+            captionArea: "fl-videoPlayer-captionArea",
         },
         
         mediaRenderers: {
