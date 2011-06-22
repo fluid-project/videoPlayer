@@ -5,7 +5,7 @@
         // TODO: This algorithm is totally evil and incorrect.  
         for (var x = that.currentIndice; x < that.captions.length; x++) {
             var match = that.captions[x];
-            if (fluid.videoPlayer.singleCaptionView.convertToMilli(match.inTime) <= timeInMillis && fluid.videoPlayer.singleCaptionView.convertToMilli(match.outTime) >= timeInMillis) {
+            if (fluid.videoPlayer.captionner.convertToMilli(match.inTime) <= timeInMillis && fluid.videoPlayer.captionner.convertToMilli(match.outTime) >= timeInMillis) {
                 that.currentIndice = x + 1;
                 return match; 
             }      
@@ -45,20 +45,20 @@
     };
     
     /**
-     * SingleCaptionView is responsible for displaying captions in a one-at-a-time style.
+     * captionner is responsible for displaying captions in a one-at-a-time style.
      * 
      * @param {Object} container the container in which the captions should be displayed
      * @param {Object} options configuration options for the component
      */
-    fluid.videoPlayer.singleCaptionView = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer.singleCaptionView", container, options);
+    fluid.videoPlayer.captionner = function (container, options) {
+        var that = fluid.initView("fluid.videoPlayer.captionner", container, options);
         that.video = that.options.video;
         that.currentCaptions = [];
         that.currentIndice = 0;
         that.timeUpdate = function (timeInMillis) {
             // Clear out any caption that has hit its end time.
             fluid.each(that.currentCaptions, function(elt) {
-                if (timeInMillis >= fluid.videoPlayer.singleCaptionView.convertToMilli(elt.outTime)) {
+                if (timeInMillis >= fluid.videoPlayer.captionner.convertToMilli(elt.outTime)) {
                     removeCaption(that, elt);
                 }
             }); 
@@ -78,7 +78,7 @@
         return that;
     };
     
-    fluid.defaults("fluid.videoPlayer.singleCaptionView", {
+    fluid.defaults("fluid.videoPlayer.captionner", {
         video: null,
         captions: null,
         maxCaption: 3, //number max of lines of captions displayed at the same time
@@ -94,7 +94,7 @@
     
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
     // time is in the format hh:mm:ss:mmm
-    fluid.videoPlayer.singleCaptionView.convertToMilli = function (time) {
+    fluid.videoPlayer.captionner.convertToMilli = function (time) {
         var splitTime = time.split(":");
         var hours = parseFloat(splitTime[0]);
         var mins = parseFloat(splitTime[1]) + (hours * 60);
