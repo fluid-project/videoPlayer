@@ -26,9 +26,12 @@
         });
         
         // Bind the scrubbers slide event to change the video's time.
-        that.locate("scrubber").bind("slide", function (evt, ui) {
-            that.video.currentTime = ui.value;
-            currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
+        that.locate("scrubber").bind({
+            "slide": function (evt, ui) {
+                that.video.currentTime = ui.value;
+                currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
+            },
+            "slidestop": that.events.scrubbed.fire
         });
         
         var volumeButton = that.locate("volume");
@@ -87,12 +90,11 @@
         var fullscreenButton = that.locate("fullscreenButton");
         fullscreenButton.click(function () {
             if (fullscreenButton.hasClass(that.options.states.fullscreenOn)) {
-                that.fullscreen(true);
                 fullscreenButton.removeClass(that.options.states.fullscreenOn).addClass(that.options.states.fullscreenOff);
-            } else {   
-                that.fullscreen(false);
+            } else {
                 fullscreenButton.removeClass(that.options.states.fullscreenOff).addClass(that.options.states.fullscreenOn);
             }
+            that.events.fullscreen.fire();
         });
         
         // Bind the play button.
@@ -174,7 +176,7 @@
             range: "min",
             min: 0,
             max: 100,
-            value: 0
+            value: 0//60 normally but the sound annoys me :)
         });
         /*scrubber.slider("option", "min", startTime);
             scrubber.slider("option", "max", that.video.duration + startTime);
@@ -191,7 +193,7 @@
     fluid.videoPlayer.controllers = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
         that.video = fluid.unwrap(that.options.video);
-        that.fullscreen = fluid.unwrap(that.options.fullscreen);
+        that.captions = fluid.unwrap(that.options.captions);
         
         setupController(that);
         return that;
@@ -201,7 +203,6 @@
     
     fluid.defaults("fluid.videoPlayer.playAndScrubController", {        
         video: null,
-        captions: null,
         
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
@@ -228,6 +229,11 @@
             captionOff: "fl-videoPlayer-state-captionOff",
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
             fullscreenOff: "fl-videoPlayer-state-fullscreenOff"
+        },
+        
+        events: {
+            fullscreen: null,
+            scrubbed: null,
         },
         
         strings: {

@@ -64,12 +64,29 @@ var fluid = fluid || {};
         }
         
         // Otherwise go and fetch the captions.
+        
+        //If it's already a JSONcc type file we don't have to convert it
+        if (caps[0].type !== "JSONcc") {
+            $.ajax({
+                type: "GET",
+                dataType: "text",
+                url: "/conversion_service/index.php",
+                data: {
+                    cc_result: 0,
+                    cc_url: caps[0].src,
+                    cc_target: "JSONcc",
+                    cc_name: "__no_name"
+                },
+                success: that.setCaptions
+            });
+        } else {
         $.ajax({
-            type: "GET",
-            dataType: "text",
-            url: caps,
-            success: that.setCaptions
-        });
+                type: "GET",
+                dataType: "text",
+                url: caps[0].src,
+                success: that.setCaptions
+            });
+        }
         return that.options.selectors.captionArea;
     };
     
@@ -122,10 +139,15 @@ var fluid = fluid || {};
             controller = (controller.length === 0) ? renderControllerContainer(that) : controller;
             that.controller = fluid.initSubcomponent(that, "controller", [controller, {
                 video: that.video,
-                fullscreen: that.fullscreen,
                 selectors: {
                     captionArea: that.options.selectors.captionArea
-                }
+                },
+                listeners: {
+                    fullscreen: that.fullscreenToggle,
+                    scrubbed: function() {
+                         that.captionView.bigTimeUpdate(that.video.currentTime);
+                    }
+        },
             }]);
         }
         
@@ -141,6 +163,7 @@ var fluid = fluid || {};
      */
     fluid.videoPlayer = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer", container, options);
+        that.fullscreen = false;
         
         that.play = function () {
             that.video[0].play();
@@ -158,8 +181,8 @@ var fluid = fluid || {};
             }
         };
         
-        that.fullscreen = function (bool) {
-            if (bool) {
+        that.fullscreenToggle = function () {
+            if (!that.fullscreen) {
                 that.videoWidth = that.container.css("width");
                 that.videoHeight = that.container.css("height");
                 that.container.css({
@@ -180,10 +203,12 @@ var fluid = fluid || {};
                     position: "relative"
                 });
             }
+            that.fullscreen = !that.fullscreen;
         };
         
         that.setCaptions = function (captions) {
             // Render the caption area if necessary
+            
             var captionArea = that.locate("captionArea");
             captionArea = captionArea.length === 0 ? renderCaptionAreaContainer(that) : captionArea;
             
@@ -227,6 +252,10 @@ var fluid = fluid || {};
             "youtube": "fluid.videoPlayer.mediaRenderers.youTubePlayer"
         },
         
+        
+        
+        
+        
         controllerType: "html", // "native", "html", "none" (or null)    
         displayCaptions: true,
         captionsAvailable: true
@@ -263,5 +292,7 @@ var fluid = fluid || {};
             return placeholder;
         }
     };
+    
+
 })(jQuery);
 
