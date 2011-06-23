@@ -26,7 +26,7 @@
     };
     
     var makeCaption = function (that, caption) {
-        var captionElt = $("<div class='flc-videoPlayer-caption-captionText'>" + caption.caption_text + "</div>");
+        var captionElt = $("<div class='flc-videoPlayer-caption-captionText'>" + caption.caption + "</div>");
         captionElt.addClass(that.options.styles.caption);
         that.container.append(captionElt); 
         return captionElt;
@@ -36,6 +36,10 @@
         // that.captions = indexCaptions(that.options.captions);
         // If the captions option isn't a String, we'll assume it consists of the captions themselves.
         that.captions = (typeof(that.options.captions) === "string") ? JSON.parse(that.options.captions) : that.options.captions;
+        //we get the actual captions and get rid of the rest
+        if (that.captions.captionCollection) {
+            that.captions = that.captions.captionCollection;
+        }
         //normalizeInOutTimes(that.captions);
         
         that.video.bind("timeupdate", function () {
@@ -55,6 +59,17 @@
         that.video = that.options.video;
         that.currentCaptions = [];
         that.currentIndice = 0;
+        
+        //replace the captionIndice at the right place (used when scrubbed for example)
+        that.bigTimeUpdate = function (timeInMillis) {
+            if(that.currentCaptions.length > 0) {
+                that.currentCaptions.each( function (elt) {
+                    that.removeCaption(that, elt);
+                });
+            }
+            that.currentIndice = 0; //should be enough :)
+        };
+        
         that.timeUpdate = function (timeInMillis) {
             // Clear out any caption that has hit its end time.
             fluid.each(that.currentCaptions, function(elt) {

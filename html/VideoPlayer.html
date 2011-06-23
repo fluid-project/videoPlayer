@@ -13,7 +13,7 @@
         <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
          <script type="text/javascript" src="../js/simpleRenderer.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayer_singleCaptionView.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_captionner.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
 
     </head>
@@ -46,7 +46,13 @@
                 displayCaptions: true,
                 
                 // TODO: These captions don't match the video!
-                captions: "InlineEditScreenCastCaptions.json"
+                captions: [
+                           /* {src: "http://localhost:8888/html/flight.srt",
+                            type: "srt"},
+                            {src: "http://localhost:8888/html/TestYouTuberCaption.sbv",
+                            type: "sbv"},*/
+                            {src: "http://localhost:8888/html/inlineEditScreenCastCaptions.json",
+                            type: "JSONcc"}]
             });
         </script>
 	</body>
