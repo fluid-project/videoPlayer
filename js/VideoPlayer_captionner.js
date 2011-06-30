@@ -71,14 +71,6 @@
     });
     
     fluid.videoPlayer.captionner.finalInit = function(that) {
-        // If the captions option isn't a String, we'll assume it consists of the captions themselves.
-        that.bigTimeUpdate = function (timeInMillis) {
-                alert("bing");
-                fluid.each(that.currentCaptions, function (caption) {
-                    removeCaption(that, caption);
-                });
-            that.currentIndice = 0; //should be enough :)
-        };
         
         that.timeUpdate = function (timeInMillis) {
             // Clear out any caption that has hit its end time.
