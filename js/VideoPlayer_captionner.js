@@ -72,25 +72,6 @@
     
     fluid.videoPlayer.captionner.finalInit = function(that) {
         
-        that.timeUpdate = function (timeInMillis) {
-            // Clear out any caption that has hit its end time.
-            fluid.each(that.currentCaptions, function(elt) {
-                if (timeInMillis >= elt.outMilliTime) {
-                    removeCaption(that, elt);
-                }
-            }); 
-            // Display a new caption.
-            var nextCaption = findCaptionForTime(that, timeInMillis);
-            if (nextCaption && jQuery.inArray(nextCaption, that.currentCaptions) === -1 ) {
-                displayCaption(that, nextCaption);
-            }
-            //if there's too many captions remove the oldest one
-            if (that.currentCaptions && that.currentCaptions.length > that.options.maxCaption) {
-                removeCaption(that , that.currentCaptions[0]);
-            }
-         
-        };
-        
         //replace the captionIndice at the right place (used when scrubbed for example)
         that.bigTimeUpdate = function (timeInMillis) {
                 alert("bing");
