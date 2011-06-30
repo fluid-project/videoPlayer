@@ -4,8 +4,15 @@
     var findCaptionForTime = function (that, timeInMillis) {     
         // TODO: This algorithm is totally evil and incorrect.  
         for (var x = that.currentIndice; x < that.captions.length; x++) {
+            //we use memoization in order to compute the convertion to milliseconds only once by caption
+            if (typeof(that.captions[x].inMilliTime) !== 'number') {
+                that.captions[x].inMilliTime = fluid.videoPlayer.captionner.convertToMilli(that.captions[x].inTime);
+            }
+            if (typeof(that.captions[x].outMilliTime) !== 'number') {
+                that.captions[x].outMilliTime = fluid.videoPlayer.captionner.convertToMilli(that.captions[x].outTime);
+            }
             var match = that.captions[x];
-            if (fluid.videoPlayer.captionner.convertToMilli(match.inTime) <= timeInMillis && fluid.videoPlayer.captionner.convertToMilli(match.outTime) >= timeInMillis) {
+            if ( match.inMilliTime <= timeInMillis && match.outMilliTime >= timeInMillis) {
                 that.currentIndice = x + 1;
                 return match; 
             }      
@@ -25,6 +32,7 @@
         that.currentCaptions.splice(elt, 1);
     };
     
+    //creates the container for a caption and adds it to the DOM
     var makeCaption = function (that, caption) {
         var captionElt = $("<div class='flc-videoPlayer-caption-captionText'>" + caption.caption + "</div>");
         captionElt.addClass(that.options.styles.caption);
@@ -32,48 +40,50 @@
         return captionElt;
     };
     
-    var setupCaptionView = function (that) {
-        // that.captions = indexCaptions(that.options.captions);
-        // If the captions option isn't a String, we'll assume it consists of the captions themselves.
-        that.captions = (typeof(that.options.captions) === "string") ? JSON.parse(that.options.captions) : that.options.captions;
-        //we get the actual captions and get rid of the rest
-        if (that.captions.captionCollection) {
-            that.captions = that.captions.captionCollection;
-        }
-        //normalizeInOutTimes(that.captions);
-        
+    var bindDOMEvents = function (that) {
         that.video.bind("timeupdate", function () {
+            alert("bam");
             var timeInMillis = Math.round(this.currentTime * 1000);
             that.timeUpdate(timeInMillis);
+            
         });
     };
-    
     /**
      * captionner is responsible for displaying captions in a one-at-a-time style.
      * 
      * @param {Object} container the container in which the captions should be displayed
      * @param {Object} options configuration options for the component
      */
-    fluid.videoPlayer.captionner = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer.captionner", container, options);
-        that.video = that.options.video;
-        that.currentCaptions = [];
-        that.currentIndice = 0;
+
+    fluid.defaults("fluid.videoPlayer.captionner", {
+        gradeNames: ["fluid.viewComponent", "autoInit"],
+        finalInitFunction:   "fluid.videoPlayer.captionner.finalInit",
+        postInitFunction:   "fluid.videoPlayer.captionner.postInit",
+        maxCaption: 3, //number max of lines of captions displayed at the same time
+        selectors: {
+            caption: ".flc-videoPlayer-caption-captionText"
+        },
         
-        //replace the captionIndice at the right place (used when scrubbed for example)
+        styles: {
+            caption: "fl-videoPlayer-caption-captionText"
+        },
+        
+    });
+    
+    fluid.videoPlayer.captionner.finalInit = function(that) {
+        // If the captions option isn't a String, we'll assume it consists of the captions themselves.
         that.bigTimeUpdate = function (timeInMillis) {
-            if(that.currentCaptions.length > 0) {
-                that.currentCaptions.each( function (elt) {
-                    that.removeCaption(that, elt);
+                alert("bing");
+                fluid.each(that.currentCaptions, function (caption) {
+                    removeCaption(that, caption);
                 });
-            }
             that.currentIndice = 0; //should be enough :)
         };
         
         that.timeUpdate = function (timeInMillis) {
             // Clear out any caption that has hit its end time.
             fluid.each(that.currentCaptions, function(elt) {
-                if (timeInMillis >= fluid.videoPlayer.captionner.convertToMilli(elt.outTime)) {
+                if (timeInMillis >= elt.outMilliTime) {
                     removeCaption(that, elt);
                 }
             }); 
@@ -89,23 +99,51 @@
          
         };
         
-        setupCaptionView(that);
+        //replace the captionIndice at the right place (used when scrubbed for example)
+        that.bigTimeUpdate = function (timeInMillis) {
+                alert("bing");
+                fluid.each(that.currentCaptions, function (caption) {
+                    removeCaption(that, caption);
+                });
+            that.currentIndice = 0; //should be enough :)
+        };
+        
+        that.timeUpdate = function (timeInMillis) {
+            // Clear out any caption that has hit its end time.
+            fluid.each(that.currentCaptions, function(elt) {
+                if (timeInMillis >= elt.outMilliTime) {
+                    removeCaption(that, elt);
+                }
+            }); 
+            // Display a new caption.
+            var nextCaption = findCaptionForTime(that, timeInMillis);
+            if (nextCaption && jQuery.inArray(nextCaption, that.currentCaptions) === -1 ) {
+                displayCaption(that, nextCaption);
+            }
+            //if there's too many captions remove the oldest one
+            if (that.currentCaptions && that.currentCaptions.length > that.options.maxCaption) {
+                removeCaption(that , that.currentCaptions[0]);
+            }
+         
+        };
+        bindDOMEvents(that);
+        alert("bim");
         return that;
     };
     
-    fluid.defaults("fluid.videoPlayer.captionner", {
-        video: null,
-        captions: null,
-        maxCaption: 3, //number max of lines of captions displayed at the same time
-        selectors: {
-            caption: ".flc-videoPlayer-caption-captionText"
-        },
-        
-        styles: {
-            caption: "fl-videoPlayer-caption-captionText"
+    fluid.videoPlayer.captionner.postInit = function(that) {
+        alert("bim");
+        that.video = that.options.video;
+        that.currentCaptions = [];
+        that.currentIndice = 0;
+        that.captions = (typeof(that.options.captions) === "string") ? JSON.parse(that.options.captions) : that.options.captions;
+        //we get the actual captions and get rid of the rest
+        if (that.captions.captionCollection) {
+            that.captions = that.captions.captionCollection;
         }
         
-    });
+        return that;
+    };
     
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
     // time is in the format hh:mm:ss:mmm
@@ -116,5 +154,4 @@
         var secs = parseFloat(splitTime[2]) + (mins * 60);
         return Math.round(secs * 1000);
     };
-    
 })(jQuery);

@@ -1,5 +1,7 @@
 //Controllers
-(function ($) {
+var fluid_1_4 = fluid_1_4 || {};
+
+(function ($, fluid) {
     
     var bindDOMEvents = function (that) {
         var scrubber = that.locate("scrubber");
@@ -26,12 +28,14 @@
         });
         
         // Bind the scrubbers slide event to change the video's time.
-        that.locate("scrubber").bind({
+        scrubber.bind({
             "slide": function (evt, ui) {
                 that.video.currentTime = ui.value;
                 currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
             },
-            "slidestop": that.events.scrubbed.fire
+            "slidestop": function() {
+                that.events.afterScrub.fire(that.video.currentTime);
+            }
         });
         
         var volumeButton = that.locate("volume");
@@ -94,7 +98,7 @@
             } else {
                 fullscreenButton.removeClass(that.options.states.fullscreenOff).addClass(that.options.states.fullscreenOn);
             }
-            that.events.fullscreen.fire();
+            that.events.onChangeFullscreen.fire();
         });
         
         // Bind the play button.
@@ -124,8 +128,98 @@
         });
     };
     
-    var setupController = function (that) {
-        // Render the play button if it's not already there.
+    /**
+     * PlayAndScrubController is a simple video controller containing a play button and a time scrubber.
+     * 
+     * @param {Object} container the container which this component is rooted
+     * @param {Object} options configuration options for the component
+     */
+ /*   fluid.videoPlayer.controllers = function (container, options) {
+        if (!container) {
+            fluid.fail("Controllers initialised with no container");
+        }
+        var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
+        that.video = that.options.video;
+        that.captions = that.options.captions;
+        setupController(that);
+        fluid.initDependents(that);
+        return that;
+    };
+   */ 
+    
+    
+    //fluid.registerNamespace("fluid.videoPlayer.controllers");
+    
+    fluid.defaults("fluid.videoPlayer.controllers", { 
+        gradeNames: ["fluid.viewComponent","autoInit"], 
+        finalInitFunction:   "fluid.videoPlayer.controllers.finalInit",
+        postInitFunction:   "fluid.videoPlayer.controllers.postInit",
+        
+        selectors: {
+            playButton: ".flc-videoPlayer-controller-play",
+            captionButton: ".flc-videoPlayer-controller-caption",
+            scrubber: ".flc-videoPlayer-controller-scrubber",
+            totalTime: ".flc-videoPlayer-controller-total",
+            currentTime: ".flc-videoPlayer-controller-current",
+            volume: ".flc-videoPlayer-controller-volume",
+            volumeControl: ".flc-videoPlayer-controller-volumeControl",
+            fullscreenButton: ".flc-videoPlayer-controller-fullscreen"
+        },
+        
+        styles: {
+            time: "fl-videoPlayer-controller-time",
+            scrubber: "fl-videoPlayer-controller-scrubber",
+            volume: "fl-videoPlayer-controller-volume",
+            volumeControl: "fl-videoPlayer-controller-volumeControl"
+        },
+        
+        states: {
+            play: "fl-videoPlayer-state-play",
+            pause: "fl-videoPlayer-state-pause",
+            captionOn: "fl-videoPlayer-state-captionOn",
+            captionOff: "fl-videoPlayer-state-captionOff",
+            fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
+            fullscreenOff: "fl-videoPlayer-state-fullscreenOff"
+        },
+        
+        events: {
+            onChangeFullscreen: null,
+            afterScrub: null,
+        },
+        
+        strings: {
+            play: "Play",
+            pause: "Pause",
+            scrubber: "Scrubber",
+            totalTime: "Total time",
+            currentTime: "Current time",
+            volume: "Volume",
+            captionOn: "Captions On",
+            captionOff: "Captions Off",
+            fullscreen: "Fullscreen"
+        }
+    });
+
+   fluid.videoPlayer.controllers.finalInit = function(that) {
+        that.video = fluid.unwrap(that.options.video);
+        that.captions = that.options.captions;
+        // Initially disable the play button and scrubber until the video is ready to go.
+        bindDOMEvents(that);
+        that.locate("scrubber").slider({
+            unittext: "seconds",
+            disabled: true
+        });
+        that.locate("volumeControl").slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: 60
+        });
+
+    };
+    
+    fluid.videoPlayer.controllers.postInit = function (that) {
         var rend = fluid.simpleRenderer(that.container, {});
         rend.render([{
             tag: "button",
@@ -167,86 +261,8 @@
             selector: "flc-videoPlayer-controller-fullscreen",
             classes: that.options.states.fullscreenOn,
             content: that.options.strings.fullscreen
-        }]);
-               
-        // Initially disable the play button and scrubber until the video is ready to go.
-        that.locate("scrubber").slider({unittext: " seconds"}).slider("disable");
-        that.locate("volumeControl").slider({
-            orientation: "vertical",
-            range: "min",
-            min: 0,
-            max: 100,
-            value: 0//60 normally but the sound annoys me :)
-        });
-        /*scrubber.slider("option", "min", startTime);
-            scrubber.slider("option", "max", that.video.duration + startTime);
-            scrubber.slider("enable");*/
-        bindDOMEvents(that);
+        }]);              
     };
     
-    /**
-     * PlayAndScrubController is a simple video controller containing a play button and a time scrubber.
-     * 
-     * @param {Object} container the container which this component is rooted
-     * @param {Object} options configuration options for the component
-     */
-    fluid.videoPlayer.controllers = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
-        that.video = fluid.unwrap(that.options.video);
-        that.captions = fluid.unwrap(that.options.captions);
-        
-        setupController(that);
-        return that;
-    };
-    
-    fluid.demands("playAndScrubController","fluid.videoPlayer", {funcName: "fullscreen", args: ["bool"]});
-    
-    fluid.defaults("fluid.videoPlayer.playAndScrubController", {        
-        video: null,
-        
-        selectors: {
-            playButton: ".flc-videoPlayer-controller-play",
-            captionButton: ".flc-videoPlayer-controller-caption",
-            scrubber: ".flc-videoPlayer-controller-scrubber",
-            totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current",
-            volume: ".flc-videoPlayer-controller-volume",
-            volumeControl: ".flc-videoPlayer-controller-volumeControl",
-            fullscreenButton: ".flc-videoPlayer-controller-fullscreen"
-        },
-        
-        styles: {
-            time: "fl-videoPlayer-controller-time",
-            scrubber: "fl-videoPlayer-controller-scrubber",
-            volume: "fl-videoPlayer-controller-volume",
-            volumeControl: "fl-videoPlayer-controller-volumeControl"
-        },
-        
-        states: {
-            play: "fl-videoPlayer-state-play",
-            pause: "fl-videoPlayer-state-pause",
-            captionOn: "fl-videoPlayer-state-captionOn",
-            captionOff: "fl-videoPlayer-state-captionOff",
-            fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
-            fullscreenOff: "fl-videoPlayer-state-fullscreenOff"
-        },
-        
-        events: {
-            fullscreen: null,
-            scrubbed: null,
-        },
-        
-        strings: {
-            play: "Play",
-            pause: "Pause",
-            scrubber: "Scrubber",
-            totalTime: "Total time",
-            currentTime: "Current time",
-            volume: "Volume",
-            captionOn: "Captions On",
-            captionOff: "Captions Off",
-            fullscreen: "Fullscreen"
-        }
-    });
 
-})(jQuery);
+})(jQuery, fluid_1_4);

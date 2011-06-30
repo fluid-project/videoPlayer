@@ -4,14 +4,30 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<title>Video Player Demo</title>
         
-        <link type="text/css" href="../lib/infusion/framework/fss/css/fss-layout.css" rel="stylesheet" />
-        <link type="text/css" href="../lib/infusion/framework/fss/css/fss-theme-coal.css" rel="stylesheet" />
-        <link type="text/css" href="../lib/jquery-ui/css/jquery.ui.theme.css" rel="stylesheet" />
-        <link type="text/css" href="../lib/jquery-ui/css/fl-theme-coal/coal.css" rel="stylesheet" />
+        <link type="text/css" href="../../infusion/src/webapp/framework/fss/css/fss-layout.css" rel="stylesheet" />
+        <link type="text/css" href="../../infusion/src/webapp/framework/fss/css/fss-theme-coal.css" rel="stylesheet" />
+        <link type="text/css" href="../../infusion/src/webapp/lib/jquery/ui/css/jquery.ui.theme.css" rel="stylesheet" />
+        <link type="text/css" href="../../infusion/src/webapp/lib/jquery/ui/css/fl-theme-coal/coal.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
 		
-        <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
-         <script type="text/javascript" src="../js/simpleRenderer.js"></script>
+             <!-- Fluid and jQuery Dependencies -->
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.core.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.widget.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.mouse.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.slider.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/swfupload/js/swfupload.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/Fluid.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/FluidDocument.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/FluidView.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/DataBinding.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/FluidIoC.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js"></script>
+            <!-- VideoPlayer dependencies -->
+        <script type="text/javascript" src="../js/simpleRenderer.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_captionner.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
@@ -51,7 +67,7 @@
                             type: "srt"},
                             {src: "http://localhost:8888/html/TestYouTuberCaption.sbv",
                             type: "sbv"},*/
-                            {src: "http://localhost:8888/html/inlineEditScreenCastCaptions.json",
+                            {src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
                             type: "JSONcc"}]
             });
         </script>
