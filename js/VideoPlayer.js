@@ -11,9 +11,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 /*global jQuery, window*/
 
-var fluid = fluid || {};
+var fluid_1_4 = fluid_1_4 || {};
 
-(function ($) {
+(function ($, fluid) {
     
     var renderSources = function (that) {
         $.each(that.options.sources, function (idx, source) {
@@ -56,6 +56,9 @@ var fluid = fluid || {};
     };
         
     var loadCaptions = function (that) {
+        if (that.options.captionsAvailable === false) {
+            return;
+        }
         var caps = that.options.captions;
         
         // Bail immediately if we just don't have any captions.
@@ -71,6 +74,7 @@ var fluid = fluid || {};
                 type: "GET",
                 dataType: "text",
                 url: "/conversion_service/index.php",
+                async: false,
                 data: {
                     cc_result: 0,
                     cc_url: caps[0].src,
@@ -80,14 +84,14 @@ var fluid = fluid || {};
                 success: that.setCaptions
             });
         } else {
-        $.ajax({
+            $.ajax({
                 type: "GET",
+                async: false,
                 dataType: "text",
                 url: caps[0].src,
                 success: that.setCaptions
             });
         }
-        return that.options.selectors.captionArea;
     };
     
     var bindDOMEvents = function (that) {
@@ -115,55 +119,21 @@ var fluid = fluid || {};
     var renderCaptionAreaContainer = function (that) {
         var captionArea = $("<div class='flc-videoPlayer-captionArea'></div>");
         captionArea.addClass(that.options.styles.captionArea);
-        that.locate("controller").before(captionArea);
+        that.locate("video").after(captionArea);
         return captionArea;
     };
     
-    var setupVideoPlayer = function (that) {
-        // Render the video element.
-        that.video = renderVideo(that);
-        // Load and render the caption view.
-        if (that.options.captionsAvailable === true) {
-            loadCaptions(that);
-        }
-        // Render each media source with its custom renderer, registered by type.
-        renderSources(that);
-        
-        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
-        if (!document.createElement('video').canPlayType) {
-            return;
-        }
-        // Add the controller if required.
-        if (that.options.controllerType === "html") {
-            var controller = that.locate("controller");
-            controller = (controller.length === 0) ? renderControllerContainer(that) : controller;
-            that.controller = fluid.initSubcomponent(that, "controller", [controller, {
-                video: that.video,
-                selectors: {
-                    captionArea: that.options.selectors.captionArea
-                },
-                listeners: {
-                    fullscreen: that.fullscreenToggle,
-                    scrubbed: function() {
-                         that.captionView.bigTimeUpdate(that.video.currentTime);
-                    }
-        },
-            }]);
-        }
-        
-        
-        bindDOMEvents(that);
-    };
-    
+
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
      * 
      * @param {Object} container the container in which video and (optionally) captions are displayed
      * @param {Object} options configuration options for the comoponent
      */
+     
     fluid.videoPlayer = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer", container, options);
-        that.fullscreen = false;
+        that.video = renderVideo(that);
         
         that.play = function () {
             that.video[0].play();
@@ -206,33 +176,67 @@ var fluid = fluid || {};
             that.fullscreen = !that.fullscreen;
         };
         
-        that.setCaptions = function (captions) {
+        that.setCaptions = function (capts) {
             // Render the caption area if necessary
-            
             var captionArea = that.locate("captionArea");
             captionArea = captionArea.length === 0 ? renderCaptionAreaContainer(that) : captionArea;
-            
             // Instantiate the caption view component.
-            that.captionView = fluid.initSubcomponent(that, "captionView", [
-                captionArea, 
-                {
-                    video: that.video,
-                    captions: captions
-                }
-            ]);
-        };
+            that.captionnerContainer = that.locate("captionArea");
+            that.captionnerOptions = { video: that.video,
+                                       captions: capts
+            };
+            that.events.onCaptionsLoaded.fire();
+            
+            return that;
+        }; 
         
-        setupVideoPlayer(that);
-        return that;    
-    };
+        renderSources(that);
+        
+        loadCaptions(that);
+       // Render each media source with its custom renderer, registered by type.
+      // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
+        if (!document.createElement('video').canPlayType) {
+            return;
+        }
 
+        // Add the controller if required.
+        if (that.options.controllerType === "html") {
+            var controller = that.locate("controller");
+            that.controllerContainer = (controller.length === 0) ? renderControllerContainer(that) : controller;
+            //that.controllerOptions = 
+        }
+        bindDOMEvents(that);
+        fluid.initDependents(that);
+        return that;
+    
+    };
+    
     fluid.defaults("fluid.videoPlayer", {
-        captionView: {
-            type: "fluid.videoPlayer.captionner"
+        grades: "fluid.viewComponent",
+        events: {
+            onCaptionsLoaded: null
         },
         
-        controller: {
-            type: "fluid.videoPlayer.controllers"
+        components: {
+            captionView: {
+                type: "fluid.videoPlayer.captionner",
+                createOnEvent: "onCaptionsLoaded",
+                container: "{videoPlayer}.captionnerContainer",
+                options: "{videoPlayer}.captionnerOptions"
+            },
+            controller: {
+                type: "fluid.videoPlayer.controllers",
+                container: "{videoPlayer}.controllerContainer",
+                options: {
+                    video: "{videoPlayer}.video",
+                    selectors: {
+                        captionArea: "{videoPlayer}.options.selectors.captionArea"
+                    },
+                    listeners: {
+                        onChangeFullscreen: "{videoPlayer}.fullscreenToggle"
+                    }
+                }
+            }
         },
         
         selectors: {
@@ -252,15 +256,11 @@ var fluid = fluid || {};
             "youtube": "fluid.videoPlayer.mediaRenderers.youTubePlayer"
         },
         
-        
-        
-        
-        
         controllerType: "html", // "native", "html", "none" (or null)    
         displayCaptions: true,
         captionsAvailable: true
     });
-    
+        
     //returns the time in format hh:mm:ss from a time in seconds 
     fluid.videoPlayer.formatTime = function(time) {
         var fullTime = Math.floor(time);
@@ -293,6 +293,18 @@ var fluid = fluid || {};
         }
     };
     
+  /*  fluid.demands("fluid.videoPlayer", [
+        "fluid.videoPlayer.controller",
+        "fluid.videoPlayer.captionner"
+    ], {
+        options: {
+            listeners: {
+                "{controller}.events.afterScrub": "{captionner}.bigTimeUpdate"
+            }
+        }
+    });*/
+    
+    
 
-})(jQuery);
+})(jQuery, fluid_1_4);
 
