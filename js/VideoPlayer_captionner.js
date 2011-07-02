@@ -36,6 +36,7 @@
     var makeCaption = function (that, caption) {
         var captionElt = $("<div class='flc-videoPlayer-caption-captionText'>" + caption.caption + "</div>");
         captionElt.addClass(that.options.styles.caption);
+        captionElt.css(caption.textStyles);
         that.container.append(captionElt); 
         return captionElt;
     };
@@ -81,7 +82,6 @@
     
     fluid.videoPlayer.captionner.preInit = function(that) {
             //replace the captionIndice at the right place (used when scrubbed for example)
-        
         that.video = that.options.video;
         that.currentCaptions = [];
         that.currentIndice = 0;
