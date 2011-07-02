@@ -73,7 +73,7 @@ var fluid_1_4 = fluid_1_4 || {};
             $.ajax({
                 type: "GET",
                 dataType: "text",
-                url: "/conversion_service/index.php",
+                url: "/videoPlayer/conversion_service/index.php",
                 async: false,
                 data: {
                     cc_result: 0,
