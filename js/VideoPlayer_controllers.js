@@ -134,21 +134,7 @@ var fluid_1_4 = fluid_1_4 || {};
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
      */
- /*   fluid.videoPlayer.controllers = function (container, options) {
-        if (!container) {
-            fluid.fail("Controllers initialised with no container");
-        }
-        var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
-        that.video = that.options.video;
-        that.captions = that.options.captions;
-        setupController(that);
-        fluid.initDependents(that);
-        return that;
-    };
-   */ 
     
-    
-    //fluid.registerNamespace("fluid.videoPlayer.controllers");
     
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent","autoInit"], 
@@ -185,6 +171,7 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onChangeFullscreen: null,
             afterScrub: null,
+            onReady: null
         },
         
         strings: {
@@ -216,7 +203,7 @@ var fluid_1_4 = fluid_1_4 || {};
             max: 100,
             value: 60
         });
-
+        that.events.onReady.fire();
     };
     
     fluid.videoPlayer.controllers.postInit = function (that) {

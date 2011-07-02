@@ -42,7 +42,6 @@
     
     var bindDOMEvents = function (that) {
         that.video.bind("timeupdate", function () {
-            alert("bam");
             var timeInMillis = Math.round(this.currentTime * 1000);
             that.timeUpdate(timeInMillis);
             
@@ -57,8 +56,14 @@
 
     fluid.defaults("fluid.videoPlayer.captionner", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
-        finalInitFunction:   "fluid.videoPlayer.captionner.finalInit",
-        postInitFunction:   "fluid.videoPlayer.captionner.postInit",
+        events: {
+            afterScrub: null,
+            onReady: null
+        }, 
+        listeners: {
+            afterScrub: "{captionner}.bigTimeUpdate"
+        },
+        preInitFunction:   "fluid.videoPlayer.captionner.preInit",
         maxCaption: 3, //number max of lines of captions displayed at the same time
         selectors: {
             caption: ".flc-videoPlayer-caption-captionText"
@@ -66,15 +71,27 @@
         
         styles: {
             caption: "fl-videoPlayer-caption-captionText"
-        },
+        }
         
     });
     
     fluid.videoPlayer.captionner.finalInit = function(that) {
+        that.events.onReady.fire();
+    };
+    
+    fluid.videoPlayer.captionner.preInit = function(that) {
+            //replace the captionIndice at the right place (used when scrubbed for example)
         
-        //replace the captionIndice at the right place (used when scrubbed for example)
+        that.video = that.options.video;
+        that.currentCaptions = [];
+        that.currentIndice = 0;
+        that.captions = (typeof(that.options.captions) === "string") ? JSON.parse(that.options.captions) : that.options.captions;
+        //we get the actual captions and get rid of the rest
+        
+        if (that.captions.captionCollection) {
+            that.captions = that.captions.captionCollection;
+        }
         that.bigTimeUpdate = function (timeInMillis) {
-                alert("bing");
                 fluid.each(that.currentCaptions, function (caption) {
                     removeCaption(that, caption);
                 });
@@ -100,20 +117,6 @@
          
         };
         bindDOMEvents(that);
-        alert("bim");
-        return that;
-    };
-    
-    fluid.videoPlayer.captionner.postInit = function(that) {
-        alert("bim");
-        that.video = that.options.video;
-        that.currentCaptions = [];
-        that.currentIndice = 0;
-        that.captions = (typeof(that.options.captions) === "string") ? JSON.parse(that.options.captions) : that.options.captions;
-        //we get the actual captions and get rid of the rest
-        if (that.captions.captionCollection) {
-            that.captions = that.captions.captionCollection;
-        }
         
         return that;
     };
@@ -127,4 +130,13 @@
         var secs = parseFloat(splitTime[2]) + (mins * 60);
         return Math.round(secs * 1000);
     };
+   
+    fluid.demands("fluid.videoPlayer.captionner",
+                  "fluid.videoPlayer.controllers", {
+            options: {
+                events: {
+                    afterScrub: "{controllers}.events.afterScrub"
+                }
+            }
+    });
 })(jQuery);
