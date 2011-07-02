@@ -99,6 +99,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         var playHandler = function (evt) {
             that.togglePlayback();
+            that.events.test.fire();
         };
         
         that.video.click(playHandler);
@@ -133,6 +134,7 @@ var fluid_1_4 = fluid_1_4 || {};
      
     fluid.videoPlayer = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer", container, options);
+        
         that.video = renderVideo(that);
         
         that.play = function () {
@@ -182,17 +184,15 @@ var fluid_1_4 = fluid_1_4 || {};
             captionArea = captionArea.length === 0 ? renderCaptionAreaContainer(that) : captionArea;
             // Instantiate the caption view component.
             that.captionnerContainer = that.locate("captionArea");
-            that.captionnerOptions = { video: that.video,
-                                       captions: capts
-            };
+            that.captions = capts;
+            
             that.events.onCaptionsLoaded.fire();
             
             return that;
         }; 
-        
+
         renderSources(that);
         
-        loadCaptions(that);
        // Render each media source with its custom renderer, registered by type.
       // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
         if (!document.createElement('video').canPlayType) {
@@ -203,10 +203,12 @@ var fluid_1_4 = fluid_1_4 || {};
         if (that.options.controllerType === "html") {
             var controller = that.locate("controller");
             that.controllerContainer = (controller.length === 0) ? renderControllerContainer(that) : controller;
-            //that.controllerOptions = 
         }
-        bindDOMEvents(that);
         fluid.initDependents(that);
+        
+        loadCaptions(that);
+        bindDOMEvents(that);
+        that.events.onReady.fire();
         return that;
     
     };
@@ -214,7 +216,9 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.defaults("fluid.videoPlayer", {
         grades: "fluid.viewComponent",
         events: {
-            onCaptionsLoaded: null
+            onCaptionsLoaded: null,
+            afterScrub: null,
+            onReady: null
         },
         
         components: {
@@ -222,10 +226,14 @@ var fluid_1_4 = fluid_1_4 || {};
                 type: "fluid.videoPlayer.captionner",
                 createOnEvent: "onCaptionsLoaded",
                 container: "{videoPlayer}.captionnerContainer",
-                options: "{videoPlayer}.captionnerOptions"
+                options: {
+                    video: "{videoPlayer}.video",
+                    captions: "{videoPlayer}.captions"   
+                }
             },
-            controller: {
+            controllers: {
                 type: "fluid.videoPlayer.controllers",
+                priority: "first",
                 container: "{videoPlayer}.controllerContainer",
                 options: {
                     video: "{videoPlayer}.video",
@@ -293,17 +301,16 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     };
     
-  /*  fluid.demands("fluid.videoPlayer", [
-        "fluid.videoPlayer.controller",
-        "fluid.videoPlayer.captionner"
-    ], {
-        options: {
-            listeners: {
-                "{controller}.events.afterScrub": "{captionner}.bigTimeUpdate"
-            }
+ /*   fluid.demands("fluid.videoPlayer",
+    "fluid.videoPlayer.controller",
+             {
+            options: {
+                events: {
+                    afterScrub: "{controller}.events.afterScrub"
+                }
         }
-    });*/
-    
+    });
+    */
     
 
 })(jQuery, fluid_1_4);
