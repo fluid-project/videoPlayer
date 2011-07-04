@@ -39,7 +39,7 @@ var fluid_1_4 = fluid_1_4 || {};
             // IE is blatantly hostile to the video tag. 
             // If one is found, remove it and replace it with something less awesome.
             video.remove();
-            video = $("<div/>")
+            video = $("<div/>");
             injectVideo(that.container, video);
         } else if (video.length === 0) {
             video = $("<video/>");
@@ -54,46 +54,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         return video;
     };
-        
-    var loadCaptions = function (that) {
-        if (that.options.captionsAvailable === false) {
-            return;
-        }
-        var caps = that.options.captions;
-        
-        // Bail immediately if we just don't have any captions.
-        if (!caps) {
-            return;
-        }
-        
-        // Otherwise go and fetch the captions.
-        
-        //If it's already a JSONcc type file we don't have to convert it
-        if (caps[0].type !== "JSONcc") {
-            $.ajax({
-                type: "GET",
-                dataType: "text",
-                url: "/videoPlayer/conversion_service/index.php",
-                async: false,
-                data: {
-                    cc_result: 0,
-                    cc_url: caps[0].src,
-                    cc_target: "JSONcc",
-                    cc_name: "__no_name"
-                },
-                success: that.setCaptions
-            });
-        } else {
-            $.ajax({
-                type: "GET",
-                async: false,
-                dataType: "text",
-                url: caps[0].src,
-                success: that.setCaptions
-            });
-        }
-    };
-    
+
     var bindDOMEvents = function (that) {
         that.video.attr("tabindex", 0);
         
@@ -117,14 +78,13 @@ var fluid_1_4 = fluid_1_4 || {};
         return controller;
     };
     
-    var renderCaptionAreaContainer = function (that) {
+    var renderCaptionnerContainer = function (that) {
         var captionArea = $("<div class='flc-videoPlayer-captionArea'></div>");
         captionArea.addClass(that.options.styles.captionArea);
         that.locate("video").after(captionArea);
         return captionArea;
     };
     
-
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
      * 
@@ -134,7 +94,6 @@ var fluid_1_4 = fluid_1_4 || {};
      
     fluid.videoPlayer = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer", container, options);
-        
         that.video = renderVideo(that);
         
         that.play = function () {
@@ -178,19 +137,6 @@ var fluid_1_4 = fluid_1_4 || {};
             that.fullscreen = !that.fullscreen;
         };
         
-        that.setCaptions = function (capts) {
-            // Render the caption area if necessary
-            var captionArea = that.locate("captionArea");
-            captionArea = captionArea.length === 0 ? renderCaptionAreaContainer(that) : captionArea;
-            // Instantiate the caption view component.
-            that.captionnerContainer = that.locate("captionArea");
-            that.captions = capts;
-            
-            that.events.onCaptionsLoaded.fire();
-            
-            return that;
-        }; 
-
         renderSources(that);
         
        // Render each media source with its custom renderer, registered by type.
@@ -204,32 +150,40 @@ var fluid_1_4 = fluid_1_4 || {};
             var controller = that.locate("controller");
             that.controllerContainer = (controller.length === 0) ? renderControllerContainer(that) : controller;
         }
-        fluid.initDependents(that);
         
-        loadCaptions(that);
+        // Add the captions if required
+        if (that.options.captionsAvailable === true) {
+            var captionArea = that.locate("captionArea");
+            that.captionnerContainer = captionArea.length === 0 ? renderCaptionnerContainer(that) : captionArea;
+        }
+        fluid.initDependents(that);
         bindDOMEvents(that);
         that.events.onReady.fire();
         return that;
-    
     };
     
     fluid.defaults("fluid.videoPlayer", {
         grades: "fluid.viewComponent",
         events: {
-            onCaptionsLoaded: null,
             afterScrub: null,
+            onReadyToLoadCaptions: null,
             onReady: null
         },
         
         components: {
             captionView: {
                 type: "fluid.videoPlayer.captionner",
-                createOnEvent: "onCaptionsLoaded",
+                priority: "last",
                 container: "{videoPlayer}.captionnerContainer",
                 options: {
-                    video: "{videoPlayer}.video",
-                    captions: "{videoPlayer}.captions"   
+                    video: "{videoPlayer}.video"   
                 }
+            },
+            captionLoader: {
+                type: "fluid.videoPlayer.captionLoader",
+                options: {
+                    captions: "{videoPlayer}.options.captions"
+                }            
             },
             controllers: {
                 type: "fluid.videoPlayer.controllers",
@@ -237,12 +191,14 @@ var fluid_1_4 = fluid_1_4 || {};
                 container: "{videoPlayer}.controllerContainer",
                 options: {
                     video: "{videoPlayer}.video",
+                    //languages: "{videoPlayer}.options.languages",
                     selectors: {
                         captionArea: "{videoPlayer}.options.selectors.captionArea"
                     },
                     listeners: {
                         onChangeFullscreen: "{videoPlayer}.fullscreenToggle"
-                    }
+                    },
+                    plusAvailable: true
                 }
             }
         },
@@ -255,7 +211,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         styles : {
             controller: "fl-videoPlayer-controller",
-            captionArea: "fl-videoPlayer-captionArea",
+            captionArea: "fl-videoPlayer-captionArea"
         },
         
         mediaRenderers: {
@@ -270,7 +226,7 @@ var fluid_1_4 = fluid_1_4 || {};
     });
         
     //returns the time in format hh:mm:ss from a time in seconds 
-    fluid.videoPlayer.formatTime = function(time) {
+    fluid.videoPlayer.formatTime = function (time) {
         var fullTime = Math.floor(time);
         var sec = fullTime % 60;
         sec = sec < 10 ? "0" + sec : sec;
@@ -278,7 +234,7 @@ var fluid_1_4 = fluid_1_4 || {};
         var min = fullTime % 60;
         fullTime = Math.floor(fullTime / 60);
         var ret = "";
-        if (fullTime /= 0) {
+        if (fullTime !== 0) {
             ret = fullTime + ":";
         }
         return ret + min + ":" + sec;
@@ -300,17 +256,6 @@ var fluid_1_4 = fluid_1_4 || {};
             return placeholder;
         }
     };
-    
- /*   fluid.demands("fluid.videoPlayer",
-    "fluid.videoPlayer.controller",
-             {
-            options: {
-                events: {
-                    afterScrub: "{controller}.events.afterScrub"
-                }
-        }
-    });
-    */
     
 
 })(jQuery, fluid_1_4);

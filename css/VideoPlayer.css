@@ -61,7 +61,7 @@
 
 .fl-videoPlayer-controller-scrubber {
     float:left;
-    width: 65%;
+    width: auto;
     text-indent: -1000px;
     z-index: 1;
 }
@@ -69,6 +69,11 @@
 .fl-videoPlayer-controller-volume {
     background:transparent no-repeat center center;
     background-image: url(../images/volume2.png);
+}
+
+.fl-videoPlayer-controller-plus {
+    background:transparent no-repeat center center;
+    background-image: url(../images/plus.png);
 }
 
 .fl-videoPlayer-controller-volumeControl {
@@ -81,6 +86,25 @@
     cursor: pointer;
     width: 5%;
     z-index: 1;
+}
+.fl-videoPlayer-controllers-plusMenu-menu {
+    margin-bottom: 0px;
+    background-color: black;
+    margin-right: 0;
+    margin-left: 800px;
+    display: none;
+}
+
+/*.fl-videoPlayer-controllers-plusMenu-subMenu {
+    margin-bottom: 0px;
+    background-color: black;
+    /*margin-right: 0;
+    margin-left: 800px;
+}*/
+
+.fl-videoPlayer-controllers-plusMenu-element {
+    text-indent: 5px;
+    display: none;
 }
 
 .fl-videoPlayer-state-captionOn {
