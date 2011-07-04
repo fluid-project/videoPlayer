@@ -11,9 +11,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 /*global jQuery, window*/
 
-var fluid = fluid || {};
+var fluid_1_4 = fluid_1_4 || {};
 
-(function ($) {
+(function ($, fluid) {
     /**
      * SimpleRenderer injects one or many elements in a the container passed in parameter to the render method
      * @param {Object} container the container in which the elements will be added
@@ -45,6 +45,7 @@ var fluid = fluid || {};
         };
         
         var renderClasses = function (elt, selector) {
+            selector = selector || "";
             var ret = " class=' " + selector + " "; 
             if (typeof (elt) === "object" && elt) {
                 fluid.each(elt, function (value) {
@@ -86,10 +87,13 @@ var fluid = fluid || {};
             } else {
                 that.container.append(create(tree));
             }
+            
+            return that;
         };
         
         that.clear = function () {
             that.container.html("");
+            return that;
         };
         
         return that; 
@@ -99,4 +103,4 @@ var fluid = fluid || {};
         template: "<%tag %classes %attributes >%content </%tag >"
     });
 
-})(jQuery);
+})(jQuery, fluid_1_4);
