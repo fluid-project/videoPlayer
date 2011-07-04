@@ -85,7 +85,6 @@ var fluid_1_4 = fluid_1_4 || {};
         return captionArea;
     };
     
-
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
      * 
@@ -95,7 +94,6 @@ var fluid_1_4 = fluid_1_4 || {};
      
     fluid.videoPlayer = function (container, options) {
         var that = fluid.initView("fluid.videoPlayer", container, options);
-        
         that.video = renderVideo(that);
         
         that.play = function () {
@@ -152,6 +150,8 @@ var fluid_1_4 = fluid_1_4 || {};
             var controller = that.locate("controller");
             that.controllerContainer = (controller.length === 0) ? renderControllerContainer(that) : controller;
         }
+        
+        // Add the captions if required
         if (that.options.captionsAvailable === true) {
             var captionArea = that.locate("captionArea");
             that.captionnerContainer = captionArea.length === 0 ? renderCaptionnerContainer(that) : captionArea;
@@ -160,7 +160,6 @@ var fluid_1_4 = fluid_1_4 || {};
         bindDOMEvents(that);
         that.events.onReady.fire();
         return that;
-    
     };
     
     fluid.defaults("fluid.videoPlayer", {

@@ -4,7 +4,7 @@ var fluid_1_4 = fluid_1_4 || {};
 (function ($, fluid) {
     
     var findCaptionForTime = function (that, timeInMillis) {     
-        // TODO: This algorithm is totally evil and incorrect.  
+        // TODO: This algorithm looks better but there might be even better.
         for (var x = that.currentIndice; x < that.captions.length; x++) {
             //we use memoization in order to compute the convertion to milliseconds only once by caption
             if (typeof (that.captions[x].inMilliTime) !== 'number') {
@@ -36,6 +36,7 @@ var fluid_1_4 = fluid_1_4 || {};
         that.currentCaptions.push(caption);
     };
     
+    //delete and undisplay a piece of caption
     var removeCaption = function (that, elt) {
         elt.container.fadeOut("fast", function () {
             elt.container.remove();
@@ -67,7 +68,7 @@ var fluid_1_4 = fluid_1_4 || {};
             onReady: null
         }, 
         listeners: {
-            afterScrub: "{captionner}.bigTimeUpdate",
+            afterScrub: "{captionner}.resyncCaptions",
             onCaptionsLoaded: "{captionner}.setCaptions"
         },
         maxCaption: 3, //number max of lines of captions displayed at the same time
@@ -91,7 +92,8 @@ var fluid_1_4 = fluid_1_4 || {};
         that.currentCaptions = [];
         that.currentIndice = 0;
         
-        that.bigTimeUpdate = function (timeInMillis) {
+        that.resyncCaptions = function (timeInMillis) {
+            //we clean the screen of the captions that were there
             fluid.each(that.currentCaptions, function (caption) {
                 removeCaption(that, caption);
             });
@@ -100,15 +102,15 @@ var fluid_1_4 = fluid_1_4 || {};
             return that;
         };
         
+        //this is used to set a new caption file (usually used as a listener to a captionLoader component)
         that.setCaptions = function (captions) {
-            alert("setCaptions");
             that.captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
             //we get the actual captions and get rid of the rest
-            
             if (that.captions.captionCollection) {
                 that.captions = that.captions.captionCollection;
             }
-            that.bigTimeUpdate(that.video.currentTime);
+            //that is to resync t
+            that.resyncCaptions(that.video.currentTime);
             
             return that;
         };
@@ -145,7 +147,8 @@ var fluid_1_4 = fluid_1_4 || {};
         var secs = parseFloat(splitTime[2]) + (mins * 60);
         return Math.round(secs * 1000);
     };
-   
+    
+    //we link with the outside events
     fluid.demands("fluid.videoPlayer.captionner",
                   ["fluid.videoPlayer.controllers","fluid.videoPlayer.captionLoader"], {
             options: {

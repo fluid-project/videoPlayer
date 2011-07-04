@@ -17,10 +17,10 @@ var fluid_1_4 = fluid_1_4 || {};
     
 
     /**
-     * Video player renders HTML 5 video content and degrades gracefully to an alternative.
+     * captionLoads renders loads from an Js object src element a caption file and converts it to JsonCC.
      * 
-     * @param {Object} container the container in which video and (optionally) captions are displayed
      * @param {Object} options configuration options for the comoponent
+     * Note: when the caption is loaded by Ajax the event onCaptionsLoaded is fired
      */
     
     fluid.defaults("fluid.videoPlayer.captionLoader", {
@@ -37,12 +37,14 @@ var fluid_1_4 = fluid_1_4 || {};
     }); 
     
     fluid.videoPlayer.captionLoader.finalInit = function (that) {
+    
         that.setCaptions = function (caps) {
             // Render the caption area if necessary
             that.events.onCaptionsLoaded.fire(caps);
             return that;
         };  
         
+        //Creates an ajax query and uses or not a convertor for the captions
         that.loadCaptions = function (caps) {
             if (caps[0].type !== "JSONcc") {
                 $.ajax({
@@ -67,11 +69,16 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         };
         
-        that.loadCaptions(that.options.captions);
+        //if we provided default captions when we created the component
+        if  (that.options.captions) {
+            that.loadCaptions(that.options.captions);
+        }
+        
         that.events.onReady.fire();
         
         return that;
     };
+    
 })(jQuery, fluid_1_4);
 
 

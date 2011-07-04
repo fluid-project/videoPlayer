@@ -63,7 +63,7 @@ var fluid_1_4 = fluid_1_4 || {};
             }         
         });
 
-        // Display the volume slider when the button is clicked
+        // hide the volume slider when the button is clicked
         volumeButton.click(function () {
             if (volumeControl.css("display") === "none") { 
                 volumeButton.hide();
@@ -76,7 +76,7 @@ var fluid_1_4 = fluid_1_4 || {};
 
         var plusButton = that.locate("plus");
         var menu = that.locate("menu");           
-        // Display the volume slider when the button is clicked
+        // Display the menu when the plus button is clicked
         plusButton.click(function () {
             if (menu.css("display") === "none") { 
                 plusButton.hide();
@@ -87,17 +87,16 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         });
         
-        //destroy the volume slider when the mouse leaves the slider
+        //hide the menu when the mouse leaves the slider
         menu.mouseleave(function (evt, ui) {
             if (menu.css("display") !== "none") {
                 menu.hide();
-                plusButton.fadeIn("fast", "linear");            
-            }         
+                plusButton.fadeIn("fast", "linear");
+            }
         });
         
-
-        
         var captionButton = that.locate("captionButton");
+        //Shows or hides the caption when the button is clicked
         captionButton.click(function () {
             var captionArea = $(that.options.selectors.captionArea);
             if (captionArea.css("display") === "none") { 
@@ -150,13 +149,12 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     /**
-     * PlayAndScrubController is a simple video controller containing a play button and a time scrubber.
+     * controllers is a video controller containing a play button, a time scrubber, 
+     *      a volume controller, a button to put captions on/off and a menu
      * 
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
      */
-    
-    
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
@@ -240,7 +238,6 @@ var fluid_1_4 = fluid_1_4 || {};
             value: 60
         });
         
-        
         that.events.onReady.fire();
     };
     
@@ -288,6 +285,7 @@ var fluid_1_4 = fluid_1_4 || {};
             content: that.options.strings.fullscreen
         }]);   
         
+        //we only do the menu if we need it
         if (that.options.plusAvailable === true) {
             rend.render([{
                 tag: "button",
@@ -303,10 +301,15 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     };
     
+    /**
+     * plusMenu is a smallMenu that is highly scalable
+     * 
+     * @param {Object} container the container which this component is rooted
+     * @param {Object} options configuration options for the component
+     */
     fluid.defaults("fluid.videoPlayer.controllers.plusMenu", {
         gradeNames: ["fluid.viewComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.plusMenu.finalInit",
-        preInitFunction: "fluid.videoPlayer.controllers.plusMenu.preInit",
         events: {
             onReady: null,
             onCaptionChange: null,
@@ -328,16 +331,14 @@ var fluid_1_4 = fluid_1_4 || {};
         
         
     });
-    fluid.videoPlayer.controllers.plusMenu.preInit = function (that) {
-        //alert("biem");
-    };
     
     fluid.videoPlayer.controllers.plusMenu.finalInit = function (that) {
         var container;
-        var rend = fluid.simpleRenderer(that.container, {});
-        var rend2;
+        var menuRenderer = fluid.simpleRenderer(that.container, {});
+        var subMenuRenderer;
         fluid.each(that.options.menu, function (val) {
-            rend.render({
+            //do each subMenu
+            menuRenderer.render({
                 tag: "div",
                 selector: val.selector,
                 classes: that.options.styles.subMenu,
@@ -346,8 +347,6 @@ var fluid_1_4 = fluid_1_4 || {};
                     content: val.label
                 }
             });
-            container = $("." + val.selector);
-            
             $("." + val.selector + "> a").bind({
                 "click": function () {
                     var sel = $("." + val.selector);
@@ -356,9 +355,10 @@ var fluid_1_4 = fluid_1_4 || {};
                     });
                 }
             });
-            rend2 = fluid.simpleRenderer(container);
+            
+            subMenuRenderer = fluid.simpleRenderer($("." + val.selector));
             //render the up arrow
-            rend2.render({
+            subMenuRenderer.render({
                 tag: "div",
                 selector: "flc-videoPlayer-controllers-plusMenu-subMenu-up",
                 classes: [that.options.styles.element, that.options.styles.up],
@@ -372,9 +372,10 @@ var fluid_1_4 = fluid_1_4 || {};
                     });
                 }
             });
-           // alert(that.dom.fastLocate(that.options.selectors.up,$("." + val.selector)).html());
+            
+            //add the elements to each subMenu
             fluid.each(val.elements, function (val2) {
-                rend2.render({
+                subMenuRenderer.render({
                     tag: "div",
                     selector: val2.selector,
                     classes: that.options.styles.element, 
