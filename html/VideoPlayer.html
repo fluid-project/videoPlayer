@@ -63,40 +63,34 @@
                 displayCaptions: true,
                 
                 // TODO: These captions don't match the video!
-                captions: [
-                           /* {src: "http://localhost:8888/videoPlayer/html/flight.srt",
-                            type: "srt"},
-                            {src: "http://localhost:8888/videoPlayer/html/TestYouTuberCaption.sbv",
-                            type: "sbv"},*/
-                            {src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
-                            type: "JSONcc"}],
-                languages: [{
-                    label: "language",
-                    selector: "flc-language",
-                    elements: [ {label: "eng",
-                                    selector: "a"},{label: "eng",
-                                    selector: "a"}
-                            ]
-                    },{
-                    label: "biming",
-                    selector: "flc-bim",
-                    elements: [ {
-                                    label: "eng",
-                                    selector: "a",
-                                    events: {
-                                        "click":  function() {alert("2")} 
-                                        }
-                                },
-                                {
-                                    label:"fre",
-                                    selector: "b",
-                                    events: {
-                                        "click": function() {alert("2")} 
-                                        }
-                                }
-                            ]
+                menu: {
+                    "captions": {
+                        selector: "flc-videoPlayer-menu-captions",
+                        elements: [{
+                            label: "english",
+                            src: "http://localhost:8888/videoPlayer/html/flight.srt",
+                            type: "srt"
+                        }, {
+                            label: "german",
+                            src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
+                            type: "JSONcc"
+                        }]
+                    }, 
+                    "colors": {
+                        selector: "flc-videoPlayer-menu-colors",
+                        elements: [{
+                            label: "bright",
+                            data1 : "foo",
+                            data2 : "bar"
+                        }, {
+                            label: "clear",
+                            data1 : "foo2",
+                            data2 : "bar2"
+                        }]
+                        
+                        
                     }
-                ]
+                }
             });
         </script>
 	</body>

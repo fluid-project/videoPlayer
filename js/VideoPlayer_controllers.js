@@ -2,6 +2,23 @@
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
+    //bind the right events according to the type of the button
+    var  bindMenuDOMEvent = function (obj, type, indice, that) {
+        if (type === "captions") { 
+            obj.bind({
+                "click" : function() {
+                    console.log("caption" + indice);
+                    that.events.onCaptionChange.fire(indice);
+                }
+            });
+        } else if (type === "colors") {
+            obj.bind({
+                "click" : function() {
+                    that.events.onColorChange.fire(indice);
+                }
+            });
+        }
+    };
     
     var bindDOMEvents = function (that) {
         var scrubber = that.locate("scrubber");
@@ -168,11 +185,11 @@ var fluid_1_4 = fluid_1_4 || {};
         
         components: {
             plus: {
-                type: "fluid.videoPlayer.controllers.plusMenu",
+                type: "fluid.videoPlayer.plusMenu",
                 createOnEvent: "onReady",
                 container: "{controllers}.menuContainer",
                 options: {
-                    menu: "{videoPlayer}.options.languages"
+                    menu: "{videoPlayer}.options.menu"
                 }
             }
         },
@@ -307,12 +324,13 @@ var fluid_1_4 = fluid_1_4 || {};
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
      */
-    fluid.defaults("fluid.videoPlayer.controllers.plusMenu", {
+    fluid.defaults("fluid.videoPlayer.plusMenu", {
         gradeNames: ["fluid.viewComponent", "autoInit"], 
-        finalInitFunction: "fluid.videoPlayer.controllers.plusMenu.finalInit",
+        finalInitFunction: "fluid.videoPlayer.plusMenu.finalInit",
         events: {
             onReady: null,
             onCaptionChange: null,
+            onColorChange: null,
             onCloseMenu: null
         },
         styles: {
@@ -332,11 +350,12 @@ var fluid_1_4 = fluid_1_4 || {};
         
     });
     
-    fluid.videoPlayer.controllers.plusMenu.finalInit = function (that) {
+    fluid.videoPlayer.plusMenu.finalInit = function (that) {
         var container;
         var menuRenderer = fluid.simpleRenderer(that.container, {});
         var subMenuRenderer;
-        fluid.each(that.options.menu, function (val) {
+        var select;
+        fluid.each(that.options.menu, function (val, key) {
             //do each subMenu
             menuRenderer.render({
                 tag: "div",
@@ -344,7 +363,7 @@ var fluid_1_4 = fluid_1_4 || {};
                 classes: that.options.styles.subMenu,
                 content: {
                     tag: "a",
-                    content: val.label
+                    content: key
                 }
             });
             $("." + val.selector + "> a").bind({
@@ -374,14 +393,15 @@ var fluid_1_4 = fluid_1_4 || {};
             });
             
             //add the elements to each subMenu
-            fluid.each(val.elements, function (val2) {
+            fluid.each(val.elements, function (val2, key2) {
+                select = "flc-videoPlayer-menu-" + key + "-" + key2;
                 subMenuRenderer.render({
                     tag: "div",
-                    selector: val2.selector,
+                    selector: select,
                     classes: that.options.styles.element, 
                     content: val2.label
                 });
-                $("." + val2.selector).bind(val2.events);
+                bindMenuDOMEvent($("." + select), key, key2, that);
             });
         });
         that.events.onReady.fire();
