@@ -182,7 +182,7 @@ var fluid_1_4 = fluid_1_4 || {};
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 options: {
-                    captions: "{videoPlayer}.options.captions"
+                    captions: "{videoPlayer}.options.menu.captions.elements"
                 }            
             },
             controllers: {

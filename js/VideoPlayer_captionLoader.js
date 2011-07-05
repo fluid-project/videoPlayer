@@ -29,15 +29,14 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onReady: null,
             onCaptionsLoaded: null,
-            onCaptionsChange: null
+            onCaptionChange: null
         },
         listeners: {
-            onCaptionsChange: "{captionLoader}.loadCaptions"
+            onCaptionChange: function(ind) {console.log("control"+ind);}//"{captionLoader}.loadCaptions"
         }
     }); 
     
     fluid.videoPlayer.captionLoader.finalInit = function (that) {
-    
         that.setCaptions = function (caps) {
             // Render the caption area if necessary
             that.events.onCaptionsLoaded.fire(caps);
@@ -45,15 +44,17 @@ var fluid_1_4 = fluid_1_4 || {};
         };  
         
         //Creates an ajax query and uses or not a convertor for the captions
-        that.loadCaptions = function (caps) {
-            if (caps[0].type !== "JSONcc") {
+        that.loadCaptions = function (indice) {
+            //console.log(indice);
+            var caps = that.options.captions[indice];
+            if (caps.type !== "JSONcc") {
                 $.ajax({
                     type: "GET",
                     dataType: "text",
                     url: "/videoPlayer/conversion_service/index.php",
                     data: {
                         cc_result: 0,
-                        cc_url: caps[0].src,
+                        cc_url: caps.src,
                         cc_target: "JSONcc",
                         cc_name: "__no_name"
                     },
@@ -63,21 +64,31 @@ var fluid_1_4 = fluid_1_4 || {};
                 $.ajax({
                     type: "GET",
                     dataType: "text",
-                    url: caps[0].src,
+                    url: caps.src,
                     success: that.setCaptions
                 });
             }
         };
         
-        //if we provided default captions when we created the component
+        //if we provided default captions when we created the component we load it
         if  (that.options.captions) {
-            that.loadCaptions(that.options.captions);
+            that.loadCaptions(0);
         }
         
         that.events.onReady.fire();
         
         return that;
     };
+
+    //we link with the outside events
+    fluid.demands("fluid.videoPlayer.captionLoader",
+                  "fluid.videoPlayer.plusMenu", {
+            options: {
+                events: {
+                    onCaptionChange: "{plusMenu}.events.onCaptionChange"
+                }
+            }
+        });
     
 })(jQuery, fluid_1_4);
 
