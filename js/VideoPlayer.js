@@ -210,10 +210,7 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             captionView: {
                 type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.captionnerContainer",
-                options: {
-                    video: "{videoPlayer}.video"   
-                }
+                container: "{videoPlayer}.captionnerContainer"
             },
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
@@ -314,7 +311,9 @@ var fluid_1_4 = fluid_1_4 || {};
                     "{videoPlayer}.events.onPlay": "{controllers}.play",
                     "{videoPlayer}.events.onPause": "{controllers}.pause",
                     "{videoPlayer}.events.onCanPlay": "{controllers}.canPlay",
+                    //so 2 listeners for a single event how can I solve that???
                     "{videoPlayer}.events.onTimeUpdate": "{controllers}.updateTime",
+                    //"{videoPlayer}.events.onTimeUpdate": "{captionner}.displayCaptionForTime",
                     "{videoPlayer}.events.onVideoLoaded": "{controllers}.setValue"
                 }
             }
