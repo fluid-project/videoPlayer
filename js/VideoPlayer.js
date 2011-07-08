@@ -56,16 +56,31 @@ var fluid_1_4 = fluid_1_4 || {};
     };
 
     var bindDOMEvents = function (that) {
+        console.log(that.video);
         that.video.attr("tabindex", 0);
         
-        var playHandler = function (evt) {
-            that.togglePlayback();
-            that.events.test.fire();
-        };
+        that.video.click(that.togglePlayback);
+        that.video.fluid("activatable", that.togglePlayback);
         
-        that.video.click(playHandler);
-        that.video.fluid("activatable", playHandler);
-        
+        that.video.bind("timeupdate", {obj: that.video}, function (ev) {
+            console.log(ev.data.obj);
+            that.events.onTimeUpdate.fire(ev.data.obj.currentTime);
+        });
+        that.video.bind("durationChange", {obj: that.video}, function (ev) {
+            // FF doesn't implement startTime from the HTML 5 spec.
+            var startTime = ev.data.obj.startTime || 0;
+            console.log(startTime);
+            that.events.onVideoLoaded.fire(startTime,ev.data.obj.duration);
+        });
+        that.video.bind("play", {obj: that.video}, function (ev) {
+            that.events.onPlay.fire(ev.data.obj.currentTime);
+        });
+        that.video.bind("pause", {obj: that.video}, function (ev) {
+            that.events.onPause.fire(ev.data.obj.currentTime);
+        });
+        that.video.bind("canPlay", function () {
+            that.events.onCanPlay.fire();
+        });
         that.video.bind("loadedmetadata", function () {
             that.container.css("width", that.video[0].videoWidth);
         });
@@ -112,7 +127,15 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         };
         
-        that.fullscreenToggle = function () {
+        that.setTime = function (time) {
+            that.video.currentTime = time;
+        };
+        
+        that.setVolume = function(volume) {
+            that.video.volume = volume;
+        };
+        
+        that.toggleFullscreen = function () {
             if (!that.fullscreen) {
                 that.videoWidth = that.container.css("width");
                 that.videoHeight = that.container.css("height");
@@ -158,6 +181,8 @@ var fluid_1_4 = fluid_1_4 || {};
         }
         fluid.initDependents(that);
         bindDOMEvents(that);
+        
+        
         that.events.onReady.fire();
         return that;
     };
@@ -167,7 +192,12 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             afterScrub: null,
             onReadyToLoadCaptions: null,
-            onReady: null
+            onReady: null,
+            onTimeUpdate: null,
+            onPlay: null,
+            onPause: null,
+            onCanPlay: null,
+            onVideoLoaded: null
         },
         
         components: {
@@ -193,13 +223,6 @@ var fluid_1_4 = fluid_1_4 || {};
                 priority: "first",
                 container: "{videoPlayer}.controllerContainer",
                 options: {
-                    video: "{videoPlayer}.video",
-                    selectors: {
-                        captionArea: "{videoPlayer}.options.selectors.captionArea"
-                    },/*
-                    listeners: {
-                        onChangeFullscreen: "{videoPlayer}.fullscreenToggle"
-                    },*/
                     plusAvailable: true
                 }
             }
@@ -261,43 +284,42 @@ var fluid_1_4 = fluid_1_4 || {};
     
     fluid.defaults("fluid.videoPlayer.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
-        preInitFunction: "fluid.videoPlayer.eventBinder.preInitFunction",
         events: {
-         /*   onCloseMenu: null,
-            onChangeFullscreen: null,
-            afterScrub: null,
-            onCaptionChange: null,
-            onCaptionChange: null,
-            onCaptionsLoaded: null,
-         */   onReady: null
+            onReady: null
         }, 
         listeners: {
             onReady: function() {console.log("eventBinder");}
         }
     });
     
-    fluid.videoPlayer.eventBinder.preInitFunction = function (that) {
-        console.log("begin");
-    }
-    
     //this binds all the events of the videoPlayer to their listeners
     fluid.demands("fluid.videoPlayer.eventBinder", 
-    ["fluid.videoPlayer.controllers",
-        "fluid.videoPlayer.captionLoader",
-        "fluid.videoPlayer.captionner",
-        //"fluid.videoPlayer.controllers.plusMenu",
-        "fluid.videoPlayer"],
-    {
-        options: {
-            listeners: {
-                "{controllers}.events.afterScrub": "{captionner}.resyncCaptions",
-                "{controllers}.events.onChangeFullscreen": "{videoPlayer}.fullscreenToggle",
-                "{captionLoader}.events.onCaptionsLoaded": "{captionner}.setCaptions",
-                //that doesn't really seem to be a clean way to do it
-                "{controllers}.plus.events.onCaptionChange": "{captionLoader}.loadCaptions"
+        ["fluid.videoPlayer.controllers",
+            "fluid.videoPlayer.captionLoader",
+            "fluid.videoPlayer.captionner",
+            //"fluid.videoPlayer.controllers.plusMenu",
+            "fluid.videoPlayer"],
+        {
+            options: {
+                listeners: {
+                    "{controllers}.events.afterScrub": "{captionner}.resyncCaptions",
+                    "{controllers}.events.onChangeCaptionVisibility": "{captionner}.captionToggle",
+                    "{controllers}.events.onChangePlay": "{videoPlayer}.togglePlayback",
+                    "{controllers}.events.onChangeFullscreen": "{videoPlayer}.toggleFullscreen",
+                    "{captionLoader}.events.onCaptionsLoaded": "{captionner}.setCaptions",
+                    "{controllers}.events.onScrub": "{videoPlayer}.setTime",
+                    "{controllers}.events.onVolumeChange": "{videoPlayer}.setVolume",
+                    //that doesn't really seem to be a clean way to do it
+                    "{controllers}.plus.events.onCaptionChange": "{captionLoader}.loadCaptions",
+                    "{videoPlayer}.events.onPlay": "{controllers}.play",
+                    "{videoPlayer}.events.onPause": "{controllers}.pause",
+                    "{videoPlayer}.events.onCanPlay": "{controllers}.canPlay",
+                    "{videoPlayer}.events.onTimeUpdate": "{controllers}.updateTime",
+                    "{videoPlayer}.events.onVideoLoaded": "{controllers}.setValue"
+
+                }
             }
-        }
-    });
+        });
     
 
 })(jQuery, fluid_1_4);
