@@ -7,7 +7,7 @@ var fluid_1_4 = fluid_1_4 || {};
         if (type === "captions") { 
             obj.bind({
                 "click" : function() {
-                    console.log("caption" + indice);
+                    //console.log("caption" + indice);
                     that.events.onCaptionChange.fire(indice);
                 }
             });
@@ -20,38 +20,32 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     };
     
+    var toggleDisplay = function (obj1, obj2) {
+        if (obj1.css("display") === "none") { 
+            obj2.hide();
+            obj1.fadeIn("fast", "linear");
+            return "show";
+        } else {
+            obj1.fadeOut("fast", "linear");
+            obj2.show();
+            return "hide";
+        }
+    };
+    
     var bindDOMEvents = function (that) {
         var scrubber = that.locate("scrubber");
         var currentTime = that.locate("currentTime");
         var totalTime = that.locate("totalTime");
         
-        var jVideo = $(that.video);
-        
-        // Setup the scrubber when we know the duration of the video.
-        jVideo.bind("durationchange", function () {
-            var startTime = that.video.startTime || 0; // FF doesn't implement startTime from the HTML 5 spec.
-            scrubber.slider("option", "min", startTime);
-            scrubber.slider("option", "max", that.video.duration + startTime);
-            scrubber.slider("enable");
-            currentTime.text(fluid.videoPlayer.formatTime(startTime));
-            totalTime.text(fluid.videoPlayer.formatTime(that.video.duration));
-        });
-        
-        // Bind to the video's timeupdate event so we can programmatically update the slider.
-        //TODO get time in hh:mm:ss
-        jVideo.bind("timeupdate", function () {
-            scrubber.slider("value", that.video.currentTime);  
-            currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
-        });
-        
         // Bind the scrubbers slide event to change the video's time.
         scrubber.bind({
             "slide": function (evt, ui) {
-                that.video.currentTime = ui.value;
-                currentTime.text(fluid.videoPlayer.formatTime(that.video.currentTime));
+                currentTime.text(fluid.videoPlayer.formatTime(ui));
+                that.events.onScrub.fire(ui);
             },
-            "slidestop": function () {
-                that.events.afterScrub.fire(that.video.currentTime);
+            "slidestop": function (evt, ui) {
+                console.log(ui);
+                that.events.afterScrub.fire(ui);
             }
         });
         
@@ -59,72 +53,45 @@ var fluid_1_4 = fluid_1_4 || {};
         var volumeControl = that.locate("volumeControl");       
         // Bind the volume Control slide event to change the video's volume and its image.
         volumeControl.bind("slide", function (evt, ui) {
-            that.video.volume = ui.value / 100.0;
+           that.events.onVolumeChange.fire(ui.value / 100.0);
             if (ui.value > 66) {
-                $(volumeButton).css("background-image", "url(../images/volume3.png)");
+                volumeButton.css("background-image", "url(../images/volume3.png)");
             } else if (ui.value > 33) {
-                $(volumeButton).css("background-image", "url(../images/volume2.png)");
+                volumeButton.css("background-image", "url(../images/volume2.png)");
             } else if (ui.value !== 0) {
-                $(volumeButton).css("background-image", "url(../images/volume1.png)");
+                volumeButton.css("background-image", "url(../images/volume1.png)");
             } else {
-                $(volumeButton).css("background-image", "url(../images/volume0.png)");
+                volumeButton.css("background-image", "url(../images/volume0.png)");
             }
             
         });
 
         //destroy the volume slider when the mouse leaves the slider
-        volumeControl.mouseleave(function (evt, ui) {
-            if (volumeControl.css("display") !== "none") {
-                volumeControl.hide();
-                volumeButton.fadeIn("fast", "linear");            
-            }         
-        });
+        volumeControl.mouseleave(toggleDisplay(volumeControl, volumeButton));
 
         // hide the volume slider when the button is clicked
-        volumeButton.click(function () {
-            if (volumeControl.css("display") === "none") { 
-                volumeButton.hide();
-                volumeControl.fadeIn("fast", "linear");
-            } else {
-                volumeControl.fadeOut("fast", "linear");
-                volumeButton.show();
-            }
-        });
+        volumeButton.click(toggleDisplay(volumeButton, volumeControl));
 
         var plusButton = that.locate("plus");
         var menu = that.locate("menu");           
         // Display the menu when the plus button is clicked
-        plusButton.click(function () {
-            if (menu.css("display") === "none") { 
-                plusButton.hide();
-                menu.fadeIn("fast", "linear");
-            } else {
-                menu.fadeOut("fast", "linear");
-                plusButton.show();
-            }
-        });
+        plusButton.click(toggleDisplay(plusButton, menu));
         
         //hide the menu when the mouse leaves the slider
-        menu.mouseleave(function (evt, ui) {
-            if (menu.css("display") !== "none") {
-                menu.hide();
-                plusButton.fadeIn("fast", "linear");
-            }
-        });
+        menu.mouseleave(toggleDisplay(menu, plusButton));
         
         var captionButton = that.locate("captionButton");
         //Shows or hides the caption when the button is clicked
         captionButton.click(function () {
-            var captionArea = $(that.options.selectors.captionArea);
-            if (captionArea.css("display") === "none") { 
-                captionArea.fadeIn("fast", "linear");
+            var captionArea = that.locate("captionArea");
+            if (captionButton.hasClass(that.options.states.captionOn)) { 
                 captionButton.text(that.options.strings.captionOn);
                 captionButton.removeClass(that.options.states.captionOff).addClass(that.options.states.captionOn);
             } else {
-                captionArea.fadeOut("fast", "linear");
                 captionButton.text(that.options.strings.captionOff);
                 captionButton.removeClass(that.options.states.captionOn).addClass(that.options.states.captionOff);
             }
+            that.events.onChangeCaptionVisibility.fire();
         });
         
         //toggle from fullscreen to normal view...
@@ -141,28 +108,9 @@ var fluid_1_4 = fluid_1_4 || {};
         // Bind the play button.
         var playButton = that.locate("playButton");
         playButton.click(function () {
-            if (that.video.paused) {
-                that.video.play();
-            } else {
-                that.video.pause();
-            }
+            that.events.onChangePlay.fire();
         });
-        
-        
-        // Bind the Play/Pause button's text status to the HTML 5 video events.
-        jVideo.bind("play", function () {
-            playButton.text(that.options.strings.pause);
-            playButton.removeClass(that.options.states.play).addClass(that.options.states.pause);
-        });
-        jVideo.bind("pause", function () {
-            playButton.text(that.options.strings.play);
-            playButton.removeClass(that.options.states.pause).addClass(that.options.states.play);
-        });
-        
-        // Enable the Play/Pause button when the video can start playing.
-        jVideo.bind("canplay", function () {
-            playButton.removeAttr("disabled");
-        });
+
     };
     
     /**
@@ -179,7 +127,11 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onChangeFullscreen: null,
             afterScrub: null,
-            onReady: null
+            onScrub: null,
+            onReady: null,
+            onChangePlay: null,
+            onVolumeChange: null,
+            onChangeCaptionVisibility: null
         },
         
         components: {
@@ -239,9 +191,48 @@ var fluid_1_4 = fluid_1_4 || {};
     });
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
-        that.video = fluid.unwrap(that.options.video);
         // Initially disable the play button and scrubber until the video is ready to go.
         bindDOMEvents(that);
+        
+        // Bind the Play/Pause button's text status to the HTML 5 video events.
+        that.play = function () {
+            var playButton = that.locate("playButton");
+            playButton.text(that.options.strings.pause);
+            playButton.removeClass(that.options.states.play).addClass(that.options.states.pause);
+        };
+        that.pause = function () {
+            var playButton = that.locate("playButton");
+            playButton.text(that.options.strings.play);
+            playButton.removeClass(that.options.states.pause).addClass(that.options.states.play);
+        };
+        
+        // Enable the Play/Pause button when the video can start playing.
+        that.canPlay = function () {
+            var playButton = that.locate("playButton");
+            playButton.removeAttr("disabled");
+        };
+        
+        // Setup the scrubber when we know the duration of the video.
+        that.setValue = function (startTime, duration) {
+            var scrubber = that.locate("scrubber");
+            var currentTime = that.locate("currentTime");
+            var totalTime = that.locate("totalTime");
+            scrubber.slider("option", "min", startTime);
+            scrubber.slider("option", "max", duration + startTime);
+            scrubber.slider("enable");
+            currentTime.text(fluid.videoPlayer.formatTime(startTime));
+            totalTime.text(fluid.videoPlayer.formatTime(duration));
+        };
+        
+        // Bind to the video's timeupdate event so we can programmatically update the slider.
+        //TODO get time in hh:mm:ss
+        that.updateTime = function (currentTime) {
+            var currentTime = that.locate("currentTime");
+            var scrubber = that.locate("scrubber");
+            scrubber.slider("value", currentTime);  
+            currentTime.text(fluid.videoPlayer.formatTime(currentTime));
+        };
+        
         that.locate("scrubber").slider({
             unittext: "seconds",
             disabled: true
@@ -332,9 +323,9 @@ var fluid_1_4 = fluid_1_4 || {};
             onColorChange: null,
             onCloseMenu: null
         },
-        listeners: {
+       /* listeners: {
            onReady: function() { console.log("plus ready");}
-        },
+        },*/
         styles: {
             element: "fl-videoPlayer-controllers-plusMenu-element",
             subMenu: "fl-videoPlayer-controllers-plusMenu-subMenu",

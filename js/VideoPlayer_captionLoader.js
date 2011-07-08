@@ -30,10 +30,6 @@ var fluid_1_4 = fluid_1_4 || {};
             onReady: null,
             onCaptionsLoaded: null,
             onCaptionChange: null
-        },
-        listeners: {
-            onCaptionChange: function(ind) {console.log("control"+ind);},//"{captionLoader}.loadCaptions"
-            onReady: function() { console.log("loader ready");}
         }
     }); 
     
