@@ -111,7 +111,6 @@ var fluid_1_4 = fluid_1_4 || {};
         
         //this is used to set a new caption file (usually used as a listener to a captionLoader component)
         that.setCaptions = function (captions) {
-            //console.log("setCaptions");
             that.captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
             //we get the actual captions and get rid of the rest
             if (that.captions.captionCollection) {

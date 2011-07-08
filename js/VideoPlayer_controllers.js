@@ -7,7 +7,6 @@ var fluid_1_4 = fluid_1_4 || {};
         if (type === "captions") { 
             obj.bind({
                 "click" : function() {
-                    //console.log("caption" + indice);
                     that.events.onCaptionChange.fire(indice);
                 }
             });
@@ -40,12 +39,11 @@ var fluid_1_4 = fluid_1_4 || {};
         // Bind the scrubbers slide event to change the video's time.
         scrubber.bind({
             "slide": function (evt, ui) {
-                currentTime.text(fluid.videoPlayer.formatTime(ui));
-                that.events.onScrub.fire(ui);
+                currentTime.text(fluid.videoPlayer.formatTime(ui.value));
+                that.events.onScrub.fire(ui.value);
             },
             "slidestop": function (evt, ui) {
-                console.log(ui);
-                that.events.afterScrub.fire(ui);
+                that.events.afterScrub.fire(ui.value);
             }
         });
         
@@ -227,10 +225,10 @@ var fluid_1_4 = fluid_1_4 || {};
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         //TODO get time in hh:mm:ss
         that.updateTime = function (currentTime) {
-            var currentTime = that.locate("currentTime");
+            var curTime = that.locate("currentTime");
             var scrubber = that.locate("scrubber");
             scrubber.slider("value", currentTime);  
-            currentTime.text(fluid.videoPlayer.formatTime(currentTime));
+            curTime.text(fluid.videoPlayer.formatTime(currentTime));
         };
         
         that.locate("scrubber").slider({

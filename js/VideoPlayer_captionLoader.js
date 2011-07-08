@@ -42,7 +42,6 @@ var fluid_1_4 = fluid_1_4 || {};
         
         //Creates an ajax query and uses or not a convertor for the captions
         that.loadCaptions = function (indice) {
-            //console.log(indice);
             var caps = that.options.captions[indice];
             if (caps.type !== "JSONcc") {
                 $.ajax({

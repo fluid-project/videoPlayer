@@ -56,31 +56,34 @@ var fluid_1_4 = fluid_1_4 || {};
     };
 
     var bindDOMEvents = function (that) {
-        console.log(that.video);
+        
         that.video.attr("tabindex", 0);
         
         that.video.click(that.togglePlayback);
         that.video.fluid("activatable", that.togglePlayback);
         
-        that.video.bind("timeupdate", {obj: that.video}, function (ev) {
-            console.log(ev.data.obj);
+        that.video.bind("timeupdate", {obj: that.video[0]}, function (ev) {
             that.events.onTimeUpdate.fire(ev.data.obj.currentTime);
         });
-        that.video.bind("durationChange", {obj: that.video}, function (ev) {
+        
+        that.video.bind("durationchange", {obj: that.video[0]}, function (ev) {
             // FF doesn't implement startTime from the HTML 5 spec.
             var startTime = ev.data.obj.startTime || 0;
-            console.log(startTime);
             that.events.onVideoLoaded.fire(startTime,ev.data.obj.duration);
         });
-        that.video.bind("play", {obj: that.video}, function (ev) {
+        
+        that.video.bind("play", {obj: that.video[0]}, function (ev) {
             that.events.onPlay.fire(ev.data.obj.currentTime);
         });
-        that.video.bind("pause", {obj: that.video}, function (ev) {
+        
+        that.video.bind("pause", {obj: that.video[0]}, function (ev) {
             that.events.onPause.fire(ev.data.obj.currentTime);
         });
-        that.video.bind("canPlay", function () {
+        
+        that.video.bind("canplay", function () {
             that.events.onCanPlay.fire();
         });
+        
         that.video.bind("loadedmetadata", function () {
             that.container.css("width", that.video[0].videoWidth);
         });
@@ -128,11 +131,11 @@ var fluid_1_4 = fluid_1_4 || {};
         };
         
         that.setTime = function (time) {
-            that.video.currentTime = time;
+            that.video[0].currentTime = time;
         };
         
         that.setVolume = function(volume) {
-            that.video.volume = volume;
+            that.video[0].volume = volume;
         };
         
         that.toggleFullscreen = function () {
@@ -286,9 +289,6 @@ var fluid_1_4 = fluid_1_4 || {};
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         events: {
             onReady: null
-        }, 
-        listeners: {
-            onReady: function() {console.log("eventBinder");}
         }
     });
     
@@ -316,7 +316,6 @@ var fluid_1_4 = fluid_1_4 || {};
                     "{videoPlayer}.events.onCanPlay": "{controllers}.canPlay",
                     "{videoPlayer}.events.onTimeUpdate": "{controllers}.updateTime",
                     "{videoPlayer}.events.onVideoLoaded": "{controllers}.setValue"
-
                 }
             }
         });
