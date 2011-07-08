@@ -171,9 +171,12 @@ var fluid_1_4 = fluid_1_4 || {};
         },
         
         components: {
+            eventBinder: {
+                type: "fluid.videoPlayer.eventBinder",
+                priority: "last"
+            },
             captionView: {
                 type: "fluid.videoPlayer.captionner",
-                priority: "last",
                 container: "{videoPlayer}.captionnerContainer",
                 options: {
                     video: "{videoPlayer}.video"   
@@ -191,13 +194,12 @@ var fluid_1_4 = fluid_1_4 || {};
                 container: "{videoPlayer}.controllerContainer",
                 options: {
                     video: "{videoPlayer}.video",
-                    //languages: "{videoPlayer}.options.languages",
                     selectors: {
                         captionArea: "{videoPlayer}.options.selectors.captionArea"
-                    },
+                    },/*
                     listeners: {
                         onChangeFullscreen: "{videoPlayer}.fullscreenToggle"
-                    },
+                    },*/
                     plusAvailable: true
                 }
             }
@@ -256,6 +258,46 @@ var fluid_1_4 = fluid_1_4 || {};
             return placeholder;
         }
     };
+    
+    fluid.defaults("fluid.videoPlayer.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        preInitFunction: "fluid.videoPlayer.eventBinder.preInitFunction",
+        events: {
+         /*   onCloseMenu: null,
+            onChangeFullscreen: null,
+            afterScrub: null,
+            onCaptionChange: null,
+            onCaptionChange: null,
+            onCaptionsLoaded: null,
+         */   onReady: null
+        }, 
+        listeners: {
+            onReady: function() {console.log("eventBinder");}
+        }
+    });
+    
+    fluid.videoPlayer.eventBinder.preInitFunction = function (that) {
+        console.log("begin");
+    }
+    
+    //this binds all the events of the videoPlayer to their listeners
+    fluid.demands("fluid.videoPlayer.eventBinder", 
+    ["fluid.videoPlayer.controllers",
+        "fluid.videoPlayer.captionLoader",
+        "fluid.videoPlayer.captionner",
+        //"fluid.videoPlayer.controllers.plusMenu",
+        "fluid.videoPlayer"],
+    {
+        options: {
+            listeners: {
+                "{controllers}.events.afterScrub": "{captionner}.resyncCaptions",
+                "{controllers}.events.onChangeFullscreen": "{videoPlayer}.fullscreenToggle",
+                "{captionLoader}.events.onCaptionsLoaded": "{captionner}.setCaptions",
+                //that doesn't really seem to be a clean way to do it
+                "{controllers}.plus.events.onCaptionChange": "{captionLoader}.loadCaptions"
+            }
+        }
+    });
     
 
 })(jQuery, fluid_1_4);
