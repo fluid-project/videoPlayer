@@ -32,7 +32,8 @@ var fluid_1_4 = fluid_1_4 || {};
             onCaptionChange: null
         },
         listeners: {
-            onCaptionChange: function(ind) {console.log("control"+ind);}//"{captionLoader}.loadCaptions"
+            onCaptionChange: function(ind) {console.log("control"+ind);},//"{captionLoader}.loadCaptions"
+            onReady: function() { console.log("loader ready");}
         }
     }); 
     
@@ -79,16 +80,6 @@ var fluid_1_4 = fluid_1_4 || {};
         
         return that;
     };
-
-    //we link with the outside events
-    fluid.demands("fluid.videoPlayer.captionLoader",
-                  "fluid.videoPlayer.plusMenu", {
-            options: {
-                events: {
-                    onCaptionChange: "{plusMenu}.events.onCaptionChange"
-                }
-            }
-        });
     
 })(jQuery, fluid_1_4);
 

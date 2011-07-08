@@ -94,6 +94,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.resyncCaptions = function (timeInMillis) {
             //we clean the screen of the captions that were there
+            console.log("resync");
             fluid.each(that.currentCaptions, function (caption) {
                 removeCaption(that, caption);
             });
@@ -104,6 +105,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         //this is used to set a new caption file (usually used as a listener to a captionLoader component)
         that.setCaptions = function (captions) {
+            console.log("setCaptions");
             that.captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
             //we get the actual captions and get rid of the rest
             if (that.captions.captionCollection) {
@@ -148,15 +150,4 @@ var fluid_1_4 = fluid_1_4 || {};
         return Math.round(secs * 1000);
     };
     
-    //we link with the outside events
-    fluid.demands("fluid.videoPlayer.captionner",
-                  ["fluid.videoPlayer.controllers","fluid.videoPlayer.captionLoader"], {
-            options: {
-                events: {
-                    afterScrub: "{controllers}.events.afterScrub",
-                    onCaptionsLoaded: "{captionLoader}.events.onCaptionsLoaded"
-                }
-            }
-        });
-
 })(jQuery, fluid_1_4);

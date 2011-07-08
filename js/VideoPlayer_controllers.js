@@ -179,13 +179,12 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onChangeFullscreen: null,
             afterScrub: null,
-            onReady: null,
-            onCaptionsChange: null
+            onReady: null
         },
         
         components: {
             plus: {
-                type: "fluid.videoPlayer.plusMenu",
+                type: "fluid.videoPlayer.controllers.plusMenu",
                 createOnEvent: "onReady",
                 container: "{controllers}.menuContainer",
                 options: {
@@ -324,14 +323,17 @@ var fluid_1_4 = fluid_1_4 || {};
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
      */
-    fluid.defaults("fluid.videoPlayer.plusMenu", {
+    fluid.defaults("fluid.videoPlayer.controllers.plusMenu", {
         gradeNames: ["fluid.viewComponent", "autoInit"], 
-        finalInitFunction: "fluid.videoPlayer.plusMenu.finalInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.plusMenu.finalInit",
         events: {
             onReady: null,
             onCaptionChange: null,
             onColorChange: null,
             onCloseMenu: null
+        },
+        listeners: {
+           onReady: function() { console.log("plus ready");}
         },
         styles: {
             element: "fl-videoPlayer-controllers-plusMenu-element",
@@ -350,7 +352,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
     });
     
-    fluid.videoPlayer.plusMenu.finalInit = function (that) {
+    fluid.videoPlayer.controllers.plusMenu.finalInit = function (that) {
         var container;
         var menuRenderer = fluid.simpleRenderer(that.container, {});
         var subMenuRenderer;
