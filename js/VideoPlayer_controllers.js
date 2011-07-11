@@ -32,20 +32,6 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     var bindDOMEvents = function (that) {
-        var scrubber = that.locate("scrubber");
-        var currentTime = that.locate("currentTime");
-        var totalTime = that.locate("totalTime");
-        
-        // Bind the scrubbers slide event to change the video's time.
-        scrubber.bind({
-            "slide": function (evt, ui) {
-                currentTime.text(fluid.videoPlayer.formatTime(ui.value));
-                that.events.onScrub.fire(ui.value);
-            },
-            "slidestop": function (evt, ui) {
-                that.events.afterScrub.fire(ui.value);
-            }
-        });
         
         var volumeButton = that.locate("volume");
         var volumeControl = that.locate("volumeControl");       
@@ -124,8 +110,6 @@ var fluid_1_4 = fluid_1_4 || {};
         postInitFunction: "fluid.videoPlayer.controllers.postInit",
         events: {
             onChangeFullscreen: null,
-            afterScrub: null,
-            onScrub: null,
             onReady: null,
             onChangePlay: null,
             onVolumeChange: null,
@@ -140,15 +124,20 @@ var fluid_1_4 = fluid_1_4 || {};
                 options: {
                     menu: "{videoPlayer}.options.menu"
                 }
+            },
+            times: {
+                type: "fluid.videoPlayer.controllers.scrubberAndTime",
+                createOnEvent: "onReady",
+                container: "{controllers}.container",
+                options: {
+                    test: "test"
+                }
             }
         },
         
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
             captionButton: ".flc-videoPlayer-controller-caption",
-            scrubber: ".flc-videoPlayer-controller-scrubber",
-            totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current",
             volume: ".flc-videoPlayer-controller-volume",
             volumeControl: ".flc-videoPlayer-controller-volumeControl",
             fullscreenButton: ".flc-videoPlayer-controller-fullscreen",
@@ -157,8 +146,6 @@ var fluid_1_4 = fluid_1_4 || {};
         },
         
         styles: {
-            time: "fl-videoPlayer-controller-time",
-            scrubber: "fl-videoPlayer-controller-scrubber",
             volume: "fl-videoPlayer-controller-volume",
             volumeControl: "fl-videoPlayer-controller-volumeControl",
             plus: "fl-videoPlayer-controller-plus",
@@ -177,9 +164,6 @@ var fluid_1_4 = fluid_1_4 || {};
         strings: {
             play: "Play",
             pause: "Pause",
-            scrubber: "Scrubber",
-            totalTime: "Total time",
-            currentTime: "Current time",
             volume: "Volume",
             captionOn: "Captions On",
             captionOff: "Captions Off",
@@ -210,31 +194,7 @@ var fluid_1_4 = fluid_1_4 || {};
             playButton.removeAttr("disabled");
         };
         
-        // Setup the scrubber when we know the duration of the video.
-        that.setValue = function (startTime, duration) {
-            var scrubber = that.locate("scrubber");
-            var currentTime = that.locate("currentTime");
-            var totalTime = that.locate("totalTime");
-            scrubber.slider("option", "min", startTime);
-            scrubber.slider("option", "max", duration + startTime);
-            scrubber.slider("enable");
-            currentTime.text(fluid.videoPlayer.formatTime(startTime));
-            totalTime.text(fluid.videoPlayer.formatTime(duration));
-        };
         
-        // Bind to the video's timeupdate event so we can programmatically update the slider.
-        //TODO get time in hh:mm:ss
-        that.updateTime = function (currentTime) {
-            var curTime = that.locate("currentTime");
-            var scrubber = that.locate("scrubber");
-            scrubber.slider("value", currentTime);  
-            curTime.text(fluid.videoPlayer.formatTime(currentTime));
-        };
-        
-        that.locate("scrubber").slider({
-            unittext: "seconds",
-            disabled: true
-        });
         that.locate("volumeControl").slider({
             orientation: "vertical",
             range: "min",
@@ -254,21 +214,6 @@ var fluid_1_4 = fluid_1_4 || {};
             classes: that.options.states.play,
             attributes: {disabled: "disabled" },
             content: that.options.strings.play
-        }, {
-            tag: "div",
-            selector: "flc-videoPlayer-controller-current", 
-            classes: that.options.styles.time,
-            content: that.options.strings.currentTime
-        }, { 
-            tag: "div", 
-            selector: "flc-videoPlayer-controller-scrubber", 
-            classes: that.options.styles.scrubber,
-            content: that.options.strings.scrubber
-        }, {
-            tag: "div",
-            selector: "flc-videoPlayer-controller-total",
-            classes: that.options.styles.time,
-            content: that.options.strings.totalTime
         }, {
             tag: "button",
             selector: "flc-videoPlayer-controller-volume",
@@ -306,6 +251,91 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     };
     
+    fluid.defaults("fluid.videoPlayer.controllers.scrubberAndTime", {
+        gradeNames: ["fluid.viewComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.controllers.scrubberAndTime.finalInit",
+        events: {
+            afterScrub: null,
+            onScrub: null,
+            onReady: null
+        },
+        selectors: {
+            scrubber: ".flc-videoPlayer-controller-scrubberAndTime-scrubber",
+            totalTime: ".flc-videoPlayer-controller-scrubberAndTime-total",
+            currentTime: ".flc-videoPlayer-controller-scrubberAndTime-current"
+        },
+        strings: {
+            scrubber: "Scrubber",
+            totalTime: "Total time",
+            currentTime: "Current time"
+        },
+        styles: {
+            time: "fl-videoPlayer-controller-time",
+            scrubber: "fl-videoPlayer-controller-scrubber"
+        }
+    });
+    
+    fluid.videoPlayer.controllers.scrubberAndTime.finalInit = function (that) {
+        var rend = fluid.simpleRenderer(that.container, {});        
+        rend.render([{
+            tag: "div",
+            selector: "flc-videoPlayer-controller-scrubberAndTime-current", 
+            classes: that.options.styles.time,
+            content: that.options.strings.currentTime
+        }, { 
+            tag: "div", 
+            selector: "flc-videoPlayer-controller-scrubberAndTime-scrubber", 
+            classes: that.options.styles.scrubber,
+            content: that.options.strings.scrubber
+        }, {
+            tag: "div",
+            selector: "flc-videoPlayer-controller-scrubberAndTime-total",
+            classes: that.options.styles.time,
+            content: that.options.strings.totalTime
+        }]);
+        
+        var scrubber = that.locate("scrubber");
+        var currentTime = that.locate("currentTime");
+        var totalTime = that.locate("totalTime");
+        
+        // Bind the scrubbers slide event to change the video's time.
+        scrubber.bind({
+            "slide": function (evt, ui) {
+                currentTime.text(fluid.videoPlayer.formatTime(ui.value));
+                that.events.onScrub.fire(ui.value);
+            },
+            "slidestop": function (evt, ui) {
+                that.events.afterScrub.fire(ui.value);
+            }
+        });
+        
+        // Setup the scrubber when we know the duration of the video.
+        that.setValue = function (startTime, duration) {
+            var scrubber = that.locate("scrubber");
+            var currentTime = that.locate("currentTime");
+            var totalTime = that.locate("totalTime");
+            scrubber.slider("option", "min", startTime);
+            scrubber.slider("option", "max", duration + startTime);
+            scrubber.slider("enable");
+            currentTime.text(fluid.videoPlayer.formatTime(startTime));
+            totalTime.text(fluid.videoPlayer.formatTime(duration));
+        };
+        
+        // Bind to the video's timeupdate event so we can programmatically update the slider.
+        //TODO get time in hh:mm:ss
+        that.updateTime = function (currentTime) {
+            var curTime = that.locate("currentTime");
+            var scrubber = that.locate("scrubber");
+            scrubber.slider("value", currentTime);  
+            curTime.text(fluid.videoPlayer.formatTime(currentTime));
+        };
+        
+        that.locate("scrubber").slider({
+            unittext: "seconds",
+            disabled: true
+        });
+        that.events.onReady.fire();
+    };
     /**
      * plusMenu is a smallMenu that is highly scalable
      * 

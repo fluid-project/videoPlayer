@@ -55,13 +55,7 @@ var fluid_1_4 = fluid_1_4 || {};
         preInitFunction:   "fluid.videoPlayer.captionner.preInit",
         finalInitFunction:   "fluid.videoPlayer.captionner.finalInit",
         events: {
-            afterScrub: null,
-            onCaptionsLoaded: null,
             onReady: null
-        }, 
-        listeners: {
-            afterScrub: "{captionner}.resyncCaptions",
-            onCaptionsLoaded: "{captionner}.setCaptions"
         },
         maxCaption: 3, //number max of lines of captions displayed at the same time
         selectors: {
