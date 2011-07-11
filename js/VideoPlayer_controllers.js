@@ -59,10 +59,10 @@ var fluid_1_4 = fluid_1_4 || {};
         var plusButton = that.locate("plus");
         var menu = that.locate("menu");           
         // Display the menu when the plus button is clicked
-        plusButton.click(toggleDisplay(plusButton, menu));
+        plusButton.click(toggleDisplay(menu, plusButton));
         
         //hide the menu when the mouse leaves the slider
-        menu.mouseleave(toggleDisplay(menu, plusButton));
+        menu.mouseleave(toggleDisplay(plusButton, menu));
         
         var captionButton = that.locate("captionButton");
         //Shows or hides the caption when the button is clicked
@@ -115,22 +115,21 @@ var fluid_1_4 = fluid_1_4 || {};
             onVolumeChange: null,
             onChangeCaptionVisibility: null
         },
-        
         components: {
-            plus: {
-                type: "fluid.videoPlayer.controllers.plusMenu",
-                createOnEvent: "onReady",
-                container: "{controllers}.menuContainer",
-                options: {
-                    menu: "{videoPlayer}.options.menu"
-                }
-            },
             times: {
                 type: "fluid.videoPlayer.controllers.scrubberAndTime",
                 createOnEvent: "onReady",
                 container: "{controllers}.container",
                 options: {
                     test: "test"
+                }
+            },
+            plus: {
+                type: "fluid.videoPlayer.controllers.plusMenu",
+                createOnEvent: "onReady",
+                container: "{controllers}.menuContainer",
+                options: {
+                    menu: "{videoPlayer}.options.menu"
                 }
             }
         },
@@ -351,9 +350,6 @@ var fluid_1_4 = fluid_1_4 || {};
             onColorChange: null,
             onCloseMenu: null
         },
-       /* listeners: {
-           onReady: function() { console.log("plus ready");}
-        },*/
         styles: {
             element: "fl-videoPlayer-controllers-plusMenu-element",
             subMenu: "fl-videoPlayer-controllers-plusMenu-subMenu",
@@ -363,12 +359,6 @@ var fluid_1_4 = fluid_1_4 || {};
         selectors: {
             up: ".flc-videoPlayer-controllers-plusMenu-subMenu-up"
         }
-        /*
-        
-        strings: {
-        }*/
-        
-        
     });
     
     fluid.videoPlayer.controllers.plusMenu.finalInit = function (that) {
