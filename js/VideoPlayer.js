@@ -210,7 +210,10 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             captionView: {
                 type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.captionnerContainer"
+                container: "{videoPlayer}.captionnerContainer",
+                options: {
+                    video: "{videoPlayer}.video"   
+                }
             },
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",

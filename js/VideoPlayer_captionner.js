@@ -43,6 +43,13 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         that.currentCaptions.splice(elt, 1);
     };
+    
+    var bindDOMEvents = function (that) {
+        that.video.bind("timeupdate", function () {
+            var timeInMillis = Math.round(this.currentTime * 1000);
+            that.timeUpdate(timeInMillis);      
+        });
+    };
     /**
      * captionner is responsible for displaying captions in a one-at-a-time style.
      * 
@@ -74,15 +81,17 @@ var fluid_1_4 = fluid_1_4 || {};
     
     fluid.videoPlayer.captionner.preInit = function (that) {
             //replace the captionIndice at the right place (used when scrubbed for example)
+        that.video = that.options.video;
         that.currentCaptions = [];
         that.currentIndice = 0;
         
-        that.resyncCaptions = function () {
+        that.resyncCaptions = function (timeInMillis) {
             //we clean the screen of the captions that were there
             fluid.each(that.currentCaptions, function (caption) {
                 removeCaption(that, caption);
             });
             that.currentIndice = 0; //should be enough :)
+            
             return that;
         };
         
@@ -101,16 +110,14 @@ var fluid_1_4 = fluid_1_4 || {};
             if (that.captions.captionCollection) {
                 that.captions = that.captions.captionCollection;
             }
-            //that is to resync the captions
-            that.resyncCaptions();
+            //that is to resync t
+            that.resyncCaptions(that.video.currentTime);
             
             return that;
         };
         
-        that.displayCaptionForTime = function (time) {
-            console.log("capts for time"+ time);
+        that.timeUpdate = function (timeInMillis) {
             // Clear out any caption that has hit its end time.
-            var timeInMillis = Math.round(time * 1000);
             fluid.each(that.currentCaptions, function (elt) {
                 if (timeInMillis >= elt.outMilliTime) {
                     removeCaption(that, elt);
@@ -128,6 +135,7 @@ var fluid_1_4 = fluid_1_4 || {};
             return that;
         };
         
+        bindDOMEvents(that);
         return that;
     };
     
