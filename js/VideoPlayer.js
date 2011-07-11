@@ -210,7 +210,10 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             captionView: {
                 type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.captionnerContainer"
+                container: "{videoPlayer}.captionnerContainer",
+                options: {
+                    video: "{videoPlayer}.video"   
+                }
             },
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
@@ -299,22 +302,20 @@ var fluid_1_4 = fluid_1_4 || {};
         {
             options: {
                 listeners: {
-                    "{controllers}.times.events.afterScrub": "{captionner}.resyncCaptions",
+                    "{controllers}.events.afterScrub": "{captionner}.resyncCaptions",
                     "{controllers}.events.onChangeCaptionVisibility": "{captionner}.captionToggle",
                     "{controllers}.events.onChangePlay": "{videoPlayer}.togglePlayback",
                     "{controllers}.events.onChangeFullscreen": "{videoPlayer}.toggleFullscreen",
                     "{captionLoader}.events.onCaptionsLoaded": "{captionner}.setCaptions",
-                    "{controllers}.times.events.onScrub": "{videoPlayer}.setTime",
+                    "{controllers}.events.onScrub": "{videoPlayer}.setTime",
                     "{controllers}.events.onVolumeChange": "{videoPlayer}.setVolume",
                     //that doesn't really seem to be a clean way to do it
                     "{controllers}.plus.events.onCaptionChange": "{captionLoader}.loadCaptions",
                     "{videoPlayer}.events.onPlay": "{controllers}.play",
                     "{videoPlayer}.events.onPause": "{controllers}.pause",
                     "{videoPlayer}.events.onCanPlay": "{controllers}.canPlay",
-                    //so 2 listeners for a single event how can I solve that???
-                    "{videoPlayer}.events.onTimeUpdate": "{controllers}.times.updateTime",
-                    //"{videoPlayer}.events.onTimeUpdate": "{captionner}.displayCaptionForTime",
-                    "{videoPlayer}.events.onVideoLoaded": "{controllers}.times.setValue"
+                    "{videoPlayer}.events.onTimeUpdate": "{controllers}.updateTime",
+                    "{videoPlayer}.events.onVideoLoaded": "{controllers}.setValue"
                 }
             }
         });
