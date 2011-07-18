@@ -24,30 +24,43 @@ var fluid_1_4 = fluid_1_4 || {};
      */
     
     fluid.defaults("fluid.videoPlayer.captionLoader", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.captionLoader.finalInit",
         events: {
             onReady: null,
-            onCaptionsLoaded: null,
-            onCaptionChange: null
+            onCaptionsLoaded: null
+        }, 
+        listeners: {
+            onReady : function() {console.log("cpationLoader");}
+        },
+        model: {
         }
-    }); 
-    
+    });
     fluid.videoPlayer.captionLoader.finalInit = function (that) {
-        that.setCaptions = function (caps) {
+        that.setCaptions = function (captions) {
             // Render the caption area if necessary
-            that.events.onCaptionsLoaded.fire(caps);
+            captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
+            //we get the actual captions and get rid of the rest
+            if (captions.captionCollection) {
+                captions = captions.captionCollection;
+            }
+            
+            that.applier.fireChangeRequest({
+                path: "captions.track",
+                value: captions
+            });
+            that.events.onCaptionsLoaded.fire();
             return that;
         };  
         
         //Creates an ajax query and uses or not a convertor for the captions
-        that.loadCaptions = function (indice) {
-            var caps = that.options.captions[indice];
+        that.loadCaptions = function () {
+            var caps = that.model.captions.sources[that.model.captions.currentTrack];
             if (caps.type !== "JSONcc") {
                 $.ajax({
                     type: "GET",
                     dataType: "text",
-                    url: "/videoPlayer/conversion_service/index.php",
+                    url: that.model.captions.conversionServiceUrl,
                     data: {
                         cc_result: 0,
                         cc_url: caps.src,
@@ -67,9 +80,10 @@ var fluid_1_4 = fluid_1_4 || {};
         };
         
         //if we provided default captions when we created the component we load it
-        if  (that.options.captions) {
-            that.loadCaptions(0);
+        if  (that.model.captions.sources) {
+           that.loadCaptions();
         }
+        that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions);
         
         that.events.onReady.fire();
         
