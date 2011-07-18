@@ -9,32 +9,37 @@ var fluid_1_4 = fluid_1_4 || {};
         });
     };
     
+   /* var toggleChangeClick = function (that, selector, path, value) {
+        that.locate(selector).click(function () {
+            that.applier.fireChangeRequest({
+                "path": path,
+                "value": !value
+            });
+        });        
+    };
+ */
     var bindDOMEvents = function (that) {      
+        //toggleChangeClick(that, "playButton", "states.play", that.model.states.play);
+        
         
         var captionButton = that.locate("captionButton");
-        //Shows or hides the caption when the button is clicked
         captionButton.click(function () {
-            if (that.model.states.displayCaptions) { 
-                captionButton.text(that.options.strings.captionOn);
-                captionButton.removeClass(that.options.states.captionOff).addClass(that.options.states.captionOn);
-            } else {
-                captionButton.text(that.options.strings.captionOff);
-                captionButton.removeClass(that.options.states.captionOn).addClass(that.options.states.captionOff);
-            }
             that.applier.fireChangeRequest({
                 path: "states.displayCaptions",
                 value: !that.model.states.displayCaptions
             });
         });
         
-        //toggle from fullscreen to normal view...
+        var playButton = that.locate("playButton");
+        playButton.click(function () {
+            that.applier.fireChangeRequest({
+                path: "states.play",
+                value: !that.model.states.play
+            });
+        });
+        
         var fullscreenButton = that.locate("fullscreenButton");
         fullscreenButton.click(function () {
-            if (that.model.states.fullscreen) {
-                fullscreenButton.removeClass(that.options.states.fullscreenOn).addClass(that.options.states.fullscreenOff);
-            } else {
-                fullscreenButton.removeClass(that.options.states.fullscreenOff).addClass(that.options.states.fullscreenOn);
-            }
             that.applier.fireChangeRequest({
                 path: "states.fullscreen",
                 value: !that.model.states.fullscreen
@@ -120,23 +125,46 @@ var fluid_1_4 = fluid_1_4 || {};
         // Bind the Play/Pause button's text status to the HTML 5 video events.
         that.applier.modelChanged.addListener("states.play", 
             function (model, oldModel, changeRequest) {
-            var playButton = that.locate("playButton");
-            if (changeRequest[0].value === true) {
-                playButton.text(that.options.strings.play);
-                playButton.removeClass(that.options.states.pause).addClass(that.options.states.play);                
-            } else {
-                playButton.text(that.options.strings.pause);
-                playButton.removeClass(that.options.states.play).addClass(that.options.states.pause);
-           }
+                var playButton = that.locate("playButton");
+                if (changeRequest[0].value === false) {
+                    playButton.text(that.options.strings.play);
+                    playButton.removeClass(that.options.states.pause).addClass(that.options.states.play);                
+                } else {
+                    playButton.text(that.options.strings.pause);
+                    playButton.removeClass(that.options.states.play).addClass(that.options.states.pause);
+               }
         });
         // Enable the Play/Pause button when the video can start playing.
-        that.applier.modelChanged.addListener("states.canPlay", function(model, oldModel, changeRequest) {
-            var playButton = that.locate("playButton");
-            if (changeRequest[0].value === true) {
-                playButton.removeAttr("disabled");
-            } else {
-                playButton.attr("disabled", "disabled");
-            }
+        that.applier.modelChanged.addListener("states.canPlay", 
+            function(model, oldModel, changeRequest) {
+                var playButton = that.locate("playButton");
+                if (changeRequest[0].value === true) {
+                    playButton.removeAttr("disabled");
+                } else {
+                    playButton.attr("disabled", "disabled");
+                }
+        });
+        
+        that.applier.modelChanged.addListener("states.displayCaptions",
+            function (model, oldModel, changeRequest) {
+                var captionButton = that.locate("captionButton");
+                if (that.model.states.displayCaptions) { 
+                    captionButton.text(that.options.strings.captionOn);
+                    captionButton.removeClass(that.options.states.captionOff).addClass(that.options.states.captionOn);
+                } else {
+                    captionButton.text(that.options.strings.captionOff);
+                    captionButton.removeClass(that.options.states.captionOn).addClass(that.options.states.captionOff);
+                }
+        });
+        
+        that.applier.modelChanged.addListener("states.fullscreen",
+            function (model, oldModel, changeRequest) {
+                var fullscreenButton = that.locate("fullscreenButton");
+                if (that.model.states.fullscreen) {
+                    fullscreenButton.removeClass(that.options.states.fullscreenOn).addClass(that.options.states.fullscreenOff);
+                } else {
+                    fullscreenButton.removeClass(that.options.states.fullscreenOff).addClass(that.options.states.fullscreenOn);
+                }
         });
         that.events.onReady.fire();
     };
