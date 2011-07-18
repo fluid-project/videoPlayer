@@ -177,7 +177,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.applier.modelChanged.addListener("states.fullscreen", 
             function (model, oldModel, changeRequest) {
-                if (changeRequest[0].value === true) {
+                if (changeRequest[0].value === false) {
                     that.container.css({
                         width: that.videoWidth,
                         height: that.videoHeight,
@@ -208,6 +208,7 @@ var fluid_1_4 = fluid_1_4 || {};
             function (model, oldModel, changeRequest) {
                 that.video[0].currentTime = changeRequest[0].value; 
         });
+        
         that.events.onReady.fire();
         return that;
     };
