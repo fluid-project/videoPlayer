@@ -44,16 +44,15 @@ var fluid_1_4 = fluid_1_4 || {};
      * @param {Object} options configuration options for the component
      */
     fluid.defaults("fluid.videoPlayer.controllers", { 
-        gradeNames: ["fluid.viewComponent", "autoInit"], 
+        gradeNames: ["fluid.rendererComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
-        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         events: {
             onReady: null
-        }, listeners: {
+        }, 
+        listeners: {
             onReady : function() {console.log("controllers");}
         },
-        
-        components: {
+       /* components: {
             volumeControl: {
                 type: "fluid.videoPlayer.controllers.volumeControl",
                 container: "{controllers}.container",
@@ -71,14 +70,13 @@ var fluid_1_4 = fluid_1_4 || {};
                     applier: "{controllers}.applier"
                 }
             }
-        },
+        },*/
         
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
             captionButton: ".flc-videoPlayer-controller-caption",
             fullscreenButton: ".flc-videoPlayer-controller-fullscreen"
         },
-        
         states: {
             play: "fl-videoPlayer-state-play",
             pause: "fl-videoPlayer-state-pause",
@@ -94,10 +92,24 @@ var fluid_1_4 = fluid_1_4 || {};
             captionOn: "Captions On",
             captionOff: "Captions Off",
             fullscreen: "Fullscreen"
+        },
+        selectorsToIgnore: ["captionButton", "fullscreenButton"],
+        protoTree: {
+            playButton: {
+                optionnames: ["Serif", "Sans-Serif", "Arial"],
+                optionlist: ["serif", "sansSerif", "arial"],
+                selection: ""
+            }
+        },
+        resources: {
+            template: {
+                url: "http://localhost:8888/videoPlayer/html/controller_template.html"
+            }
         }
     });
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
+        that.renderer.refreshView();
         // Initially disable the play button and scrubber until the video is ready to go.
         bindDOMEvents(that);
         
@@ -148,26 +160,10 @@ var fluid_1_4 = fluid_1_4 || {};
         that.events.onReady.fire();
     };
     
-    fluid.videoPlayer.controllers.postInit = function (that) {
-        var rend = fluid.simpleRenderer(that.container, {});
-        rend.render([{
-            tag: "button",
-            selector: "flc-videoPlayer-controller-play",
-            classes: that.options.states.play,
-            attributes: {disabled: "disabled" },
-            content: that.options.strings.play
-        }, {
-            tag: "button",
-            selector: "flc-videoPlayer-controller-caption",
-            classes: that.options.states.captionOn,
-            content: that.options.strings.captionOn
-        }, {
-            tag: "button",
-            selector: "flc-videoPlayer-controller-fullscreen",
-            classes: that.options.states.fullscreenOn,
-            content: that.options.strings.fullscreen
-        }]);
-    };
+    /*********************************
+     * videoPlayer volume control *
+     *********************************/
+    
     
     fluid.defaults("fluid.videoPlayer.controllers.volumeControl",{
         gradeNames: ["fluid.viewComponent", "autoInit"],
@@ -192,25 +188,6 @@ var fluid_1_4 = fluid_1_4 || {};
     });
     
     fluid.videoPlayer.controllers.volumeControl.finalInit = function (that) {
-        var rend = fluid.simpleRenderer(that.container, {});
-        rend.render([{
-            tag: "button",
-            selector: "flc-videoPlayer-controller-volume",
-            classes: that.options.styles.volume,
-            content: that.options.strings.volume
-        }, {
-            tag: "div",
-            selector: "flc-videoPlayer-controller-volumeControl",
-            classes: that.options.styles.volumeControl
-        }]);  
-        
-        that.locate("volumeControl").slider({
-            orientation: "vertical",
-            range: "min",
-            min: 0,
-            max: 100,
-            value: 60
-        });
         
         var volumeButton = that.locate("volume");
         var volumeControl = that.locate("volumeControl");    
@@ -247,6 +224,10 @@ var fluid_1_4 = fluid_1_4 || {};
         //destroy the volume slider when the mouse leaves the slider
         that.events.onReady.fire();
     };
+
+    /*********************************
+     * videoPlayer scrubber and time *
+     *********************************/
     
     fluid.defaults("fluid.videoPlayer.controllers.scrubberAndTime", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
