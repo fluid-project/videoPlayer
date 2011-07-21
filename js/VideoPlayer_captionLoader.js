@@ -83,6 +83,7 @@ var fluid_1_4 = fluid_1_4 || {};
         if  (that.model.captions.sources) {
            that.loadCaptions();
         }
+        
         that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions);
         
         that.events.onReady.fire();

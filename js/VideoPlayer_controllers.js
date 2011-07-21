@@ -8,53 +8,32 @@ var fluid_1_4 = fluid_1_4 || {};
             obj2.fadeIn("fast", "linear");
         });
     };
-    
-   /* var toggleChangeClick = function (that, selector, path, value) {
-        that.locate(selector).click(function () {
-            that.applier.fireChangeRequest({
-                "path": path,
-                "value": !value
+    //selector, path
+    var toggleChangeModel = function (that, elements) {
+        fluid.each(elements, function(elt) {
+            that.locate(elt.selector).bind(elt.event,function () {
+                that.applier.fireChangeRequest({
+                    "path": elt.path,
+                    "value": !fluid.get(that.model, elt.path)
+                });
             });
-        });        
+        });
     };
- */
+    
     var bindDOMEvents = function (that) {      
-        //toggleChangeClick(that, "playButton", "states.play", that.model.states.play);
-        
-        
-        var captionButton = that.locate("captionButton");
-        captionButton.click(function () {
-            that.applier.fireChangeRequest({
-                path: "states.displayCaptions",
-                value: !that.model.states.displayCaptions
-            });
-        });
-        
-        var playButton = that.locate("playButton");
-        playButton.click(function () {
-            that.applier.fireChangeRequest({
-                path: "states.play",
-                value: !that.model.states.play
-            });
-        });
-        
-        var fullscreenButton = that.locate("fullscreenButton");
-        fullscreenButton.click(function () {
-            that.applier.fireChangeRequest({
-                path: "states.fullscreen",
-                value: !that.model.states.fullscreen
-            });
-        });
-        
-        // Bind the play button.
-        var playButton = that.locate("playButton");
-        playButton.click(function () {
-            that.applier.fireChangeRequest({
-                path: "states.play",
-                value: !that.model.states.play
-            });
-        });
-
+        toggleChangeModel(that, [{
+                event: "click",
+                selector: "playButton", 
+                path: "states.play"
+            }, {
+                event: "click",
+                selector: "captionButton",
+                path: "states.displayCaptions"
+            }, {
+                event: "click",
+                selector: "fullscreenButton",
+                path: "states.fullscreen"
+        }]);
     };
     
     /**
@@ -195,8 +174,9 @@ var fluid_1_4 = fluid_1_4 || {};
         finalInitFunction: "fluid.videoPlayer.controllers.volumeControl.finalInit",
         events: {
             onReady: null
-        }, listeners: {
-            onReady : function() {console.log("valume");}
+        }, 
+        listeners: {
+            onReady : function() {console.log("volume");}
         },
         selectors: {
             volume: ".flc-videoPlayer-controller-volume",
@@ -249,16 +229,20 @@ var fluid_1_4 = fluid_1_4 || {};
                 path: "states.volume",
                 value: ui.value / 100.0
             });
-            if (ui.value > 66) {
-                volumeButton.css("background-image", "url(../images/volume3.png)");
-            } else if (ui.value > 33) {
-                volumeButton.css("background-image", "url(../images/volume2.png)");
-            } else if (ui.value !== 0) {
-                volumeButton.css("background-image", "url(../images/volume1.png)");
-            } else {
-                volumeButton.css("background-image", "url(../images/volume0.png)");
-            }
-            
+        });
+        
+        that.applier.modelChanged.addListener("states.volume",
+            function (model, oldModel, changeRequest) {
+                var volumeButton = that.locate("volume");
+                if (that.model.states.volume > 66) {
+                    volumeButton.css("background-image", "url(../images/volume3.png)");
+                } else if (that.model.states.volume > 33) {
+                    volumeButton.css("background-image", "url(../images/volume2.png)");
+                } else if (that.model.states.volume !== 0) {
+                    volumeButton.css("background-image", "url(../images/volume1.png)");
+                } else {
+                    volumeButton.css("background-image", "url(../images/volume0.png)");
+                }
         });
         //destroy the volume slider when the mouse leaves the slider
         that.events.onReady.fire();
@@ -269,6 +253,7 @@ var fluid_1_4 = fluid_1_4 || {};
         finalInitFunction: "fluid.videoPlayer.controllers.scrubberAndTime.finalInit",
         events: {
             afterScrub: null,
+            onScrub: null,
             onReady: null
         }, listeners: {
             onReady : function() {console.log("scrub");}
@@ -316,10 +301,7 @@ var fluid_1_4 = fluid_1_4 || {};
         scrubber.bind({
             "slide": function (evt, ui) {
                 currentTime.text(fluid.videoPlayer.formatTime(ui.value));
-                that.applier.fireChangeRequest({
-                    path: "states.currentTime",
-                    value: ui.value
-                });
+                that.events.onScrub.fire(ui.value);
             },
             "slidestop": function (evt, ui) {
                 that.events.afterScrub.fire(ui.value);
@@ -358,7 +340,7 @@ var fluid_1_4 = fluid_1_4 || {};
         //TODO get time in hh:mm:ss
         that.applier.modelChanged.addListener("states.currentTime",
             function (model, oldModel, changeRequest) {
-                var currentTime = changeRequest[0].value;
+                var currentTime = that.model.states.currentTime;
                 var curTime = that.locate("currentTime");
                 var scrubber = that.locate("scrubber");
                 scrubber.slider("value", currentTime);  
