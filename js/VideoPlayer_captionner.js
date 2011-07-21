@@ -92,8 +92,8 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     fluid.videoPlayer.captionner.preInit = function (that) {
+    
         that.resyncCaptions = function () {
-            console.log(that.model.captions.currentCaptions);
             //we clean the screen of the captions that were there
             fluid.each(that.model.captions.currentCaptions, function (caption) {
                 removeCaption(that, caption);
@@ -105,15 +105,6 @@ var fluid_1_4 = fluid_1_4 || {};
             });
             return that;
         };
-        
-        that.applier.modelChanged.addListener("states.displayCaptions", function (model, oldModel, changeRequest) {
-            if (changeRequest[0].value === true) {
-                that.container.fadeIn("fast", "linear");
-            } else {
-                that.container.fadeOut("fast", "linear");
-            }
-        });
-        
         
         that.displayCaptionForTime = function (time) {
             // Display a new caption.
@@ -139,6 +130,14 @@ var fluid_1_4 = fluid_1_4 || {};
                 if (that.model.captions.currentCaptions && that.model.captions.currentCaptions.length > that.model.captions.maxNumber) {
                     removeCaption(that, that.model.currentCaptions[0]);
                 }    
+        });
+        
+        that.applier.modelChanged.addListener("states.displayCaptions", function (model, oldModel, changeRequest) {
+            if (that.states.displayCaptions === true) {
+                that.container.fadeIn("fast", "linear");
+            } else {
+                that.container.fadeOut("fast", "linear");
+            }
         });
         
         that.applier.modelChanged.addListener("states.currentTime", that.displayCaptionForTime);

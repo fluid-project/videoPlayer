@@ -14,11 +14,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-         fluid.setLogging(false);   
+    fluid.setLogging(true);   
     var renderSources = function (that) {
         $.each(that.model.video.sources, function (idx, source) {
             var renderer = that.options.mediaRenderers[source.type];
-
+            
             if ($.isFunction(renderer)) {
                 renderer.apply(that, source);
             } else {
@@ -137,8 +137,9 @@ var fluid_1_4 = fluid_1_4 || {};
 
         var that = fluid.initView("fluid.videoPlayer", container, options);
         that.model.video = that.options.video;
-        that.model.captions.sources = that.options.captions.sources;
-        
+        if (that.options.captions) {
+            that.model.captions.sources = that.options.captions.sources || null;
+        }
         that.video = renderVideo(that);
         
         renderSources(that);
@@ -149,26 +150,31 @@ var fluid_1_4 = fluid_1_4 || {};
             return;
         }
 
+        that.applier = fluid.makeChangeApplier(that.model);
+        fluid.initDependents(that);
+
+        that.updateTime = function (time) {
+            that.video[0].currentTime = time;
+        }
         // Add the controller if required.
         if (that.options.controllerType === "html") {
             var controller = that.locate("controller");
             that.controllerContainer = (controller.length === 0) ? renderControllerContainer(that) : controller;
+            that.events.onCreateControllerContainer.fire();
         }
 
         // Add the captions if required
         if (that.model.captions.sources) {
             var captionArea = that.locate("captionArea");
             that.captionnerContainer = captionArea.length === 0 ? renderCaptionnerContainer(that) : captionArea;
+            that.events.onCreateCaptionContainer.fire();
         }
-        
-        that.applier = fluid.makeChangeApplier(that.model);
-        
-        fluid.initDependents(that);
         bindDOMEvents(that);
         
+        //create all the listeners to the model
         that.applier.modelChanged.addListener("states.play",
             function (model, oldModel, changeRequest) {
-            if (changeRequest[0].value === true) {
+            if (that.model.states.play === true) {
                 that.video[0].play();
             } else {
                 that.video[0].pause();
@@ -177,7 +183,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.applier.modelChanged.addListener("states.fullscreen", 
             function (model, oldModel, changeRequest) {
-                if (changeRequest[0].value === false) {
+                if (that.model.states.fullscreen === false) {
                     that.container.css({
                         width: that.videoWidth,
                         height: that.videoHeight,
@@ -201,12 +207,7 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         that.applier.modelChanged.addListener("states.volume",
             function (model, oldModel, changeRequest) {
-                that.video[0].volume = changeRequest[0].value; 
-        });
-        
-        that.applier.modelChanged.addListener("states.currentTime",
-            function (model, oldModel, changeRequest) {
-                that.video[0].currentTime = changeRequest[0].value; 
+                that.video[0].volume = that.model.states.volume; 
         });
         
         that.events.onReady.fire();
@@ -219,19 +220,23 @@ var fluid_1_4 = fluid_1_4 || {};
             afterScrub: null,
             onReadyToLoadCaptions: null,
             onReady: null,
-            onVideoLoaded: null
-        }, listeners: {
-            onReady : function() {console.log("videoPlayer");}
+            onVideoLoaded: null,
+            onCreateControllerContainer: null,
+            onCreateCaptionContainer: null
+        }, 
+        listeners: {
+            onReady : function() {console.log("videoPlayer");} 
         },
         
         components: {
             eventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
-                priority: "last"
+                createOnEvent: "onReady"
             },
-            captionView: {
+            captionner: {
                 type: "fluid.videoPlayer.captionner",
                 container: "{videoPlayer}.captionnerContainer",
+                createOnEvent: "onCreateCaptionContainer",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier"
@@ -247,7 +252,7 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             controllers: {
                 type: "fluid.videoPlayer.controllers",
-                priority: "first",
+                createOnEvent: "onCreateControllerContainer",
                 container: "{videoPlayer}.controllerContainer",
                 options: {
                     model: "{videoPlayer}.model",
@@ -332,7 +337,8 @@ var fluid_1_4 = fluid_1_4 || {};
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         events: {
             onReady: null
-        }, listeners: {
+        }, 
+        listeners: {
             onReady : function() {console.log("eventbinder");}
         }
     });
@@ -340,12 +346,15 @@ var fluid_1_4 = fluid_1_4 || {};
     //this binds all the events of the videoPlayer to their listeners
     fluid.demands("fluid.videoPlayer.eventBinder", 
         ["fluid.videoPlayer.controllers",
-            "fluid.videoPlayer.captionner"],
+            "fluid.videoPlayer.captionner",
+            "fluid.videoPlayer.captionLoader",
+            "fluid.videoPlayer"],
         {
             options: {
                 listeners: {
                     "{controllers}.times.events.afterScrub": "{captionner}.resyncCaptions",
-                    "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions"
+                    "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+                    "{controllers}.times.events.onScrub": "{videoPlayer}.updateTime"
                 }
             }
         });
