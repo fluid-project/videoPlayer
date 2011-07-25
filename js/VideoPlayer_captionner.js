@@ -62,7 +62,6 @@ var fluid_1_4 = fluid_1_4 || {};
 
     fluid.defaults("fluid.videoPlayer.captionner", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
-        preInitFunction:   "fluid.videoPlayer.captionner.preInit",
         finalInitFunction:   "fluid.videoPlayer.captionner.finalInit",
         events: {
             onReady: null
@@ -73,26 +72,18 @@ var fluid_1_4 = fluid_1_4 || {};
         selectors: {
             caption: ".flc-videoPlayer-caption-captionText"
         },
-        
         styles: {
             caption: "fl-videoPlayer-caption-captionText"
         },
-        
         model: {
             captions: {
                 currentCaptions: [],
                 currentIndice: 0
             }
         }
-        
     });
     
     fluid.videoPlayer.captionner.finalInit = function (that) {
-        that.events.onReady.fire();
-    };
-    
-    fluid.videoPlayer.captionner.preInit = function (that) {
-    
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
             fluid.each(that.model.captions.currentCaptions, function (caption) {
@@ -141,10 +132,8 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         
         that.applier.modelChanged.addListener("states.currentTime", that.displayCaptionForTime);
-        
-        return that;
+        that.events.onReady.fire();
     };
-    
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
     // time is in the format hh:mm:ss:mmm
     fluid.videoPlayer.captionner.convertToMilli = function (time) {

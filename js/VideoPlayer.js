@@ -14,7 +14,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    fluid.setLogging(true);   
+    fluid.setLogging(false);   
     var renderSources = function (that) {
         $.each(that.model.video.sources, function (idx, source) {
             var renderer = that.options.mediaRenderers[source.type];
@@ -55,26 +55,16 @@ var fluid_1_4 = fluid_1_4 || {};
         return video;
     };
 
-    //for boolean data from the model fire a changeRequest to change the value
-    var toggleChangeRequest = function (that, path, value) {
-        that.applier.fireChangeRequest({
-            "path": path,
-            "value": !value
-        });    
-    };
-
     var bindDOMEvents = function (that) {
         
         that.video.attr("tabindex", 0);
         
         that.video.click(function() {
             that.applier.fireChangeRequest({
-            "path": "states.play",
-            "value": !that.model.states.play
+                "path": "states.play",
+                "value": !that.model.states.play
             });
         });
-        
-       // that.video.fluid(toggleChangeRequest(that, "states.play", that.model.states.play));
         
         that.video.bind("timeupdate", {obj: that.video[0]}, function (ev) {
             that.applier.fireChangeRequest({
@@ -169,6 +159,7 @@ var fluid_1_4 = fluid_1_4 || {};
             that.captionnerContainer = captionArea.length === 0 ? renderCaptionnerContainer(that) : captionArea;
             that.events.onCreateCaptionContainer.fire();
         }
+
         bindDOMEvents(that);
         
         //create all the listeners to the model
@@ -183,13 +174,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.applier.modelChanged.addListener("states.fullscreen", 
             function (model, oldModel, changeRequest) {
-                if (that.model.states.fullscreen === false) {
-                    that.container.css({
-                        width: that.videoWidth,
-                        height: that.videoHeight,
-                        position: "relative"
-                    });
-                } else {
+                if (that.model.states.fullscreen === true) {
                     that.videoWidth = that.container.css("width");
                     that.videoHeight = that.container.css("height");
                     that.container.css({
@@ -203,12 +188,19 @@ var fluid_1_4 = fluid_1_4 || {};
                         width: "100%",
                         height: "100%"
                     });
+                } else {
+                    that.container.css({
+                        width: that.videoWidth,
+                        height: that.videoHeight,
+                        position: "relative"
+                    });
                 }       
         });
         that.applier.modelChanged.addListener("states.volume",
             function (model, oldModel, changeRequest) {
                 that.video[0].volume = that.model.states.volume; 
         });
+        
         
         that.events.onReady.fire();
         return that;
@@ -222,13 +214,18 @@ var fluid_1_4 = fluid_1_4 || {};
             onReady: null,
             onVideoLoaded: null,
             onCreateControllerContainer: null,
-            onCreateCaptionContainer: null
+            onCreateCaptionContainer: null,
+            onTemplateReady: null
         }, 
         listeners: {
-            onReady : function() {console.log("videoPlayer");} 
+            onReady : function() {console.log("videoPlayer");},
+            onTemplateReady: function () {console.log("template///////////////////////");}
         },
         
         components: {
+            templateLoader: {
+                type: "fluid.templateLoader"
+            },
             eventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onReady"
@@ -252,8 +249,8 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             controllers: {
                 type: "fluid.videoPlayer.controllers",
-                createOnEvent: "onCreateControllerContainer",
                 container: "{videoPlayer}.controllerContainer",
+                createOnEvent: "onCreateControllerContainer",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier"
@@ -263,6 +260,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         selectors: {
             video: ".flc-videoPlayer-video",
+            test: ".flc-videoPlayer-test",
             captionArea: ".flc-videoPlayer-captionArea",
             controller: ".flc-videoPlayer-controller"
         },
@@ -299,6 +297,7 @@ var fluid_1_4 = fluid_1_4 || {};
                 track: undefined
             }
         }
+        
     });
         
     //returns the time in format hh:mm:ss from a time in seconds 
@@ -332,6 +331,9 @@ var fluid_1_4 = fluid_1_4 || {};
             return placeholder;
         }
     };
+    /************************************************
+     *      VideoPlayer Event Binder                *
+     ************************************************/   
     
     fluid.defaults("fluid.videoPlayer.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
@@ -342,23 +344,76 @@ var fluid_1_4 = fluid_1_4 || {};
             onReady : function() {console.log("eventbinder");}
         }
     });
-    
+     
     //this binds all the events of the videoPlayer to their listeners
     fluid.demands("fluid.videoPlayer.eventBinder", 
         ["fluid.videoPlayer.controllers",
             "fluid.videoPlayer.captionner",
             "fluid.videoPlayer.captionLoader",
-            "fluid.videoPlayer"],
+            "fluid.videoPlayer",
+            "fluid.templateLoader"],
         {
             options: {
                 listeners: {
                     "{controllers}.times.events.afterScrub": "{captionner}.resyncCaptions",
                     "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                    "{controllers}.times.events.onScrub": "{videoPlayer}.updateTime"
+                    "{controllers}.times.events.onScrub": "{videoPlayer}.updateTime",
+                    "{templateLoader}.events.onTemplateReady": "{controllers}.refreshView"
                 }
             }
+             
         });
+        
+        
+    /************************************************
+     * VideoPlayer Resource Expander                *
+     *      Pretty much what is done in UI options   *
+     ************************************************/
     
+    fluid.defaults("fluid.templateLoader", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        finalInitFunction : "fluid.templateLoader.finalInit",
+        events: {
+            onReady: null,
+            onTemplateReady: null
+        },
+        listeners: {
+            onReady: function() {console.log("templateLoader");},
+            onTemplateReady: function() {console.log("templateready");}
+        },
+        templates: {
+            videoPlayer: {
+                forceCache: true,
+                href: "../html/videoPlayer_template.html"
+            },
+            controllers: {
+                forceCache: true,
+                href: "../html/controller_template.html"
+            }/*,
+            captions: {
+                href: "../html/caption_template.html"
+            }*/
+        }  
+    });
+    
+    fluid.templateLoader.finalInit = function (that) {
+        fluid.fetchResources(that.options.templates, function (res) {
+            for (var key in res) {
+                if (res[key].fetchError) {
+                    fluid.log("couldn't fetch" + res[key].href);
+                    fluid.log("status: " + res[key].fetchError.status +
+                    ", textStatus: " + res[key].fetchError.textStatus +
+                    ", errorThrown: " + res[key].fetchError.errorThrown);
+                }
+            }
+            console.log("laoded");
+            that.events.onTemplateReady.fire();
+        });
+        
+        that.events.onReady.fire();
+        return that;
+    };
+
 
 })(jQuery, fluid_1_4);
 
