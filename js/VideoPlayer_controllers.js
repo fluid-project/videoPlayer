@@ -20,21 +20,6 @@ var fluid_1_4 = fluid_1_4 || {};
         });
     };
     
-    var bindDOMEvents = function (that) {      
-        toggleChangeModel(that, [{
-                event: "click",
-                selector: "playButton", 
-                path: "states.play"
-            }, {
-                event: "click",
-                selector: "captionButton",
-                path: "states.displayCaptions"
-            }, {
-                event: "click",
-                selector: "fullscreenButton",
-                path: "states.fullscreen"
-        }]);
-    };
     
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
@@ -48,11 +33,11 @@ var fluid_1_4 = fluid_1_4 || {};
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onReady: null
-        }, 
-        listeners: {
+        }, listeners: {
             onReady : function() {console.log("controllers");}
         },
-       /* components: {
+        
+        components: {
             volumeControl: {
                 type: "fluid.videoPlayer.controllers.volumeControl",
                 container: "{controllers}.container",
@@ -70,13 +55,23 @@ var fluid_1_4 = fluid_1_4 || {};
                     applier: "{controllers}.applier"
                 }
             }
-        },*/
+        },
         
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
             captionButton: ".flc-videoPlayer-controller-caption",
             fullscreenButton: ".flc-videoPlayer-controller-fullscreen"
         },
+        
+        rendererOptions: {
+            autoBind: true
+        },
+        protoTree: {
+            playButton: "${states.play}",
+            captionButton: "${states.displayCaptions}",
+            fullscreenButton: "${states.fullscreen}"
+        },
+        
         states: {
             play: "fl-videoPlayer-state-play",
             pause: "fl-videoPlayer-state-pause",
@@ -93,38 +88,16 @@ var fluid_1_4 = fluid_1_4 || {};
             captionOff: "Captions Off",
             fullscreen: "Fullscreen"
         },
-        selectorsToIgnore: ["captionButton", "fullscreenButton"],
-        protoTree: {
-            playButton: {
-                optionnames: ["Serif", "Sans-Serif", "Arial"],
-                optionlist: ["serif", "sansSerif", "arial"],
-                selection: ""
-            }
-        },
         resources: {
             template: {
-                url: "http://localhost:8888/videoPlayer/html/controller_template.html"
+                forceCache: true,
+                href: "../html/controller_template.html"
             }
         }
     });
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
-        that.renderer.refreshView();
-        // Initially disable the play button and scrubber until the video is ready to go.
-        bindDOMEvents(that);
         
-        // Bind the Play/Pause button's text status to the HTML 5 video events.
-        that.applier.modelChanged.addListener("states.play", 
-            function (model, oldModel, changeRequest) {
-                var playButton = that.locate("playButton");
-                if (changeRequest[0].value === false) {
-                    playButton.text(that.options.strings.play);
-                    playButton.removeClass(that.options.states.pause).addClass(that.options.states.play);                
-                } else {
-                    playButton.text(that.options.strings.pause);
-                    playButton.removeClass(that.options.states.play).addClass(that.options.states.pause);
-               }
-        });
         // Enable the Play/Pause button when the video can start playing.
         that.applier.modelChanged.addListener("states.canPlay", 
             function(model, oldModel, changeRequest) {
@@ -136,34 +109,12 @@ var fluid_1_4 = fluid_1_4 || {};
                 }
         });
         
-        that.applier.modelChanged.addListener("states.displayCaptions",
-            function (model, oldModel, changeRequest) {
-                var captionButton = that.locate("captionButton");
-                if (that.model.states.displayCaptions) { 
-                    captionButton.text(that.options.strings.captionOn);
-                    captionButton.removeClass(that.options.states.captionOff).addClass(that.options.states.captionOn);
-                } else {
-                    captionButton.text(that.options.strings.captionOff);
-                    captionButton.removeClass(that.options.states.captionOn).addClass(that.options.states.captionOff);
-                }
-        });
-        
-        that.applier.modelChanged.addListener("states.fullscreen",
-            function (model, oldModel, changeRequest) {
-                var fullscreenButton = that.locate("fullscreenButton");
-                if (that.model.states.fullscreen) {
-                    fullscreenButton.removeClass(that.options.states.fullscreenOn).addClass(that.options.states.fullscreenOff);
-                } else {
-                    fullscreenButton.removeClass(that.options.states.fullscreenOff).addClass(that.options.states.fullscreenOn);
-                }
+        that.applier.modelChanged.addListener("states.play", 
+            function(model, oldModel, changeRequest) {
+                console.log(that.model.states.play);
         });
         that.events.onReady.fire();
     };
-    
-    /*********************************
-     * videoPlayer volume control *
-     *********************************/
-    
     
     fluid.defaults("fluid.videoPlayer.controllers.volumeControl",{
         gradeNames: ["fluid.viewComponent", "autoInit"],
@@ -188,6 +139,25 @@ var fluid_1_4 = fluid_1_4 || {};
     });
     
     fluid.videoPlayer.controllers.volumeControl.finalInit = function (that) {
+        var rend = fluid.simpleRenderer(that.container, {});
+        rend.render([{
+            tag: "button",
+            selector: "flc-videoPlayer-controller-volume",
+            classes: that.options.styles.volume,
+            content: that.options.strings.volume
+        }, {
+            tag: "div",
+            selector: "flc-videoPlayer-controller-volumeControl",
+            classes: that.options.styles.volumeControl
+        }]);  
+        
+        that.locate("volumeControl").slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: 60
+        });
         
         var volumeButton = that.locate("volume");
         var volumeControl = that.locate("volumeControl");    
@@ -224,10 +194,6 @@ var fluid_1_4 = fluid_1_4 || {};
         //destroy the volume slider when the mouse leaves the slider
         that.events.onReady.fire();
     };
-
-    /*********************************
-     * videoPlayer scrubber and time *
-     *********************************/
     
     fluid.defaults("fluid.videoPlayer.controllers.scrubberAndTime", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
