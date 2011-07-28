@@ -38,7 +38,7 @@ var fluid_1_4 = fluid_1_4 || {};
             times: {
                 type: "fluid.videoPlayer.controllers.scrubber",
                 createOnEvent: "onReady",
-                container: "{controllers}.dom.scrubber",
+                container: "{controllers}.container",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
@@ -51,8 +51,7 @@ var fluid_1_4 = fluid_1_4 || {};
             captionButton: ".flc-videoPlayer-controller-caption",
             fullscreenButton: ".flc-videoPlayer-controller-fullscreen",
             totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current",
-            scrubber: ".flc-videoPlayer-controller-scrubber"
+            currentTime: ".flc-videoPlayer-controller-current"
         },
         
         rendererOptions: {
@@ -60,9 +59,6 @@ var fluid_1_4 = fluid_1_4 || {};
             applier: "{controllers}.applier"
         },
         protoTree: {
-            scrubber: {
-                value: null
-            },
             playButton: {
                 valuebinding: "states.play",
             },
@@ -121,6 +117,9 @@ var fluid_1_4 = fluid_1_4 || {};
         }, listeners: {
             onReady : function() {console.log("scrub");}
         },
+        selectors: {
+            scrubber: ".flc-videoPlayer-controller-scrubber"
+        },
         strings: {
             scrubber: "Scrubber"
         },
@@ -130,11 +129,12 @@ var fluid_1_4 = fluid_1_4 || {};
     });
     
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
-        that.container.slider({
+        var scrubber = that.locate("scrubber");
+        scrubber.slider({
             unittext: "seconds",
             disabled: true
         });
-        var scrubber = that.container;
+
         // Bind the scrubbers slide event to change the video's time.
         scrubber.bind({
             "slide": function (evt, ui) {
