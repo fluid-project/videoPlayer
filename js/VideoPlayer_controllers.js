@@ -4,7 +4,7 @@ var fluid_1_4 = fluid_1_4 || {};
 (function ($, fluid) {
     
     var toggleDisplay = function (obj1, obj2) {
-        obj1.fadeOut("fast", function() {
+        obj1.fadeOut("fast", function () {
             obj2.fadeIn("fast", "linear");
         });
     };
@@ -23,7 +23,7 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onReady: null
         }, listeners: {
-            onReady : function() {console.log("controllers");}
+            onReady : function () {console.log("controllers");}
         },
         
         components: {
@@ -38,7 +38,7 @@ var fluid_1_4 = fluid_1_4 || {};
             times: {
                 type: "fluid.videoPlayer.controllers.scrubber",
                 createOnEvent: "onReady",
-                container: "{controllers}.container",
+                container: "{controllers}.dom.scrubberContainer",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
@@ -51,7 +51,8 @@ var fluid_1_4 = fluid_1_4 || {};
             captionButton: ".flc-videoPlayer-controller-caption",
             fullscreenButton: ".flc-videoPlayer-controller-fullscreen",
             totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current"
+            currentTime: ".flc-videoPlayer-controller-current",
+            scrubberContainer: ".flc-videoPlayer-controller-scrubberContainer"
         },
         
         rendererOptions: {
@@ -59,6 +60,9 @@ var fluid_1_4 = fluid_1_4 || {};
             applier: "{controllers}.applier"
         },
         protoTree: {
+            scrubberContainer: {
+                value: ""
+            },
             playButton: {
                 valuebinding: "states.play",
             },
@@ -96,10 +100,9 @@ var fluid_1_4 = fluid_1_4 || {};
                 }
         });
         
-        that.applier.modelChanged.addListener("", function() {
+        that.applier.modelChanged.addListener("", function () {
             that.refreshView();
         });
-        that.events.onReady.fire();
     };
     
     
@@ -115,7 +118,7 @@ var fluid_1_4 = fluid_1_4 || {};
             onScrub: null,
             onReady: null
         }, listeners: {
-            onReady : function() {console.log("scrub");}
+            onReady : function () {console.log("scrub");}
         },
         selectors: {
             scrubber: ".flc-videoPlayer-controller-scrubber"
@@ -129,6 +132,9 @@ var fluid_1_4 = fluid_1_4 || {};
     });
     
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
+        var scrub = $("<div/>");
+        scrub.addClass("flc-videoPlayer-controller-scrubber");
+        that.container.append(scrub);
         var scrubber = that.locate("scrubber");
         scrubber.slider({
             unittext: "seconds",
@@ -162,7 +168,7 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         
         that.applier.modelChanged.addListener("states.canPlay", 
-            function(model, oldModel, changeRequest) {
+            function (model, oldModel, changeRequest) {
                 var scrubber = that.locate("scrubber");
                 if (changeRequest[0].value === true) {
                     scrubber.slider({disabled: false});

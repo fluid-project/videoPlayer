@@ -14,7 +14,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    fluid.setLogging(false);   
+    fluid.setLogging(true);   
     var renderSources = function (that) {
         $.each(that.model.video.sources, function (idx, source) {
             var renderer = that.options.mediaRenderers[source.type];
@@ -356,7 +356,8 @@ var fluid_1_4 = fluid_1_4 || {};
                     "{controllers}.times.events.afterScrub": "{captionner}.resyncCaptions",
                     "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
                     "{controllers}.times.events.onScrub": "{videoPlayer}.updateTime",
-                    "{templateLoader}.events.onTemplateReady": "{controllers}.refreshView"
+                    "{templateLoader}.events.onTemplateReady": "{controllers}.refreshView",
+                    "{templateLoader}.events.onTemplateReady": "{controllers}.events.onReady.fire"
                 }
             }
              
