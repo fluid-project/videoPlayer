@@ -214,12 +214,10 @@ var fluid_1_4 = fluid_1_4 || {};
             onReady: null,
             onVideoLoaded: null,
             onCreateControllerContainer: null,
-            onCreateCaptionContainer: null,
-            onTemplateReady: null
+            onCreateCaptionContainer: null
         }, 
         listeners: {
-            onReady : function() {console.log("videoPlayer");},
-            onTemplateReady: function () {console.log("template///////////////////////");}
+            onReady : function() {console.log("videoPlayer");}
         },
         
         components: {
@@ -406,7 +404,6 @@ var fluid_1_4 = fluid_1_4 || {};
                     ", errorThrown: " + res[key].fetchError.errorThrown);
                 }
             }
-            console.log("laoded");
             that.events.onTemplateReady.fire();
         });
         

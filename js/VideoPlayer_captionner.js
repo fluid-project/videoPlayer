@@ -124,7 +124,7 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         
         that.applier.modelChanged.addListener("states.displayCaptions", function (model, oldModel, changeRequest) {
-            if (that.states.displayCaptions === true) {
+            if (that.model.states.displayCaptions === true) {
                 that.container.fadeIn("fast", "linear");
             } else {
                 that.container.fadeOut("fast", "linear");

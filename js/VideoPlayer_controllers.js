@@ -8,17 +8,6 @@ var fluid_1_4 = fluid_1_4 || {};
             obj2.fadeIn("fast", "linear");
         });
     };
-    //selector, path
-    var toggleChangeModel = function (that, elements) {
-        fluid.each(elements, function(elt) {
-            that.locate(elt.selector).bind(elt.event,function () {
-                that.applier.fireChangeRequest({
-                    "path": elt.path,
-                    "value": !fluid.get(that.model, elt.path)
-                });
-            });
-        });
-    };
     
     
     /**
@@ -47,9 +36,9 @@ var fluid_1_4 = fluid_1_4 || {};
                 }
             },
             times: {
-                type: "fluid.videoPlayer.controllers.scrubberAndTime",
+                type: "fluid.videoPlayer.controllers.scrubber",
                 createOnEvent: "onReady",
-                container: "{controllers}.container",
+                container: "{controllers}.dom.scrubber",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
@@ -60,33 +49,35 @@ var fluid_1_4 = fluid_1_4 || {};
         selectors: {
             playButton: ".flc-videoPlayer-controller-play",
             captionButton: ".flc-videoPlayer-controller-caption",
-            fullscreenButton: ".flc-videoPlayer-controller-fullscreen"
+            fullscreenButton: ".flc-videoPlayer-controller-fullscreen",
+            totalTime: ".flc-videoPlayer-controller-total",
+            currentTime: ".flc-videoPlayer-controller-current",
+            scrubber: ".flc-videoPlayer-controller-scrubber"
         },
         
         rendererOptions: {
-            autoBind: true
+            autoBind: true,
+            applier: "{controllers}.applier"
         },
         protoTree: {
-            playButton: "${states.play}",
-            captionButton: "${states.displayCaptions}",
-            fullscreenButton: "${states.fullscreen}"
-        },
-        
-        states: {
-            play: "fl-videoPlayer-state-play",
-            pause: "fl-videoPlayer-state-pause",
-            captionOn: "fl-videoPlayer-state-captionOn",
-            captionOff: "fl-videoPlayer-state-captionOff",
-            fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
-            fullscreenOff: "fl-videoPlayer-state-fullscreenOff"
-        },
-        
-        strings: {
-            play: "Play",
-            pause: "Pause",
-            captionOn: "Captions On",
-            captionOff: "Captions Off",
-            fullscreen: "Fullscreen"
+            scrubber: {
+                value: null
+            },
+            playButton: {
+                valuebinding: "states.play",
+            },
+            captionButton: {
+                valuebinding: "states.displayCaptions"
+            },
+            fullscreenButton: {
+                valuebinding: "states.fullscreen"
+            },
+            currentTime: {
+                valuebinding: "states.currentTime"
+            },
+            totalTime: {
+                valuebinding: "states.totalTime"
+            }
         },
         resources: {
             template: {
@@ -109,13 +100,93 @@ var fluid_1_4 = fluid_1_4 || {};
                 }
         });
         
-        that.applier.modelChanged.addListener("states.play", 
-            function(model, oldModel, changeRequest) {
-                console.log(that.model.states.play);
+        that.applier.modelChanged.addListener("", function() {
+            that.refreshView();
         });
         that.events.onReady.fire();
     };
     
+    
+    /********************************************
+    * scrubber: a slider to follow the progress *
+    *           of the video                    *
+    ********************************************/
+    fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
+        gradeNames: ["fluid.viewComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
+        events: {
+            afterScrub: null,
+            onScrub: null,
+            onReady: null
+        }, listeners: {
+            onReady : function() {console.log("scrub");}
+        },
+        strings: {
+            scrubber: "Scrubber"
+        },
+        styles: {
+            scrubber: "fl-videoPlayer-controller-scrubber"
+        }
+    });
+    
+    fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
+        that.container.slider({
+            unittext: "seconds",
+            disabled: true
+        });
+        var scrubber = that.container;
+        // Bind the scrubbers slide event to change the video's time.
+        scrubber.bind({
+            "slide": function (evt, ui) {
+                that.events.onScrub.fire(ui.value);
+            },
+            "slidestop": function (evt, ui) {
+                that.events.afterScrub.fire(ui.value);
+            }
+        });
+        
+        // Setup the scrubber when we know the duration of the video.
+        that.applier.modelChanged.addListener("states.startTime",
+            function (model, oldModel, changeRequest) {
+                var startTime = changeRequest[0].value || 0;
+                var scrubber = that.locate("scrubber");
+                scrubber.slider("option", "min", startTime);
+                scrubber.slider("option", "max", that.model.states.totalTime + startTime);
+        });        
+        
+        that.applier.modelChanged.addListener("states.totalTime", 
+            function (model, oldModel, changeRequest) {
+                var duration = changeRequest[0].value;
+                var scrubber = that.locate("scrubber");
+                scrubber.slider("option", "max", duration + that.model.states.startTime);
+        });
+        
+        that.applier.modelChanged.addListener("states.canPlay", 
+            function(model, oldModel, changeRequest) {
+                var scrubber = that.locate("scrubber");
+                if (changeRequest[0].value === true) {
+                    scrubber.slider({disabled: false});
+                } else {
+                    scrubber.slider({disabled: true});
+                }
+        });
+        
+        // Bind to the video's timeupdate event so we can programmatically update the slider.
+        //TODO get time in hh:mm:ss
+        that.applier.modelChanged.addListener("states.currentTime",
+            function (model, oldModel, changeRequest) {
+                var currentTime = that.model.states.currentTime;
+                var scrubber = that.locate("scrubber");
+                scrubber.slider("value", currentTime);
+        });
+        that.events.onReady.fire();
+    };
+    
+    
+    /********************************************
+    * Volume Control: a button and a slider     *
+    *           To control the volume           *
+    ********************************************/
     fluid.defaults("fluid.videoPlayer.controllers.volumeControl",{
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.volumeControl.finalInit",
@@ -192,112 +263,6 @@ var fluid_1_4 = fluid_1_4 || {};
                 }
         });
         //destroy the volume slider when the mouse leaves the slider
-        that.events.onReady.fire();
-    };
-    
-    fluid.defaults("fluid.videoPlayer.controllers.scrubberAndTime", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.controllers.scrubberAndTime.finalInit",
-        events: {
-            afterScrub: null,
-            onScrub: null,
-            onReady: null
-        }, listeners: {
-            onReady : function() {console.log("scrub");}
-        },
-        selectors: {
-            scrubber: ".flc-videoPlayer-controller-scrubberAndTime-scrubber",
-            totalTime: ".flc-videoPlayer-controller-scrubberAndTime-total",
-            currentTime: ".flc-videoPlayer-controller-scrubberAndTime-current"
-        },
-        strings: {
-            scrubber: "Scrubber",
-            totalTime: "Total time",
-            currentTime: "Current time"
-        },
-        styles: {
-            time: "fl-videoPlayer-controller-time",
-            scrubber: "fl-videoPlayer-controller-scrubber"
-        }
-    });
-    
-    fluid.videoPlayer.controllers.scrubberAndTime.finalInit = function (that) {
-        var rend = fluid.simpleRenderer(that.container, {});        
-        rend.render([{
-            tag: "div",
-            selector: "flc-videoPlayer-controller-scrubberAndTime-current", 
-            classes: that.options.styles.time,
-            content: that.options.strings.currentTime
-        }, { 
-            tag: "div", 
-            selector: "flc-videoPlayer-controller-scrubberAndTime-scrubber", 
-            classes: that.options.styles.scrubber,
-            content: that.options.strings.scrubber
-        }, {
-            tag: "div",
-            selector: "flc-videoPlayer-controller-scrubberAndTime-total",
-            classes: that.options.styles.time,
-            content: that.options.strings.totalTime
-        }]);
-        
-        var scrubber = that.locate("scrubber");
-        var currentTime = that.locate("currentTime");
-        var totalTime = that.locate("totalTime");
-        
-        // Bind the scrubbers slide event to change the video's time.
-        scrubber.bind({
-            "slide": function (evt, ui) {
-                currentTime.text(fluid.videoPlayer.formatTime(ui.value));
-                that.events.onScrub.fire(ui.value);
-            },
-            "slidestop": function (evt, ui) {
-                that.events.afterScrub.fire(ui.value);
-            }
-        });
-        
-        // Setup the scrubber when we know the duration of the video.
-        that.applier.modelChanged.addListener("states.startTime",
-            function (model, oldModel, changeRequest) {
-                var startTime = changeRequest[0].value || 0;
-                var scrubber = that.locate("scrubber");
-                scrubber.slider("option", "min", startTime);
-                scrubber.slider("option", "max", that.model.states.totalTime + startTime);
-        });        
-        
-        that.applier.modelChanged.addListener("states.totalTime", 
-            function (model, oldModel, changeRequest) {
-                var duration = changeRequest[0].value;
-                var totalTime = that.locate("totalTime");
-                var scrubber = that.locate("scrubber");
-                scrubber.slider("option", "max", duration + that.model.states.startTime);
-                totalTime.text(fluid.videoPlayer.formatTime(duration));
-        });
-        
-        that.applier.modelChanged.addListener("states.canPlay", 
-            function(model, oldModel, changeRequest) {
-                var scrubber = that.locate("scrubber");
-                if (changeRequest[0].value === true) {
-                    scrubber.slider({disabled: false});
-                } else {
-                    scrubber.slider({disabled: true});
-                }
-        });
-        
-        // Bind to the video's timeupdate event so we can programmatically update the slider.
-        //TODO get time in hh:mm:ss
-        that.applier.modelChanged.addListener("states.currentTime",
-            function (model, oldModel, changeRequest) {
-                var currentTime = that.model.states.currentTime;
-                var curTime = that.locate("currentTime");
-                var scrubber = that.locate("scrubber");
-                scrubber.slider("value", currentTime);  
-                curTime.text(fluid.videoPlayer.formatTime(currentTime));
-        });
-        
-        that.locate("scrubber").slider({
-            unittext: "seconds",
-            disabled: true
-        });
         that.events.onReady.fire();
     };
 
