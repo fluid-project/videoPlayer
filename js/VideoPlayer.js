@@ -90,6 +90,13 @@ var fluid_1_4 = fluid_1_4 || {};
             });
         });
         
+        that.video.bind("volumechange", {obj: that.video[0]}, function (ev) {
+           that.applier.fireChangeRequest({
+                path: "states.volume", 
+                value: ev.data.obj.volume * 100
+            }); 
+        });
+        
         that.video.bind("canplay", function () {
             that.applier.fireChangeRequest({
                 path: "states.canPlay", 
@@ -154,10 +161,47 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier = fluid.makeChangeApplier(that.model);
         fluid.initDependents(that);
 
-        that.updateTime = function (time) {
+        that.setTime = function (time) {
             console.log(time);
             that.video[0].currentTime = time;
-        }
+        };
+        
+        that.setVolume = function (volume) {
+            that.video[0].volume = volume;
+        };
+        
+        that.play = function () {
+            if (that.model.states.play === true) {
+                that.video[0].play();
+            } else {
+                that.video[0].pause();
+            }
+        };
+        
+        that.fullscreen = function () {
+            if (that.model.states.fullscreen === true) {
+                that.videoWidth = that.container.css("width");
+                that.videoHeight = that.container.css("height");
+                that.container.css({
+                    width: window.innerWidth + "px",
+                    height: window.innerHeight + "px",
+                    left: 0,
+                    top: 0,
+                    position: "fixed"
+                });
+                that.video.css({
+                    width: "100%",
+                    height: "100%"
+                });
+            } else {
+                that.container.css({
+                    width: that.videoWidth,
+                    height: that.videoHeight,
+                    position: "relative"
+                });
+            }
+        };
+        
         // Add the controller if required.
         if (that.options.controllerType === "html") {
             var controller = that.locate("controller");
@@ -175,43 +219,8 @@ var fluid_1_4 = fluid_1_4 || {};
         bindDOMEvents(that);
         
         //create all the listeners to the model
-        that.applier.modelChanged.addListener("states.play",
-            function (model, oldModel, changeRequest) {
-            if (that.model.states.play === true) {
-                that.video[0].play();
-            } else {
-                that.video[0].pause();
-            }
-        });
-        
-        that.applier.modelChanged.addListener("states.fullscreen", 
-            function (model, oldModel, changeRequest) {
-                if (that.model.states.fullscreen === true) {
-                    that.videoWidth = that.container.css("width");
-                    that.videoHeight = that.container.css("height");
-                    that.container.css({
-                        width: window.innerWidth + "px",
-                        height: window.innerHeight + "px",
-                        left: 0,
-                        top: 0,
-                        position: "fixed"
-                    });
-                    that.video.css({
-                        width: "100%",
-                        height: "100%"
-                    });
-                } else {
-                    that.container.css({
-                        width: that.videoWidth,
-                        height: that.videoHeight,
-                        position: "relative"
-                    });
-                }       
-        });
-        that.applier.modelChanged.addListener("states.volume",
-            function (model, oldModel, changeRequest) {
-                that.video[0].volume = that.model.states.volume; 
-        });
+        that.applier.modelChanged.addListener("states.play", that.play);
+        that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
         
         
         return that;
@@ -290,7 +299,8 @@ var fluid_1_4 = fluid_1_4 || {};
                 totalTime: 0,
                 displayCaptions: true,
                 fullscreen: false,
-                volume: 0
+                volume: 60,
+                canPlay: false
             },
             video: {
                 sources: null
@@ -304,10 +314,10 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         },
         templates: {
-            videoPlayer: {
+            /*videoPlayer: {
                 forceCache: true,
                 href: "../html/videoPlayer_template.html"
-            },
+            },*/
             controllers: {
                 forceCache: true,
                 href: "../html/controller_template.html"
@@ -374,14 +384,14 @@ var fluid_1_4 = fluid_1_4 || {};
         ["fluid.videoPlayer.controllers",
             "fluid.videoPlayer.captionner",
             "fluid.videoPlayer.captionLoader",
-            "fluid.videoPlayer",
-            "fluid.templateLoader"],
+            "fluid.videoPlayer"],
         {
             options: {
                 listeners: {
-                    "{controllers}.times.events.afterScrub": "{captionner}.resyncCaptions",
+                    "{controllers}.events.afterTimeChange": "{captionner}.resyncCaptions",
                     "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                    "{controllers}.times.events.onScrub": "{videoPlayer}.updateTime"
+                    "{controllers}.events.onTimeChange": "{videoPlayer}.setTime",
+                    "{controllers}.events.onVolumeChange": "{videoPlayer}.setVolume"
                 }
             }
              
