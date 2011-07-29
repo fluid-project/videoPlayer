@@ -69,6 +69,13 @@
 .fl-videoPlayer-controller-volume {
     background:transparent no-repeat center center;
     background-image: url(../images/volume2.png);
+    float:left;
+    width:5%;
+    height: 20px;
+    border : none;
+    text-indent:-1000px;
+    cursor:pointer;
+    margin-top:-1px;
 }
 
 .fl-videoPlayer-controller-plus {
@@ -79,7 +86,6 @@
 .fl-videoPlayer-controller-volumeControl {
     text-indent: -1000px;
     float: left;
-    display: none;
     margin-top: -90px;
     text-indent: -1000px;
     opacity: 0.5;
