@@ -139,11 +139,23 @@ var fluid_1_4 = fluid_1_4 || {};
         if (!document.createElement('video').canPlayType) {
             return;
         }
-
+        
+        fluid.fetchResources(that.options.templates, function (res) {
+            for (var key in res) {
+                if (res[key].fetchError) {
+                    fluid.log("couldn't fetch" + res[key].href);
+                    fluid.log("status: " + res[key].fetchError.status +
+                    ", textStatus: " + res[key].fetchError.textStatus +
+                    ", errorThrown: " + res[key].fetchError.errorThrown);
+                }
+            }
+            that.events.onTemplateReady.fire();
+        });
         that.applier = fluid.makeChangeApplier(that.model);
         fluid.initDependents(that);
 
         that.updateTime = function (time) {
+            console.log(time);
             that.video[0].currentTime = time;
         }
         // Add the controller if required.
@@ -202,7 +214,6 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         
         
-        that.events.onReady.fire();
         return that;
     };
     
@@ -211,27 +222,20 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             afterScrub: null,
             onReadyToLoadCaptions: null,
-            onReady: null,
             onVideoLoaded: null,
             onCreateControllerContainer: null,
+            onTemplateReady: null,
             onCreateCaptionContainer: null
         }, 
         listeners: {
-            onReady : function() {console.log("videoPlayer");}
+            onTemplateReady: function() {console.log("templateready");}
         },
         
         components: {
-            templateLoader: {
-                type: "fluid.templateLoader"
-            },
-            eventBinder: {
-                type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onReady"
-            },
             captionner: {
                 type: "fluid.videoPlayer.captionner",
                 container: "{videoPlayer}.captionnerContainer",
-                createOnEvent: "onCreateCaptionContainer",
+                createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier"
@@ -248,11 +252,15 @@ var fluid_1_4 = fluid_1_4 || {};
             controllers: {
                 type: "fluid.videoPlayer.controllers",
                 container: "{videoPlayer}.controllerContainer",
-                createOnEvent: "onCreateControllerContainer",
+                createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier"
                 }
+            },
+            eventBinder: {
+                type: "fluid.videoPlayer.eventBinder",
+                createOnEvent: "onTemplateReady"
             }
         },
         
@@ -294,7 +302,20 @@ var fluid_1_4 = fluid_1_4 || {};
                 maxNumber: 3,
                 track: undefined
             }
-        }
+        },
+        templates: {
+            videoPlayer: {
+                forceCache: true,
+                href: "../html/videoPlayer_template.html"
+            },
+            controllers: {
+                forceCache: true,
+                href: "../html/controller_template.html"
+            }/*,
+            captions: {
+                href: "../html/caption_template.html"
+            }*/
+        } 
         
     });
         
@@ -335,6 +356,7 @@ var fluid_1_4 = fluid_1_4 || {};
     
     fluid.defaults("fluid.videoPlayer.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.eventBinder.finalInit",
         events: {
             onReady: null
         }, 
@@ -342,6 +364,10 @@ var fluid_1_4 = fluid_1_4 || {};
             onReady : function() {console.log("eventbinder");}
         }
     });
+    
+    fluid.videoPlayer.eventBinder.finalInit = function (that) {
+        that.events.onReady.fire();
+    };
      
     //this binds all the events of the videoPlayer to their listeners
     fluid.demands("fluid.videoPlayer.eventBinder", 
@@ -355,63 +381,12 @@ var fluid_1_4 = fluid_1_4 || {};
                 listeners: {
                     "{controllers}.times.events.afterScrub": "{captionner}.resyncCaptions",
                     "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                    "{controllers}.times.events.onScrub": "{videoPlayer}.updateTime",
-                    "{templateLoader}.events.onTemplateReady": "{controllers}.refreshView",
-                    "{templateLoader}.events.onTemplateReady": "{controllers}.events.onReady.fire"
+                    "{controllers}.times.events.onScrub": "{videoPlayer}.updateTime"
                 }
             }
              
         });
         
-        
-    /************************************************
-     * VideoPlayer Resource Expander                *
-     *      Pretty much what is done in UI options   *
-     ************************************************/
-    
-    fluid.defaults("fluid.templateLoader", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        finalInitFunction : "fluid.templateLoader.finalInit",
-        events: {
-            onReady: null,
-            onTemplateReady: null
-        },
-        listeners: {
-            onReady: function() {console.log("templateLoader");},
-            onTemplateReady: function() {console.log("templateready");}
-        },
-        templates: {
-            videoPlayer: {
-                forceCache: true,
-                href: "../html/videoPlayer_template.html"
-            },
-            controllers: {
-                forceCache: true,
-                href: "../html/controller_template.html"
-            }/*,
-            captions: {
-                href: "../html/caption_template.html"
-            }*/
-        }  
-    });
-    
-    fluid.templateLoader.finalInit = function (that) {
-        fluid.fetchResources(that.options.templates, function (res) {
-            for (var key in res) {
-                if (res[key].fetchError) {
-                    fluid.log("couldn't fetch" + res[key].href);
-                    fluid.log("status: " + res[key].fetchError.status +
-                    ", textStatus: " + res[key].fetchError.textStatus +
-                    ", errorThrown: " + res[key].fetchError.errorThrown);
-                }
-            }
-            that.events.onTemplateReady.fire();
-        });
-        
-        that.events.onReady.fire();
-        return that;
-    };
-
 
 })(jQuery, fluid_1_4);
 

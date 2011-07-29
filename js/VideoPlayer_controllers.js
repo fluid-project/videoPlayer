@@ -21,23 +21,25 @@ var fluid_1_4 = fluid_1_4 || {};
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
-            onReady: null
+            onControllerReady: null
         }, listeners: {
-            onReady : function () {console.log("controllers");}
+            onControllerReady : function () {
+                console.log("controllers");
+            }
         },
         
         components: {
-            volumeControl: {
+            /*volumeControl: {
                 type: "fluid.videoPlayer.controllers.volumeControl",
                 container: "{controllers}.container",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
                 }
-            },
+            },*/
             times: {
                 type: "fluid.videoPlayer.controllers.scrubber",
-                createOnEvent: "onReady",
+                createOnEvent: "onControllerReady",
                 container: "{controllers}.dom.scrubberContainer",
                 options: {
                     model: "{controllers}.model",
@@ -59,10 +61,8 @@ var fluid_1_4 = fluid_1_4 || {};
             autoBind: true,
             applier: "{controllers}.applier"
         },
+        selectorsToIgnore: ["scrubberContainer"],
         protoTree: {
-            scrubberContainer: {
-                value: ""
-            },
             playButton: {
                 valuebinding: "states.play",
             },
@@ -89,7 +89,7 @@ var fluid_1_4 = fluid_1_4 || {};
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         
-        // Enable the Play/Pause button when the video can start playing.
+        // Enable the Play/Pause button when the video can start playing. (need fixing)
         that.applier.modelChanged.addListener("states.canPlay", 
             function(model, oldModel, changeRequest) {
                 var playButton = that.locate("playButton");
@@ -100,9 +100,12 @@ var fluid_1_4 = fluid_1_4 || {};
                 }
         });
         
-        that.applier.modelChanged.addListener("", function () {
-            that.refreshView();
-        });
+        /*that.applier.modelChanged.addListener("", 
+            function (model, oldModel, changeRequest) {
+                that.refreshView();
+        });*/
+        that.refreshView();
+        that.events.onControllerReady.fire();
     };
     
     
@@ -116,9 +119,9 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             afterScrub: null,
             onScrub: null,
-            onReady: null
+            onScrubberReady: null
         }, listeners: {
-            onReady : function () {console.log("scrub");}
+            onScrubberReady : function () {console.log("scrub");}
         },
         selectors: {
             scrubber: ".flc-videoPlayer-controller-scrubber"
@@ -185,7 +188,7 @@ var fluid_1_4 = fluid_1_4 || {};
                 var scrubber = that.locate("scrubber");
                 scrubber.slider("value", currentTime);
         });
-        that.events.onReady.fire();
+        that.events.onScrubberReady.fire();
     };
     
     
