@@ -44,7 +44,6 @@ var fluid_1_4 = fluid_1_4 || {};
                 playButton.attr("disabled", "disabled");
             }
         });
-        
         that.applier.modelChanged.addListener("states.play", that.togglePlayView);
         that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionsView);
         that.applier.modelChanged.addListener("states.fullscreen", that.toggleFullscreenView);
@@ -144,15 +143,7 @@ var fluid_1_4 = fluid_1_4 || {};
             tree.scrubberContainer = {
                 decorators: {
                     type: "fluid",
-                    func: "fluid.videoPlayer.controllers.scrubber",
-                    options: {
-                        model: that.model,
-                        applier: that.applier,
-                        listeners: {
-                            onScrub: that.events.onTimeChange.fire,
-                            afterScrub: that.events.afterTimeChange.fire
-                        }
-                    }
+                    func: "fluid.videoPlayer.controllers.scrubber"
                 }
             };
         }
@@ -160,18 +151,10 @@ var fluid_1_4 = fluid_1_4 || {};
             tree.volumeContainer = {
                 decorators: {
                     type: "fluid",
-                    func: "fluid.videoPlayer.controllers.volumeControl",
-                    options: {
-                        model: that.model,
-                        applier: that.applier,
-                        listeners: {
-                            onChange: that.events.onVolumeChange.fire
-                        }
-                    }
+                    func: "fluid.videoPlayer.controllers.volumeControl"
                 }
             };
         }
-        console.log(tree);
         return tree;
     };
 
@@ -206,6 +189,12 @@ var fluid_1_4 = fluid_1_4 || {};
         that.events.onControllerReady.fire();
     };
     
+    fluid.demands("fluid.videoPlayer.controllers", "fluid.videoPlayer", {
+        options: {
+            model: "{videoPlayer}.model",
+            applier: "{videoPlayer}.applier",
+        }
+    });
     
     /********************************************
     * scrubber: a slider to follow the progress *
@@ -213,6 +202,7 @@ var fluid_1_4 = fluid_1_4 || {};
     ********************************************/
     var bindScrubberDOMEvents = function (that) {
         // Bind the scrubbers slide event to change the video's time.
+        var scrubber = that.locate("scrubber");
         scrubber.bind({
             "slide": function (evt, ui) {
                 that.events.onScrub.fire(ui.value);
@@ -251,6 +241,7 @@ var fluid_1_4 = fluid_1_4 || {};
             unittext: "seconds",
             disabled: true
         });
+        return scrubber;
     };
     
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
@@ -272,7 +263,7 @@ var fluid_1_4 = fluid_1_4 || {};
     });
     
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
-        createScrubberMarkup(that);
+        var scrubber = createScrubberMarkup(that);
         
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
@@ -294,6 +285,17 @@ var fluid_1_4 = fluid_1_4 || {};
 
         that.events.onScrubberReady.fire();
     };
+    
+    fluid.demands("fluid.videoPlayer.controllers.scrubber","fluid.videoPlayer.controllers", {
+        options: {
+            model: "{controllers}.model",
+            applier: "{controllers}.applier",
+            listeners: {
+                onScrub: "{controllers}.events.onTimeChange.fire",
+                afterScrub: "{controllers}.events.afterTimeChange.fire"
+            }
+        }
+    });
     
     
     /********************************************************
@@ -368,8 +370,8 @@ var fluid_1_4 = fluid_1_4 || {};
             var volume = that.locate("volume");
             if (volume.hasClass(that.options.styles.volumeControl)) {
                 volume.slider("destroy");
-                volume.removeClass(that.options.styles.volumeControl).
-                valume.addClass(that.options.styles.volume);
+                volume.removeClass(that.options.styles.volumeControl);
+                volume.addClass(that.options.styles.volume);
             }
         };
         
@@ -392,8 +394,17 @@ var fluid_1_4 = fluid_1_4 || {};
         bindVolumeDOMEvents(that);
         
         bindVolumeModel(that);
-        //destroy the volume slider when the mouse leaves the slider
         that.events.onReady.fire();
     };
+    
+    fluid.demands("fluid.videoPlayer.controllers.volumeControl","fluid.videoPlayer.controllers", {
+        options: {
+            model: "{controllers}.model",
+            applier: "{controllers}.applier",
+            listeners: {
+                onChange: "{controllers}.events.onVolumeChange.fire"
+            }
+        }
+    });
 
 })(jQuery, fluid_1_4);
