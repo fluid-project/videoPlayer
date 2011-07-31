@@ -144,4 +144,11 @@ var fluid_1_4 = fluid_1_4 || {};
         return Math.round(secs * 1000);
     };
     
+    fluid.demands("fluid.videoPlayer.captionner", "fluid.videoPlayer", {
+        options: {
+            model: "{videoPlayer}.model",
+            applier: "{videoPlayer}.applier",
+        }
+    });
+    
 })(jQuery, fluid_1_4);

@@ -14,254 +14,50 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    fluid.setLogging(true);   
-    var renderSources = function (that) {
-        $.each(that.model.video.sources, function (idx, source) {
-            var renderer = that.options.mediaRenderers[source.type];
-            
-            if ($.isFunction(renderer)) {
-                renderer.apply(that, source);
-            } else {
-                fluid.invokeGlobalFunction(renderer, [that, source]); 
-            }                                      
-        });
-    };
-    
-    var injectVideo = function (container, video) {
-        video.addClass("flc-videoPlayer-video");
-        container.append(video);
-    };
+    fluid.setLogging(false);
 
-    var renderVideo = function (that) {
+    var bindVideoPlayerDOMEvents = function (that) {
         var video = that.locate("video");
-        
-        if ($.browser.msie) {
-            // IE is blatantly hostile to the video tag. 
-            // If one is found, remove it and replace it with something less awesome.
-            video.remove();
-            video = $("<div/>");
-            injectVideo(that.container, video);
-        } else if (video.length === 0) {
-            video = $("<video/>");
-            injectVideo(that.container, video);
-        }
-
-        // Safari seems to show controls if the attribute is present at all, 
-        // regardless of its value.
-        if (that.options.controllerType === "native") {
-            video.attr("controls", "true"); 
-        }
-        
-        return video;
-    };
-
-    var bindDOMEvents = function (that) {
-        
-        that.video.attr("tabindex", 0);
-        
-        that.video.click(function() {
+        video.click(function() {
             that.applier.fireChangeRequest({
                 "path": "states.play",
                 "value": !that.model.states.play
             });
         });
-        
-        that.video.bind("timeupdate", {obj: that.video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "states.currentTime", 
-                value: ev.data.obj.currentTime
-            });
-        });
-        
-        that.video.bind("durationchange", {obj: that.video[0]}, function (ev) {
-            // FF doesn't implement startTime from the HTML 5 spec.
-            var startTime = ev.data.obj.startTime || 0;
-            that.applier.fireChangeRequest({
-                path: "states.totalTime", 
-                value: ev.data.obj.duration
-            });
-            that.applier.fireChangeRequest({
-                path: "states.currentTime",
-                value: startTime
-            });
-            that.applier.fireChangeRequest({
-                path: "states.startTime",
-                value: startTime
-            });
-        });
-        
-        that.video.bind("volumechange", {obj: that.video[0]}, function (ev) {
-           that.applier.fireChangeRequest({
-                path: "states.volume", 
-                value: ev.data.obj.volume * 100
-            }); 
-        });
-        
-        that.video.bind("canplay", function () {
-            that.applier.fireChangeRequest({
-                path: "states.canPlay", 
-                value: true
-            });
-        });
-        
-        that.video.bind("loadedmetadata", function () {
-            that.container.css("width", that.video[0].videoWidth);
+        video.bind("loadedmetadata", function () {
+            that.container.css("width", video[0].videoWidth);
         });
     };
     
-    var renderControllerContainer = function (that) {
-        var controller = $("<div class='flc-videoPlayer-controller'></div>");
-        controller.addClass(that.options.styles.controller);
-        that.locate("video").after(controller);
-        return controller;
-    };
-    
-    var renderCaptionnerContainer = function (that) {
-        var captionArea = $("<div class='flc-videoPlayer-captionArea'></div>");
-        captionArea.addClass(that.options.styles.captionArea);
-        that.locate("video").after(captionArea);
-        return captionArea;
+    var bindVideoPlayerModel = function (that) {
+        that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
     };
     
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
      * 
      * @param {Object} container the container in which video and (optionally) captions are displayed
-     * @param {Object} options configuration options for the comoponent
+     * @param {Object} options configuration options for the component
      */
-     
-    fluid.videoPlayer = function (container, options) {
-
-        var that = fluid.initView("fluid.videoPlayer", container, options);
-        that.model.video = that.options.video;
-        if (that.options.captions) {
-            that.model.captions.sources = that.options.captions.sources || null;
-        }
-        that.video = renderVideo(that);
-        
-        renderSources(that);
-        
-       // Render each media source with its custom renderer, registered by type.
-      // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
-        if (!document.createElement('video').canPlayType) {
-            return;
-        }
-        
-        fluid.fetchResources(that.options.templates, function (res) {
-            for (var key in res) {
-                if (res[key].fetchError) {
-                    fluid.log("couldn't fetch" + res[key].href);
-                    fluid.log("status: " + res[key].fetchError.status +
-                    ", textStatus: " + res[key].fetchError.textStatus +
-                    ", errorThrown: " + res[key].fetchError.errorThrown);
-                }
-            }
-            that.events.onTemplateReady.fire();
-        });
-        that.applier = fluid.makeChangeApplier(that.model);
-        fluid.initDependents(that);
-
-        that.setTime = function (time) {
-            console.log(time);
-            that.video[0].currentTime = time;
-        };
-        
-        that.setVolume = function (volume) {
-            that.video[0].volume = volume;
-        };
-        
-        that.play = function () {
-            if (that.model.states.play === true) {
-                that.video[0].play();
-            } else {
-                that.video[0].pause();
-            }
-        };
-        
-        that.fullscreen = function () {
-            if (that.model.states.fullscreen === true) {
-                that.videoWidth = that.container.css("width");
-                that.videoHeight = that.container.css("height");
-                that.container.css({
-                    width: window.innerWidth + "px",
-                    height: window.innerHeight + "px",
-                    left: 0,
-                    top: 0,
-                    position: "fixed"
-                });
-                that.video.css({
-                    width: "100%",
-                    height: "100%"
-                });
-            } else {
-                that.container.css({
-                    width: that.videoWidth,
-                    height: that.videoHeight,
-                    position: "relative"
-                });
-            }
-        };
-        
-        // Add the controller if required.
-        if (that.options.controllerType === "html") {
-            var controller = that.locate("controller");
-            that.controllerContainer = (controller.length === 0) ? renderControllerContainer(that) : controller;
-            that.events.onCreateControllerContainer.fire();
-        }
-
-        // Add the captions if required
-        if (that.model.captions.sources) {
-            var captionArea = that.locate("captionArea");
-            that.captionnerContainer = captionArea.length === 0 ? renderCaptionnerContainer(that) : captionArea;
-            that.events.onCreateCaptionContainer.fire();
-        }
-
-        bindDOMEvents(that);
-        
-        //create all the listeners to the model
-        that.applier.modelChanged.addListener("states.play", that.play);
-        that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
-        
-        
-        return that;
-    };
     
     fluid.defaults("fluid.videoPlayer", {
-        grades: "fluid.viewComponent",
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        preInitFunction: "fluid.videoPlayer.preInit",
+        finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             afterScrub: null,
             onReadyToLoadCaptions: null,
             onVideoLoaded: null,
-            onCreateControllerContainer: null,
-            onTemplateReady: null,
-            onCreateCaptionContainer: null
+            onTemplateReady: null
         }, 
         listeners: {
             onTemplateReady: function() {console.log("templateready");}
         },
         
         components: {
-            captionner: {
-                type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.captionnerContainer",
-                createOnEvent: "onTemplateReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            controllers: {
-                type: "fluid.videoPlayer.controllers",
-                container: "{videoPlayer}.controllerContainer",
-                createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier"
@@ -275,21 +71,16 @@ var fluid_1_4 = fluid_1_4 || {};
         
         selectors: {
             video: ".flc-videoPlayer-video",
-            test: ".flc-videoPlayer-test",
-            captionArea: ".flc-videoPlayer-captionArea",
-            controller: ".flc-videoPlayer-controller"
+            caption: ".flc-videoPlayer-captionArea",
+            controllers: ".flc-videoPlayer-controller"
         },
         
         styles : {
-            controller: "fl-videoPlayer-controller",
-            captionArea: "fl-videoPlayer-captionArea"
+            controllers: "fl-videoPlayer-controller",
+            caption: "fl-videoPlayer-captionArea"
         },
         
-        mediaRenderers: {
-            "video/mp4": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "video/ogg": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "youtube": "fluid.videoPlayer.mediaRenderers.youTubePlayer"
-        },
+        produceTree: "fluid.videoPlayer.produceTree",
         controllerType: "html", // "native", "html", "none" (or null),
                         
         model: {
@@ -314,20 +105,123 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         },
         templates: {
-            /*videoPlayer: {
+            videoPlayer: {
                 forceCache: true,
                 href: "../html/videoPlayer_template.html"
-            },*/
+            },
             controllers: {
                 forceCache: true,
                 href: "../html/controller_template.html"
-            }/*,
-            captions: {
-                href: "../html/caption_template.html"
-            }*/
+            }
         } 
         
     });
+    
+    fluid.videoPlayer.produceTree = function (that) {
+        var tree = {};
+        if (that.model.video.sources) {
+            tree.video = {
+                decorators: {
+                    type: "fluid",
+                    func: "fluid.videoPlayer.media"
+                }
+            };
+        }
+        if (that.options.controllerType === "html") {
+            tree.controllers = {
+                decorators: [
+                    {
+                        type: "fluid",
+                        func: "fluid.videoPlayer.controllers"
+                    },
+                    {
+                        type: "addClass",
+                        classes: that.options.styles.controllers
+                    }
+                ]
+                
+            };
+        } else if (that.options.controllerType === "native") {
+            tree.video.decorators.attributes.controls = "true";
+        }
+        if (that.model.captions.sources) {
+            tree.caption = {
+                decorators: [
+                    {
+                        type: "fluid",
+                        func: "fluid.videoPlayer.captionner"
+                    },
+                    {
+                        type: "addClass",
+                        classes: that.options.styles.caption
+                }]
+                
+            };
+        }
+        return tree;
+    };
+
+    fluid.videoPlayer.preInit = function (that) {
+        that.model.video = that.options.video;
+        if (that.options.captions) {
+            that.model.captions.sources = that.options.captions.sources || null;
+        }    
+    };
+     
+    fluid.videoPlayer.finalInit = function (that) {
+        that.applier = fluid.makeChangeApplier(that.model);
+       // Render each media source with its custom renderer, registered by type.
+      // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
+        if (!document.createElement('video').canPlayType) {
+            return;
+        }
+        
+        fluid.fetchResources(that.options.templates, function (res) {
+            for (var key in res) {
+                if (res[key].fetchError) {
+                    fluid.log("couldn't fetch" + res[key].href);
+                    fluid.log("status: " + res[key].fetchError.status +
+                    ", textStatus: " + res[key].fetchError.textStatus +
+                    ", errorThrown: " + res[key].fetchError.errorThrown);
+                } else if (key === "videoPlayer") {
+                    that.container.append(res[key].resourceText);
+                    that.refreshView();
+                    bindVideoPlayerDOMEvents(that);
+                    //create all the listeners to the model
+                    bindVideoPlayerModel(that);
+                }
+            }
+
+            that.events.onTemplateReady.fire();
+            
+        });
+        
+        that.fullscreen = function () {
+            if (that.model.states.fullscreen === true) {
+                that.videoWidth = that.container.css("width");
+                that.videoHeight = that.container.css("height");
+                that.container.css({
+                    width: window.innerWidth + "px",
+                    height: window.innerHeight + "px",
+                    left: 0,
+                    top: 0,
+                    position: "fixed"
+                });
+                that.locate("video").css({
+                    width: "100%",
+                    height: "100%"
+                });
+            } else {
+                that.container.css({
+                    width: that.videoWidth,
+                    height: that.videoHeight,
+                    position: "relative"
+                });
+            }
+        };
+        
+        return that;
+    };
         
     //returns the time in format hh:mm:ss from a time in seconds 
     fluid.videoPlayer.formatTime = function (time) {
@@ -348,18 +242,19 @@ var fluid_1_4 = fluid_1_4 || {};
         html5SourceTag: function (videoPlayer, mediaSource) {
             var sourceTag = $("<source />");
             sourceTag.attr(mediaSource);
-            videoPlayer.video.append(sourceTag);
+            videoPlayer.container.append(sourceTag);
             return sourceTag;
         },
         
         youTubePlayer: function (videoPlayer, mediaSource) {
             var placeholder = $("<div/>"),
                 id = fluid.allocateSimpleId(placeholder);
-            videoPlayer.video.append(placeholder);
+            videoPlayer.container.append(placeholder);
             swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
             return placeholder;
         }
     };
+    
     /************************************************
      *      VideoPlayer Event Binder                *
      ************************************************/   
@@ -384,19 +279,19 @@ var fluid_1_4 = fluid_1_4 || {};
         ["fluid.videoPlayer.controllers",
             "fluid.videoPlayer.captionner",
             "fluid.videoPlayer.captionLoader",
-            "fluid.videoPlayer"],
+            "fluid.videoPlayer",
+            "fluid.videoPlayer.media"],
         {
             options: {
                 listeners: {
                     "{controllers}.events.afterTimeChange": "{captionner}.resyncCaptions",
                     "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                    "{controllers}.events.onTimeChange": "{videoPlayer}.setTime",
-                    "{controllers}.events.onVolumeChange": "{videoPlayer}.setVolume"
+                    "{controllers}.events.onTimeChange": "{media}.setTime",
+                    "{controllers}.events.onVolumeChange": "{media}.setVolume"
                 }
             }
              
         });
-        
 
 })(jQuery, fluid_1_4);
 
