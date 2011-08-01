@@ -382,6 +382,7 @@ var fluid_1_4 = fluid_1_4 || {};
             "icons": {
                 primary: "ui-icon-signal"
             },
+            label: that.options.strings.volume,
             text: false
         });
         that.container.append(volumeElt);
