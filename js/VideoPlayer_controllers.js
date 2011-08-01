@@ -53,6 +53,35 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     var bindControllerDOMEvents = function (that) {
+        that.locate("play").click(function () {
+            that.applier.fireChangeRequest({
+                "path": "states.play",
+                "value": !that.model.states.play
+            });
+        });
+    };
+    
+    var createControllerMarkup = function (that) {
+        that.locate("play").button({
+            icons: {
+                primary: "ui-icon-play"
+            },
+            text: false
+        });
+        that.locate("displayCaptions").button({
+            icons: {
+                primary: "ui-icon-comment"
+            },
+            text: false
+        });
+        that.locate("fullscreen").button({
+            icons: {
+                primary: "ui-icon-extlink"
+            },
+            text: false
+        });
+
+
         return;
     };
     
@@ -84,6 +113,8 @@ var fluid_1_4 = fluid_1_4 || {};
 
         styles: {
             time: "fl-videoPlayer-controller-time",
+            scrubberContainer: "fl-videoPlayer-controller-scrubberContainer",
+            volumeContainer: "fl-videoPlayer-controller-volumeContainer",
             playOn: "fl-videoPlayer-state-play",
             playOff: "fl-videoPlayer-state-pause",
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
@@ -120,9 +151,10 @@ var fluid_1_4 = fluid_1_4 || {};
         var value;
         for (var item in that.model.states) {
             if (that.options.selectors[item]) {
-                tree[item] = {
-                        valuebinding: "states." + item
-                };
+                tree[item] = {};
+                if (item === "fullscreen" || item === "displayCaptions") {
+                        tree[item].valuebinding = "states." + item;
+                }
                 if (item === "play" || item === "displayCaptions" || item === "fullscreen") {
                     value = that.model.states[item] ? "On" : "Off";
                     // render radio buttons
@@ -141,18 +173,24 @@ var fluid_1_4 = fluid_1_4 || {};
         }
         if (that.options.selectors.scrubberContainer) {
             tree.scrubberContainer = {
-                decorators: {
+                decorators: [{
                     type: "fluid",
                     func: "fluid.videoPlayer.controllers.scrubber"
-                }
+                }, {
+                    type: "addClass",
+                    classes: that.options.styles.scrubberContainer
+                }]
             };
         }
         if (that.options.selectors.volumeContainer) {
             tree.volumeContainer = {
-                decorators: {
+                decorators: [{
                     type: "fluid",
                     func: "fluid.videoPlayer.controllers.volumeControl"
-                }
+                }, {
+                    type: "addClass",
+                    classes: that.options.styles.volumeContainer
+                }]
             };
         }
         return tree;
@@ -160,7 +198,8 @@ var fluid_1_4 = fluid_1_4 || {};
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         that.renderer.refreshView();
-        // Enable the Play/Pause button when the video can start playing.
+        
+        createControllerMarkup(that);
         
         that.setCurrentTime = function () {
             updateTime(that, "currentTime");
@@ -171,7 +210,22 @@ var fluid_1_4 = fluid_1_4 || {};
         };
         
         that.togglePlayView = function () {
-            toggleView(that, "play");
+            var play = that.locate("play");
+            var options = {}
+            if (that.model.states.play) {
+                play.removeClass(that.options.styles.playOn).addClass(that.options.styles.playOff);
+                options = {
+                    label: that.options.strings.playOff,
+                    icons: { primary: "ui-icon-pause"}
+                };
+            } else {
+                play.removeClass(that.options.styles.playOff).addClass(that.options.styles.playOn);
+                options = {
+                    label: that.options.strings.playOn,
+                    icons: { primary: "ui-icon-play"}
+                };
+            }
+            play.button("option", options);
         };
         
         that.toggleCaptionsView = function () {
@@ -181,6 +235,7 @@ var fluid_1_4 = fluid_1_4 || {};
         that.toggleFullscreenView = function () {
             toggleView(that, "fullscreen");
         };
+        
         
         bindControllerModel(that);
         
@@ -304,13 +359,14 @@ var fluid_1_4 = fluid_1_4 || {};
     *********************************************************/
     var bindVolumeDOMEvents = function (that) {
         var volumeButton = that.locate("volume");
+        var volumeControl = that.locate("volumeControl");
         // hide the volume slider when the button is clicked
         volumeButton.click(that.showSlider);
         
-        volumeButton.focusout(that.showButton);
+        volumeControl.focusout(that.showButton);
         
         // Bind the volume Control slide event to change the video's volume and its image.
-        volumeButton.bind("slide", function (evt, ui) {
+        volumeControl.bind("slide", function (evt, ui) {
             that.events.onChange.fire(ui.value / 100.0);
         });
     };
@@ -320,9 +376,28 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     var createVolumeMarkup = function (that) {
-        var volumeElt = $("<div class='flc-videoPlayer-controller-volume'/>");
+        var volumeElt = $("<button class='flc-videoPlayer-controller-volume'/>");
         volumeElt.addClass(that.options.styles.volume);
+        volumeElt.button({
+            "icons": {
+                primary: "ui-icon-signal"
+            },
+            text: false
+        });
         that.container.append(volumeElt);
+        
+        var volumeControl = $("<div class='flc-videoPlayer-controller-volumeControl'/>");
+        volumeControl.addClass(that.options.styles.volumeControl);
+        volumeControl.slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: that.model.states.volume
+        });
+        volumeControl.hide();
+        that.container.append(volumeControl);
+        
     };
     
     fluid.defaults("fluid.videoPlayer.controllers.volumeControl",{
@@ -352,32 +427,20 @@ var fluid_1_4 = fluid_1_4 || {};
         createVolumeMarkup(that);
         
         that.showSlider = function () {
-            var volume = that.locate("volume");
-            if (volume.hasClass(that.options.styles.volume)) {
-                volume.slider({
-                    orientation: "vertical",
-                    range: "min",
-                    min: 0,
-                    max: 100,
-                    value: that.model.states.volume
-                });
-                volume.removeClass(that.options.styles.volume);
-                volume.addClass(that.options.styles.volumeControl);
-            }
+            that.locate("volume").hide();
+            that.locate("volumeControl").show();
         };
         
         that.showButton = function () {
-            var volume = that.locate("volume");
-            if (volume.hasClass(that.options.styles.volumeControl)) {
-                volume.slider("destroy");
-                volume.removeClass(that.options.styles.volumeControl);
-                volume.addClass(that.options.styles.volume);
-            }
+            that.locate("volumeControl").hide();
+            that.locate("volume").show();
         };
         
         that.updateVolume = function () {
             var volume = that.model.states.volume;
-            var volumeButton = that.locate("volume");
+            var volumeControl = that.locate("volumeControl");
+            volumeControl.slider("value",volume);
+            /*
             if (volumeButton.hasClass(that.options.styles.volume)) {
                 if (volume > 66) {
                     volumeButton.css("background-image", "url(../images/volume3.png)");
@@ -388,7 +451,7 @@ var fluid_1_4 = fluid_1_4 || {};
                 } else {
                     volumeButton.css("background-image", "url(../images/volume0.png)");
                 }
-            }
+            }*/
         };
         
         bindVolumeDOMEvents(that);
