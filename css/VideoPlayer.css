@@ -4,8 +4,6 @@
 
 .fl-videoPlayer {
     position: relative;
-    color: white;
-    font: bold Tahoma,Arial,Helvetica,sans-serif;
 }
 
 /*
@@ -29,7 +27,6 @@
 .fl-videoPlayer-controller * {
     display: inline-block;
     margin: auto;
-    overflow: hidden;
 }
 
 .fl-videoPlayer-controller-time {
@@ -37,9 +34,6 @@
     padding: 5px;
     height: 100%
     text-align: center;
-    background: black;
-    border-radius: 7px;
-    border: solid 1px;
 }
 
 .fl-videoPlayer-controller-scrubberContainer {

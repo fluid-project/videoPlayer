@@ -112,7 +112,7 @@ var fluid_1_4 = fluid_1_4 || {};
         },
 
         styles: {
-            time: "fl-videoPlayer-controller-time",
+            time: "fl-videoPlayer-controller-time ui-state-default ui-corner-all",
             scrubberContainer: "fl-videoPlayer-controller-scrubberContainer",
             volumeContainer: "fl-videoPlayer-controller-volumeContainer",
             playOn: "fl-videoPlayer-state-play",
@@ -428,7 +428,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.showSlider = function () {
             that.locate("volume").hide();
-            that.locate("volumeControl").show();
+            that.locate("volumeControl").show().focus();
         };
         
         that.showButton = function () {
