@@ -16,22 +16,70 @@ var fluid_1_4 = fluid_1_4 || {};
 (function ($, fluid) {
     fluid.setLogging(false);
 
+    var bindKeyboardControl = function (that) {
+        var opts = {
+            additionalBindings: [{
+                modifier: that.options.keyBindings.play.modifier,
+                key: that.options.keyBindings.play.key,
+                activateHandler: that.play
+            }, {
+                modifier: that.options.keyBindings.fullscreen.modifier,
+                key: that.options.keyBindings.fullscreen.key,
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "states.fullscreen",
+                        value: !that.model.states.fullscreen
+                    });
+                }
+            }, {
+                modifier: that.options.keyBindings.captions.modifier,
+                key: that.options.keyBindings.captions.key,
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "states.displayCaptions",
+                        value: !that.model.states.displayCaptions
+                    });
+                }
+            },{
+                modifier: that.options.keyBindings.volumePlus.modifier,
+                key: that.options.keyBindings.volumePlus.key,
+                activateHandler: that.incrVolume
+            },{
+                modifier: that.options.keyBindings.volumeMinus.modifier,
+                key: that.options.keyBindings.volumeMinus.key,
+                activateHandler: that.decrVolume
+            },{
+                modifier: that.options.keyBindings.forward.modifier,
+                key: that.options.keyBindings.forward.key,
+                activateHandler: that.incrTime
+            },{
+                modifier: that.options.keyBindings.rewind.modifier,
+                key: that.options.keyBindings.rewind.key,
+                activateHandler: that.decrTime
+            }]
+        };
+        that.container.fluid("activatable", [null, opts]);
+        //that.container.fluid("tabbable");
+        var video = that.locate("video");
+        video.fluid("tabbable");
+        video.fluid("activatable", that.play);
+        video.focus();
+    };
+
     var bindVideoPlayerDOMEvents = function (that) {
         var video = that.locate("video");
-        video.click(function() {
-            that.applier.fireChangeRequest({
-                "path": "states.play",
-                "value": !that.model.states.play
-            });
-        });
+        video.click(that.play);
         video.bind("loadedmetadata", function () {
             that.container.css("width", video[0].videoWidth);
+            bindKeyboardControl(that);
         });
     };
     
     var bindVideoPlayerModel = function (that) {
         that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
     };
+    
+
     
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
@@ -48,6 +96,8 @@ var fluid_1_4 = fluid_1_4 || {};
             afterScrub: null,
             onReadyToLoadCaptions: null,
             onVideoLoaded: null,
+            onVolumeChange: null,
+            onTimeChange: null,
             onTemplateReady: null
         }, 
         listeners: {
@@ -73,6 +123,37 @@ var fluid_1_4 = fluid_1_4 || {};
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller"
+        },
+        
+        keyBindings: {
+            play: {
+                modifier: null,
+                key: 80
+            },
+            captions: {
+                modifier: null,
+                key: 67
+            },
+            fullscreen: {
+                modifier: null,
+                key: 70
+            },
+            volumePlus: {
+                modifier: null,
+                key: 187
+            },
+            volumeMinus: {
+                modifier: null,
+                key: 189
+            },
+            forward: {
+                modifier: $.ui.keyCode.SHIFT,
+                key: $.ui.keyCode.RIGHT
+            },
+            rewind: {
+                modifier: $.ui.keyCode.SHIFT,
+                key: $.ui.keyCode.LEFT
+            }
         },
         
         styles : {
@@ -196,6 +277,13 @@ var fluid_1_4 = fluid_1_4 || {};
             
         });
         
+        that.play = function() {
+            that.applier.fireChangeRequest({
+                "path": "states.play",
+                "value": !that.model.states.play
+            });
+        };
+        
         that.fullscreen = function () {
             if (that.model.states.fullscreen === true) {
                 that.videoWidth = that.container.css("width");
@@ -220,6 +308,33 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         };
         
+        that.incrVolume = function () {
+            if (that.model.states.volume < 100) {
+                var newVol = (that.model.states.volume + 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
+            }
+        };
+        
+        that.decrVolume = function () {
+            if (that.model.states.volume > 0) {
+                var newVol = (that.model.states.volume - 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
+            }
+        };
+        
+        that.incrTime = function () {
+            if (that.model.states.currentTime < that.model.states.totalTime) {
+                var newVol = that.model.states.currentTime + 1;
+                that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
+            }
+        };
+        
+        that.decrTime = function () {
+            if (that.model.states.currentTime > 0) {
+                var newVol = that.model.states.currentTime - 1;
+                that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
+            }
+        };        
         return that;
     };
         
@@ -287,7 +402,9 @@ var fluid_1_4 = fluid_1_4 || {};
                     "{controllers}.events.afterTimeChange": "{captionner}.resyncCaptions",
                     "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
                     "{controllers}.events.onTimeChange": "{media}.setTime",
-                    "{controllers}.events.onVolumeChange": "{media}.setVolume"
+                    "{videoPlayer}.events.onTimeChange": "{media}.setTime",
+                    "{controllers}.events.onVolumeChange": "{media}.setVolume",
+                    "{videoPlayer}.events.onVolumeChange": "{media}.setVolume"
                 }
             }
              

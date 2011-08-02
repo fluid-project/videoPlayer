@@ -19,6 +19,7 @@ var fluid_1_4 = fluid_1_4 || {};
             });
             tag.removeClass(that.options.styles[element + "On"]).addClass(that.options.styles[element + "Off"]);
        }
+       tag.button( "refresh" );
     };
     
     //change the text of the selected time
@@ -36,12 +37,24 @@ var fluid_1_4 = fluid_1_4 || {};
      */
     //add all the modelChanged listener to the applier
     var bindControllerModel = function (that) {
-        that.applier.modelChanged.addListener("states.canPlay", function() {
+    
+
+        that.applier.modelChanged.addListener("states.canPlay", function () {
             var playButton = that.locate("play");
             if (that.model.states.canPlay === true) {
-                playButton.removeAttr("disabled");
+                that.container.fluid("tabbable");
+                that.container.fluid("selectable", {
+                    direction: fluid.a11y.orientation.HORIZONTAL,
+                    selectableSelector: that.options.selectors,
+                    rememberSelectionState: false       
+                });
+                playButton.button("enable");
+                that.locate("displayCaptions").button("enable");
+                that.locate("fullscreen").button("enable");
             } else {
-                playButton.attr("disabled", "disabled");
+                playButton.button("disable");
+                that.locate("displayCaptions").button("disable");
+                that.locate("fullscreen").button("disable");
             }
         });
         that.applier.modelChanged.addListener("states.play", that.togglePlayView);
@@ -59,6 +72,20 @@ var fluid_1_4 = fluid_1_4 || {};
                 "value": !that.model.states.play
             });
         });
+        
+        that.locate("fullscreen").fluid("activatable", function () {
+            that.applier.fireChangeRequest({
+                "path": "states.fullscreen",
+                "value": !that.model.states.fullscreen
+            });
+        });        
+        
+        that.locate("displayCaptions").fluid("activatable", function () {
+            that.applier.fireChangeRequest({
+                "path": "states.displayCaptions",
+                "value": !that.model.states.displayCaptions
+            });
+        });
     };
     
     var createControllerMarkup = function (that) {
@@ -66,18 +93,21 @@ var fluid_1_4 = fluid_1_4 || {};
             icons: {
                 primary: "ui-icon-play"
             },
+            disabled: !that.model.states.canPlay,
             text: false
         });
         that.locate("displayCaptions").button({
             icons: {
                 primary: "ui-icon-comment"
             },
+            disabled: !that.model.states.canPlay,
             text: false
         });
         that.locate("fullscreen").button({
             icons: {
                 primary: "ui-icon-extlink"
             },
+            disabled: !that.model.states.canPlay,
             text: false
         });
 
@@ -198,7 +228,6 @@ var fluid_1_4 = fluid_1_4 || {};
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         that.renderer.refreshView();
-        
         createControllerMarkup(that);
         
         that.setCurrentTime = function () {
@@ -279,9 +308,9 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier.modelChanged.addListener("states.canPlay", function () {
             var scrubber = that.locate("scrubber");
             if (that.model.states.canPlay === true) {
-                scrubber.slider({disabled: false});
+                scrubber.slider("enable");
             } else {
-                scrubber.slider({disabled: true});
+                scrubber.slider("disable");
             }
         });
     };
@@ -373,6 +402,14 @@ var fluid_1_4 = fluid_1_4 || {};
     
     var bindVolumeModel = function (that) {
         that.applier.modelChanged.addListener("states.volume", that.updateVolume);
+        
+        that.applier.modelChanged.addListener("states.canPlay", function () {
+            if (that.model.states.canPlay === true) {
+                that.locate("volume").button("enable");
+            } else {
+                that.locate("volume").button("disable");
+            }
+        });
     };
     
     var createVolumeMarkup = function (that) {
@@ -382,6 +419,7 @@ var fluid_1_4 = fluid_1_4 || {};
             "icons": {
                 primary: "ui-icon-signal"
             },
+            disabled: !that.model.states.canPlay,
             label: that.options.strings.volume,
             text: false
         });
@@ -429,7 +467,8 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.showSlider = function () {
             that.locate("volume").hide();
-            that.locate("volumeControl").show().focus();
+            //is there a more correct way?
+            that.locate("volumeControl").show().find(".ui-slider-handle").focus();
         };
         
         that.showButton = function () {
@@ -441,18 +480,6 @@ var fluid_1_4 = fluid_1_4 || {};
             var volume = that.model.states.volume;
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value",volume);
-            /*
-            if (volumeButton.hasClass(that.options.styles.volume)) {
-                if (volume > 66) {
-                    volumeButton.css("background-image", "url(../images/volume3.png)");
-                } else if (volume > 33) {
-                    volumeButton.css("background-image", "url(../images/volume2.png)");
-                } else if (volume !== 0) {
-                    volumeButton.css("background-image", "url(../images/volume1.png)");
-                } else {
-                    volumeButton.css("background-image", "url(../images/volume0.png)");
-                }
-            }*/
         };
         
         bindVolumeDOMEvents(that);
