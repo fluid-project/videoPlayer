@@ -37,17 +37,9 @@ var fluid_1_4 = fluid_1_4 || {};
      */
     //add all the modelChanged listener to the applier
     var bindControllerModel = function (that) {
-    
-
         that.applier.modelChanged.addListener("states.canPlay", function () {
             var playButton = that.locate("play");
             if (that.model.states.canPlay === true) {
-                that.container.fluid("tabbable");
-                that.container.fluid("selectable", {
-                    direction: fluid.a11y.orientation.HORIZONTAL,
-                    selectableSelector: that.options.selectors,
-                    rememberSelectionState: false       
-                });
                 playButton.button("enable");
                 that.locate("displayCaptions").button("enable");
                 that.locate("fullscreen").button("enable");
@@ -110,8 +102,6 @@ var fluid_1_4 = fluid_1_4 || {};
             disabled: !that.model.states.canPlay,
             text: false
         });
-
-
         return;
     };
     
@@ -497,5 +487,6 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         }
     });
+    
 
 })(jQuery, fluid_1_4);
