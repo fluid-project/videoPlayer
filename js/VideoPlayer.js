@@ -278,7 +278,6 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         
         that.play = function(ev) {
-            console.log(ev);
             that.applier.fireChangeRequest({
                 "path": "states.play",
                 "value": !that.model.states.play
@@ -422,4 +421,3 @@ var fluid_1_4 = fluid_1_4 || {};
         });
 
 })(jQuery, fluid_1_4);
-
