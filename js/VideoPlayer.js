@@ -189,10 +189,6 @@ var fluid_1_4 = fluid_1_4 || {};
             videoPlayer: {
                 forceCache: true,
                 href: "../html/videoPlayer_template.html"
-            },
-            controllers: {
-                forceCache: true,
-                href: "../html/controller_template.html"
             }
         } 
         

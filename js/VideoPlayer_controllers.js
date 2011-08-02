@@ -19,7 +19,7 @@ var fluid_1_4 = fluid_1_4 || {};
             });
             tag.removeClass(that.options.styles[element + "On"]).addClass(that.options.styles[element + "Off"]);
        }
-       tag.button( "refresh" );
+       tag.button("refresh" );
     };
     
     //change the text of the selected time
@@ -128,13 +128,15 @@ var fluid_1_4 = fluid_1_4 || {};
             totalTime: ".flc-videoPlayer-controller-total",
             currentTime: ".flc-videoPlayer-controller-current",
             scrubberContainer: ".flc-videoPlayer-controller-scrubberContainer",
-            volumeContainer: ".flc-videoPlayer-controller-volumeContainer"
+            volumeContainer: ".flc-videoPlayer-controller-volumeContainer",
+            menuContainer: ".flc-videoPlayer-controller-menuContainer"
         },
 
         styles: {
             time: "fl-videoPlayer-controller-time ui-state-default ui-corner-all",
             scrubberContainer: "fl-videoPlayer-controller-scrubberContainer",
             volumeContainer: "fl-videoPlayer-controller-volumeContainer",
+            menuContainer: "fl-videoPlayer-controller-menuContainer",
             playOn: "fl-videoPlayer-state-play",
             playOff: "fl-videoPlayer-state-pause",
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
@@ -157,13 +159,7 @@ var fluid_1_4 = fluid_1_4 || {};
             applier: "{controllers}.applier"
         },
         
-        produceTree: "fluid.videoPlayer.controllers.produceTree",
-        resources: {
-            template: {
-                forceCache: true,
-                href: "../html/controller_template.html"
-            }
-        }
+        produceTree: "fluid.videoPlayer.controllers.produceTree"
     });
 
     fluid.videoPlayer.controllers.produceTree = function (that) {
@@ -210,6 +206,17 @@ var fluid_1_4 = fluid_1_4 || {};
                 }, {
                     type: "addClass",
                     classes: that.options.styles.volumeContainer
+                }]
+            };
+        }
+        if (that.options.selectors.menuContainer) {
+            tree.menuContainer = {
+                decorators: [/*{
+                    type: "fluid",
+                    func: "fluid.videoPlayer.controllers.volumeControl"
+                },*/ {
+                    type: "addClass",
+                    classes: that.options.styles.menuContainer
                 }]
             };
         }
@@ -488,5 +495,54 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     });
     
-
+    /********************************************************
+    * Menu: a menu to choose the caption and other options  *
+    *********************************************************/
+/*    var bindMenuDOMEvents = function (that) {
+        return;
+    };
+    
+    var bindMenuModel = function (that) {
+        return;
+    };
+    
+    var createMenuMarkup = function (that) {
+        that.container.buttonset();
+    };
+    
+    fluid.defaults("fluid.videoPlayer.controllers.menu",{
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.controllers.menu.finalInit",
+        events: {
+            onMenuReady: null
+        }, 
+        listeners: {
+            onMenuReady : function() {console.log("menu");}
+        },
+        selectors: {
+        },
+        styles: {
+        },
+        strings: {
+        }
+    });
+    
+    fluid.videoPlayer.controllers.menu.finalInit = function (that) {
+        that.refreshView();
+        createMenuMarkup(that);
+        
+        
+        bindMenuDOMEvents(that);
+        
+        bindMenuModel(that);
+        that.events.onMenuReady.fire();
+    };
+    
+    fluid.demands("fluid.videoPlayer.controllers.menu","fluid.videoPlayer.controllers", {
+        options: {
+            model: "{controllers}.model",
+            applier: "{controllers}.applier"
+        }
+    });
+*/
 })(jQuery, fluid_1_4);
