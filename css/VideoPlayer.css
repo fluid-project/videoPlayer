@@ -42,13 +42,6 @@
     width: 60%;
 }
 
-.fl-videoPlayer-state-captionOn {
-    background:transparent url(../images/captionOn.png) no-repeat center center;
-}
-
-.fl-videoPlayer-state-captionOff {
-    background:transparent url(../images/captionOff.png) no-repeat center center;
-}
 
 /*
  * Caption area
@@ -69,3 +62,4 @@
 .fl-videoPlayer-controller-scrubber {
     width: 100%;
 }
+

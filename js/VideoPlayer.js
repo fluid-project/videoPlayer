@@ -58,11 +58,11 @@ var fluid_1_4 = fluid_1_4 || {};
                 activateHandler: that.decrTime
             }]
         };
-        that.container.fluid("activatable", [null, opts]);
-        //that.container.fluid("tabbable");
+        //that.container.fluid("activatable", [null, opts]);
         var video = that.locate("video");
         video.fluid("tabbable");
-        video.fluid("activatable", that.play);
+        video.fluid("activatable", [that.play, opts]);
+        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
         video.focus();
     };
 
@@ -277,7 +277,7 @@ var fluid_1_4 = fluid_1_4 || {};
             
         });
         
-        that.play = function() {
+        that.play = function(ev) {
             that.applier.fireChangeRequest({
                 "path": "states.play",
                 "value": !that.model.states.play
@@ -285,27 +285,37 @@ var fluid_1_4 = fluid_1_4 || {};
         };
         
         that.fullscreen = function () {
-            if (that.model.states.fullscreen === true) {
-                that.videoWidth = that.container.css("width");
-                that.videoHeight = that.container.css("height");
-                that.container.css({
-                    width: window.innerWidth + "px",
-                    height: window.innerHeight + "px",
-                    left: 0,
-                    top: 0,
-                    position: "fixed"
-                });
-                that.locate("video").css({
-                    width: "100%",
-                    height: "100%"
-                });
-            } else {
-                that.container.css({
-                    width: that.videoWidth,
-                    height: that.videoHeight,
-                    position: "relative"
-                });
-            }
+            // For real fullscreen (only on safari how do I make the difference?)
+            /*if ($.browser.webkit) {
+                var video = that.locate("video");
+                if (that.model.states.fullscreen === true) {
+                    video[0].webkitEnterFullscreen();
+                } else {
+                    video[0].webkitExitFullscreen();
+                }
+            } else {*/
+                if (that.model.states.fullscreen === true) {
+                    that.videoWidth = that.container.css("width");
+                    that.videoHeight = that.container.css("height");
+                    that.container.css({
+                        width: window.innerWidth + "px",
+                        height: window.innerHeight + "px",
+                        left: 0,
+                        top: 0,
+                        position: "fixed"
+                    });
+                    that.locate("video").css({
+                        width: "100%",
+                        height: "100%"
+                    });
+                } else {
+                    that.container.css({
+                        width: that.videoWidth,
+                        height: that.videoHeight,
+                        position: "relative"
+                    });
+                }
+            //}
         };
         
         that.incrVolume = function () {
@@ -324,14 +334,14 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.incrTime = function () {
             if (that.model.states.currentTime < that.model.states.totalTime) {
-                var newVol = that.model.states.currentTime + 1;
+                var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
             }
         };
         
         that.decrTime = function () {
             if (that.model.states.currentTime > 0) {
-                var newVol = that.model.states.currentTime - 1;
+                var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
             }
         };        
@@ -411,4 +421,3 @@ var fluid_1_4 = fluid_1_4 || {};
         });
 
 })(jQuery, fluid_1_4);
-
