@@ -108,10 +108,7 @@ var fluid_1_4 = fluid_1_4 || {};
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
+                createOnEvent: "onTemplateReady"
             },
             eventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
@@ -179,7 +176,7 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             captions: {
                 sources: null,
-                currentTrack: 1,
+                currentTrack: "english",
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined

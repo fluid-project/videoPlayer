@@ -68,17 +68,16 @@
                 
                 // TODO: These captions don't match the video!
                 captions: {
-                    sources: [
-                        {
-                            label: "english",
+                    sources: {
+                        english: {
                             src: "http://localhost:8888/videoPlayer/html/flight.srt",
                             type: "srt"
-                        }, {
-                            label: "german",
+                        }, 
+                        german: {
                             src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
                             type: "JSONcc"
                         }
-                    ]
+                    }
                 }
             });
         </script>

@@ -17,11 +17,16 @@ var fluid_1_4 = fluid_1_4 || {};
     
 
     /**
-     * captionLoads renders loads from an Js object src element a caption file and converts it to JsonCC.
+     * captionLoader renders loads from an Js object src element a caption file and converts it to JsonCC.
      * 
      * @param {Object} options configuration options for the comoponent
      * Note: when the caption is loaded by Ajax the event onCaptionsLoaded is fired
      */
+    
+    
+    var bindCaptionLoaderModel = function (that) {
+        that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions);
+    };
     
     fluid.defaults("fluid.videoPlayer.captionLoader", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
@@ -83,12 +88,18 @@ var fluid_1_4 = fluid_1_4 || {};
         if  (that.model.captions.sources) {
            that.loadCaptions();
         }
-        that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions);
         
         that.events.onReady.fire();
         
         return that;
     };
+    
+    fluid.demands("fluid.videoPlayer.captionLoader", "fluid.videoPlayer", {
+        options: {
+            model: "{videoPlayer}.model",
+            applier: "{videoPlayer}.applier",
+        }
+    });
     
 })(jQuery, fluid_1_4);
 
