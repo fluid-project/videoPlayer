@@ -211,10 +211,10 @@ var fluid_1_4 = fluid_1_4 || {};
         }
         if (that.options.selectors.menuContainer) {
             tree.menuContainer = {
-                decorators: [/*{
+                decorators: [{
                     type: "fluid",
-                    func: "fluid.videoPlayer.controllers.volumeControl"
-                },*/ {
+                    func: "fluid.videoPlayer.controllers.menu"
+                }, {
                     type: "addClass",
                     classes: that.options.styles.menuContainer
                 }]
@@ -498,7 +498,7 @@ var fluid_1_4 = fluid_1_4 || {};
     /********************************************************
     * Menu: a menu to choose the caption and other options  *
     *********************************************************/
-/*    var bindMenuDOMEvents = function (that) {
+    var bindMenuDOMEvents = function (that) {
         return;
     };
     
@@ -507,8 +507,27 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     var createMenuMarkup = function (that) {
-        that.container.buttonset();
+        that.locate("menuButton").button({
+            icons: {
+                primary: "ui-icon-arrow"
+            },
+            text: false
+        });
+        
+        //that.locate("element").button();
     };
+    
+    var makeCaptionTree = function (that) {
+        var tree = {
+            title: {},
+            element: {
+                selection: "0",
+                optionlist: ["home", "work"],
+                optionnames: ["Home", "Work"]
+            }
+        };
+        return tree;
+    }
     
     fluid.defaults("fluid.videoPlayer.controllers.menu",{
         gradeNames: ["fluid.rendererComponent", "autoInit"],
@@ -520,17 +539,59 @@ var fluid_1_4 = fluid_1_4 || {};
             onMenuReady : function() {console.log("menu");}
         },
         selectors: {
+            menuButton: ".flc-videoPlayer-controller-menu-button",
+            menu: ".flc-videoPlayer-controller-menu-container",
+        /*    captions: ".flc-videoPlayer-controller-menu-captions",
+            title: ".flc-videoPlayer-controller-menu-title",
+        */    element: ".flc-videoPlayer-controller-menu-element",
+            label: ".flc-videoPlayer-controller-menu-label",
+            select: ".flc-videoPlayer-controller-menu-select"
         },
+        rendererOptions: {
+            autoBind: true
+        },
+        repeatingSelectors: ["menu"],
+        produceTree: "fluid.videoPlayer.controllers.menu.produceTree",
         styles: {
-        },
-        strings: {
+        
         }
     });
+    
+    fluid.videoPlayer.controllers.menu.produceTree = function (that) {
+        var tree = {};
+        console.log(that.model);
+        var list = [];
+        for (var key in that.model.captions.sources) {
+            list.push(key);
+        }
+        tree = {
+                menuButton: {},
+                expander: [{
+                    /*type: "fluid.renderer.repeat",
+                    repeatID: "element",
+                    controlledBy: "captions.sources",
+                    pathAs: "captions",
+                    tree: {
+                        value: "${{captions}.label}"
+                    }*/
+                    type: "fluid.renderer.selection.inputs",
+                    rowID: "menu",
+                    labelID: "label",
+                    inputID: "element",
+                    selectID: "select",
+                    tree: {
+                        "selection": "${captions.currentTrack}",
+                        "optionlist": list,
+                        "optionnames": list
+                    }
+            }]
+        };
+        return tree;
+    };
     
     fluid.videoPlayer.controllers.menu.finalInit = function (that) {
         that.refreshView();
         createMenuMarkup(that);
-        
         
         bindMenuDOMEvents(that);
         
@@ -544,5 +605,5 @@ var fluid_1_4 = fluid_1_4 || {};
             applier: "{controllers}.applier"
         }
     });
-*/
+
 })(jQuery, fluid_1_4);

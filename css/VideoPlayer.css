@@ -30,7 +30,7 @@
 }
 
 .fl-videoPlayer-controller-time {
-    margin: 0 10px;
+    margin: 0 5px;
     padding: 0.4em;
     line-height: 1.4;
     font-size: 1.1em;
@@ -39,7 +39,7 @@
 }
 
 .fl-videoPlayer-controller-scrubberContainer {
-    width: 60%;
+    width: 55%;
 }
 
 

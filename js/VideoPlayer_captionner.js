@@ -2,6 +2,7 @@
 
 var fluid_1_4 = fluid_1_4 || {};
 (function ($, fluid) {
+    //TODO deal when there's no captions!!!!!!!!
     
     var findCaptionForTime = function (that, timeInMillis) {     
         // TODO: This algorithm looks better but there might be even better.
