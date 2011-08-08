@@ -1,22 +1,23 @@
-<video class="flc-videoPlayer-video" alt="A video demonstrating the Infusion video player"/>
-<div class="flc-videoPlayer-captionArea"/>
-<div class="flc-videoPlayer-controller">
+<video class="flc-videoPlayer-video fl-videoPlayer-video" alt="A video demonstrating the Infusion video player"/>
+<div class="flc-videoPlayer-captionArea fl-videoPlayer-captionArea"/>
+<div class="flc-videoPlayer-controller fl-videoPlayer-controller">
     <button class="flc-videoPlayer-controller-play">Play/Pause</button>
-    <div class="flc-videoPlayer-controller-current"/>
-    <div class="flc-videoPlayer-controller-scrubberContainer"></div>
-    <div class="flc-videoPlayer-controller-total"/>
-    <div class="flc-videoPlayer-controller-volumeContainer"/>
+    <div class="flc-videoPlayer-controller-current fl-videoPlayer-controller-time ui-state-default ui-corner-all"/>
+    <div class="flc-videoPlayer-controller-scrubberContainer fl-videoPlayer-controller-scrubberContainer"></div>
+    <div class="flc-videoPlayer-controller-total fl-videoPlayer-controller-time ui-state-default ui-corner-all"/>
+    <div class="flc-videoPlayer-controller-volumeContainer fl-videoPlayer-controller-volumeContainer"/>
     <input type="checkbox" class="flc-videoPlayer-controller-caption"/><label for="displayCaptions">Caption On/Off</label>
     <input type="checkbox" class="flc-videoPlayer-controller-fullscreen"/><label for="fullscreen">Fullscreen On/Off</label>
-    <div class="flc-videoPlayer-controller-menuContainer">
+    <div class="flc-videoPlayer-controller-menuContainer fl-videoPlayer-controller-menuContainer">
         <button class="flc-videoPlayer-controller-menu-button">Menu</button>
-        <div class="flc-videoPlayer-controller-menu-container">
-
-            <input type="radio" class="flc-videoPlayer-controller-menu-element"/>
-            <label class="flc-videoPlayer-controller-menu-label"/>
+        <div class="flc-videoPlayer-controller-menu-captions fl-videoPlayer-controller-menu-captions ui-state-default ui-corner-all">
+            <span class="flc-videoPlayer-controller-menu-title">Captions</span>
+            <ul class="flc-videoPlayer-controller-menu-container">
+                <li class="flc-videoPlayer-controller-menu-element">
+                    <input type="radio" class="flc-videoPlayer-controller-menu-input" id="input"/>
+                    <label for="input" class="flc-videoPlayer-controller-menu-label"/>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
-          <!-- <div class="flc-videoPlayer-controller-menu-captions">
-                <div class="flc-videoPlayer-controller-menu-title">Captions</div>
-                <div class="flc-videoPlayer-controller-menu-element" />-->

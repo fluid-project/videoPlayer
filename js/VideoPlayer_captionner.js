@@ -54,6 +54,15 @@ var fluid_1_4 = fluid_1_4 || {};
             value: temp 
         });
     };
+    
+    var bindCaptionnerModel = function (that) {
+        that.applier.modelChanged.addListener("captions.currentCaptions", that.refreshView);
+        
+        that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionView);
+        
+        that.applier.modelChanged.addListener("states.currentTime", that.displayCaptionForTime);
+        
+    };
     /**
      * captionner is responsible for displaying captions in a one-at-a-time style.
      * 
@@ -85,6 +94,7 @@ var fluid_1_4 = fluid_1_4 || {};
     });
     
     fluid.videoPlayer.captionner.finalInit = function (that) {
+    
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
             fluid.each(that.model.captions.currentCaptions, function (caption) {
@@ -99,40 +109,43 @@ var fluid_1_4 = fluid_1_4 || {};
         };
         
         that.displayCaptionForTime = function (time) {
-            // Display a new caption.
-            var timeInMillis = Math.round(that.model.states.currentTime * 1000);
-            var nextCaption = findCaptionForTime(that, timeInMillis);
-            if (nextCaption !== null && $.inArray(nextCaption, that.model.captions.currentCaptions) === -1) {
-                displayCaption(that, nextCaption);
+            if (that.model.captions.track) {
+                // Display a new caption.
+                var timeInMillis = Math.round(that.model.states.currentTime * 1000);
+                var nextCaption = findCaptionForTime(that, timeInMillis);
+                if (nextCaption !== null && $.inArray(nextCaption, that.model.captions.currentCaptions) === -1) {
+                    displayCaption(that, nextCaption);
+                }
             }
             return that;
+            
         };
         
-        that.applier.modelChanged.addListener("captions.currentCaptions", 
-            function (model, oldModel, changeRequest) {
-                // Clear out any caption that has hit its end time.
-                var timeInMillis = Math.round(that.model.states.currentTime * 1000);
-                fluid.each(that.model.captions.currentCaptions, function (elt) {
-                    if (timeInMillis >= elt.outMilliTime) {
-                        removeCaption(that, elt);
-                    }
-                });
-                
-                //if there's too many captions remove the oldest one
-                if (that.model.captions.currentCaptions && that.model.captions.currentCaptions.length > that.model.captions.maxNumber) {
-                    removeCaption(that, that.model.currentCaptions[0]);
-                }    
-        });
-        
-        that.applier.modelChanged.addListener("states.displayCaptions", function (model, oldModel, changeRequest) {
+        that.toggleCaptionView = function () {
             if (that.model.states.displayCaptions === true) {
                 that.container.fadeIn("fast", "linear");
             } else {
                 that.container.fadeOut("fast", "linear");
             }
-        });
+        };
         
-        that.applier.modelChanged.addListener("states.currentTime", that.displayCaptionForTime);
+        that.refreshView = function () {
+            // Clear out any caption that has hit its end time.
+            var timeInMillis = Math.round(that.model.states.currentTime * 1000);
+            fluid.each(that.model.captions.currentCaptions, function (elt) {
+                if (timeInMillis >= elt.outMilliTime) {
+                    removeCaption(that, elt);
+                }
+            });
+            
+            //if there's too many captions remove the oldest one
+            if (that.model.captions.currentCaptions && that.model.captions.currentCaptions.length > that.model.captions.maxNumber) {
+                removeCaption(that, that.model.currentCaptions[0]);
+            }    
+        };
+        
+        bindCaptionnerModel(that);
+        
         that.events.onReady.fire();
     };
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions

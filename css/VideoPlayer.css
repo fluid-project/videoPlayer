@@ -42,6 +42,14 @@
     width: 55%;
 }
 
+.fl-videoPlayer-controller-menu-captions {
+    display: block;
+    position: absolute;
+    bottom: 50px;
+    width: 30%;
+    
+}
+
 
 /*
  * Caption area

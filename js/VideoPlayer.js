@@ -14,7 +14,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    fluid.setLogging(false);
+    fluid.setLogging(true);
 
     var bindKeyboardControl = function (that) {
         var opts = {
@@ -58,7 +58,6 @@ var fluid_1_4 = fluid_1_4 || {};
                 activateHandler: that.decrTime
             }]
         };
-        //that.container.fluid("activatable", [null, opts]);
         var video = that.locate("video");
         video.fluid("tabbable");
         video.fluid("activatable", [that.play, opts]);
@@ -79,7 +78,37 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
     };
     
-
+    //This is the default key bindings
+    var defaultKeys = {
+        play: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 80
+        },
+        captions: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 67
+        },
+        fullscreen: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 70
+        },
+        volumePlus: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.UP
+        },
+        volumeMinus: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.DOWN
+        },
+        forward: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.RIGHT
+        },
+        rewind: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.LEFT
+        }
+    };
     
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
@@ -122,41 +151,7 @@ var fluid_1_4 = fluid_1_4 || {};
             controllers: ".flc-videoPlayer-controller"
         },
         
-        keyBindings: {
-            play: {
-                modifier: null,
-                key: 80
-            },
-            captions: {
-                modifier: null,
-                key: 67
-            },
-            fullscreen: {
-                modifier: null,
-                key: 70
-            },
-            volumePlus: {
-                modifier: null,
-                key: 187
-            },
-            volumeMinus: {
-                modifier: null,
-                key: 189
-            },
-            forward: {
-                modifier: $.ui.keyCode.SHIFT,
-                key: $.ui.keyCode.RIGHT
-            },
-            rewind: {
-                modifier: $.ui.keyCode.SHIFT,
-                key: $.ui.keyCode.LEFT
-            }
-        },
-        
-        styles : {
-            controllers: "fl-videoPlayer-controller",
-            caption: "fl-videoPlayer-captionArea"
-        },
+        keyBindings: defaultKeys,
         
         produceTree: "fluid.videoPlayer.produceTree",
         controllerType: "html", // "native", "html", "none" (or null),
@@ -203,16 +198,10 @@ var fluid_1_4 = fluid_1_4 || {};
         }
         if (that.options.controllerType === "html") {
             tree.controllers = {
-                decorators: [
-                    {
-                        type: "fluid",
-                        func: "fluid.videoPlayer.controllers"
-                    },
-                    {
-                        type: "addClass",
-                        classes: that.options.styles.controllers
-                    }
-                ]
+                decorators: [{
+                    type: "fluid",
+                    func: "fluid.videoPlayer.controllers"
+                }]
                 
             };
         } else if (that.options.controllerType === "native") {
@@ -220,14 +209,9 @@ var fluid_1_4 = fluid_1_4 || {};
         }
         if (that.model.captions.sources) {
             tree.caption = {
-                decorators: [
-                    {
-                        type: "fluid",
-                        func: "fluid.videoPlayer.captionner"
-                    },
-                    {
-                        type: "addClass",
-                        classes: that.options.styles.caption
+                decorators: [{
+                    type: "fluid",
+                    func: "fluid.videoPlayer.captionner"
                 }]
                 
             };
