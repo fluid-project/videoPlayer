@@ -12,7 +12,13 @@
 
              <!-- Fluid and jQuery Dependencies -->
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
+        <!--<script type="text/javascript" src="../lib/jquery-ui/js/jquery-1.5.1.min.js"></script>-->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery-ui-1.8.14.custom.min.js"></script>
+        <!--<script type="text/javascript" src="../lib/ui/jquery.ui.core.js"></script>
+        <script type="text/javascript" src="../lib/ui/jquery.ui.widget.js"></script>
+        <script type="text/javascript" src="../lib/ui/jquery.ui.mouse.js"></script>
+        <script type="text/javascript" src="../lib/ui/jquery.ui.slider.js"></script>
+        <script type="text/javascript" src="../lib/ui/jquery.ui.button.js"></script>-->
         <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
@@ -48,35 +54,39 @@
         
         <script type="text/javascript">
             var vp = fluid.videoPlayer(".videoPlayer", {
-                video: {
-                    sources: [
-                        {
-                            src: "http://a15.video2.blip.tv/10390000798504/Commonscreative-ASharedCulture944.mov",
-                            //src: "video.mov",/* For offline work*/
-                            type: "video/mp4"
-                        },
-                        {
-                            src: "http://a32.video2.blip.tv/3550000338230/Commonscreative-ASharedCulture211.ogv",
-                            type: "video/ogg"
-                        },
-                        {
-                            src: "http://www.youtube.com/v/1DKm96Ftfko&hl=en&fs=1",
-                            type: "youtube"
+                model: {
+                    video: {
+                        sources: [
+                            {
+                                src: "http://a15.video2.blip.tv/10390000798504/Commonscreative-ASharedCulture944.mov",
+                                //src: "video.mov",/* For offline work*/
+                                type: "video/mp4"
+                            },
+                            {
+                                src: "http://a32.video2.blip.tv/3550000338230/Commonscreative-ASharedCulture211.ogv",
+                                type: "video/ogg"
+                            },
+                            {
+                                src: "http://www.youtube.com/v/1DKm96Ftfko&hl=en&fs=1",
+                                type: "youtube"
+                            }
+                        ]
+                    },
+                    // TODO: These captions don't match the video!
+                    captions: {
+                        sources: {
+                            english: {
+                                src: "http://localhost:8888/videoPlayer/html/flight.srt",
+                                type: "srt"
+                            }, 
+                            german: {
+                                src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
+                                type: "JSONcc"
+                            }
                         }
-                    ]
-                },
-                
-                // TODO: These captions don't match the video!
-                captions: {
-                    sources: {
-                        english: {
-                            src: "http://localhost:8888/videoPlayer/html/flight.srt",
-                            type: "srt"
-                        }, 
-                        german: {
-                            src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
-                            type: "JSONcc"
-                        }
+                    },
+                    states: {
+                        fullscreen: true
                     }
                 }
             });

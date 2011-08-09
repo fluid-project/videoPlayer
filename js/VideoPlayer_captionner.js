@@ -63,6 +63,10 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier.modelChanged.addListener("states.currentTime", that.displayCaptionForTime);
         
     };
+    
+    var createCaptionnerMarkup = function (that) {
+        that.toggleCaptionView();
+    };
     /**
      * captionner is responsible for displaying captions in a one-at-a-time style.
      * 
@@ -144,6 +148,7 @@ var fluid_1_4 = fluid_1_4 || {};
             }    
         };
         
+        createCaptionnerMarkup(that);
         bindCaptionnerModel(that);
         
         that.events.onReady.fire();

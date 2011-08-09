@@ -102,8 +102,8 @@ var fluid_1_4 = fluid_1_4 || {};
             that.container[0].currentTime = time;
         };
         
-        that.setVolume = function (volume) {
-            that.container[0].volume = volume;
+        that.setVolume = function (vol) {
+            that.container[0].volume = vol;
         };
         
         that.play = function () {
@@ -114,9 +114,14 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         };
         
+        that.refresh = function () {
+            //that.setTime(that.model.states.startTime);
+            that.setVolume(that.model.states.volume / 100);
+            that.play();
+        }
+        
         bindMediaModel(that);
         bindMediaDOMEvents(that);
-        
         that.events.onMediaReady.fire();
     };
     

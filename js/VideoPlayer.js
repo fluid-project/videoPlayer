@@ -14,7 +14,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    fluid.setLogging(true);
+    fluid.setLogging(false);
 
     var bindKeyboardControl = function (that) {
         var opts = {
@@ -64,11 +64,12 @@ var fluid_1_4 = fluid_1_4 || {};
         //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
         video.focus();
     };
-
+    
     var bindVideoPlayerDOMEvents = function (that) {
         var video = that.locate("video");
         video.click(that.play);
         video.bind("loadedmetadata", function () {
+            //that shouldn't be usefull but the video is too big if it's not used
             that.container.css("width", video[0].videoWidth);
             bindKeyboardControl(that);
         });
@@ -76,7 +77,12 @@ var fluid_1_4 = fluid_1_4 || {};
     
     var bindVideoPlayerModel = function (that) {
         that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
+        that.applier.modelChanged.addListener("states.canPlay", function() {
+            that.events.onViewReady.fire();
+            //that.refresh();
+        });
     };
+    
     
     //This is the default key bindings
     var defaultKeys = {
@@ -119,7 +125,6 @@ var fluid_1_4 = fluid_1_4 || {};
     
     fluid.defaults("fluid.videoPlayer", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
-        preInitFunction: "fluid.videoPlayer.preInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             afterScrub: null,
@@ -127,7 +132,8 @@ var fluid_1_4 = fluid_1_4 || {};
             onVideoLoaded: null,
             onVolumeChange: null,
             onTimeChange: null,
-            onTemplateReady: null
+            onTemplateReady: null,
+            onViewReady: null
         }, 
         listeners: {
             onTemplateReady: function() {console.log("templateready");}
@@ -190,10 +196,10 @@ var fluid_1_4 = fluid_1_4 || {};
         var tree = {};
         if (that.model.video.sources) {
             tree.video = {
-                decorators: {
+                decorators: [{
                     type: "fluid",
                     func: "fluid.videoPlayer.media"
-                }
+                }]
             };
         }
         if (that.options.controllerType === "html") {
@@ -202,28 +208,22 @@ var fluid_1_4 = fluid_1_4 || {};
                     type: "fluid",
                     func: "fluid.videoPlayer.controllers"
                 }]
-                
             };
         } else if (that.options.controllerType === "native") {
-            tree.video.decorators.attributes.controls = "true";
+            tree.video.decorators.push({
+                type: "attrs",
+                attributes: {
+                    controls: "true"
+                }
+            });
         }
-        if (that.model.captions.sources) {
-            tree.caption = {
-                decorators: [{
-                    type: "fluid",
-                    func: "fluid.videoPlayer.captionner"
-                }]
-                
-            };
-        }
+        tree.caption = {
+            decorators: [{
+                type: "fluid",
+                func: "fluid.videoPlayer.captionner"
+            }]
+        };
         return tree;
-    };
-
-    fluid.videoPlayer.preInit = function (that) {
-        that.model.video = that.options.video;
-        if (that.options.captions) {
-            that.model.captions.sources = that.options.captions.sources || null;
-        }    
     };
      
     fluid.videoPlayer.finalInit = function (that) {
@@ -271,6 +271,7 @@ var fluid_1_4 = fluid_1_4 || {};
                     video[0].webkitExitFullscreen();
                 }
             } else {*/
+                console.log(that.model.states.fullscreen);
                 if (that.model.states.fullscreen === true) {
                     that.videoWidth = that.container.css("width");
                     that.videoHeight = that.container.css("height");
@@ -286,9 +287,10 @@ var fluid_1_4 = fluid_1_4 || {};
                         height: "100%"
                     });
                 } else {
+                    var video = that.locate("video");
                     that.container.css({
-                        width: that.videoWidth,
-                        height: that.videoHeight,
+                        width: video[0].videoWidth,
+                        height: video[0].videoHeight,
                         position: "relative"
                     });
                 }
@@ -321,7 +323,13 @@ var fluid_1_4 = fluid_1_4 || {};
                 var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
             }
-        };        
+        };   
+        
+        that.refresh = function () {
+            console.log("yop");
+            that.fullscreen();
+        };
+        
         return that;
     };
         
@@ -365,15 +373,12 @@ var fluid_1_4 = fluid_1_4 || {};
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.eventBinder.finalInit",
         events: {
-            onReady: null
-        }, 
-        listeners: {
-            onReady : function() {console.log("eventbinder");}
+            onEventBinderReady: null
         }
     });
     
     fluid.videoPlayer.eventBinder.finalInit = function (that) {
-        that.events.onReady.fire();
+        that.events.onEventBinderReady.fire();
     };
      
     //this binds all the events of the videoPlayer to their listeners
@@ -382,8 +387,7 @@ var fluid_1_4 = fluid_1_4 || {};
             "fluid.videoPlayer.captionner",
             "fluid.videoPlayer.captionLoader",
             "fluid.videoPlayer",
-            "fluid.videoPlayer.media"],
-        {
+            "fluid.videoPlayer.media"], {
             options: {
                 listeners: {
                     "{controllers}.events.afterTimeChange": "{captionner}.resyncCaptions",
@@ -391,10 +395,11 @@ var fluid_1_4 = fluid_1_4 || {};
                     "{controllers}.events.onTimeChange": "{media}.setTime",
                     "{videoPlayer}.events.onTimeChange": "{media}.setTime",
                     "{controllers}.events.onVolumeChange": "{media}.setVolume",
-                    "{videoPlayer}.events.onVolumeChange": "{media}.setVolume"
+                    "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                    "{videoPlayer}.events.onViewReady": "{media}.refresh",
+                    "{videoPlayer}.events.onViewReady": "{videoPlayer}.refresh"
                 }
             }
-             
-        });
+    });
 
 })(jQuery, fluid_1_4);

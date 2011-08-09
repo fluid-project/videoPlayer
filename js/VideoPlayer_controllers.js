@@ -83,7 +83,7 @@ var fluid_1_4 = fluid_1_4 || {};
     var createControllerMarkup = function (that) {
         that.locate("play").button({
             icons: {
-                primary: "ui-icon-play"
+                primary: that.model.states.play ? "ui-icon-pause" : "ui-icon-play"
             },
             disabled: !that.model.states.canPlay,
             text: false
@@ -247,6 +247,10 @@ var fluid_1_4 = fluid_1_4 || {};
         
         that.toggleFullscreenView = function () {
             toggleView(that, "fullscreen");
+        };
+        
+        that.refresh = function () {
+            createControllerMarkup(that);
         };
         
         
