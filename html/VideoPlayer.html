@@ -3,22 +3,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <title>Video Player Demo</title>
-        <link type="text/css" href="../../infusion/src/webapp/framework/fss/css/fss-layout.css" rel="stylesheet" />
-        <link type="text/css" href="../../infusion/src/webapp/framework/fss/css/fss-theme-coal.css" rel="stylesheet" />
-        <link type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
-        <link type="text/css" href="../../infusion/src/webapp/lib/jquery/ui/css/fl-theme-coal/coal.css" rel="stylesheet" />
+        <link type="text/css" href="../utils/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
         
 
              <!-- Fluid and jQuery Dependencies -->
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
-        <!--<script type="text/javascript" src="../lib/jquery-ui/js/jquery-1.5.1.min.js"></script>-->
-        <script type="text/javascript" src="../lib/jquery-ui/js/jquery-ui-1.8.14.custom.min.js"></script>
-        <!--<script type="text/javascript" src="../lib/ui/jquery.ui.core.js"></script>
-        <script type="text/javascript" src="../lib/ui/jquery.ui.widget.js"></script>
-        <script type="text/javascript" src="../lib/ui/jquery.ui.mouse.js"></script>
-        <script type="text/javascript" src="../lib/ui/jquery.ui.slider.js"></script>
-        <script type="text/javascript" src="../lib/ui/jquery.ui.button.js"></script>-->
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.core.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.widget.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.mouse.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.slider.js"></script>
+        <script type="text/javascript" src="../utils/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
@@ -83,10 +78,11 @@
                                 src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
                                 type: "JSONcc"
                             }
-                        }
+                        },
+                        currentTrack: "english"
                     },
                     states: {
-                        fullscreen: true
+                        fullscreen: false
                     }
                 }
             });

@@ -81,11 +81,9 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.defaults("fluid.videoPlayer.media", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
+        preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onMediaReady: null
-        }, 
-        listeners: {
-            onMediaReady : function() {console.log("media");}
         },
         
         mediaRenderers: {
@@ -95,9 +93,7 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     });
     
-    fluid.videoPlayer.media.finalInit = function (that) {
-        renderSources(that);
-        
+    fluid.videoPlayer.media.preInit = function (that) {
         that.setTime = function (time) {
             that.container[0].currentTime = time;
         };
@@ -118,7 +114,11 @@ var fluid_1_4 = fluid_1_4 || {};
             //that.setTime(that.model.states.startTime);
             that.setVolume(that.model.states.volume / 100);
             that.play();
-        }
+        };
+    };
+    
+    fluid.videoPlayer.media.finalInit = function (that) {
+        renderSources(that);
         
         bindMediaModel(that);
         bindMediaDOMEvents(that);
@@ -129,6 +129,9 @@ var fluid_1_4 = fluid_1_4 || {};
         options: {
             model: "{videoPlayer}.model",
             applier: "{videoPlayer}.applier",
+            listeners: {
+                onMediaReady: "{videoPlayer}.onMediaReady"
+            }
         }
     });
 

@@ -108,18 +108,14 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
+        preInitFunction: "fluid.videoPlayer.controllers.preInit",
         events: {
-            onControllerReady: null,
+            onControllersReady: null,
             onVolumeChange: null,
             onTimeChange: null,
             afterTimeChange: null
-        }, 
-
-        listeners: {
-            onControllerReady : function () {
-                console.log("controllers");
-            }
         },
+        listeners: {},
 
         selectors: {
             play: ".flc-videoPlayer-controller-play",
@@ -209,11 +205,7 @@ var fluid_1_4 = fluid_1_4 || {};
         }
         return tree;
     };
-
-    fluid.videoPlayer.controllers.finalInit = function (that) {
-        that.renderer.refreshView();
-        createControllerMarkup(that);
-        
+    fluid.videoPlayer.controllers.preInit = function (that) {
         that.setCurrentTime = function () {
             updateTime(that, "currentTime");
         };
@@ -252,19 +244,25 @@ var fluid_1_4 = fluid_1_4 || {};
         that.refresh = function () {
             createControllerMarkup(that);
         };
-        
+    };
+
+    fluid.videoPlayer.controllers.finalInit = function (that) {
+        that.renderer.refreshView();
+        createControllerMarkup(that);
         
         bindControllerModel(that);
         
         bindControllerDOMEvents(that);
-        
-        that.events.onControllerReady.fire();
+        that.events.onControllersReady.fire();
     };
     
     fluid.demands("fluid.videoPlayer.controllers", "fluid.videoPlayer", {
         options: {
             model: "{videoPlayer}.model",
             applier: "{videoPlayer}.applier",
+            listeners: {
+                onControllersReady: "{videoPlayer}.events.onControllersReady.fire"
+            }
         }
     });
     
@@ -319,12 +317,11 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
+        preInitFunction: "fluid.videoPlayer.controllers.scrubber.preInit",
         events: {
             afterScrub: null,
             onScrub: null,
             onScrubberReady: null
-        }, listeners: {
-            onScrubberReady : function () {console.log("scrub");}
         },
         selectors: {
             scrubber: ".flc-videoPlayer-controller-scrubber"
@@ -334,22 +331,24 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     });
     
-    fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
-        var scrubber = createScrubberMarkup(that);
-        
+    fluid.videoPlayer.controllers.scrubber.preInit = function (that) {
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
-            scrubber.slider("option", "min", that.model.states.startTime +
+            that.locate("scrubber").slider("option", "min", that.model.states.startTime +
                 that.model.states.currentTime);
-        }
+        };
         
         that.updateMax = function () {
-            scrubber.slider("option", "max", that.model.states.totalTime);
-        }
+            that.locate("scrubber").slider("option", "max", that.model.states.totalTime);
+        };
         
         that.updateCurrent = function () {
-            scrubber.slider("value", that.model.states.currentTime);
-        }
+            that.locate("scrubber").slider("value", that.model.states.currentTime);
+        };
+    };
+    
+    fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
+        createScrubberMarkup(that);
 
         bindScrubberDOMEvents(that);
         
@@ -430,12 +429,10 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.defaults("fluid.videoPlayer.controllers.volumeControl",{
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.volumeControl.finalInit",
+        preInitFunction: "fluid.videoPlayer.controllers.volumeControl.preInit",
         events: {
             onReady: null,
             onChange: null
-        }, 
-        listeners: {
-            onReady : function() {console.log("volume");}
         },
         selectors: {
             volume: ".flc-videoPlayer-controller-volume",
@@ -450,9 +447,7 @@ var fluid_1_4 = fluid_1_4 || {};
         }
     });
     
-    fluid.videoPlayer.controllers.volumeControl.finalInit = function (that) {
-        createVolumeMarkup(that);
-        
+    fluid.videoPlayer.controllers.volumeControl.preInit = function (that) {
         that.showSlider = function () {
             that.locate("volume").hide();
             //is there a more correct way?
@@ -469,6 +464,10 @@ var fluid_1_4 = fluid_1_4 || {};
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value",volume);
         };
+    };
+    
+    fluid.videoPlayer.controllers.volumeControl.finalInit = function (that) {
+        createVolumeMarkup(that);
         
         bindVolumeDOMEvents(that);
         
@@ -499,6 +498,10 @@ var fluid_1_4 = fluid_1_4 || {};
         return;
     };
     
+    /*var selectorEscape = function (selector) {
+        selector.replace(new regexp())
+    };*/
+    
     var createMenuMarkup = function (that) {
         that.locate("menuButton").button({
             icons: {
@@ -508,24 +511,23 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         
         that.locate("captions").hide();
-        
-        
-        //console.log(that.locate("element"));
-        /*fluid.each(that.locate("label"), function (elt) {
-            console.log(that.locate("element"));
-        });*/
-        //that.locate("menu").buttonset();
+        that.locate("captions").buttonset();
+        // Because UI buttons is not working properly with check
+        that.locate("label").click(function(e) {
+            e.preventDefault();
+            var id = "#"+$(this).attr('for');
+            $(id).attr('checked', true);
+        });
+
     };
     
     
     fluid.defaults("fluid.videoPlayer.controllers.menu",{
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.menu.finalInit",
+        preInitFunction: "fluid.videoPlayer.controllers.menu.preInit",
         events: {
             onMenuReady: null
-        }, 
-        listeners: {
-            onMenuReady : function() {console.log("menu");}
         },
         selectors: {
             menuButton: ".flc-videoPlayer-controller-menu-button",
@@ -570,15 +572,17 @@ var fluid_1_4 = fluid_1_4 || {};
         return tree;
     };
     
-    fluid.videoPlayer.controllers.menu.finalInit = function (that) {
-        that.refreshView();
-        createMenuMarkup(that);
-        
+    fluid.videoPlayer.controllers.menu.preInit = function (that) {
         that.toggleMenu = function () {
             var menu = that.locate("captions");
             menu.toggle();
             menu.focus();
-        }
+        };
+    };
+    
+    fluid.videoPlayer.controllers.menu.finalInit = function (that) {
+        that.refreshView();
+        createMenuMarkup(that);
         
         bindMenuDOMEvents(that);
         
