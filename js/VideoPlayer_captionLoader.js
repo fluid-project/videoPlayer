@@ -31,17 +31,16 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.defaults("fluid.videoPlayer.captionLoader", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.captionLoader.finalInit",
+        preInitFunction: "fluid.videoPlayer.captionLoader.preInit",
         events: {
             onReady: null,
             onCaptionsLoaded: null
-        }, 
-        listeners: {
-            onReady : function() {console.log("cpationLoader");}
         },
         model: {
         }
     });
-    fluid.videoPlayer.captionLoader.finalInit = function (that) {
+    
+    fluid.videoPlayer.captionLoader.preInit = function (that) {
         that.setCaptions = function (captions) {
             // Render the caption area if necessary
             captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
@@ -83,10 +82,17 @@ var fluid_1_4 = fluid_1_4 || {};
                 });
             }
         };
+    };
+    fluid.videoPlayer.captionLoader.finalInit = function (that) {
         
         //if we provided default captions when we created the component we load it
-        if  (that.model.captions.sources) {
+        if  (that.model.captions.sources && that.model.captions.currentTrack) {
            that.loadCaptions();
+        } else {
+            that.applier.fireChangeRequest({
+                path: "states.displayCaptions",
+                value: false
+            });
         }
         
         that.events.onReady.fire();

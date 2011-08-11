@@ -125,29 +125,36 @@ var fluid_1_4 = fluid_1_4 || {};
     
     fluid.defaults("fluid.videoPlayer", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
+        preInitFunction: "fluid.videoPlayer.preInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             afterScrub: null,
             onReadyToLoadCaptions: null,
+            onCaptionsLoaded: null,
             onVideoLoaded: null,
             onVolumeChange: null,
             onTimeChange: null,
             onTemplateReady: null,
-            onViewReady: null
+            onViewReady: null,
+            onMediaReady: null,
+            onControllersReady: null,
+            onCaptionnerReady: null,
+            afterTimeChange: null
         }, 
         listeners: {
-            onTemplateReady: function() {console.log("templateready");}
+            onViewReady: "{videoPlayer}.refresh"
         },
         
         components: {
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
-                createOnEvent: "onTemplateReady"
-            },
-            eventBinder: {
-                type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onTemplateReady"
+                createOnEvent: "onTemplateReady",
+                options: {
+                    listeners: {
+                        onCaptionsLoaded: "{videoPlayer}.onCaptionsLoaded"
+                    }
+                }
             }
         },
         
@@ -177,7 +184,7 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             captions: {
                 sources: null,
-                currentTrack: "english",
+                currentTrack: undefined,
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined
@@ -199,6 +206,10 @@ var fluid_1_4 = fluid_1_4 || {};
                 decorators: [{
                     type: "fluid",
                     func: "fluid.videoPlayer.media"
+                },
+                {
+                    type: "fluid",
+                    func: "fluid.videoPlayer.eventBinderMedia"
                 }]
             };
         }
@@ -207,6 +218,10 @@ var fluid_1_4 = fluid_1_4 || {};
                 decorators: [{
                     type: "fluid",
                     func: "fluid.videoPlayer.controllers"
+                },
+                {
+                    type: "fluid",
+                    func: "fluid.videoPlayer.eventBinderControllers"
                 }]
             };
         } else if (that.options.controllerType === "native") {
@@ -221,39 +236,16 @@ var fluid_1_4 = fluid_1_4 || {};
             decorators: [{
                 type: "fluid",
                 func: "fluid.videoPlayer.captionner"
+            },
+            {
+                type: "fluid",
+                func: "fluid.videoPlayer.eventBinderCaptionner"
             }]
         };
         return tree;
     };
-     
-    fluid.videoPlayer.finalInit = function (that) {
-        that.applier = fluid.makeChangeApplier(that.model);
-       // Render each media source with its custom renderer, registered by type.
-      // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
-        if (!document.createElement('video').canPlayType) {
-            return;
-        }
-        
-        fluid.fetchResources(that.options.templates, function (res) {
-            for (var key in res) {
-                if (res[key].fetchError) {
-                    fluid.log("couldn't fetch" + res[key].href);
-                    fluid.log("status: " + res[key].fetchError.status +
-                    ", textStatus: " + res[key].fetchError.textStatus +
-                    ", errorThrown: " + res[key].fetchError.errorThrown);
-                } else if (key === "videoPlayer") {
-                    that.container.append(res[key].resourceText);
-                    that.refreshView();
-                    bindVideoPlayerDOMEvents(that);
-                    //create all the listeners to the model
-                    bindVideoPlayerModel(that);
-                }
-            }
 
-            that.events.onTemplateReady.fire();
-            
-        });
-        
+    fluid.videoPlayer.preInit = function (that) {
         that.play = function(ev) {
             that.applier.fireChangeRequest({
                 "path": "states.play",
@@ -271,7 +263,6 @@ var fluid_1_4 = fluid_1_4 || {};
                     video[0].webkitExitFullscreen();
                 }
             } else {*/
-                console.log(that.model.states.fullscreen);
                 if (that.model.states.fullscreen === true) {
                     that.videoWidth = that.container.css("width");
                     that.videoHeight = that.container.css("height");
@@ -326,9 +317,37 @@ var fluid_1_4 = fluid_1_4 || {};
         };   
         
         that.refresh = function () {
-            console.log("yop");
             that.fullscreen();
         };
+    };
+    
+    fluid.videoPlayer.finalInit = function (that) {
+        that.applier = fluid.makeChangeApplier(that.model);
+       // Render each media source with its custom renderer, registered by type.
+      // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
+        if (!document.createElement('video').canPlayType) {
+            return;
+        }
+        
+        fluid.fetchResources(that.options.templates, function (res) {
+            for (var key in res) {
+                if (res[key].fetchError) {
+                    fluid.log("couldn't fetch" + res[key].href);
+                    fluid.log("status: " + res[key].fetchError.status +
+                    ", textStatus: " + res[key].fetchError.textStatus +
+                    ", errorThrown: " + res[key].fetchError.errorThrown);
+                } else if (key === "videoPlayer") {
+                    that.container.append(res[key].resourceText);
+                    that.refreshView();
+                    bindVideoPlayerDOMEvents(that);
+                    //create all the listeners to the model
+                    bindVideoPlayerModel(that);
+                }
+            }
+
+            that.events.onTemplateReady.fire();
+            
+        });
         
         return that;
     };
@@ -366,40 +385,90 @@ var fluid_1_4 = fluid_1_4 || {};
     };
     
     /************************************************
-     *      VideoPlayer Event Binder                *
+     *      VideoPlayer Event Binders                *
      ************************************************/   
+    fluid.defaults("fluid.videoPlayer.eventBinderControllers", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
     
-    fluid.defaults("fluid.videoPlayer.eventBinder", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.eventBinder.finalInit",
-        events: {
-            onEventBinderReady: null
+    fluid.demands("fluid.videoPlayer.eventBinderControllers",
+        ["fluid.videoPlayer", "fluid.videoPlayer.controllers"], {
+        options: {
+            listeners: {
+                "{controllers}.events.onTimeChange": "{videoPlayer}.events.onTimeChange.fire",
+                "{controllers}.events.onVolumeChange": "{videoPlayer}.events.onVolumeChange.fire",
+                "{controllers}.events.afterTimeChange": "{videoPlayer}.events.afterTimeChange.fire"
+            }
         }
     });
     
-    fluid.videoPlayer.eventBinder.finalInit = function (that) {
-        that.events.onEventBinderReady.fire();
-    };
-     
-    //this binds all the events of the videoPlayer to their listeners
-    fluid.demands("fluid.videoPlayer.eventBinder", 
-        ["fluid.videoPlayer.controllers",
-            "fluid.videoPlayer.captionner",
-            "fluid.videoPlayer.captionLoader",
-            "fluid.videoPlayer",
-            "fluid.videoPlayer.media"], {
-            options: {
-                listeners: {
-                    "{controllers}.events.afterTimeChange": "{captionner}.resyncCaptions",
-                    "{captionLoader}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                    "{controllers}.events.onTimeChange": "{media}.setTime",
+    fluid.defaults("fluid.videoPlayer.eventBinderCaptionner", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+    
+    fluid.demands("fluid.videoPlayer.eventBinderCaptionner",
+        ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.afterTimeChange": "{captionner}.resyncCaptions"
+            }
+        }
+    });
+    
+    fluid.defaults("fluid.videoPlayer.eventBinderMedia", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+    
+    fluid.demands("fluid.videoPlayer.eventBinderMedia",
+        ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
                     "{videoPlayer}.events.onTimeChange": "{media}.setTime",
-                    "{controllers}.events.onVolumeChange": "{media}.setVolume",
                     "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
-                    "{videoPlayer}.events.onViewReady": "{media}.refresh",
-                    "{videoPlayer}.events.onViewReady": "{videoPlayer}.refresh"
+                    "{videoPlayer}.events.onViewReady": "{media}.refresh"
+            }
+        }
+    });  
+    
+    //////////////// For future implementation
+    //this binds all the events of the videoPlayer to their listeners 
+    // That would be the clean way but there is a real issue with contexts
+    
+    
+    /*fluid.defaults("fluid.videoPlayer.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        events: {
+            onEventBinderReady: null,
+            afterTimeChange: null,
+            onCaptionsLoaded: null,
+            onTimeChage: null,
+            onVolumeChange: null,
+            onViewReady:null
+        }
+    });
+    
+    fluid.demands("fluid.videoPlayer.eventBinder", 
+           "fluid.videoPlayer", {
+            options: {
+                events: {
+                    afterTimeChange: "{controllers}.events.afterTimeChange",
+                    onCaptionsLoaded: "{captionLoader}.events.onCaptionsLoaded", 
+                    onTimeChange: "{controllers}.events.onTimeChange",
+                    onVolumeChange: "{controllers}.events.onVolumeChange",
+                    //onVolumeChange: "{videoPlayer}.events.onVolumeChange",
+                    onViewReady: "{videoPlayer}.events.onViewReady" 
+                },
+                listeners: {
+                    afterTimeChange: "{captionner}.resyncCaptions",
+                    onCaptionsLoaded: "{captionner}.resyncCaptions",
+                    onTimeChange: "{media}.setTime",
+                    //"{videoPlayer}.events.onTimeChange": "{media}.setTime",
+                    onVolumeChange: "{media}.setVolume",
+                    //"{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                    onViewReady: "{media}.refresh",
                 }
             }
-    });
+    });  */ 
 
 })(jQuery, fluid_1_4);
