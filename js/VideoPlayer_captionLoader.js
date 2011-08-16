@@ -35,8 +35,6 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onReady: null,
             onCaptionsLoaded: null
-        },
-        model: {
         }
     });
     
@@ -83,8 +81,10 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         };
     };
+    
     fluid.videoPlayer.captionLoader.finalInit = function (that) {
         
+        bindCaptionLoaderModel(that);
         //if we provided default captions when we created the component we load it
         if  (that.model.captions.sources && that.model.captions.currentTrack) {
            that.loadCaptions();

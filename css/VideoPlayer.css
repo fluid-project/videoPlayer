@@ -19,8 +19,7 @@
  
 .fl-videoPlayer-controller {
     width:100%;
-    position: absolute;
-    bottom: 0;
+    
     margin: 10px;
 }
 
@@ -30,24 +29,27 @@
 }
 
 .fl-videoPlayer-controller-time {
-    margin: 0 5px;
-    padding: 0.4em;
+    /*margin: 0 5px;
+    */padding: 0.4em;
     line-height: 1.4;
     font-size: 1.1em;
-    height: 100%
+    height: 100%;
     text-align: center;
 }
 
 .fl-videoPlayer-controller-scrubberContainer {
-    width: 55%;
+    width: 100%;
+}
+.fl-videoPlayer-controller-scrubberContainer * {
+	margin: auto;
+	display: inline-block;
 }
 
 .fl-videoPlayer-controller-menu-captions {
     display: block;
     position: absolute;
     bottom: 50px;
-    width: 30%;
-    
+    width: 30%; 
 }
 
 
@@ -56,18 +58,23 @@
  */
  
 .fl-videoPlayer-captionArea {
-    bottom:10%;
+    bottom:0;
+    left: 20%;
+	right: 20%;
     position: absolute;
     text-align:center;
-    color: white;
-    width:100%;
 }
 
+.fl-videoPlayer-caption-captionText {
+    color: white;
+    background-color: black;
+    opacity: 0.7;
+}
 /*
 * mods to the coal theme
 */
 
 .fl-videoPlayer-controller-scrubber {
-    width: 100%;
+    width: 60%;
 }
 

@@ -44,7 +44,7 @@ var fluid_1_4 = fluid_1_4 || {};
     
     //delete and undisplay a piece of caption
     var removeCaption = function (that, elt) {
-        elt.container.fadeOut("fast", function () {
+        elt.container.fadeOut("slow", function () {
             elt.container.remove();
         });
         var temp = that.model.captions.currentCaptions;

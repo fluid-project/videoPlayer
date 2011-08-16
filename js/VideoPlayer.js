@@ -14,7 +14,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    fluid.setLogging(false);
+    fluid.setLogging(true);
 
     var bindKeyboardControl = function (that) {
         var opts = {
@@ -67,7 +67,10 @@ var fluid_1_4 = fluid_1_4 || {};
     
     var bindVideoPlayerDOMEvents = function (that) {
         var video = that.locate("video");
-        video.click(that.play);
+        video.click(function(ev) {
+        	ev.preventDefault();
+        	that.play();
+        });
         video.bind("loadedmetadata", function () {
             //that shouldn't be usefull but the video is too big if it's not used
             that.container.css("width", video[0].videoWidth);
@@ -79,7 +82,6 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
         that.applier.modelChanged.addListener("states.canPlay", function() {
             that.events.onViewReady.fire();
-            //that.refresh();
         });
     };
     
@@ -139,7 +141,8 @@ var fluid_1_4 = fluid_1_4 || {};
             onMediaReady: null,
             onControllersReady: null,
             onCaptionnerReady: null,
-            afterTimeChange: null
+            afterTimeChange: null,
+            onOldBrowserDetected: null
         }, 
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -155,6 +158,10 @@ var fluid_1_4 = fluid_1_4 || {};
                         onCaptionsLoaded: "{videoPlayer}.onCaptionsLoaded"
                     }
                 }
+            },
+            browserCompatibility: {
+            	type: "demo.html5BackwardsCompatability",
+            	createOnEvent: "onOldBrowserDetected"
             }
         },
         
@@ -213,39 +220,42 @@ var fluid_1_4 = fluid_1_4 || {};
                 }]
             };
         }
-        if (that.options.controllerType === "html") {
-            tree.controllers = {
-                decorators: [{
-                    type: "fluid",
-                    func: "fluid.videoPlayer.controllers"
-                },
-                {
-                    type: "fluid",
-                    func: "fluid.videoPlayer.eventBinderControllers"
-                }]
-            };
-        } else if (that.options.controllerType === "native") {
-            tree.video.decorators.push({
-                type: "attrs",
-                attributes: {
-                    controls: "true"
-                }
-            });
+	    if (!($.browser.msie && $.browser.version < 9)) {
+	        if (that.options.controllerType === "html") {
+	            tree.controllers = {
+	                decorators: [{
+	                    type: "fluid",
+	                    func: "fluid.videoPlayer.controllers"
+	                },
+	                {
+	                    type: "fluid",
+	                    func: "fluid.videoPlayer.eventBinderControllers"
+	                }]
+	            };
+	        } else if (that.options.controllerType === "native") {
+	            tree.video.decorators.push({
+	                type: "attrs",
+	                attributes: {
+	                    controls: "true"
+	                }
+	            });
+	        }
+	        tree.caption = {
+	            decorators: [{
+	                type: "fluid",
+	                func: "fluid.videoPlayer.captionner"
+	            },
+	            {
+	                type: "fluid",
+	                func: "fluid.videoPlayer.eventBinderCaptionner"
+	            }]
+	        };
         }
-        tree.caption = {
-            decorators: [{
-                type: "fluid",
-                func: "fluid.videoPlayer.captionner"
-            },
-            {
-                type: "fluid",
-                func: "fluid.videoPlayer.eventBinderCaptionner"
-            }]
-        };
         return tree;
     };
 
     fluid.videoPlayer.preInit = function (that) {
+    
         that.play = function(ev) {
             that.applier.fireChangeRequest({
                 "path": "states.play",
@@ -254,8 +264,8 @@ var fluid_1_4 = fluid_1_4 || {};
         };
         
         that.fullscreen = function () {
-            // For real fullscreen (only on safari how do I make the difference?)
-            /*if ($.browser.webkit) {
+            // For real fullscreen (only on safari for the moment) but no captions available in that case...
+            /*if ($.browser.safari) {
                 var video = that.locate("video");
                 if (that.model.states.fullscreen === true) {
                     video[0].webkitEnterFullscreen();
@@ -266,17 +276,18 @@ var fluid_1_4 = fluid_1_4 || {};
                 if (that.model.states.fullscreen === true) {
                     that.videoWidth = that.container.css("width");
                     that.videoHeight = that.container.css("height");
+                    // minus 5 just cause it makes it more comfortable
                     that.container.css({
-                        width: window.innerWidth + "px",
-                        height: window.innerHeight + "px",
-                        left: 0,
-                        top: 0,
-                        position: "fixed"
+                        width: window.innerWidth - 5 + "px",
+                        height: window.innerHeight - 5 + "px"
                     });
-                    that.locate("video").css({
+                    var video = that.locate("video")
+                    video.css({
                         width: "100%",
                         height: "100%"
                     });
+                    video.focus();
+                    
                 } else {
                     var video = that.locate("video");
                     that.container.css({
@@ -319,15 +330,13 @@ var fluid_1_4 = fluid_1_4 || {};
         that.refresh = function () {
             that.fullscreen();
         };
+        
     };
     
     fluid.videoPlayer.finalInit = function (that) {
         that.applier = fluid.makeChangeApplier(that.model);
        // Render each media source with its custom renderer, registered by type.
       // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
-        if (!document.createElement('video').canPlayType) {
-            return;
-        }
         
         fluid.fetchResources(that.options.templates, function (res) {
             for (var key in res) {
@@ -337,11 +346,17 @@ var fluid_1_4 = fluid_1_4 || {};
                     ", textStatus: " + res[key].fetchError.textStatus +
                     ", errorThrown: " + res[key].fetchError.errorThrown);
                 } else if (key === "videoPlayer") {
+                	if ($.browser.msie && $.browser.version < 9) {
+        				that.events.onOldBrowserDetected.fire();
+        			}
                     that.container.append(res[key].resourceText);
                     that.refreshView();
-                    bindVideoPlayerDOMEvents(that);
-                    //create all the listeners to the model
-                    bindVideoPlayerModel(that);
+                    //if we're on an old browser there's no point in linking all the evets as they won't exist...
+                    if (!($.browser.msie && $.browser.version < 9)) {            		
+	                    bindVideoPlayerDOMEvents(that);
+	                    //create all the listeners to the model
+	                    bindVideoPlayerModel(that);
+                    }
                 }
             }
 

@@ -37,13 +37,21 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier.modelChanged.addListener("states.play", that.play);
     };
     
+    var getcanPlayData = function (data) {
+    	return data.readyState == 4 || data.readyState == 3 || data.readyState == 2; 
+    };
+    
+    
     var bindMediaDOMEvents = function (that) {
         var video = that.container;
         video.bind("timeupdate", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "states.currentTime", 
-                value: ev.data.obj.currentTime
-            });
+        	//weirdly on event a timeupdate event is sent after the ended event so the condition is to avoid that
+            if (ev.data.obj.currentTime != ev.data.obj.duration) {
+	            that.applier.fireChangeRequest({
+	                path: "states.currentTime", 
+	                value: ev.data.obj.currentTime
+	            });
+        	}
         });
         
         video.bind("durationchange", {obj: video[0]}, function (ev) {
@@ -70,12 +78,46 @@ var fluid_1_4 = fluid_1_4 || {};
             }); 
         });
         
-        video.bind("canplay", function () {
+        //all browser don't support the canplay so we do all different states
+        video.bind("canplay", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
                 path: "states.canPlay", 
-                value: true
+                value: getcanPlayData(ev.data.obj)
             });
         });
+        
+        video.bind("canplaythrough", {obj: video[0]}, function (ev) {
+            that.applier.fireChangeRequest({
+                path: "states.canPlay", 
+                value: getcanPlayData(ev.data.obj)
+            });
+        });
+        
+        video.bind("loadeddata", {obj: video[0]}, function (ev) {
+           that.applier.fireChangeRequest({
+                path: "states.canPlay", 
+                value: getcanPlayData(ev.data.obj)
+            });
+        });
+        
+        video.bind("ended", function () {
+           that.applier.fireChangeRequest({
+                path: "states.play", 
+                value: false
+           });     
+           that.applier.fireChangeRequest({
+                path: "states.currentTime", 
+                value: 0
+           });
+        })
+        
+        /*if ($.browser) {
+        	video.bind("loadedmetadata", function () {
+            	//that shouldn't be usefull but the video is too big if it's not used
+            	that.container.css("width", video[0].videoWidth);
+            	bindKeyboardControl(that);
+        	});
+        }*/
     };
     
     fluid.defaults("fluid.videoPlayer.media", {
@@ -88,7 +130,9 @@ var fluid_1_4 = fluid_1_4 || {};
         
         mediaRenderers: {
             "video/mp4": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
+            "video/webm": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
             "video/ogg": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
+            "video/ogv": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
             "youtube": "fluid.videoPlayer.mediaRenderers.youTubePlayer"
         }
     });
