@@ -1,8 +1,20 @@
-//Controllers
+/*
+Copyright 2009 University of Toronto
+
+Licensed under the Educational Community License (ECL), Version 2.0 or the New
+BSD license. You may not use this file except in compliance with one these
+Licenses.
+
+You may obtain a copy of the ECL 2.0 License and BSD License at
+https://source.fluidproject.org/svn/LICENSE.txt
+*/
+
+/*global jQuery, window*/
+
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    
+
     //change the classes/title/checked of the selected checkbox
     var toggleView = function (that, element) {
         var tag = that.locate(element);
@@ -18,16 +30,9 @@ var fluid_1_4 = fluid_1_4 || {};
                 "title": that.options.strings[element + "Off"]
             });
             tag.removeClass(that.options.styles[element + "On"]).addClass(that.options.styles[element + "Off"]);
-       }
-       tag.button("refresh" );
+        }
+        tag.button("refresh");
     };
-    
-    //change the text of the selected time
-    var updateTime = function (that, element) {
-        var time = that.locate(element);
-        time.text(fluid.videoPlayer.formatTime(that.model.states[element]));
-    };
-    
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
      *      a volume controller, a button to put captions on/off and a menu
@@ -52,11 +57,8 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier.modelChanged.addListener("states.play", that.togglePlayView);
         that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionsView);
         that.applier.modelChanged.addListener("states.fullscreen", that.toggleFullscreenView);
-        
-        that.applier.modelChanged.addListener("states.currentTime", that.setCurrentTime);
-        that.applier.modelChanged.addListener("states.totalTime", that.setTotalTime);
     };
-    
+
     var bindControllerDOMEvents = function (that) {
         that.locate("play").click(function () {
             that.applier.fireChangeRequest({
@@ -64,14 +66,14 @@ var fluid_1_4 = fluid_1_4 || {};
                 "value": !that.model.states.play
             });
         });
-        
+
         that.locate("fullscreen").fluid("activatable", function () {
             that.applier.fireChangeRequest({
                 "path": "states.fullscreen",
                 "value": !that.model.states.fullscreen
             });
-        });        
-        
+        });
+
         that.locate("displayCaptions").fluid("activatable", function () {
             that.applier.fireChangeRequest({
                 "path": "states.displayCaptions",
@@ -102,9 +104,8 @@ var fluid_1_4 = fluid_1_4 || {};
             disabled: !that.model.states.canPlay,
             text: false
         });
-        return;
     };
-    
+
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
@@ -121,8 +122,6 @@ var fluid_1_4 = fluid_1_4 || {};
             play: ".flc-videoPlayer-controller-play",
             displayCaptions: ".flc-videoPlayer-controller-caption",
             fullscreen: ".flc-videoPlayer-controller-fullscreen",
-            totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current",
             scrubberContainer: ".flc-videoPlayer-controller-scrubberContainer",
             volumeContainer: ".flc-videoPlayer-controller-volumeContainer",
             menuContainer: ".flc-videoPlayer-controller-menuContainer"
@@ -143,14 +142,14 @@ var fluid_1_4 = fluid_1_4 || {};
             displayCaptionsOn: "Captions On",
             displayCaptionsOff: "Captions Off",
             fullscreenOn: "Fullscreen On",
-            fullscreenOff: "Fullscreen Off",
+            fullscreenOff: "Fullscreen Off"
         },
-        
+
         rendererOptions: {
             autoBind: true,
             applier: "{controllers}.applier"
         },
-        
+
         produceTree: "fluid.videoPlayer.controllers.produceTree"
     });
 
@@ -161,7 +160,7 @@ var fluid_1_4 = fluid_1_4 || {};
             if (that.options.selectors[item]) {
                 tree[item] = {};
                 if (item === "fullscreen" || item === "displayCaptions") {
-                        tree[item].valuebinding = "states." + item;
+                    tree[item].valuebinding = "states." + item;
                 }
                 if (item === "play" || item === "displayCaptions" || item === "fullscreen") {
                     value = that.model.states[item] ? "On" : "Off";
@@ -172,10 +171,6 @@ var fluid_1_4 = fluid_1_4 || {};
                     if (item === "play") {
                         tree[item].decorators.attributes = {"disabled": "disabled"};
                     }
-                } else if (item === "currentTime" || item === "totalTime") {
-                    tree[item].decorators = {
-                        addClass: that.options.styles.time
-                    };
                 }
             }
         }
@@ -205,18 +200,11 @@ var fluid_1_4 = fluid_1_4 || {};
         }
         return tree;
     };
-    fluid.videoPlayer.controllers.preInit = function (that) {
-        that.setCurrentTime = function () {
-            updateTime(that, "currentTime");
-        };
-        
-        that.setTotalTime = function () {
-            updateTime(that, "totalTime");
-        };
-        
+
+    fluid.videoPlayer.controllers.preInit = function (that) {   
         that.togglePlayView = function () {
             var play = that.locate("play");
-            var options = {}
+            var options = {};
             if (that.model.states.play) {
                 play.removeClass(that.options.styles.playOn).addClass(that.options.styles.playOff);
                 options = {
@@ -232,15 +220,15 @@ var fluid_1_4 = fluid_1_4 || {};
             }
             play.button("option", options);
         };
-        
+
         that.toggleCaptionsView = function () {
             toggleView(that, "displayCaptions");
         };
-        
+
         that.toggleFullscreenView = function () {
             toggleView(that, "fullscreen");
         };
-        
+
         that.refresh = function () {
             createControllerMarkup(that);
         };
@@ -249,10 +237,9 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.videoPlayer.controllers.finalInit = function (that) {
         that.renderer.refreshView();
         createControllerMarkup(that);
-        
         bindControllerModel(that);
-        
         bindControllerDOMEvents(that);
+
         that.events.onControllersReady.fire();
     };
     
@@ -270,6 +257,12 @@ var fluid_1_4 = fluid_1_4 || {};
     * scrubber: a slider to follow the progress *
     *           of the video                    *
     ********************************************/
+        
+    //change the text of the selected time
+    var updateTime = function (that, element) {
+        var time = that.locate(element);
+        time.text(fluid.videoPlayer.formatTime(that.model.states[element]));
+    };
     var bindScrubberDOMEvents = function (that) {
         // Bind the scrubbers slide event to change the video's time.
         var scrubber = that.locate("scrubber");
@@ -282,7 +275,7 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         });
     };
-    
+
     var bindScrubberModel = function (that) {
         // Setup the scrubber when we know the duration of the video.
         that.applier.modelChanged.addListener("states.startTime", that.updateMin);
@@ -290,7 +283,7 @@ var fluid_1_4 = fluid_1_4 || {};
         that.applier.modelChanged.addListener("states.totalTime", that.updateMax);
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         that.applier.modelChanged.addListener("states.currentTime", that.updateCurrent);
-        
+
         that.applier.modelChanged.addListener("states.canPlay", function () {
             var scrubber = that.locate("scrubber");
             if (that.model.states.canPlay === true) {
@@ -300,12 +293,8 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         });
     };
-    
-    var createScrubberMarkup = function (that) {
-        var scrub = $("<div class='flc-videoPlayer-controller-scrubber'>");
-        scrub.addClass(that.options.styles.scrubber);
-        that.container.append(scrub);
 
+    var createScrubberMarkup = function (that) {
         var scrubber = that.locate("scrubber");
         scrubber.slider({
             unittext: "seconds",
@@ -313,9 +302,9 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         return scrubber;
     };
-    
+
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
         preInitFunction: "fluid.videoPlayer.controllers.scrubber.preInit",
         events: {
@@ -324,40 +313,47 @@ var fluid_1_4 = fluid_1_4 || {};
             onScrubberReady: null
         },
         selectors: {
+            totalTime: ".flc-videoPlayer-controller-total",
+            currentTime: ".flc-videoPlayer-controller-current",
             scrubber: ".flc-videoPlayer-controller-scrubber"
         },
-        styles: {
-            scrubber: "fl-videoPlayer-controller-scrubber"
-        }
+        produceTree: "fluid.videoPlayer.controllers.scrubber.produceTree"
     });
-    
+
+    fluid.videoPlayer.controllers.scrubber.produceTree = function (that) {
+        var tree = {};
+        tree.currentTime = "${states.currentTime}";
+        tree.totalTime = "${states.totalTime}";
+        tree.scrubber = {}; 
+    };
+
     fluid.videoPlayer.controllers.scrubber.preInit = function (that) {
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
-            that.locate("scrubber").slider("option", "min", that.model.states.startTime +
+            that.locate("scrubber").slider("option", "min", startTime +
                 that.model.states.currentTime);
         };
-        
+
         that.updateMax = function () {
+            updateTime(that, "totalTime");
             that.locate("scrubber").slider("option", "max", that.model.states.totalTime);
         };
-        
+
         that.updateCurrent = function () {
+            updateTime(that, "currentTime");
             that.locate("scrubber").slider("value", that.model.states.currentTime);
         };
     };
-    
+
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
         createScrubberMarkup(that);
-
         bindScrubberDOMEvents(that);
-        
         bindScrubberModel(that);
 
         that.events.onScrubberReady.fire();
     };
-    
-    fluid.demands("fluid.videoPlayer.controllers.scrubber","fluid.videoPlayer.controllers", {
+
+    fluid.demands("fluid.videoPlayer.controllers.scrubber", "fluid.videoPlayer.controllers", {
         options: {
             model: "{controllers}.model",
             applier: "{controllers}.applier",
@@ -367,8 +363,7 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         }
     });
-    
-    
+
     /********************************************************
     * Volume Control: a button that turns into a slider     *
     *           To control the volume                       *
@@ -378,18 +373,15 @@ var fluid_1_4 = fluid_1_4 || {};
         var volumeControl = that.locate("volumeControl");
         // hide the volume slider when the button is clicked
         volumeButton.click(that.showSlider);
-        
         volumeControl.focusout(that.showButton);
-        
         // Bind the volume Control slide event to change the video's volume and its image.
         volumeControl.bind("slide", function (evt, ui) {
             that.events.onChange.fire(ui.value / 100.0);
         });
     };
-    
+
     var bindVolumeModel = function (that) {
         that.applier.modelChanged.addListener("states.volume", that.updateVolume);
-        
         that.applier.modelChanged.addListener("states.canPlay", function () {
             if (that.model.states.canPlay === true) {
                 that.locate("volume").button("enable");
@@ -398,7 +390,7 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         });
     };
-    
+
     var createVolumeMarkup = function (that) {
         var volumeElt = $("<button class='flc-videoPlayer-controller-volume'/>");
         volumeElt.addClass(that.options.styles.volume);
@@ -411,7 +403,6 @@ var fluid_1_4 = fluid_1_4 || {};
             text: false
         });
         that.container.append(volumeElt);
-        
         var volumeControl = $("<div class='flc-videoPlayer-controller-volumeControl'/>");
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
@@ -423,10 +414,9 @@ var fluid_1_4 = fluid_1_4 || {};
         });
         volumeControl.hide();
         that.container.append(volumeControl);
-        
     };
-    
-    fluid.defaults("fluid.videoPlayer.controllers.volumeControl",{
+
+    fluid.defaults("fluid.videoPlayer.controllers.volumeControl", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.volumeControl.finalInit",
         preInitFunction: "fluid.videoPlayer.controllers.volumeControl.preInit",
@@ -446,62 +436,54 @@ var fluid_1_4 = fluid_1_4 || {};
             volume: "Volume"
         }
     });
-    
+
     fluid.videoPlayer.controllers.volumeControl.preInit = function (that) {
         that.showSlider = function () {
-            that.locate("volume").hide();
             //is there a more correct way?
             that.locate("volumeControl").show().find(".ui-slider-handle").focus();
         };
         
         that.showButton = function () {
             that.locate("volumeControl").hide();
-            that.locate("volume").show();
+            that.locate("volume").focus();
         };
-        
+
         that.updateVolume = function () {
             var volume = that.model.states.volume;
             var volumeControl = that.locate("volumeControl");
-            volumeControl.slider("value",volume);
+            volumeControl.slider("value", volume);
         };
     };
-    
+
     fluid.videoPlayer.controllers.volumeControl.finalInit = function (that) {
         createVolumeMarkup(that);
-        
         bindVolumeDOMEvents(that);
-        
         bindVolumeModel(that);
         that.events.onReady.fire();
     };
-    
-    fluid.demands("fluid.videoPlayer.controllers.volumeControl","fluid.videoPlayer.controllers", {
+
+    fluid.demands("fluid.videoPlayer.controllers.volumeControl", "fluid.videoPlayer.controllers", {
         options: {
-            model: "{controllers}.model",
-            applier: "{controllers}.applier",
+            model: "{videoPlayer}.model",
+            applier: "{videoPlayer}.applier",
             listeners: {
                 onChange: "{controllers}.events.onVolumeChange.fire"
             }
         }
     });
-    
+
     /********************************************************
     * Menu: a menu to choose the caption and other options  *
     *********************************************************/
     var bindMenuDOMEvents = function (that) {
         that.locate("menuButton").click(that.toggleMenu);
         that.locate("captions").focusout(that.toggleMenu);
-        return;
+        that.locate("captions").mouseleave(that.toggleMenu);
     };
-    
+
     var bindMenuModel = function (that) {
-        return;
     };
-    
-    /*var selectorEscape = function (selector) {
-        selector.replace(new regexp())
-    };*/
-    
+
     var createMenuMarkup = function (that) {
         that.locate("menuButton").button({
             icons: {
@@ -509,20 +491,24 @@ var fluid_1_4 = fluid_1_4 || {};
             },
             text: false
         });
-        
+
         that.locate("captions").hide();
-        that.locate("captions").buttonset();
+        that.locate("element").buttonset();
         // Because UI buttons is not working properly with check
-        that.locate("label").click(function(e) {
+        that.locate("label").click(function (e) {
             e.preventDefault();
-            var id = "#"+$(this).attr('for');
+            var id = "#" + $.escapeSelector($(this).attr('for'));
+            that.locate("input").removeAttr("checked");
             $(id).attr('checked', true);
+            that.applier.fireChangeRequest({
+                path: "captions.currentTrack",
+                value: $(id).attr("value")
+            });
         });
 
     };
-    
-    
-    fluid.defaults("fluid.videoPlayer.controllers.menu",{
+
+    fluid.defaults("fluid.videoPlayer.controllers.menu", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.menu.finalInit",
         preInitFunction: "fluid.videoPlayer.controllers.menu.preInit",
@@ -544,7 +530,7 @@ var fluid_1_4 = fluid_1_4 || {};
         repeatingSelectors: ["element"],
         produceTree: "fluid.videoPlayer.controllers.menu.produceTree"
     });
-    
+
     fluid.videoPlayer.controllers.menu.produceTree = function (that) {
         var tree = {};
         var list = [];
@@ -571,29 +557,31 @@ var fluid_1_4 = fluid_1_4 || {};
         };
         return tree;
     };
-    
+
     fluid.videoPlayer.controllers.menu.preInit = function (that) {
         that.toggleMenu = function () {
             var menu = that.locate("captions");
             menu.toggle();
-            menu.focus();
+            if (menu.css("display") !== "none") {
+                menu.focus();
+            } else {
+                that.locate("menuButton").focus();
+            }
         };
     };
-    
+
     fluid.videoPlayer.controllers.menu.finalInit = function (that) {
         that.refreshView();
         createMenuMarkup(that);
-        
         bindMenuDOMEvents(that);
-        
         bindMenuModel(that);
         that.events.onMenuReady.fire();
     };
-    
-    fluid.demands("fluid.videoPlayer.controllers.menu","fluid.videoPlayer.controllers", {
+
+    fluid.demands("fluid.videoPlayer.controllers.menu", "fluid.videoPlayer.controllers", {
         options: {
-            model: "{controllers}.model",
-            applier: "{controllers}.applier"
+            model: "{videoPlayer}.model",
+            applier: "{videoPlayer}.applier"
         }
     });
 

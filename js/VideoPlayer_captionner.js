@@ -1,9 +1,19 @@
-//Captions
+/*
+Copyright 2009 University of Toronto
+
+Licensed under the Educational Community License (ECL), Version 2.0 or the New
+BSD license. You may not use this file except in compliance with one these
+Licenses.
+
+You may obtain a copy of the ECL 2.0 License and BSD License at
+https://source.fluidproject.org/svn/LICENSE.txt
+*/
+
+/*global jQuery, window*/
 
 var fluid_1_4 = fluid_1_4 || {};
+
 (function ($, fluid) {
-    //TODO deal when there's no captions!!!!!!!!
-    
     var findCaptionForTime = function (that, timeInMillis) {     
         // TODO: This algorithm looks better but there might be even better.
         for (var x = that.model.captions.currentIndice; x < that.model.captions.track.length; x++) {
@@ -17,8 +27,8 @@ var fluid_1_4 = fluid_1_4 || {};
             var match = that.model.captions.track[x];
             if (match.inMilliTime <= timeInMillis && match.outMilliTime >= timeInMillis) {
                 that.model.captions.currentIndice = x + 1;
-                return match; 
-            }      
+                return match;
+            }
         }
         return null;
     };
@@ -41,32 +51,30 @@ var fluid_1_4 = fluid_1_4 || {};
             value: temp
         });
     };
-    
+
     //delete and undisplay a piece of caption
     var removeCaption = function (that, elt) {
-        elt.container.fadeOut("fast", function () {
+        elt.container.fadeOut("slow", function () {
             elt.container.remove();
         });
         var temp = that.model.captions.currentCaptions;
         temp.splice(elt, 1);
         that.applier.fireChangeRequest({
             path: "captions.currentCaptions",
-            value: temp 
+            value: temp
         });
     };
-    
+
     var bindCaptionnerModel = function (that) {
         that.applier.modelChanged.addListener("captions.currentCaptions", that.refreshView);
-        
         that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionView);
-        
         that.applier.modelChanged.addListener("states.currentTime", that.displayCaptionForTime);
-        
     };
     
     var createCaptionnerMarkup = function (that) {
         that.toggleCaptionView();
     };
+
     /**
      * captionner is responsible for displaying captions in a one-at-a-time style.
      * 
@@ -94,21 +102,20 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         }
     });
-    
+
     fluid.videoPlayer.captionner.preInit = function (that) {
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
             fluid.each(that.model.captions.currentCaptions, function (caption) {
                 removeCaption(that, caption);
             });
-            
             that.applier.fireChangeRequest({
                 path: "captions.currentIndice", 
                 value: 0
             });
             return that;
         };
-        
+
         that.displayCaptionForTime = function (time) {
             if (that.model.captions.track) {
                 // Display a new caption.
@@ -119,7 +126,6 @@ var fluid_1_4 = fluid_1_4 || {};
                 }
             }
             return that;
-            
         };
         
         that.toggleCaptionView = function () {
@@ -129,7 +135,7 @@ var fluid_1_4 = fluid_1_4 || {};
                 that.container.fadeOut("fast", "linear");
             }
         };
-        
+
         that.refreshView = function () {
             // Clear out any caption that has hit its end time.
             var timeInMillis = Math.round(that.model.states.currentTime * 1000);
@@ -138,18 +144,18 @@ var fluid_1_4 = fluid_1_4 || {};
                     removeCaption(that, elt);
                 }
             });
-            
+
             //if there's too many captions remove the oldest one
             if (that.model.captions.currentCaptions && that.model.captions.currentCaptions.length > that.model.captions.maxNumber) {
                 removeCaption(that, that.model.currentCaptions[0]);
-            }    
+            }
         };
     };
-    
+
     fluid.videoPlayer.captionner.finalInit = function (that) {
         createCaptionnerMarkup(that);
         bindCaptionnerModel(that);
-        
+
         that.events.onCaptionnerReady.fire();
     };
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
@@ -171,5 +177,5 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         }
     });
-    
+
 })(jQuery, fluid_1_4);

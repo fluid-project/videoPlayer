@@ -5,7 +5,6 @@
         <title>Video Player Demo</title>
         <link type="text/css" href="../utils/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
-        
 
              <!-- Fluid and jQuery Dependencies -->
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/core/js/jquery.js"></script>
@@ -13,7 +12,6 @@
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.widget.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.mouse.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.slider.js"></script>
-        <script type="text/javascript" src="../utils/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
@@ -29,36 +27,50 @@
         <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/ModelTransformations.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js"></script>
         <!-- renderer -->
-         <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/fluidParser.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/fluidParser.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/fluidRenderer.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/RendererUtilities.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/fastXmlPull/js/fastXmlPull.js"></script>
-       
+        <!-- Utils -->
+        <script type="text/javascript" src="../utils/js/jquery.ui.button.js"></script>
+        <script type="text/javascript" src="../utils/js/escapeSelector.js"></script>
+        <!--[if lt IE 9]>
+        	<script type="text/javascript" src="../utils/js/HTML5-backcompat.js"></script>
+        <![endif]-->      
         <!-- VideoPlayer dependencies -->
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_captionner.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_captionLoader.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
-    </head>
+
+        </head>
     <body>
 	    <h1>Infusion HTML 5 Video Player</h1>
 
-        <div class="videoPlayer fl-videoPlayer">
+        <div class="videoPlayer fl-videoPlayer fl-theme-coal">
+        	
         </div>
-        
+
         <script type="text/javascript">
             var vp = fluid.videoPlayer(".videoPlayer", {
                 model: {
                     video: {
                         sources: [
                             {
-                                src: "http://a15.video2.blip.tv/10390000798504/Commonscreative-ASharedCulture944.mov",
-                                //src: "video.mov",/* For offline work*/
+                                src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
                                 type: "video/mp4"
                             },
                             {
-                                src: "http://a32.video2.blip.tv/3550000338230/Commonscreative-ASharedCulture211.ogv",
+                                src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.webm",
+                                type: "video/webm"
+                            },
+                            {
+                                src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.theora.ogv",
+                                type: "video/ogg"
+                            },
+                            {
+                                src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.ogg",
                                 type: "video/ogg"
                             },
                             {
@@ -71,14 +83,15 @@
                     captions: {
                         sources: {
                             english: {
-                                src: "http://localhost:8888/videoPlayer/html/flight.srt",
+                                src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.en.srt",
                                 type: "srt"
                             }, 
                             german: {
-                                src: "http://localhost:8888/videoPlayer/html/inlineEditScreenCastCaptions.json",
-                                type: "JSONcc"
+                                src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.de.srt",
+                                type: "srt"
                             }
                         },
+                        conversionServiceUrl: "http://royalgiz.fr/videoplayer/conversion_service/index.php",
                         currentTrack: "english"
                     },
                     states: {

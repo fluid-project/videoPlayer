@@ -14,20 +14,16 @@ https://source.fluidproject.org/svn/LICENSE.txt
 var fluid_1_4 = fluid_1_4 || {};
 
 (function ($, fluid) {
-    
-
     /**
      * captionLoader renders loads from an Js object src element a caption file and converts it to JsonCC.
      * 
      * @param {Object} options configuration options for the comoponent
      * Note: when the caption is loaded by Ajax the event onCaptionsLoaded is fired
      */
-    
-    
     var bindCaptionLoaderModel = function (that) {
         that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions);
     };
-    
+
     fluid.defaults("fluid.videoPlayer.captionLoader", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.captionLoader.finalInit",
@@ -35,8 +31,6 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onReady: null,
             onCaptionsLoaded: null
-        },
-        model: {
         }
     });
     
@@ -83,30 +77,28 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         };
     };
+    
     fluid.videoPlayer.captionLoader.finalInit = function (that) {
-        
+        bindCaptionLoaderModel(that);
         //if we provided default captions when we created the component we load it
-        if  (that.model.captions.sources && that.model.captions.currentTrack) {
-           that.loadCaptions();
+        if (that.model.captions.sources && that.model.captions.currentTrack) {
+            that.loadCaptions();
         } else {
             that.applier.fireChangeRequest({
                 path: "states.displayCaptions",
                 value: false
             });
         }
-        
         that.events.onReady.fire();
-        
         return that;
     };
-    
+
     fluid.demands("fluid.videoPlayer.captionLoader", "fluid.videoPlayer", {
         options: {
             model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
+            applier: "{videoPlayer}.applier"
         }
-    });
-    
+    });    
 })(jQuery, fluid_1_4);
 
 
