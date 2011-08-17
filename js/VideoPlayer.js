@@ -268,8 +268,8 @@ var fluid_1_4 = fluid_1_4 || {};
                 that.videoHeight = that.container.css("height");
                 // minus 5 just cause it makes it more comfortable
                 that.container.css({
-                    width: window.innerWidth - 5 + "px",
-                    height: window.innerHeight - 5 + "px"
+                    width: window.innerWidth + "px",
+                    height: window.innerHeight - 20 + "px"
                 });
                 video.css({
                     width: "100%",
