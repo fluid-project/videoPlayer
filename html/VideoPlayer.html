@@ -4,8 +4,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <title>Video Player Demo</title>
         <link type="text/css" href="../utils/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
-        <link type="text/css" href="../../infusion/src/webapp/framework/fss/css/fss-layout.css" rel="stylesheet" />
-        <link type="text/css" href="../../infusion/src/webapp/framework/fss/css/fss-theme-coal.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
 
              <!-- Fluid and jQuery Dependencies -->
@@ -14,7 +12,6 @@
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.widget.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.mouse.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/ui/js/jquery.ui.slider.js"></script>
-        <script type="text/javascript" src="../utils/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/jquery.keyboard-a11y.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/swfobject/js/swfobject.js"></script>
@@ -30,21 +27,23 @@
         <script type="text/javascript" src="../../infusion/src/webapp/framework/core/js/ModelTransformations.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js"></script>
         <!-- renderer -->
-         <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/fluidParser.js"></script>
+        <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/fluidParser.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/fluidRenderer.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/framework/renderer/js/RendererUtilities.js"></script>
         <script type="text/javascript" src="../../infusion/src/webapp/lib/fastXmlPull/js/fastXmlPull.js"></script>
-       
-        <!-- VideoPlayer dependencies -->
+        <!-- Utils -->
+        <script type="text/javascript" src="../utils/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../utils/js/escapeSelector.js"></script>
+        <!--[if lt IE 9]>
+        	<script type="text/javascript" src="../utils/js/HTML5-backcompat.js"></script>
+        <![endif]-->      
+        <!-- VideoPlayer dependencies -->
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_captionner.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_captionLoader.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
-        <!--[if lt IE 9]>
-        	<script type="text/javascript" src="../utils/js/HTML5-backcompat.js"></script>
-        <![endif]-->
+
         </head>
     <body>
 	    <h1>Infusion HTML 5 Video Player</h1>
