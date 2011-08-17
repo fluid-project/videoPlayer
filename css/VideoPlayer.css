@@ -41,15 +41,21 @@
     width: 100%;
 }
 .fl-videoPlayer-controller-scrubberContainer * {
-	margin: auto;
-	display: inline-block;
+    margin: auto;
+    display: inline-block;
+}
+
+.fl-videoPlayer-controller-volumeControl {
+    display: block;
+    position: absolute;
+    bottom: -40px;
+    z-index: 100;
 }
 
 .fl-videoPlayer-controller-menu-captions {
     display: block;
     position: absolute;
-    bottom: 50px;
-    width: 30%; 
+    bottom: -40px;
 }
 
 
