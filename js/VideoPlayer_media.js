@@ -147,7 +147,6 @@ var fluid_1_4 = fluid_1_4 || {};
         };
 
         that.refresh = function () {
-            //that.setTime(that.model.states.startTime);
             that.setVolume(that.model.states.volume / 100);
             that.play();
         };
@@ -165,7 +164,7 @@ var fluid_1_4 = fluid_1_4 || {};
             model: "{videoPlayer}.model",
             applier: "{videoPlayer}.applier",
             listeners: {
-                onMediaReady: "{videoPlayer}.onMediaReady"
+                onMediaReady: "{videoPlayer}.events.onMediaReady.fire"
             }
         }
     });

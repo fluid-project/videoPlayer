@@ -128,10 +128,8 @@ var fluid_1_4 = fluid_1_4 || {};
         preInitFunction: "fluid.videoPlayer.preInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            afterScrub: null,
             onReadyToLoadCaptions: null,
             onCaptionsLoaded: null,
-            onVideoLoaded: null,
             onVolumeChange: null,
             onTimeChange: null,
             onTemplateReady: null,
