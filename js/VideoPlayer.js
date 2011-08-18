@@ -332,7 +332,7 @@ var fluid_1_4 = fluid_1_4 || {};
                         ", errorThrown: " + res[key].fetchError.errorThrown);
                 } else if (key === "videoPlayer") {
                     if ($.browser.msie && $.browser.version < 9) {
-                        that.events.onOldBrowserDetected.fire();
+                        that.events.onOldBrowserDetected.fire($.browser);
                     }
                     that.container.append(res[key].resourceText);
                     that.refreshView();

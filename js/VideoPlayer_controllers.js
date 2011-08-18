@@ -85,21 +85,21 @@ var fluid_1_4 = fluid_1_4 || {};
     var createControllerMarkup = function (that) {
         that.locate("play").button({
             icons: {
-                primary: that.model.states.play ? "ui-icon-pause" : "ui-icon-play"
+                primary: that.model.states.play ? that.options.styles.pauseIcon : that.options.styles.playIcon
             },
             disabled: !that.model.states.canPlay,
             text: false
         });
         that.locate("displayCaptions").button({
             icons: {
-                primary: "ui-icon-comment"
+                primary: that.options.styles.captionIcon
             },
             disabled: !that.model.states.canPlay,
             text: false
         });
         that.locate("fullscreen").button({
             icons: {
-                primary: "ui-icon-extlink"
+                primary: that.options.style.fullscreenIcon
             },
             disabled: !that.model.states.canPlay,
             text: false
@@ -133,7 +133,11 @@ var fluid_1_4 = fluid_1_4 || {};
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
             displayCaptionsOff: "fl-videoPlayer-state-captionOff",
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
-            fullscreenOff: "fl-videoPlayer-state-fullscreenOff"
+            fullscreenOff: "fl-videoPlayer-state-fullscreenOff",
+            pauseIcon: "ui-icon-pause",
+            playIcon: "ui-icon-play",
+            fullscreenIcon: "ui-icon-extlink",
+            captionIcon: "ui-icon-comment"
         },
 
         strings: {
@@ -209,13 +213,13 @@ var fluid_1_4 = fluid_1_4 || {};
                 play.removeClass(that.options.styles.playOn).addClass(that.options.styles.playOff);
                 options = {
                     label: that.options.strings.playOff,
-                    icons: { primary: "ui-icon-pause"}
+                    icons: { primary: that.options.styles.pauseIcon}
                 };
             } else {
                 play.removeClass(that.options.styles.playOff).addClass(that.options.styles.playOn);
                 options = {
                     label: that.options.strings.playOn,
-                    icons: { primary: "ui-icon-play"}
+                    icons: { primary: that.options.styles.playIcon}
                 };
             }
             play.button("option", options);
@@ -396,7 +400,7 @@ var fluid_1_4 = fluid_1_4 || {};
         volumeElt.addClass(that.options.styles.volume);
         volumeElt.button({
             "icons": {
-                primary: "ui-icon-signal"
+                primary: that.options.styles.buttonIcon
             },
             disabled: !that.model.states.canPlay,
             label: that.options.strings.volume,
@@ -430,7 +434,8 @@ var fluid_1_4 = fluid_1_4 || {};
         },
         styles: {
             volume: "fl-videoPlayer-controller-volume",
-            volumeControl: "fl-videoPlayer-controller-volumeControl"
+            volumeControl: "fl-videoPlayer-controller-volumeControl",
+            buttonIcon: "ui-icon-signal"
         },
         strings: {
             volume: "Volume"
@@ -487,7 +492,7 @@ var fluid_1_4 = fluid_1_4 || {};
     var createMenuMarkup = function (that) {
         that.locate("menuButton").button({
             icons: {
-                primary: "ui-icon-arrow"
+                primary: that.options.styles.buttonIcon
             },
             text: false
         });
@@ -524,6 +529,9 @@ var fluid_1_4 = fluid_1_4 || {};
             element: ".flc-videoPlayer-controller-menu-element",
             label: ".flc-videoPlayer-controller-menu-label"
         },
+        styles: {
+            buttonIcon: "ui-icon-arrow"
+        }
         rendererOptions: {
             autoBind: true
         },
