@@ -13,8 +13,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 var fluid_1_4 = fluid_1_4 || {};
 
-(function ($, fluid, swfobject) {
-    fluid.setLogging(true);
+(function ($, fluid) {
+    fluid.setLogging(false);
 
     var bindKeyboardControl = function (that) {
         var opts = {
@@ -138,6 +138,7 @@ var fluid_1_4 = fluid_1_4 || {};
             onControllersReady: null,
             onCaptionnerReady: null,
             afterTimeChange: null,
+            onStartTimeChange: null,
             onOldBrowserDetected: null
         },
         listeners: {
@@ -299,17 +300,21 @@ var fluid_1_4 = fluid_1_4 || {};
         };
 
         that.incrTime = function () {
+			that.events.onStartTimeChange.fire();
             if (that.model.states.currentTime < that.model.states.totalTime) {
                 var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
             }
+        	that.events.afterTimeChange.fire();
         };
 
         that.decrTime = function () {
+			that.events.onStartTimeChange.fire();
             if (that.model.states.currentTime > 0) {
                 var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
             }
+        	that.events.afterTimeChange.fire();
         };
 
         that.refresh = function () {
@@ -332,7 +337,7 @@ var fluid_1_4 = fluid_1_4 || {};
                         ", errorThrown: " + res[key].fetchError.errorThrown);
                 } else if (key === "videoPlayer") {
                     if ($.browser.msie && $.browser.version < 9) {
-                        that.events.onOldBrowserDetected.fire();
+                        that.events.onOldBrowserDetected.fire($.browser);
                     }
                     that.container.append(res[key].resourceText);
                     that.refreshView();
@@ -392,6 +397,7 @@ var fluid_1_4 = fluid_1_4 || {};
         options: {
             listeners: {
                 "{controllers}.events.onTimeChange": "{videoPlayer}.events.onTimeChange.fire",
+                "{controllers}.events.onStartTimeChange": "{videoPlayer}.events.onStartTimeChange.fire",
                 "{controllers}.events.onVolumeChange": "{videoPlayer}.events.onVolumeChange.fire",
                 "{controllers}.events.afterTimeChange": "{videoPlayer}.events.afterTimeChange.fire"
             }
@@ -406,7 +412,8 @@ var fluid_1_4 = fluid_1_4 || {};
         options: {
             listeners: {
                 "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterTimeChange": "{captionner}.resyncCaptions"
+                "{videoPlayer}.events.afterTimeChange": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"               
             }
         }
     });

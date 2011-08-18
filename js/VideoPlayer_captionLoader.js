@@ -47,7 +47,7 @@ var fluid_1_4 = fluid_1_4 || {};
                 path: "captions.track",
                 value: captions
             });
-            that.events.onCaptionsLoaded.fire();
+            that.events.onCaptionsLoaded.fire(captions);
             return that;
         };  
         
