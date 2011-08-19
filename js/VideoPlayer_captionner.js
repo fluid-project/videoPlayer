@@ -106,13 +106,17 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.videoPlayer.captionner.preInit = function (that) {
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
-            fluid.each(that.model.captions.currentCaptions, function (caption) {
-                removeCaption(that, caption);
+            that.container.empty();
+            that.applier.fireChangeRequest({
+                path: "captions.currentCaptions", 
+                value: []
             });
+            
             that.applier.fireChangeRequest({
                 path: "captions.currentIndice", 
                 value: 0
             });
+            that.showCaptions();
             return that;
         };
 
@@ -149,6 +153,14 @@ var fluid_1_4 = fluid_1_4 || {};
             if (that.model.captions.currentCaptions && that.model.captions.currentCaptions.length > that.model.captions.maxNumber) {
                 removeCaption(that, that.model.currentCaptions[0]);
             }
+        };
+        
+        that.hideCaptions = function () {
+        	that.container.hide();
+        };
+        
+        that.showCaptions = function () {
+        	that.container.show();
         };
     };
 

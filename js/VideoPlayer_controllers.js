@@ -20,15 +20,14 @@ var fluid_1_4 = fluid_1_4 || {};
         var tag = that.locate(element);
         if (that.model.states[element] === false) {
             tag.removeAttr("checked");
-            tag.attr({
-                "title": that.options.strings[element + "On"]
-            });
+            tag.button("option", "label", that.options.strings[element + "On"]);
             tag.removeClass(that.options.styles[element + "Off"]).addClass(that.options.styles[element + "On"]);                
         } else {
             tag.attr({
-                "checked": "checked",
-                "title": that.options.strings[element + "Off"]
+                "checked": "checked"
             });
+            tag.button("option", "label", that.options.strings[element + "Off"]);
+            
             tag.removeClass(that.options.styles[element + "On"]).addClass(that.options.styles[element + "Off"]);
         }
         tag.button("refresh");
@@ -88,21 +87,24 @@ var fluid_1_4 = fluid_1_4 || {};
                 primary: that.model.states.play ? that.options.styles.pauseIcon : that.options.styles.playIcon
             },
             disabled: !that.model.states.canPlay,
-            text: false
+            text: false,
+            label: that.model.states.play ? that.options.strings.playOff : that.options.strings.playOn 
         });
         that.locate("displayCaptions").button({
             icons: {
                 primary: that.options.styles.captionIcon
             },
             disabled: !that.model.states.canPlay,
-            text: false
+            text: false,
+            label: that.model.states.displayCaptions ? that.options.strings.displayCaptionsOff : that.options.strings.displayCaptionsOn
         });
         that.locate("fullscreen").button({
             icons: {
-                primary: that.options.style.fullscreenIcon
+                primary: that.options.styles.fullscreenIcon
             },
             disabled: !that.model.states.canPlay,
-            text: false
+            text: false,
+            label: that.model.states.fullscreen ? that.options.strings.fullscreenOff : that.options.strings.fullscreenOn
         });
     };
 
@@ -113,6 +115,7 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             onControllersReady: null,
             onVolumeChange: null,
+            onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null
         },
@@ -267,10 +270,14 @@ var fluid_1_4 = fluid_1_4 || {};
         var time = that.locate(element);
         time.text(fluid.videoPlayer.formatTime(that.model.states[element]));
     };
+    
     var bindScrubberDOMEvents = function (that) {
         // Bind the scrubbers slide event to change the video's time.
         var scrubber = that.locate("scrubber");
         scrubber.bind({
+        	"slidestart": function (evt, ui) {
+        		that.events.onStartScrub.fire(ui.value);
+        	},
             "slide": function (evt, ui) {
                 that.events.onScrub.fire(ui.value);
             },
@@ -292,6 +299,7 @@ var fluid_1_4 = fluid_1_4 || {};
             var scrubber = that.locate("scrubber");
             if (that.model.states.canPlay === true) {
                 scrubber.slider("enable");
+                scrubber.slider("option", "step", that.model.states.totalTime * 0.05);
             } else {
                 scrubber.slider("disable");
             }
@@ -314,7 +322,8 @@ var fluid_1_4 = fluid_1_4 || {};
         events: {
             afterScrub: null,
             onScrub: null,
-            onScrubberReady: null
+            onScrubberReady: null,
+            onStartScrub:null
         },
         selectors: {
             totalTime: ".flc-videoPlayer-controller-total",
@@ -363,7 +372,8 @@ var fluid_1_4 = fluid_1_4 || {};
             applier: "{controllers}.applier",
             listeners: {
                 onScrub: "{controllers}.events.onTimeChange.fire",
-                afterScrub: "{controllers}.events.afterTimeChange.fire"
+                afterScrub: "{controllers}.events.afterTimeChange.fire",
+                onStartScrub: "{controllers}.events.onStartTimeChange.fire"
             }
         }
     });
@@ -416,6 +426,7 @@ var fluid_1_4 = fluid_1_4 || {};
             max: 100,
             value: that.model.states.volume
         });
+        volumeControl.find(".ui-slider-handle").attr("title", that.model.states.volume);
         volumeControl.hide();
         that.container.append(volumeControl);
     };
@@ -531,7 +542,7 @@ var fluid_1_4 = fluid_1_4 || {};
         },
         styles: {
             buttonIcon: "ui-icon-arrow"
-        }
+        },
         rendererOptions: {
             autoBind: true
         },
