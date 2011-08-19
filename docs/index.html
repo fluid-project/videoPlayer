@@ -267,15 +267,20 @@
                 <td>time: the new time value in milliseconds</td>
             </tr>
             <tr>
+                <td>onStartTimeChange</td>
+                <td>Default</td>
+                <td>Event raised when the time of the scrubber is modified</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
                 <td>afterTimeChange</td>
                 <td>Default</td>
-                <td>Event raised when the time has changed a lot</td>
+                <td>Event raised when the time has changed</td>
                 <td></td>
                 <td></td>
             </tr>
         </table>
-        <h3>Other options</h3>
-        <b>TODO!!!!</b>
     <h2>Selectors</h2>
         <p>
             Here is a list of all the components and their selectors.
@@ -319,6 +324,8 @@
             <li>input: ".flc-videoPlayer-controller-menu-input" (repeated)</li>
             <li>element: ".flc-videoPlayer-controller-menu-element" (repeated)</li>
             <li>label: ".flc-videoPlayer-controller-menu-label" (repeated)</li>
+            <li>helpButton: "flc-videoPlayer-controller-menu-helpButton"</li>
+            <li>help: "flc-videoPlayer-controller-menu-help"</li>
         </ul>
         <h3>Captionner</h3>
         <ul>
@@ -385,6 +392,7 @@
             the template (for those who are not dynamic) or through the options of each component.
         </p>
     <h2>Keyboard controls</h2>
+    	<h3>Default Controls</h3>
         <p>
             The videoplayer comes with some default keyboard control that are describe here.
             you can modify them with the "keyBindings" option as described in the "option" section.
@@ -393,8 +401,59 @@
         <em>
             Note: The keyboard control works only if the focus is on the video tag in order not to make it too invasive
         </em>
+        <ul>
+       		<li>Play/Pause: SHIFT + p or SPACEBAR</li>
+       		<li>Forward/backward: SHIFT + LEFT/RIGHT</li>
+       		<li>Volume up/down: SHIFT + UP/DOWN</li>
+       		<li>Captions On/Off: SHIFT + c</li>
+       		<li>Fullscreen On/Off: SHIFT + f</li>
+       	</ul>
     <h2>Note on video format and HTML5</h2>
-    <h2>Note on other necessary Js</h2>    
+    <p>
+    	In order to be sure to be able to read your video on most browser you'll need to provide more than one source. Here is a list of Browsers and their needed video format. In order to make the player work on IOS (iPhone, iPad) it is necessary to put the mp4 video first.
+    </p>
+    <ul>
+    	<li>mp4 H264: Google Chrome and Apple Safari (video/mp4)</li>
+    	<li>Ogg Theora: Firefox, Opera and Google Chrome (video/ogg, video/ogv)</li>
+    	<li>WebM: Firefox 4,Opera 10.6, Chrome, IE9 (codec needed) (video/webm)</li>
+    	<li>YouTube link: old browsers (youtube)</li>
+    </ul>
+    <h2>Dependances</h2>  
+    	<div>The video player depends on Fluid Infusion but also a few elements outside from it (they are in the folder utils)</div>
+    	<ul>
+    		<li>jQuery UI buttons</li>
+    		<li>jQuery escapeSelector plugin</li>
+    		<li>HTML5-backcompat</li>
+    	</ul>  
+    	<div>These are the necessary Infusion elements:</div>
+    	<ul>
+            <li> lib/jquery/core/js/jquery.js</li>
+			<li> lib/jquery/ui/js/jquery.ui.core.js</li>
+			<li> lib/jquery/ui/js/jquery.ui.widget.js</li>
+			<li> lib/jquery/ui/js/jquery.ui.mouse.js</li>
+			<li> lib/jquery/ui/js/jquery.ui.slider.js</li>
+			<li> lib/jquery/ui/js/jquery.ui.draggable.js</li>
+			<li> lib/jquery/ui/js/jquery.ui.position.js</li>
+			<li> lib/jquery/ui/js/jquery.ui.dialog.js</li>	
+			<li> framework/core/js/jquery.keyboard-a11y.js</li>
+			<li> lib/jquery/plugins/scrollTo/js/jquery.scrollTo.js</li>
+			<li> lib/swfobject/js/swfobject.js</li>
+			<li> lib/swfupload/js/swfupload.js</li>
+			<li> framework/core/js/Fluid.js</li>
+			<li> framework/core/js/FluidDocument.js</li>
+			<li> framework/core/js/FluidDebugging.js</li>
+			<li> framework/core/js/FluidDOMUtilities.js</li>
+			<li> framework/core/js/FluidView.js</li>
+			<li> framework/core/js/FluidRequests.js</li>
+			<li> framework/core/js/DataBinding.js</li>
+			<li> framework/core/js/FluidIoC.js</li>
+			<li> framework/core/js/ModelTransformations.js</li>
+			<li> framework/enhancement/js/ProgressiveEnhancement.js</li>
+			<li> framework/renderer/js/fluidParser.js</li>
+			<li> framework/renderer/js/fluidRenderer.js</li>
+			<li> framework/renderer/js/RendererUtilities.js</li>
+			<li> lib/fastXmlPull/js/fastXmlPull.js</li>
+    	</ul>
 </body>
 </html>
 

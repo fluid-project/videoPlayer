@@ -299,7 +299,6 @@ var fluid_1_4 = fluid_1_4 || {};
             var scrubber = that.locate("scrubber");
             if (that.model.states.canPlay === true) {
                 scrubber.slider("enable");
-                scrubber.slider("option", "step", that.model.states.totalTime * 0.05);
             } else {
                 scrubber.slider("disable");
             }
@@ -311,14 +310,16 @@ var fluid_1_4 = fluid_1_4 || {};
         scrubber.slider({
             unittext: "seconds",
             disabled: true
+        }).attr({
+        	"role": "slider"
         });
+        
         scrubber.find(".ui-slider-handle").attr({
         	"aria-label": that.options.strings.scrubber,
         	"aria-valuemin": 0,
         	"aria-valuemax": 0,
         	"aria-valuenow": 0,
-        	"aria-valuetext": 0,
-        	"role": "slider"
+        	"aria-valuetext": 0
         });
         return scrubber;
     };
@@ -409,8 +410,8 @@ var fluid_1_4 = fluid_1_4 || {};
         var volumeButton = that.locate("volume");
         var volumeControl = that.locate("volumeControl");
         // hide the volume slider when the button is clicked
-        volumeButton.click(that.showSlider);
-        volumeControl.focusout(that.showButton);
+        volumeButton.click(that.toggleSlider);
+        volumeControl.focusout(that.toggleSlider);
         // Bind the volume Control slide event to change the video's volume and its image.
         volumeControl.bind("slide", function (evt, ui) {
             that.events.onChange.fire(ui.value / 100.0);
@@ -484,14 +485,16 @@ var fluid_1_4 = fluid_1_4 || {};
     });
 
     fluid.videoPlayer.controllers.volumeControl.preInit = function (that) {
-        that.showSlider = function () {
-            //is there a more correct way?
-            that.locate("volumeControl").show().find(".ui-slider-handle").focus();
-        };
         
-        that.showButton = function () {
-            that.locate("volumeControl").hide();
-            that.locate("volume").focus();
+        that.toggleSlider = function (ev) {
+        	var volume = that.locate("volumeControl");
+            if (volume.css("display") !== "none") {
+            	volume.hide();
+            	that.locate("volume").focus();
+            } else {
+            	//is there a more correct way?
+            	volume.show().find(".ui-slider-handle").focus();
+            }
         };
 
         that.updateVolume = function () {
@@ -527,11 +530,20 @@ var fluid_1_4 = fluid_1_4 || {};
     *********************************************************/
     var bindMenuDOMEvents = function (that) {
         that.locate("menuButton").click(that.toggleMenu);
-        that.locate("captions").focusout(that.toggleMenu);
+        that.locate("helpButton").click(that.showHelp);
         that.locate("captions").mouseleave(that.toggleMenu);
     };
 
     var bindMenuModel = function (that) {
+    	that.applier.modelChanged.addListener("states.canPlay", function () {
+            if (that.model.states.canPlay === true) {
+                that.locate("menuButton").button("enable");
+                that.locate("helpButton").button("enable");
+            } else {
+                that.locate("menuButton").button("disable");
+            	that.locate("helpButton").button("disable");
+            }
+        });
     };
 
     var createMenuMarkup = function (that) {
@@ -539,7 +551,18 @@ var fluid_1_4 = fluid_1_4 || {};
             icons: {
                 primary: that.options.styles.buttonIcon
             },
+            disabled: !that.model.states.canPlay,
+            label: that.options.strings.menuButton,
             text: false
+        });
+        
+        that.locate("helpButton").button({
+            icons: {
+                primary: that.options.styles.helpIcon
+            },
+            disabled: !that.model.states.canPlay,
+            label: that.options.strings.helpButton,
+            text: false        
         });
 
         that.locate("captions").hide();
@@ -555,7 +578,12 @@ var fluid_1_4 = fluid_1_4 || {};
                 value: $(id).attr("value")
             });
         });
-
+        that.locate("help").dialog({
+        	autoOpen: false,
+        	title: that.options.strings.help,
+        	width: 500
+        });
+		that.locate("menu").fluid("selectable");
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.menu", {
@@ -572,10 +600,18 @@ var fluid_1_4 = fluid_1_4 || {};
             title: ".flc-videoPlayer-controller-menu-title",
             input: ".flc-videoPlayer-controller-menu-input",
             element: ".flc-videoPlayer-controller-menu-element",
-            label: ".flc-videoPlayer-controller-menu-label"
+            label: ".flc-videoPlayer-controller-menu-label",
+            helpButton: ".flc-videoPlayer-controller-menu-helpButton",
+            help: ".flc-videoPlayer-controller-menu-help"
         },
         styles: {
-            buttonIcon: "ui-icon-arrow"
+            buttonIcon: "ui-icon-arrow",
+            helpIcon: "ui-icon-info"
+        },
+        strings: {
+        	menuButton: "Subtitle selection Menu",
+        	helpButton: "Help menu (keyboard shortcuts)",
+        	help: "HELP"
         },
         rendererOptions: {
             autoBind: true
@@ -606,7 +642,9 @@ var fluid_1_4 = fluid_1_4 || {};
                     "optionlist": list,
                     "optionnames": list
                 }
-            }]
+            }],
+            helpButton: {},
+            help: {}
         };
         return tree;
     };
@@ -616,10 +654,14 @@ var fluid_1_4 = fluid_1_4 || {};
             var menu = that.locate("captions");
             menu.toggle();
             if (menu.css("display") !== "none") {
-                menu.focus();
+                that.locate("input").first().focus();
             } else {
                 that.locate("menuButton").focus();
             }
+        };
+        
+        that.showHelp = function () {
+        	$(that.options.selectors.help).dialog("open");
         };
     };
 
