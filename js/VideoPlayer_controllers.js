@@ -312,6 +312,14 @@ var fluid_1_4 = fluid_1_4 || {};
             unittext: "seconds",
             disabled: true
         });
+        scrubber.find(".ui-slider-handle").attr({
+        	"aria-label": that.options.strings.scrubber,
+        	"aria-valuemin": 0,
+        	"aria-valuemax": 0,
+        	"aria-valuenow": 0,
+        	"aria-valuetext": 0,
+        	"role": "slider"
+        });
         return scrubber;
     };
 
@@ -330,6 +338,9 @@ var fluid_1_4 = fluid_1_4 || {};
             currentTime: ".flc-videoPlayer-controller-current",
             scrubber: ".flc-videoPlayer-controller-scrubber"
         },
+        strings: {
+        	scrubber: "Time scrub"
+        },
         produceTree: "fluid.videoPlayer.controllers.scrubber.produceTree"
     });
 
@@ -343,18 +354,30 @@ var fluid_1_4 = fluid_1_4 || {};
     fluid.videoPlayer.controllers.scrubber.preInit = function (that) {
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
-            that.locate("scrubber").slider("option", "min", startTime +
-                that.model.states.currentTime);
+            var scrubber = that.locate("scrubber")
+            scrubber.slider("option", "min", startTime + that.model.states.currentTime);
+            scrubber.find(".ui-slider-handle").attr({
+        		"aria-valuemin": startTime + that.model.states.currentTime
+        	});
         };
 
         that.updateMax = function () {
             updateTime(that, "totalTime");
-            that.locate("scrubber").slider("option", "max", that.model.states.totalTime);
+            var scrubber = that.locate("scrubber")
+            scrubber.slider("option", "max", that.model.states.totalTime);
+            scrubber.find(".ui-slider-handle").attr({
+        		"aria-valuemax": that.model.states.totalTime
+        	});
         };
 
         that.updateCurrent = function () {
             updateTime(that, "currentTime");
-            that.locate("scrubber").slider("value", that.model.states.currentTime);
+            var scrubber = that.locate("scrubber")
+            scrubber.slider("value", that.model.states.currentTime);
+            scrubber.find(".ui-slider-handle").attr({
+        		"aria-valuenow": that.model.states.totalTime,
+        		"aria-valuetext": fluid.videoPlayer.formatTime(that.model.states.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.states.totalTime),
+        	});
         };
     };
 
@@ -426,7 +449,14 @@ var fluid_1_4 = fluid_1_4 || {};
             max: 100,
             value: that.model.states.volume
         });
-        volumeControl.find(".ui-slider-handle").attr("title", that.model.states.volume);
+        volumeControl.find(".ui-slider-handle").attr({
+        	"aria-label": that.options.strings.volume,
+        	"aria-valuemin": 0,
+        	"aria-valuemax": 100,
+        	"aria-valuenow": that.model.states.volume,
+        	"aria-valuetext": that.model.states.volume + "%",
+        	"role": "slider"
+        });
         volumeControl.hide();
         that.container.append(volumeControl);
     };
@@ -468,6 +498,10 @@ var fluid_1_4 = fluid_1_4 || {};
             var volume = that.model.states.volume;
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value", volume);
+ 	        volumeControl.find(".ui-slider-handle").attr({
+	        	"aria-valuenow": that.model.states.volume,
+	        	"aria-valuetext": Math.round(that.model.states.volume) + "%"
+	        });
         };
     };
 
