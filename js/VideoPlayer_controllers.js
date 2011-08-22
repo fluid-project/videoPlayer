@@ -654,7 +654,7 @@ var fluid_1_4 = fluid_1_4 || {};
             var menu = that.locate("captions");
             menu.toggle();
             if (menu.css("display") !== "none") {
-                menu.focus();
+                that.locate("input").first().focus();
             } else {
                 that.locate("menuButton").focus();
             }
