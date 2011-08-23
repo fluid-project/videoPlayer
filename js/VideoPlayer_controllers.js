@@ -530,7 +530,9 @@ var fluid_1_4 = fluid_1_4 || {};
     *********************************************************/
     var bindMenuDOMEvents = function (that) {
         that.locate("menuButton").click(that.toggleMenu);
-        that.locate("helpButton").click(that.showHelp);
+        that.locate("helpButton").click(that.toggleHelp);
+        that.locate("help").mouseleave(that.toggleHelp);
+        that.locate("helpButton").focusout(that.hideHelp);
         that.locate("captions").mouseleave(that.toggleMenu);
     };
 
@@ -566,6 +568,7 @@ var fluid_1_4 = fluid_1_4 || {};
         });
 
         that.locate("captions").hide();
+        that.locate("help").hide();
         that.locate("element").buttonset();
         // Because UI buttons is not working properly with check
         that.locate("label").click(function (e) {
@@ -577,11 +580,6 @@ var fluid_1_4 = fluid_1_4 || {};
                 path: "captions.currentTrack",
                 value: $(id).attr("value")
             });
-        });
-        that.locate("help").dialog({
-        	autoOpen: false,
-        	title: that.options.strings.help,
-        	width: 500
         });
 		that.locate("menu").fluid("selectable");
     };
@@ -660,8 +658,12 @@ var fluid_1_4 = fluid_1_4 || {};
             }
         };
         
-        that.showHelp = function () {
-        	$(that.options.selectors.help).dialog("open");
+        that.toggleHelp = function () {
+        	that.locate("help").toggle();
+        };
+        
+        that.hideHelp = function () {
+        	that.locate("help").hide();
         };
     };
 
