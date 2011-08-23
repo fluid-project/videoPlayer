@@ -274,7 +274,6 @@ var fluid_1_4 = fluid_1_4 || {};
                     width: "100%",
                     height: "100%"
                 });
-                video.focus();
             } else {
                 that.container.css({
                     width: video[0].videoWidth,
