@@ -1,61 +1,86 @@
+/*
+ * Videoplayer container
+ */
+
 .fl-videoPlayer {
     position: relative;
 }
 
+/*
+* Video area
+*/
+
+.fl-videoPlayer-video {
+}
+
+/*
+ * Controller area
+ */
+ 
 .fl-videoPlayer-controller {
-    background-color:rgba(0, 0, 0, 0.65);
-    bottom:0;
     width:100%;
-    padding:10px 0;
-    overflow:hidden;
-    position:absolute;
-}
-.fl-videoPlayer-controller button {
-    width:16px;
-    height:16px;
-    padding:10px 20px;
-	margin:-3px 0 0 10px;
-    border:none;
-    text-indent:-2000px;
-    float:left;
-    cursor:pointer;
-    -moz-border-radius:4px;
+    margin: 10px;
+    text-align: center;
 }
 
-.fl-videoPlayer-state-play {
-    background:transparent url(../images/play.png) no-repeat center center;
-}
-.fl-videoPlayer-state-pause {
-    background:transparent url(../images/pause.png) no-repeat center center;
+.fl-videoPlayer-controller * {
+    display: inline-block;
+    margin: auto;
 }
 
-.fl-player-scrubber {
-	margin-right:10px;
-	margin-left:50px;
-}
-.fl-player-caption {
-	width:100%;
-    bottom:36px;
-	padding:.25em 0;
-	color:white;
-	background: rgba(255, 255, 255, 0.2);
-	font:bold 1.25em Tahoma, Arial, Helvetica, sans-serif;
-	text-align:center;
-    position:absolute;
-    text-shadow:1px 1px 4px #000000;
+.fl-videoPlayer-controller-time {
+    /*margin: 0 5px;
+    */padding: 0.4em;
+    line-height: 1.4;
+    font-size: 1.1em;
+    height: 100%;
+    text-align: center;
 }
 
-/* Mods for the slider to look more like a scrubber */
-.fl-theme-coal .ui-corner-all {
-    -moz-border-radius:10px;
-    -webkit-border-radius:10px;
+.fl-videoPlayer-controller-scrubberContainer {
+    width: 100%;
 }
-.fl-theme-coal .ui-slider-horizontal .ui-slider-handle {
-    margin-left:0;
-    top:-0.05em;
+.fl-videoPlayer-controller-scrubberContainer * {
+    margin: auto;
+    display: inline-block;
 }
-.fl-theme-coal .ui-slider .ui-slider-handle {
-    height: 0.6em;
-    width: 0.6em;
-    margin-top: 0.06em;
+
+.fl-videoPlayer-controller-volumeControl {
+    display: block;
+    position: absolute;
+    bottom: -40px;
+    z-index: 100;
 }
+
+.fl-videoPlayer-controller-menu-captions {
+    display: block;
+    position: absolute;
+    bottom: -40px;
+}
+
+
+/*
+ * Caption area
+ */
+ 
+.fl-videoPlayer-captionArea {
+    bottom:0;
+    left: 20%;
+	right: 20%;
+    position: absolute;
+    text-align:center;
+}
+
+.fl-videoPlayer-caption-captionText {
+    color: white;
+    background-color: black;
+    opacity: 0.7;
+}
+/*
+* mods to the coal theme
+*/
+
+.fl-videoPlayer-controller-scrubber {
+    width: 60%;
+}
+
