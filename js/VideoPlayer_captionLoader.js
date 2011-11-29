@@ -9,11 +9,10 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, window*/
+/*global jQuery, window, fluid*/
 
-var fluid_1_4 = fluid_1_4 || {};
 
-(function ($, fluid) {
+(function ($) {
     /**
      * captionLoader renders loads from an Js object src element a caption file and converts it to JsonCC.
      * 
@@ -99,6 +98,6 @@ var fluid_1_4 = fluid_1_4 || {};
             applier: "{videoPlayer}.applier"
         }
     });    
-})(jQuery, fluid_1_4);
+})(jQuery);
 
 

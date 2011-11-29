@@ -9,11 +9,10 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, window, swfobject*/
+/*global jQuery, window, swfobject, fluid*/
 
-var fluid_1_4 = fluid_1_4 || {};
 
-(function ($, fluid) {
+(function ($) {
     fluid.setLogging(false);
 
     var bindKeyboardControl = function (that) {
@@ -471,4 +470,4 @@ var fluid_1_4 = fluid_1_4 || {};
             }
     });  */ 
 
-})(jQuery, fluid_1_4);
+})(jQuery);
