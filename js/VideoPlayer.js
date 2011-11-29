@@ -126,7 +126,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
      */
     fluid.defaults("fluid.videoPlayer", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
-        preInitFunction: "fluid.videoPlayer.preInit",
+        postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             onReadyToLoadCaptions: null,
@@ -244,7 +244,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return tree;
     };
 
-    fluid.videoPlayer.preInit = function (that) {
+    fluid.videoPlayer.postInit = function (that) {
         that.play = function (ev) {
             that.applier.fireChangeRequest({
                 "path": "states.play",
@@ -324,7 +324,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
     
     fluid.videoPlayer.finalInit = function (that) {
-        that.applier = fluid.makeChangeApplier(that.model);
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
 

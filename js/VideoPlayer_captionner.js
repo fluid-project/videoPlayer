@@ -86,7 +86,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.captionner", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction:   "fluid.videoPlayer.captionner.finalInit",
-        preInitFunction:   "fluid.videoPlayer.captionner.preInit",
+        postInitFunction:   "fluid.videoPlayer.captionner.postInit",
         events: {
             onCaptionnerReady: null
         },
@@ -104,7 +104,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
 
-    fluid.videoPlayer.captionner.preInit = function (that) {
+    fluid.videoPlayer.captionner.postInit = function (that) {
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
             that.container.empty();
