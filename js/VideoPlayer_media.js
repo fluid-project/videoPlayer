@@ -1,7 +1,5 @@
 /*
 Copyright 2009 University of Toronto
-Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -48,68 +46,38 @@ https://source.fluidproject.org/svn/LICENSE.txt
             //weirdly on event a timeupdate event is sent after the ended event 
             //so the condition is to avoid that
             if (ev.data.obj.currentTime !== ev.data.obj.duration) {
-                that.applier.fireChangeRequest({
-                    path: "states.currentTime", 
-                    value: ev.data.obj.currentTime
-                });
+                that.applier.requestChange("states.currentTime", ev.data.obj.currentTime);
             }
         });
 
         video.bind("durationchange", {obj: video[0]}, function (ev) {
             // FF doesn't implement startTime from the HTML 5 spec.
             var startTime = ev.data.obj.startTime || 0;
-            that.applier.fireChangeRequest({
-                path: "states.totalTime",
-                value: ev.data.obj.duration
-            });
-            that.applier.fireChangeRequest({
-                path: "states.currentTime",
-                value: ev.data.obj.currentTime
-            });
-            that.applier.fireChangeRequest({
-                path: "states.startTime",
-                value: startTime
-            });
+            that.applier.requestChange("states.totalTime", ev.data.obj.duration);
+            that.applier.requestChange("states.currentTime", ev.data.obj.currentTime);
+            that.applier.requestChange("states.startTime", startTime);
         });
 
         video.bind("volumechange", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "states.volume",
-                value: ev.data.obj.volume * 100
-            });
+            that.applier.requestChange("states.volume", ev.data.obj.volume * 100);
         });
 
         //all browser don't support the canplay so we do all different states
         video.bind("canplay", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "states.canPlay",
-                value: getcanPlayData(ev.data.obj)
-            });
+            that.applier.requestChange("states.canPlay", getcanPlayData(ev.data.obj));
         });
 
         video.bind("canplaythrough", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "states.canPlay",
-                value: getcanPlayData(ev.data.obj)
-            });
+            that.applier.requestChange("states.canPlay", getcanPlayData(ev.data.obj));
         });
 
         video.bind("loadeddata", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "states.canPlay",
-                value: getcanPlayData(ev.data.obj)
-            });
+            that.applier.requestChange("states.canPlay", getcanPlayData(ev.data.obj));
         });
 
         video.bind("ended", function () {
-            that.applier.fireChangeRequest({
-                path: "states.play",
-                value: false
-            });
-            that.applier.fireChangeRequest({
-                path: "states.currentTime",
-                value: 0
-            });
+            that.applier.requestChange("states.play", false);
+            that.applier.requestChange("states.currentTime", 0);
         });
     };
 

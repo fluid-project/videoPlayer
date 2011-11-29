@@ -1,7 +1,5 @@
 /*
 Copyright 2009 University of Toronto
-Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -47,10 +45,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         caption.container = makeCaption(that, caption).fadeIn("fast", "linear");
         var temp = that.model.captions.currentCaptions;
         temp.push(caption);
-        that.applier.fireChangeRequest({
-            path: "captions.currentCaptions",
-            value: temp
-        });
+        that.applier.requestChange("captions.currentCaptions", temp);
     };
 
     //delete and undisplay a piece of caption
@@ -60,10 +55,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
         var temp = that.model.captions.currentCaptions;
         temp.splice(elt, 1);
-        that.applier.fireChangeRequest({
-            path: "captions.currentCaptions",
-            value: temp
-        });
+        that.applier.requestChange("captions.currentCaptions", temp);
     };
 
     var bindCaptionnerModel = function (that) {
@@ -108,15 +100,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
             that.container.empty();
-            that.applier.fireChangeRequest({
-                path: "captions.currentCaptions", 
-                value: []
-            });
+            that.applier.requestChange("captions.currentCaptions", []);
             
-            that.applier.fireChangeRequest({
-                path: "captions.currentIndice", 
-                value: 0
-            });
+            that.applier.requestChange("captions.currentIndice", 0);
             that.showCaptions();
             return that;
         };

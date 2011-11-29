@@ -1,7 +1,5 @@
 /*
 Copyright 2009 University of Toronto
-Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -61,24 +59,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     var bindControllerDOMEvents = function (that) {
         that.locate("play").click(function () {
-            that.applier.fireChangeRequest({
-                "path": "states.play",
-                "value": !that.model.states.play
-            });
+            that.applier.requestChange("states.play", !that.model.states.play);
         });
 
         that.locate("fullscreen").fluid("activatable", function () {
-            that.applier.fireChangeRequest({
-                "path": "states.fullscreen",
-                "value": !that.model.states.fullscreen
-            });
+            that.applier.requestChange("states.fullscreen", !that.model.states.fullscreen);
         });
 
         that.locate("displayCaptions").fluid("activatable", function () {
-            that.applier.fireChangeRequest({
-                "path": "states.displayCaptions",
-                "value": !that.model.states.displayCaptions
-            });
+            that.applier.requestChange("states.displayCaptions", !that.model.states.displayCaptions);
         });
     };
     
@@ -577,10 +566,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var id = "#" + $.escapeSelector($(this).attr('for'));
             that.locate("input").removeAttr("checked");
             $(id).attr('checked', true);
-            that.applier.fireChangeRequest({
-                path: "captions.currentTrack",
-                value: $(id).attr("value")
-            });
+            that.applier.requestChange("captions.currentTrack", $(id).attr("value"));
         });
 		that.locate("menu").fluid("selectable");
     };
