@@ -13,6 +13,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 /*global jQuery, window, fluid*/
 
+// JSLint options 
+/*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
+
 
 (function ($) {
 
@@ -120,7 +123,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onTimeChange: null,
             afterTimeChange: null
         },
-        listeners: {},
 
         selectors: {
             play: ".flc-videoPlayer-controller-play",
@@ -276,9 +278,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // Bind the scrubbers slide event to change the video's time.
         var scrubber = that.locate("scrubber");
         scrubber.bind({
-        	"slidestart": function (evt, ui) {
-        		that.events.onStartScrub.fire(ui.value);
-        	},
+            "slidestart": function (evt, ui) {
+                that.events.onStartScrub.fire(ui.value);
+            },
             "slide": function (evt, ui) {
                 that.events.onScrub.fire(ui.value);
             },
@@ -312,15 +314,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
             unittext: "seconds",
             disabled: true
         }).attr({
-        	"role": "slider"
+            "role": "slider"
         });
         
         scrubber.find(".ui-slider-handle").attr({
-        	"aria-label": that.options.strings.scrubber,
-        	"aria-valuemin": 0,
-        	"aria-valuemax": 0,
-        	"aria-valuenow": 0,
-        	"aria-valuetext": 0
+            "aria-label": that.options.strings.scrubber,
+            "aria-valuemin": 0,
+            "aria-valuemax": 0,
+            "aria-valuenow": 0,
+            "aria-valuetext": 0
         });
         return scrubber;
     };
@@ -333,7 +335,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             afterScrub: null,
             onScrub: null,
             onScrubberReady: null,
-            onStartScrub:null
+            onStartScrub: null
         },
         selectors: {
             totalTime: ".flc-videoPlayer-controller-total",
@@ -341,45 +343,46 @@ https://source.fluidproject.org/svn/LICENSE.txt
             scrubber: ".flc-videoPlayer-controller-scrubber"
         },
         strings: {
-        	scrubber: "Time scrub"
+            scrubber: "Time scrub"
         },
         produceTree: "fluid.videoPlayer.controllers.scrubber.produceTree"
     });
 
     fluid.videoPlayer.controllers.scrubber.produceTree = function (that) {
-        var tree = {};
-        tree.currentTime = "${states.currentTime}";
-        tree.totalTime = "${states.totalTime}";
-        tree.scrubber = {}; 
+        var tree = {
+            currentTime: "${states.currentTime}",
+            totalTime: "${states.totalTime}",
+            scrubber: {}
+        };
     };
 
     fluid.videoPlayer.controllers.scrubber.preInit = function (that) {
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
-            var scrubber = that.locate("scrubber")
+            var scrubber = that.locate("scrubber");
             scrubber.slider("option", "min", startTime + that.model.states.currentTime);
             scrubber.find(".ui-slider-handle").attr({
-        		"aria-valuemin": startTime + that.model.states.currentTime
-        	});
+                "aria-valuemin": startTime + that.model.states.currentTime
+            });
         };
 
         that.updateMax = function () {
             updateTime(that, "totalTime");
-            var scrubber = that.locate("scrubber")
+            var scrubber = that.locate("scrubber");
             scrubber.slider("option", "max", that.model.states.totalTime);
             scrubber.find(".ui-slider-handle").attr({
-        		"aria-valuemax": that.model.states.totalTime
-        	});
+                "aria-valuemax": that.model.states.totalTime
+            });
         };
 
         that.updateCurrent = function () {
             updateTime(that, "currentTime");
-            var scrubber = that.locate("scrubber")
+            var scrubber = that.locate("scrubber");
             scrubber.slider("value", that.model.states.currentTime);
             scrubber.find(".ui-slider-handle").attr({
-        		"aria-valuenow": that.model.states.totalTime,
-        		"aria-valuetext": fluid.videoPlayer.formatTime(that.model.states.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.states.totalTime),
-        	});
+                "aria-valuenow": that.model.states.totalTime,
+                "aria-valuetext": fluid.videoPlayer.formatTime(that.model.states.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.states.totalTime)
+            });
         };
     };
 
@@ -452,12 +455,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             value: that.model.states.volume
         });
         volumeControl.find(".ui-slider-handle").attr({
-        	"aria-label": that.options.strings.volume,
-        	"aria-valuemin": 0,
-        	"aria-valuemax": 100,
-        	"aria-valuenow": that.model.states.volume,
-        	"aria-valuetext": that.model.states.volume + "%",
-        	"role": "slider"
+            "aria-label": that.options.strings.volume,
+            "aria-valuemin": 0,
+            "aria-valuemax": 100,
+            "aria-valuenow": that.model.states.volume,
+            "aria-valuetext": that.model.states.volume + "%",
+            "role": "slider"
         });
         volumeControl.hide();
         that.container.append(volumeControl);
@@ -488,13 +491,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.controllers.volumeControl.preInit = function (that) {
         
         that.toggleSlider = function (ev) {
-        	var volume = that.locate("volumeControl");
+            var volume = that.locate("volumeControl");
             if (volume.css("display") !== "none") {
-            	volume.hide();
-            	that.locate("volume").focus();
+                volume.hide();
+                that.locate("volume").focus();
             } else {
-            	//is there a more correct way?
-            	volume.show().find(".ui-slider-handle").focus();
+                //is there a more correct way?
+                volume.show().find(".ui-slider-handle").focus();
             }
         };
 
@@ -502,10 +505,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var volume = that.model.states.volume;
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value", volume);
- 	        volumeControl.find(".ui-slider-handle").attr({
-	        	"aria-valuenow": that.model.states.volume,
-	        	"aria-valuetext": Math.round(that.model.states.volume) + "%"
-	        });
+            volumeControl.find(".ui-slider-handle").attr({
+                "aria-valuenow": that.model.states.volume,
+                "aria-valuetext": Math.round(that.model.states.volume) + "%"
+            });
         };
     };
 
@@ -538,13 +541,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     var bindMenuModel = function (that) {
-    	that.applier.modelChanged.addListener("states.canPlay", function () {
+        that.applier.modelChanged.addListener("states.canPlay", function () {
             if (that.model.states.canPlay === true) {
                 that.locate("menuButton").button("enable");
                 that.locate("helpButton").button("enable");
             } else {
                 that.locate("menuButton").button("disable");
-            	that.locate("helpButton").button("disable");
+                that.locate("helpButton").button("disable");
             }
         });
     };
@@ -582,7 +585,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 value: $(id).attr("value")
             });
         });
-		that.locate("menu").fluid("selectable");
+        that.locate("menu").fluid("selectable");
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.menu", {
@@ -608,9 +611,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
             helpIcon: "ui-icon-info"
         },
         strings: {
-        	menuButton: "Subtitle selection Menu",
-        	helpButton: "Help menu (keyboard shortcuts)",
-        	help: "HELP"
+            menuButton: "Subtitle selection Menu",
+            helpButton: "Help menu (keyboard shortcuts)",
+            help: "HELP"
         },
         rendererOptions: {
             autoBind: true
@@ -620,12 +623,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
     });
 
     fluid.videoPlayer.controllers.menu.produceTree = function (that) {
-        var tree = {};
         var list = [];
         for (var key in that.model.captions.sources) {
             list.push(key);
         }
-        tree = {
+        return {
             captions: {},
             title: {},
             menuButton: {},
@@ -645,7 +647,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             helpButton: {},
             help: {}
         };
-        return tree;
     };
 
     fluid.videoPlayer.controllers.menu.preInit = function (that) {
@@ -660,11 +661,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
         
         that.toggleHelp = function () {
-        	that.locate("help").toggle();
+            that.locate("help").toggle();
         };
         
         that.hideHelp = function () {
-        	that.locate("help").hide();
+            that.locate("help").hide();
         };
     };
 
