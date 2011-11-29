@@ -1,0 +1,1461 @@
+0
+00:00:00,000 --> 00:00:01,000
+Moderator: Richard, bitte
+
+1
+00:00:01,500 --> 00:00:04,000
+Richard: Oh, es hat aufgehört, die Zeit
+anzuzeigen
+
+2
+00:00:04,000 --> 00:00:06,000
+Ich habe nur ein wenig draufgehauen
+
+3
+00:00:06,000 --> 00:00:09,000
+Ich benutze diese Handcomputer nicht
+
+4
+00:00:09,000 --> 00:00:12,000
+weil in ihnen unfreie Software ist
+
+5
+00:00:12,000 --> 00:00:16,000
+hmm, einige von euch fragen sich vielleicht,
+warum ich Alufolie um mein Namensschild gewickelt habe
+
+6
+00:00:16,000 --> 00:00:20,000
+Das liegt daran, dass ein RFID-Chip
+im Namensschild ist
+
+7
+00:00:20,000 --> 00:00:24,000
+Ein RFID-Chip ist eine Wanze. Wenn 
+man einen RFID-Chip trägt
+
+8
+00:00:24,000 --> 00:00:27,000
+kann jederzeit der Aufenthaltsort bestimmt werden
+
+9
+00:00:27,000 --> 00:00:30,000
+sie sind also eine schreckliche Bedrohung
+für das Recht auf Privatsphäre
+
+10
+00:00:30,000 --> 00:00:32,000
+und deshalb wehre ich mich
+
+11
+00:00:32,000 --> 00:00:34,000
+ich habe Alufolie hier
+
+12
+00:00:34,000 --> 00:00:35,000
+wenn ihr euren RFID-Chip
+
+13
+00:00:35,000 --> 00:00:38,000 
+abschirmen wollt, so dass er
+nicht verfolgt werden kann
+
+14
+00:00:38,000 --> 00:00:41,000
+dann kommt nach der Diskussion
+vorbei und holt sie euch ab
+
+15
+00:00:41,000 --> 00:00:44,000
+Aber ich kämpfe für die Freiheit
+
+16
+00:00:44,000 --> 00:00:49,000
+schon seit langer Zeit. Vor 22 Jahren
+
+17
+00:00:49,000 --> 00:00:52,000
+kündigte ich den Beginn der
+Freie-Software-Bewegung an
+
+18
+00:00:52,000 --> 00:00:57,000
+einer sozialen Bewegung für die Freiheit der
+Computer-Nutzer
+
+19
+00:00:57,000 --> 00:01:00,000
+insbesondere, für die Freiheit der Zusammenarbeit
+
+20
+00:01:00,000 --> 00:01:03,000
+und die Freiheit, deinen eigenen
+Computer zu kontrollieren
+
+21
+00:01:03,000 --> 00:01:06,000
+die Freiheit der Nutzer, in einer Gemeinschaft
+
+22
+00:01:06,000 --> 00:01:10,000
+zusammenzuarbeiten, die die
+Software kontrolliert, die sie einsetzt
+
+23
+00:01:10,000 --> 00:01:14,000
+Das war 1983 unmöglich
+
+24
+00:01:14,000 --> 00:01:18,000
+weil Computer ohne ein Betriebssystem
+nichts machen können
+
+25
+00:01:18,000 --> 00:01:20,000
+sie sind nur ein Haufen Metall 
+und Sillicon
+
+26
+00:01:20,000 --> 00:01:22,000
+der vollkommen nutzlos ist
+
+27
+00:01:22,000 --> 00:01:25,000
+aber alle Betriebssysteme vor
+22 Jahren
+
+28
+00:01:25,000 --> 00:01:27,000
+waren proprietäre Software
+
+29
+00:01:27,000 --> 00:01:31,000
+Software, die die Nutzer isoliert
+und hilflos macht
+
+30
+00:01:31,000 --> 00:01:37,000
+Also...ich war entschlossen, nicht auf
+diese Weise zu leben und so meine Computer zu nutzen
+
+31
+00:01:37,000 --> 00:01:39,000
+ich will nicht hilflos sein
+
+32
+00:01:39,000 --> 00:01:41,000
+und ich will nicht, dass mir verboten
+wird, mit euch zu teilen
+
+33
+00:01:41,000 --> 00:01:45,000
+Also entschloss ich mich, etwas dagegen
+zu tun
+
+34
+00:01:45,000 --> 00:01:47,000
+Was kann ich tun?
+
+35
+00:01:47,000 --> 00:01:50,000
+ich hatte keine politische Partei hinter mir
+
+36
+00:01:50,000 --> 00:01:53,000
+ich konnte nicht erwarten, Regierungen oder
+Unternehmen zu überzeugen,
+
+37
+00:01:53,000 --> 00:01:56,000
+irgendwelche ihrer Strategien zu ändern
+
+38
+00:01:56,000 --> 00:01:59,000
+aber ich wusste, wie man Software schreibt
+
+39
+00:01:59,000 --> 00:02:01,000
+also sagte ich: ich werde ein
+
+40
+00:02:01,000 --> 00:02:04,000
+anderes Betriebssystem entwickeln, mit der
+Hilfe von
+
+41
+00:02:04,000 --> 00:02:06,000
+wem auch immer, der mitmacht
+
+42
+00:02:06,000 --> 00:02:09,000
+und zusammen werden wir es
+Freie Software machen
+
+43
+00:02:09,000 --> 00:02:10,000
+wir werden eure Freiheit respektieren
+
+44
+00:02:10,000 --> 00:02:13,000
+und ihr werdet in der Lage sein, 
+eure Computer
+
+45
+00:02:13,000 --> 00:02:16,000
+mit diesem Betriebssystem in Freiheit zu nutzen
+
+46
+00:02:16,000 --> 00:02:19,000
+Aber was bedeutet diese Freiheit?
+
+47
+00:02:19,000 --> 00:02:21,000
+Es gibt 4 essenzielle Freiheiten
+
+48
+00:02:21,000 --> 00:02:24,000
+durch die Freie Software definiert wird
+
+49
+00:02:24,000 --> 00:02:28,000
+und diese sind: Freiheit Null
+
+50
+00:02:28,000 --> 00:02:32,000
+die Freiheit, das Programm zu nutzen, wie
+auch immer du möchtest
+
+51
+00:02:32,000 --> 00:02:36,000
+Freiheit 1, die Freiheit, dir selbst zu helfen
+
+52
+00:02:36,000 --> 00:02:38,000
+das ist die Freiheit, den Quellcode zu lesen
+
+53
+00:02:38,000 --> 00:02:41,000
+und ihn nach eigenen Wünschen zu verändern
+
+54
+00:02:41,000 --> 00:02:42,000
+dann gibt es Freiheit 2
+
+55
+00:02:42,000 --> 00:02:44,000
+die Freiheit, deinem Nachbarn zu helfen
+
+56
+00:02:44,000 --> 00:02:47,000
+das ist die Freiheit, das Programm zu kopieren
+
+57
+00:02:47,000 --> 00:02:49,000
+und die Kopie an andere weiterzugeben, wenn
+du möchtest
+
+58
+00:02:49,000 --> 00:02:53,000
+und Freiheit 3 ist die Freiheit, deiner
+Gemeinschaft zu helfen
+
+59
+00:02:53,000 --> 00:02:56,000
+das ist die Freiheit, eine
+
+60
+00:02:56,000 --> 00:02:59,000
+abgeänderte Version zu veröffentlichen oder
+zu verteilen
+
+61
+00:02:59,000 --> 00:03:02,000
+Mit allen vier Freiheiten ist das
+Programm freie Software
+
+62
+00:03:02,000 --> 00:03:06,000
+aber diese Freiheiten sollten dir
+nicht fremd sein
+
+63
+00:03:06,000 --> 00:03:09,000
+wenigstens nicht, wenn du kochst
+
+64
+00:03:09,000 --> 00:03:12,000
+weil Leute die kochen, genießen
+dieselben vier Freiheiten
+
+65
+00:03:12,000 --> 00:03:14,000
+wenn sie Rezepte verwenden
+
+66
+00:03:14,000 --> 00:03:17,000
+die Freiheit, das Rezept zu kochen, wenn man will
+
+67
+00:03:17,000 --> 00:03:18,000
+das ist Freiheit Null
+
+68
+00:03:18,000 --> 00:03:21,000
+die Freiheit die Zutaten zu lesen
+
+69
+00:03:21,000 --> 00:03:23,000
+und wie es gemacht wird, und es dann abzuändern
+
+70
+00:03:23,000 --> 00:03:26,000
+das ist Freiheit 1. Köche ändern häufig
+Rezepte
+
+71
+00:03:26,000 --> 00:03:29,000
+und dann die Freiheit, es zu kopieren
+
+72
+00:03:29,000 --> 00:03:32,000
+und Kopien an deine Freunde weiterzugeben,
+das ist Freiheit 2
+
+73
+00:03:32,000 --> 00:03:36,000
+und dann ist da...Freiheit 3 wird weniger
+häufig ausgeübt
+
+74
+00:03:36,000 --> 00:03:38,000
+weil es mehr Arbeit ist
+
+75
+00:03:38,000 --> 00:03:40,000
+aber wenn du deine Version des Rezepts kochst
+
+76
+00:03:40,000 --> 00:03:42,000
+bei einem Abendessen mit deinen Freunden
+
+77
+00:03:42,000 --> 00:03:45,000
+und ein Freund sagt: "Das war großartig! Kann ich das Rezept haben?"
+
+78
+00:03:45,000 --> 00:03:48,000
+kannst du deine Version des Rezepts aufschreiben
+
+79
+00:03:48,000 --> 00:03:51,000
+und für deinen Freund eine Kopie machen
+
+80
+00:03:51,000 --> 00:03:52,000
+dieselben vier Freiheiten
+
+81
+00:03:52,000 --> 00:03:54,000
+und das ist kein Zufall
+
+82
+00:03:54,000 --> 00:03:57,000
+weil Programme genauso wie Rezepte
+
+83
+00:03:57,000 --> 00:04:00,000
+Werke sind, die du für einen praktischen Zweck einsetzt
+
+84
+00:04:00,000 --> 00:04:03,000
+du benutzt sie, um etwas zu machen
+
+85
+00:04:03,000 --> 00:04:06,000
+und wenn du ein Werk benutzt, um damit etwas zu tun
+
+86
+00:04:06,000 --> 00:04:10,000
+wenn du dies nicht kontrollierst, hast
+du keine Kontrolle über dein Leben
+
+87
+00:04:10,000 --> 00:04:13,000
+und wenn du nicht mit anderen Menschen
+teilen kannst
+
+88
+00:04:13,000 --> 00:04:15,000
+ist es dir verboten, Teil einer Gemeinschaft zu sein
+
+89
+00:04:15,000 --> 00:04:19,000
+Stell dir vor, wie jeder, der kocht, sein würde
+
+90
+00:04:19,000 --> 00:04:22,000
+falls die Regierung eines Tages sagt:
+
+91
+00:04:22,000 --> 00:04:25,000
+von nun an, wenn du ein Rezept teils oder veränderst
+
+92
+00:04:25,000 --> 00:04:27,000
+werden wir dich einen Piraten nennen!
+
+93
+00:04:27,000 --> 00:04:30,000
+Wir vergleichen dich mit Leuten, die
+Schiffe angreifen
+
+94
+00:04:30,000 --> 00:04:33,000
+und wir werden dich jahrelang
+ins Gefängnis stecken
+
+95
+00:04:33,000 --> 00:04:35,000
+weil das verbotene Zusammenarbeit ist
+
+96
+00:04:35,000 --> 00:04:39,000
+Stell dir die Wut vor, die herrschen würde!
+
+97
+00:04:39,000 --> 00:04:43,000
+Diese Wut liegt der Freien-Software-
+Bewegung zu Grunde
+
+98
+00:04:43,000 --> 00:04:46,000
+wir wollen Freiheit dabei haben,
+wenn wir unsere Computer benutzen
+
+99
+00:04:46,000 --> 00:04:50,000
+Deshalb haben wir das GNU Betriebssystem entwickelt
+
+100
+00:04:50,000 --> 00:04:51,000
+während der achtziger Jahre
+
+101
+00:04:51,000 --> 00:04:56,000
+und im Jahr 1992 wurde das letzte fehlende
+Stück ergänzt
+
+102
+00:04:56,000 --> 00:04:60,000
+das letzte fehlende Stück ist
+der Kernel namens Linux
+
+103
+00:04:60,000 --> 00:05:04,000
+Linux ist also kein Betriebssystem, es ist
+ein zentraler Bestandteil
+
+104
+00:05:04,000 --> 00:05:07,000
+eines Systems, welches das GNU System plus Linux ist
+
+105
+00:05:07,000 --> 00:05:10,000
+das GNU / Linux-System
+
+106
+00:05:10,000 --> 00:05:14,000
+und dieses System arbeitet nun auf
+mehreren zehn Millionen Computern
+
+107
+00:05:14,000 --> 00:05:18,000
+Jon Hall schätzte vor ein zwei Jahren,
+auf 100 Millionen Computern
+
+108
+00:05:18,000 --> 00:05:21,000
+niemand weiß es genau, weil, siehst Du,
+wir sind alle frei
+
+109
+00:05:21,000 --> 00:05:25,000
+niemand kann buchführen, was wir tun, das
+ist ein Teil
+
+110
+00:05:25,000 --> 00:05:30,000
+der Freiheit, das niemand genau Bescheid weiß,
+was los ist
+
+111
+00:05:30,000 --> 00:05:32,000
+weil du niemand mitteilen musst
+
+112
+00:05:32,000 --> 00:05:36,000
+Also, heute ist es möglich, einen Computer
+in Freiheit zu nutzen
+
+113
+00:05:36,000 --> 00:05:40,000
+aber dies bedeutet nicht, dass die
+Freiheit für immer sicher ist
+
+114
+00:05:40,000 --> 00:05:43,000
+Freiheit ist niemals für immer sicher!
+
+115
+00:05:43,000 --> 00:05:47,000
+Es besteht immer die Gefahr, dass du 
+jemanden bekommst wie einen George Bush, der
+
+116
+00:05:47,000 --> 00:05:49,000
+die Freiheit wegnehmen möchte!
+
+117
+00:05:49,000 --> 00:05:52,000
+selbst in Ländern wie den Vereinigten Staaten,
+die sagen
+
+118
+00:05:52,000 --> 00:05:55,000
+Freiheit ist alles, was wir sind
+
+119
+00:05:55,000 --> 00:05:58,000
+dies kann zu einem reinen Lippenbekenntnis
+verwandelt werden
+
+120
+00:05:58,000 --> 00:05:60,000
+Freiheiten können vernichtet werden
+
+121
+00:05:60,000 --> 00:06:03,000
+also, damit Leute Freiheit haben
+
+122
+00:06:03,000 --> 00:06:06,000
+müssen wir bereit sein, die Freiheit zu 
+verteidigen
+
+123
+00:06:06,000 --> 00:06:09,000
+und um unsere Freiheit zu verteidigen
+
+124
+00:06:09,000 --> 00:06:12,000
+müssen wir erkennen, was es bedeutet
+
+125
+00:06:12,000 --> 00:06:13,500
+das ist der erste Schritt
+
+126
+00:06:13,500 --> 00:06:15,000
+deshalb bin ich heute hier
+
+127
+00:06:15,000 --> 00:06:18,000
+um mit euch über Freie Software
+zu sprechen
+
+128
+00:06:18,000 --> 00:06:20,000
+und die Freiheiten, die sie verkörpert
+
+129
+00:06:20,000 --> 00:06:22,000
+Freiheiten für euch
+
+130
+00:06:22,000 --> 00:06:25,000
+weil auf diese Weise werdet ihr 
+wissen, was Freiheit bedeutet
+
+131
+00:06:25,000 --> 00:06:27,000
+und dann, vielleicht nächstes Jahr
+
+132
+00:06:27,000 --> 00:06:31,000
+oder vielleicht im nächsten Jahrzehnt werdet 
+ihr mithelfen, diese Freiheiten zu verteidigen
+
+133
+00:06:31,000 --> 00:06:33,000
+und es wird sie weiter geben
+
+134
+00:06:33,000 --> 00:06:37,000
+viele Leute konzentrieren sich
+darauf, mehr Nutzer
+
+135
+00:06:37,000 --> 00:06:40,000
+dazu zu ermutigen, zu freier Software
+zu wechseln
+
+136
+00:06:40,000 --> 00:06:42,000
+Hm, das ist eine nützliche Sache
+
+137
+00:06:42,000 --> 00:06:44,000
+aber das allein wird uns
+
+138
+00:06:44,000 --> 00:06:47,000
+keine Freiheiten bringen, die dauerhaft sind
+
+139
+00:06:47,000 --> 00:06:50,000
+wenn wir jedem in der Welt heute
+Freie Software geben würden
+
+140
+00:06:50,000 --> 00:06:53,000
+aber es nicht schaffen würden, ihnen
+
+141
+00:06:53,000 --> 00:06:55,000
+die vier Freiheiten zu lehren
+
+142
+00:06:55,000 --> 00:06:57,000
+dann in 5 Jahren von heute an:
+
+143
+00:06:57,000 --> 00:06:59,000
+Würden sie immernoch Freie Software
+haben?
+
+144
+00:06:59,000 --> 00:07:01,000
+Wahrscheinlich nicht!
+
+145
+00:07:01,000 --> 00:07:03,000
+Weil wenn sie ihre Freiheiten nicht
+erkennen
+
+146
+00:07:03,000 --> 00:07:07,000
+werden sie sie fallen lassen
+
+147
+00:07:07,000 --> 00:07:09,000
+sie werden sich ihre Freiheiten
+durch die Finger gehen lassen
+
+148
+00:07:09,000 --> 00:07:11,000
+weil sie sich nicht aufraffen werden,
+ihre Hand zu schließen
+
+149
+00:07:11,000 --> 00:07:14,000
+wenn sie nicht wissen warum
+
+150
+00:07:14,000 --> 00:07:18,000
+also, neben der Entwicklung freier Software
+
+151
+00:07:18,000 --> 00:07:21,000
+neben ihrer Verteilung, des Lehrens,
+wie sie anzuwenden ist,
+
+152
+00:07:21,000 --> 00:07:24,000
+neben den Ermuntern der Leute, sie 
+auszuprobieren und zu ihr zu wechseln
+
+153
+00:07:24,000 --> 00:07:28,000
+müssen wir die gleichen Leute ständig die
+Bedeutung lehren
+
+154
+00:07:28,000 --> 00:07:31,000
+warum das wichtig ist
+
+155
+00:07:31,000 --> 00:07:34,000
+dass es nicht bloß darum geht, mächtige
+bequeme Software zu bekommen
+
+156
+00:07:34,000 --> 00:07:36,000
+und dies so billig wie möglich
+
+157
+00:07:36,000 --> 00:07:38,000
+<!--it's about how you can live in freedom-->
+es geht darum, wie du in Freiheit leben kannst
+
+158
+00:07:38,000 --> 00:07:41,000
+und darum, ein guter Nachbar zu sein
+
+159
+00:07:41,000 --> 00:07:46,000
+Also, was hat die alles mit dem 
+Thema Entwicklung zu tun?
+
+160
+00:07:46,000 --> 00:07:51,000
+Ist freie Software besser für
+die Entwicklung?
+
+161
+00:07:51,000 --> 00:07:53,000
+Hmm, das ist eine Untertreibung.
+
+162
+00:07:53,000 --> 00:07:56,000
+Freie Software ist die einzige Software
+
+163
+00:07:56,000 --> 00:07:58,000
+deren Benutzung Entwicklung bedeutet
+
+164
+00:07:58,000 --> 00:08:02,000
+denn die Nutzung unfreier Programme
+
+165
+00:08:02,000 --> 00:08:06,000
+stellt keine Entwicklung dar, sondern
+elektronische Kolonisierung
+
+166
+00:08:06,000 --> 00:08:10,000
+Was bedeutet es, wenn deine Gesellschaft
+
+167
+00:08:10,000 --> 00:08:13,000
+die Nutzung unfreier Software ausdehnt?
+
+168
+00:08:13,000 --> 00:08:16,000
+Hm, das ist Software, die niemand
+
+169
+00:08:16,000 --> 00:08:18,000
+in deiner Stadt reparieren kann, außer
+
+170
+00:08:18,000 --> 00:08:20,000
+du wohnst genau im richtigen Teil der Welt
+
+171
+00:08:20,000 --> 00:08:24,000
+niemand in deiner Stadt ist in
+der Lage
+
+172
+00:08:24,000 --> 00:08:27,000
+sie zu verstehen
+
+173
+00:08:27,000 --> 00:08:29,000
+sie zu warten, sie anzupassen
+
+174
+00:08:29,000 --> 00:08:32,000
+sie zu erweitern, oder irgendwas
+damit zu tun
+
+175
+00:08:32,000 --> 00:08:35,000
+es ist genau wie das alte
+Kolonialsystem
+
+176
+00:08:35,000 --> 00:08:38,000
+wo die Kolonialmacht die ganze
+Industrie hatte
+
+177
+00:08:38,000 --> 00:08:40,000
+und sie die ganze Technologie herstellte
+
+178
+00:08:40,000 --> 00:08:42,000
+und die Menschen in der Kolonie
+
+179
+00:08:42,000 --> 00:08:45,000
+konnten sie nur kaufen
+
+180
+00:08:45,000 --> 00:08:48,000
+und sie sollten auch nichts verstehen oder
+irgendwas herstellen
+
+181
+00:08:48,000 --> 00:08:51,000
+sie konnten die Technik kaum reparieren
+
+182
+00:08:51,000 --> 00:08:53,000
+stell dir vor, du würdest Autos kaufen
+
+183
+00:08:53,000 --> 00:08:56,000
+und sie kämen aus den Vereinigten Staaten
+
+184
+00:08:56,000 --> 00:08:59,000
+und immer wenn sie kaputtgehen müsstest
+du sie in die USA transportieren
+
+185
+00:08:59,000 --> 00:09:01,000
+weil es ein Geheimnis ist
+
+186
+00:09:01,000 --> 00:09:03,000
+wie sie innen funktionieren
+
+187
+00:09:03,000 --> 00:09:05,000
+und niemand in deinem Land ist es erlaubt
+
+188
+00:09:05,000 --> 00:09:07,000
+zu lernen wie sie repariert werden
+
+189
+00:09:07,000 --> 00:09:09,000
+das ist es, wie proprietäre Software
+ist
+
+190
+00:09:09,000 --> 00:09:13,000
+dies ist also keine nachhaltige Entwicklung
+
+191
+00:09:13,000 --> 00:09:16,000
+das ist keine passende Technologie
+
+192
+00:09:16,000 --> 00:09:18,000
+das ist eine Technologie der Abhängigkeit
+
+193
+00:09:18,000 --> 00:09:20,000
+und Abhängigkeit ist es genau, worum
+
+194
+00:09:20,000 --> 00:09:22,000
+es bei diesem System alles geht
+
+195
+00:09:22,000 --> 00:09:24,000
+Menschen sollen hilflos bleiben
+
+196
+00:09:24,000 --> 00:09:28,000
+ein anderes Element des alten 
+Kolonialsystem war
+
+197
+00:09:28,000 --> 00:09:31,000
+Teile und Herrsche
+
+198
+00:09:31,000 --> 00:09:33,000
+spiele Menschen gegeneinander aus
+
+199
+00:09:33,000 --> 00:09:35,000
+erlaube ihnen nicht, zusammenzuarbeiten
+
+200
+00:09:35,000 --> 00:09:37,000
+weil es damit einfacher wird
+
+201
+00:09:37,000 --> 00:09:39,000
+sie alle in Unterdrückung zu halten
+
+202
+00:09:39,000 --> 00:09:41,000
+nun, teilen, Menschen teilen
+
+203
+00:09:41,000 --> 00:09:43,000
+und sie zu unterwerfen
+
+204
+00:09:43,000 --> 00:09:45,000
+das ist nicht bloß ein kleiner Nebenaspekt
+
+205
+00:09:45,000 --> 00:09:47,000
+von proprietärer Software
+
+206
+00:09:47,000 --> 00:09:50,000
+das ist, was es zu proprietärer Software
+macht
+
+207
+00:09:50,000 --> 00:09:53,000
+die Lizenz sagt, es ist dir verboten,
+das Programm mit anderen zu teilen
+
+208
+00:09:53,000 --> 00:09:55,000
+und du kannst den Quellcode nicht bekommen
+
+209
+00:09:55,000 --> 00:09:57,000
+so kannst du nicht wissen, was darin ist
+
+210
+00:09:57,000 --> 00:10:01,000
+du kannst es also nicht kontrollieren
+- teile es, und beherrsche es
+
+211
+00:10:01,000 --> 00:10:05,000
+das ist es, was die Natur
+proprietärer Software ausmacht
+
+212
+00:10:05,000 --> 00:10:07,000
+also, natürlich, das System, das dabei herauskommt
+
+213
+00:10:07,000 --> 00:10:09,000
+schaut so aus wie das Kolonialsystem
+
+214
+00:10:08,000 --> 00:10:11,000
+ein anderes Element, an das du dich
+beim Kolonialsystem
+
+215
+00:10:11,000 --> 00:10:13,000
+vielleicht erinnerst
+
+216
+00:10:13,000 --> 00:10:15,000
+war, dass die Kolonialmacht
+
+217
+00:10:15,000 --> 00:10:18,000
+eine lokale Elite rekrutierte
+
+218
+00:10:18,000 --> 00:10:20,000
+einige lokale Leute, die
+
+219
+00:10:20,000 --> 00:10:22,000
+vielleicht die Adligen
+
+220
+00:10:22,000 --> 00:10:24,000
+oder wer auch immer
+
+221
+00:10:24,000 --> 00:10:26,000
+einen Stamm gegen einen anderen
+
+222
+00:10:26,000 --> 00:10:27,000
+oder sie schufen Stämme
+
+223
+00:10:27,000 --> 00:10:29,000
+wenn es keine Stämme gab
+
+224
+00:10:29,000 --> 00:10:31,000
+so dass sie sich Jahrzehnte später
+
+225
+00:10:31,000 --> 00:10:33,000
+gegenseitig massakrieren könnten
+
+226
+00:10:33,000 --> 00:10:35,000
+und so dass die lokale Elite
+
+227
+00:10:35,000 --> 00:10:38,000
+bestimmte Privilegien bekommen würde
+
+228
+00:10:38,000 --> 00:10:40,000
+und im Gegenzug würden sie dabei helfen
+
+229
+00:10:40,000 --> 00:10:42,000
+alle anderen niederzuhalten
+
+230
+00:10:42,000 --> 00:10:44,000
+hm, das kann man heute beobachten
+
+231
+00:10:44,000 --> 00:10:47,000
+einige proprietäre Softwarefirmen
+
+232
+00:10:47,000 --> 00:10:49,000
+rekrutieren aktiv lokale Eliten
+
+233
+00:10:49,000 --> 00:10:53,000
+sie richten Softwareentwicklungszentren ein
+
+234
+00:10:53,000 --> 00:10:55,000
+in deinem Land, und die Leute
+
+235
+00:10:55,000 --> 00:10:58,000
+die dort arbeiten sind Teil der
+lokalen Elite
+
+236
+00:10:58,000 --> 00:11:00,000
+oder sie vergeben Gefallen entweder
+
+237
+00:11:00,000 --> 00:11:02,000
+insgeheim an Politiker
+
+238
+00:11:02,000 --> 00:11:04,000
+oder offen an die Regierung
+
+239
+00:11:04,000 --> 00:11:07,000
+aber es macht keinen Unterschied an welche der beiden
+
+240
+00:11:07,000 --> 00:11:09,000
+auf beide Weisen kaufen sie
+Einfluss in der Regierung
+
+241
+00:11:09,000 --> 00:11:11,000
+sie verwandeln diese Regierung
+
+242
+00:11:11,000 --> 00:11:14,000
+von einem souveränen Staat
+
+243
+00:11:14,000 --> 00:11:18,000
+in ihren lokalen Aufseher
+
+244
+00:11:18,000 --> 00:11:20,000
+ihres Imperiums, dessen Job es ist,
+sicherzustellen
+
+245
+00:11:20,000 --> 00:11:22,000
+das jeder abhängig wird
+
+246
+00:11:22,000 --> 00:11:25,000
+von der gleichen unfreien Software
+
+247
+00:11:25,000 --> 00:11:27,000
+sie sagen zu Schulen
+
+248
+00:11:27,000 --> 00:11:32,000
+wir helfen euch, indem wir euch diese
+Gratiskopien
+
+249
+00:11:32,000 --> 00:11:34,000
+unserer unfreien Software geben
+
+250
+00:11:34,000 --> 00:11:36,000
+so dass die Schulen eure Schüler
+
+251
+00:11:36,000 --> 00:11:38,000
+in Abhängige unserer Software
+verwandeln können
+
+252
+00:11:38,000 --> 00:11:41,000
+Wieso benutze ich das Wort Abhängige?
+
+253
+00:11:41,000 --> 00:11:44,000
+weil sie eine Abhängigkeit entwickeln
+
+254
+00:11:44,000 --> 00:11:47,000
+von dieser Software, und dann danach, wenn 
+sie ihren Abschluss machen
+
+255
+00:11:47,000 --> 00:11:49,000
+kannst Du sicher sein
+
+256
+00:11:49,000 --> 00:11:51,000
+dass ihnen keine Gratiskopien mehr angeboten werden
+
+257
+00:11:51,000 --> 00:11:55,000
+weil nur die erste Dosis gratis ist
+
+258
+00:11:55,000 --> 00:11:56,000
+wenn du erst einmal abhängig bist
+
+259
+00:11:56,000 --> 00:11:58,000
+sollst du zahlen
+
+260
+00:11:58,000 --> 00:12:00,000
+und dann natürlich die Unternehmen,
+
+261
+00:12:00,000 --> 00:12:03,000
+für die diese Absolventen arbeiten
+
+262
+00:12:03,000 --> 00:12:06,000
+diesen Unternehmen werden keine Gratiskopien
+angeboten
+
+263
+00:12:06,000 --> 00:12:08,000
+also, was diese Softwarefirmen in Wirklichkeit tun, ist,
+
+264
+00:12:08,000 --> 00:12:10,000
+sie rekrutieren die Schulen dazu,
+
+265
+00:12:10,000 --> 00:12:14,000
+Agenten zu sein, um Leute in
+
+266
+00:12:14,000 --> 00:12:19,000
+dauerhafte, lebenslange Abhängigkeit zu führen
+
+267
+00:12:19,000 --> 00:12:21,000
+Das sind die Dinge, über die
+
+268
+00:12:21,000 --> 00:12:24,000
+die Open Source Bewegung gewöhnlich nicht
+spricht
+
+269
+00:12:24,000 --> 00:12:27,000
+und das ist der Grund, warum ich
+Open Source nicht unterstütze
+
+270
+00:12:27,000 --> 00:12:29,000
+Open Source ist ein Weg, Software anzupreisen
+
+271
+00:12:29,000 --> 00:12:31,000
+die gewöhnlich frei ist
+
+272
+00:12:31,000 --> 00:12:35,000
+ohne jedoch diese Ideale zu erwähnen
+
+273
+00:12:35,000 --> 00:12:37,000
+das sind die Angelegenheiten der Freiheit
+
+274
+00:12:37,000 --> 00:12:38,000
+diese bleiben im Hintergrund
+
+275
+00:12:38,000 --> 00:12:41,000
+Open Source-Vertreter reden gewöhnlich
+
+276
+00:12:41,000 --> 00:12:43,000
+nur über den praktischen Nutzen
+
+277
+00:12:43,000 --> 00:12:45,000
+wisst ihr, wie man mächtige
+
+278
+00:12:45,000 --> 00:12:47,000
+bequeme Software bekommt
+
+279
+00:12:47,000 --> 00:12:48,000
+und wieviel es kostet
+
+280
+00:12:48,000 --> 00:12:52,000
+hm, freie Software ermöglicht es dir
+wahrscheinlich auch, Geld zu sparen
+
+281
+00:12:52,000 --> 00:12:55,000
+wenn Du nicht für die Erlaubnis bezahlen
+muss
+
+282
+00:12:55,000 --> 00:12:58,000
+also, benutzt sie, ihr könnt wahrscheinlich
+Geld sparen
+
+283
+00:12:58,000 --> 00:12:59,000
+aber ich denke, das ist eine zweitrangige Sache
+
+284
+00:12:59,000 --> 00:13:01,000
+selbst in armen Ländern ist Freiheit wichtig
+
+285
+00:13:01,000 --> 00:13:03,000
+wir sollten nie anfangen zu sagen:
+
+286
+00:13:03,000 --> 00:13:04,000
+Oh, sie sind so arm,
+
+287
+00:13:04,000 --> 00:13:07,000
+Freiheit ist für sie nicht wichtig
+
+288
+00:13:07,000 --> 00:13:10,000
+sie brauchen nur Brot und Circusse
+
+289
+00:13:10,000 --> 00:13:14,000
+die sie hier früher einmal hatten
+
+290
+00:13:14,000 --> 00:13:16,000
+und dann sollten sie nicht mal darüber nachdenken,
+frei zu sein
+
+291
+00:13:16,000 --> 00:13:19,000
+ich denke, Freiheit ist wichtig
+
+292
+00:13:19,000 --> 00:13:21,000
+in jedem Land, in jeder Gesellschaft
+
+293
+00:13:21,000 --> 00:13:23,000
+egal ob sie reich oder arm ist
+
+294
+00:13:23,000 --> 00:13:27,000
+trotz allem, Leute, die Open Source unterstützen
+
+295
+00:13:27,000 --> 00:13:30,000
+tragen oft dazu bei,
+
+296
+00:13:30,000 --> 00:13:32,000
+die Freie-Software-Gemeinschaft zu vergrößern
+
+297
+00:13:32,000 --> 00:13:34,000
+viele von ihnen entwickeln freie Software
+
+298
+00:13:34,000 --> 00:13:37,000
+das sind nützliche Beiträge
+
+299
+00:13:37,000 --> 00:13:39,000
+ich sage nicht, was sie tun sei schlecht
+
+300
+00:13:39,000 --> 00:13:41,000
+ich sage, für sich selbst gesehen, ist es nicht genug!
+
+301
+00:13:41,000 --> 00:13:45,000
+weil es schwach ist, seht ihr, wenn du sagst,
+das Ziel sei es
+
+302
+00:13:45,000 --> 00:13:50,000
+mächtige, verlässliche, bequeme Software zu haben
+und sie billig zu bekommen
+
+303
+00:13:50,000 --> 00:13:52,000
+dann wird es möglich
+
+304
+00:13:52,000 --> 00:13:55,000
+für die Vertreter proprietärer
+Software
+
+305
+00:13:55,000 --> 00:13:57,000
+zu sagen: hm, wir behaupten, wir geben
+
+306
+00:13:57,000 --> 00:13:60,000
+noch mächtigere, verlässliche Software
+
+307
+00:13:60,000 --> 00:14:03,000
+wir behaupten, dass unsere Gesamtnutzungskosten
+billiger sind
+
+308
+00:14:03,000 --> 00:14:07,000
+und ich glaube das ist normalerweise Mist
+
+309
+00:14:07,000 --> 00:14:11,000
+wenn Microsoft das sagt, basiert das
+auf verzerrten Fakten
+
+310
+00:14:11,000 --> 00:14:14,000
+aber es ist schwach
+
+311
+00:14:14,000 --> 00:14:17,000
+aber wenn wir sagen, dass Ziel ist, 
+in Freiheit zu leben
+
+312
+00:14:17,000 --> 00:14:21,000
+und dass es  erlaubt ist, mit anderen
+Menschen in einer Gemeinschaft zusammenzuarbeiten
+
+313
+00:14:21,000 --> 00:14:25,000
+können sie nicht sagen, sie bieten uns
+mehr davon billiger
+
+314
+00:14:25,000 --> 00:14:27,000
+weil sie das überhaupt nicht anbieten
+
+315
+00:14:27,000 --> 00:14:29,000
+sie treten nicht einmal in Wettbewerb mit uns
+
+316
+00:14:29,000 --> 00:14:31,000
+sie nehmen am Rennen nicht teil
+
+317
+00:14:31,000 --> 00:14:34,000
+wenn du erst einmal entscheidest, du möchtest
+in Freiheit leben
+
+318
+00:14:34,000 --> 00:14:36,000
+sind sie aus dem Rennen
+
+319
+00:14:37,000 --> 00:14:41,000
+so, wir versuchen euch zu helfen
+
+320
+00:14:41,000 --> 00:14:44,000
+Freiheit in Gemeinschaft zu erreichen
+
+321
+00:14:44,000 --> 00:14:47,000
+sie dagegen wollen euch unterwerfen
+
+322
+00:14:47,000 --> 00:14:50,000
+Aber sie sagen, sie werden das schneller
+machen!
+
+323
+00:14:50,000 --> 00:14:53,000
+Und vielleicht würden sie das.
+
+324
+00:14:53,000 --> 00:14:56,000
+Ich nehme an ich werde auf den
+Rest meiner Redezeit verzichten
+
+325
+00:14:56,000 --> 00:14:58,000
+weil ich gesagt habe, was ich sagen musste
+
+326
+00:14:59,000 --> 00:15:03,000
+Moderator: Das ist bemerkenswert,
+
+327
+00:15:03,000 --> 00:15:05,000
+das ist einer der bemerkenswertesten Momente
+meines Lebens
+
+328
+00:15:05,000 --> 00:15:08,000
+Ich denke, dass wir uns alle glücklich
+schätzen sollten heute hier zu sein
+
+329
+00:15:08,000 --> 00:15:12,000
+weil es das erstemal in der Geschichte ist, 
+und das ist dokumentierte Geschichte
+
+330
+00:15:12,000 --> 00:15:15,000
+das Richard Stallman eine Rede frühzeitig beendet
+hat
+
+331
+00:15:15,000 --> 00:15:18,000
+RMS: Du irrst dich, ich habe es vor ein paar
+Wochen schon einmal getan!
+
+332
+00:15:18,000 --> 00:15:20,000
+- Applaus -
+
+333
+00:15:21,000 --> 00:15:22,000
+Moderator: Ich weiß nicht, was ich sagen soll
+
+334
+00:15:22,000 --> 00:15:24,000
+Aber ich werde es versuchen
+
+335
+00:15:24,000 --> 00:15:28,000
+Perens: Ken, Ken ist wirklich glücklich 
+weil sein Job
+
+336
+00:15:28,000 --> 00:15:31,000
+sehr viel einfacher war als er glaubte,
+dass er sein würde

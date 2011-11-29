@@ -1,5 +1,7 @@
 /*
 Copyright 2009 University of Toronto
+Copyright 2011 Charly Molter
+Copyright 2011 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -9,421 +11,465 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, window*/
+/*global jQuery, window, swfobject, fluid*/
 
-var fluid = fluid || {};
 
 (function ($) {
-    
-    var renderSources = function (that) {
-        $.each(that.options.sources, function (idx, source) {
-            var renderer = that.options.mediaRenderers[source.type];
+    fluid.setLogging(false);
 
-            if ($.isFunction(renderer)) {
-                renderer.apply(that, source);
-            } else {
-                fluid.invokeGlobalFunction(renderer, [that, source]); 
-            }                                      
-        });
-    };
-    
-    var injectVideo = function (container, video) {
-        video.addClass("flc-videoPlayer-video");
-        container.append(video);
-    };
-
-    var renderVideo = function (that) {
-        var video = that.locate("video");
-        
-        if ($.browser.msie) {
-            // IE is blatantly hostile to the video tag. 
-            // If one is found, remove it and replace it with something less awesome.
-            video.remove();
-            video = $("<div/>")
-            injectVideo(that.container, video);
-        } else if (video.length === 0) {
-            video = $("<video/>");
-            injectVideo(that.container, video);
-        }
-
-        // Safari seems to show controls if the attribute is present at all, 
-        // regardless of its value.
-        if (that.options.controllerType === "native") {
-            video.attr("controls", "true"); 
-        }
-        
-        return video;
-    };
-    
-    var renderCaptionArea = function (that) {
-        var captionArea = $("<div class='flc-videoPlayer-captionArea fl-player-caption'></div>");
-        that.locate("controller").before(captionArea);
-        return captionArea;
-    };
-    
-    // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
-    // time is in the format hh:mm:ss:mmm
-    var convertToMilli = function (time) {
-        var splitTime = time.split(":");
-        var hours = parseFloat(splitTime[0]);
-        var mins = parseFloat(splitTime[1]) + (hours * 60);
-        var secs = parseFloat(splitTime[2]) + (mins * 60);
-        return Math.round(secs * 1000);
-    };
-     
-    var normalizeInOutTimes = function (captions) {
-        // TODO: This is temporary to work around the difference between capscribe web and capscribe desktop captions
-        for (var i = 0; i < captions.length; i++) {
-            var cap = captions[i];
-            if (!cap.inTimeMilli) {
-                cap.inTimeMilli = convertToMilli(cap.inTime);
-            }
-            if (!cap.outTimeMilli) {
-                cap.outTimeMilli = convertToMilli(cap.outTime);
-            }
-        }
-    };
-        
-    var loadCaptions = function (that) {
-        var caps = that.options.captions;
-        
-        // Bail immediately if we just don't have any captions.
-        if (!caps) {
-            return;
-        }
-        
-        // Otherwise go and fetch the captions.
-        $.ajax({
-            type: "GET",
-            dataType: "text",
-            url: caps,
-            success: that.setCaptions
-        });
-    };
-    
-    var bindDOMEvents = function (that) {
-        that.video.attr("tabindex", 0);
-        
-        var playHandler = function (evt) {
-            that.togglePlayback();
+    var bindKeyboardControl = function (that) {
+        var opts = {
+            additionalBindings: [{
+                modifier: that.options.keyBindings.play.modifier,
+                key: that.options.keyBindings.play.key,
+                activateHandler: that.play
+            }, {
+                modifier: that.options.keyBindings.fullscreen.modifier,
+                key: that.options.keyBindings.fullscreen.key,
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "states.fullscreen",
+                        value: !that.model.states.fullscreen
+                    });
+                }
+            }, {
+                modifier: that.options.keyBindings.captions.modifier,
+                key: that.options.keyBindings.captions.key,
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "states.displayCaptions",
+                        value: !that.model.states.displayCaptions
+                    });
+                }
+            }, {
+                modifier: that.options.keyBindings.volumePlus.modifier,
+                key: that.options.keyBindings.volumePlus.key,
+                activateHandler: that.incrVolume
+            }, {
+                modifier: that.options.keyBindings.volumeMinus.modifier,
+                key: that.options.keyBindings.volumeMinus.key,
+                activateHandler: that.decrVolume
+            }, {
+                modifier: that.options.keyBindings.forward.modifier,
+                key: that.options.keyBindings.forward.key,
+                activateHandler: that.incrTime
+            }, {
+                modifier: that.options.keyBindings.rewind.modifier,
+                key: that.options.keyBindings.rewind.key,
+                activateHandler: that.decrTime
+            }]
         };
-        
-        that.video.click(playHandler);
-        that.video.fluid("activatable", playHandler);
-        
-        that.video.bind("loadedmetadata", function () {
-            that.container.css("width", that.video[0].videoWidth);
+        var video = that.locate("video");
+        video.fluid("tabbable");
+        video.fluid("activatable", [that.play, opts]);
+        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
+        video.focus();
+    };
+
+    var bindVideoPlayerDOMEvents = function (that) {
+        var video = that.locate("video");
+        video.click(function (ev) {
+            ev.preventDefault();
+            that.play();
+        });
+        video.bind("loadedmetadata", function () {
+            //that shouldn't be usefull but the video is too big if it's not used
+            that.container.css("width", video[0].videoWidth);
+            bindKeyboardControl(that);
+        });
+    };
+
+    var bindVideoPlayerModel = function (that) {
+        that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
+        that.applier.modelChanged.addListener("states.canPlay", function () {
+            that.events.onViewReady.fire();
         });
     };
     
-    var renderControllerContainer = function (that) {
-        var controller = $("<div class='flc-videoPlayer-controller fl-videoPlayer-controller'></div>");
-        that.locate("video").after(controller);
-        return controller;
-    };
-    
-    var setupVideoPlayer = function (that) {
-        // Render the video element.
-        that.video = renderVideo(that);
-        
-        // Render each media source with its custom renderer, registered by type.
-        renderSources(that);
-        
-        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
-        if (!document.createElement('video').canPlayType) {
-            return;
+    //This is the default key bindings
+    var defaultKeys = {
+        play: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 80
+        },
+        captions: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 67
+        },
+        fullscreen: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 70
+        },
+        volumePlus: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.UP
+        },
+        volumeMinus: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.DOWN
+        },
+        forward: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.RIGHT
+        },
+        rewind: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.LEFT
         }
-        
-        // Add the controller if required.
-        if (that.options.controllerType === "html") {
-            var controller = that.locate("controller");
-            controller = (controller.length === 0) ? renderControllerContainer(that) : controller;
-            that.controller = fluid.initSubcomponent(that, "controller", [controller, {
-                video: that.video
-            }]);
-        }
-        
-        // Load and render the caption view.
-        loadCaptions(that);
-        
-        bindDOMEvents(that);
     };
-    
+
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
      * 
      * @param {Object} container the container in which video and (optionally) captions are displayed
-     * @param {Object} options configuration options for the comoponent
+     * @param {Object} options configuration options for the component
      */
-    fluid.videoPlayer = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer", container, options);
-        
-        that.play = function () {
-            that.video[0].play();
-        };
-        
-        that.pause = function () {
-            that.video[0].pause();    
-        };
-        
-        that.togglePlayback = function () {
-            if (that.video[0].paused) {
-                that.play();
-            } else {
-                that.pause();
-            }
-        };
-        
-        that.setCaptions = function (captions) {
-            // If the captions option isn't a String, we'll assume it consists of the captions themselves.
-            that.captions = (typeof(captions) === "string") ? JSON.parse(captions) : captions;
-            normalizeInOutTimes(that.captions);
-
-            // Render the caption area if necessary
-            var captionArea = that.locate("captionArea");
-            captionArea = captionArea.length === 0 ? renderCaptionArea(that) : captionArea;
-            
-            // Instantiate the caption view component.
-            that.captionView = fluid.initSubcomponent(that, "captionView", [
-                captionArea, 
-                {
-                    video: that.video,
-                    captions: that.captions
-                }
-            ]);
-        };
-        
-        setupVideoPlayer(that);
-        return that;    
-    };
-    
     fluid.defaults("fluid.videoPlayer", {
-        captionView: {
-            type: "fluid.videoPlayer.singleCaptionView"
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        preInitFunction: "fluid.videoPlayer.preInit",
+        finalInitFunction: "fluid.videoPlayer.finalInit",
+        events: {
+            onReadyToLoadCaptions: null,
+            onCaptionsLoaded: null,
+            onVolumeChange: null,
+            onTimeChange: null,
+            onTemplateReady: null,
+            onViewReady: null,
+            onMediaReady: null,
+            onControllersReady: null,
+            onCaptionnerReady: null,
+            afterTimeChange: null,
+            onStartTimeChange: null,
+            onOldBrowserDetected: null
         },
-        
-        controller: {
-            type: "fluid.videoPlayer.playAndScrubController"
+        listeners: {
+            onViewReady: "{videoPlayer}.refresh"
         },
-        
+        components: {
+            captionLoader: {
+                type: "fluid.videoPlayer.captionLoader",
+                container: "{videoPlayer}.container",
+                createOnEvent: "onTemplateReady",
+                options: {
+                    listeners: {
+                        onCaptionsLoaded: "{videoPlayer}.onCaptionsLoaded"
+                    }
+                }
+            },
+            browserCompatibility: {
+                type: "demo.html5BackwardsCompatability",
+                createOnEvent: "onOldBrowserDetected"
+            }
+        },
         selectors: {
             video: ".flc-videoPlayer-video",
-            captionArea: ".flc-videoPlayer-captionArea",
-            controller: ".flc-videoPlayer-controller"
+            caption: ".flc-videoPlayer-captionArea",
+            controllers: ".flc-videoPlayer-controller"
         },
-        
-        mediaRenderers: {
-            "video/mp4": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "video/ogg": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "youtube": "fluid.videoPlayer.mediaRenderers.youTubePlayer"
+        keyBindings: defaultKeys,
+        produceTree: "fluid.videoPlayer.produceTree",
+        controllerType: "html", // "native", "html", "none" (or null),
+        model: {
+            states: {
+                play: false,
+                currentTime: 0,
+                totalTime: 0,
+                displayCaptions: true,
+                fullscreen: false,
+                volume: 60,
+                canPlay: false
+            },
+            video: {
+                sources: null
+            },
+            captions: {
+                sources: null,
+                currentTrack: undefined,
+                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                maxNumber: 3,
+                track: undefined
+            }
         },
-        
-        controllerType: "html", // "native", "html", "none" (or null)    
-        showCaptions: true
+        templates: {
+            videoPlayer: {
+                forceCache: true,
+                href: "../html/videoPlayer_template.html"
+            }
+        }
     });
+
+    fluid.videoPlayer.produceTree = function (that) {
+        var tree = {};
+        if (that.model.video.sources) {
+            tree.video = {
+                decorators: [{
+                    type: "fluid",
+                    func: "fluid.videoPlayer.media"
+                }, {
+                    type: "fluid",
+                    func: "fluid.videoPlayer.eventBinderMedia"
+                }]
+            };
+        }
+        if (!($.browser.msie && $.browser.version < 9)) {
+            if (that.options.controllerType === "html") {
+                tree.controllers = {
+                    decorators: [{
+                        type: "fluid",
+                        func: "fluid.videoPlayer.controllers"
+                    }, {
+                        type: "fluid",
+                        func: "fluid.videoPlayer.eventBinderControllers"
+                    }]
+                };
+            } else if (that.options.controllerType === "native") {
+                tree.video.decorators.push({
+                    type: "attrs",
+                    attributes: {
+                        controls: "true"
+                    }
+                });
+            }
+
+            tree.caption = {
+                decorators: [{
+                    type: "fluid",
+                    func: "fluid.videoPlayer.captionner"
+                }, {
+                    type: "fluid",
+                    func: "fluid.videoPlayer.eventBinderCaptionner"
+                }]
+            };
+        }
+        return tree;
+    };
+
+    fluid.videoPlayer.preInit = function (that) {
+        that.play = function (ev) {
+            that.applier.fireChangeRequest({
+                "path": "states.play",
+                "value": !that.model.states.play
+            });
+        };
+
+        that.fullscreen = function () {
+            // For real fullscreen (only on safari for the moment) but no captions available in that case...
+            /*if ($.browser.safari) {
+                var video = that.locate("video");
+                if (that.model.states.fullscreen === true) {
+                    video[0].webkitEnterFullscreen();
+                } else {
+                    video[0].webkitExitFullscreen();
+                }
+            } else {*/
+            var video = that.locate("video");
+            if (that.model.states.fullscreen === true) {
+                that.videoWidth = that.container.css("width");
+                that.videoHeight = that.container.css("height");
+                // minus 5 just cause it makes it more comfortable
+                that.container.css({
+                    width: window.innerWidth + "px",
+                    height: window.innerHeight - 20 + "px"
+                });
+                video.css({
+                    width: "100%",
+                    height: "100%"
+                });
+            } else {
+                that.container.css({
+                    width: video[0].videoWidth,
+                    height: video[0].videoHeight,
+                    position: "relative"
+                });
+            }
+            //}
+        };
+
+        that.incrVolume = function () {
+            if (that.model.states.volume < 100) {
+                var newVol = (that.model.states.volume + 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
+            }
+        };
+
+        that.decrVolume = function () {
+            if (that.model.states.volume > 0) {
+                var newVol = (that.model.states.volume - 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
+            }
+        };
+
+        that.incrTime = function () {
+			that.events.onStartTimeChange.fire();
+            if (that.model.states.currentTime < that.model.states.totalTime) {
+                var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
+                that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
+            }
+        	that.events.afterTimeChange.fire();
+        };
+
+        that.decrTime = function () {
+			that.events.onStartTimeChange.fire();
+            if (that.model.states.currentTime > 0) {
+                var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
+                that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
+            }
+        	that.events.afterTimeChange.fire();
+        };
+
+        that.refresh = function () {
+            that.fullscreen();
+        };
+
+    };
     
+    fluid.videoPlayer.finalInit = function (that) {
+        that.applier = fluid.makeChangeApplier(that.model);
+        // Render each media source with its custom renderer, registered by type.
+        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
+
+        fluid.fetchResources(that.options.templates, function (res) {
+            for (var key in res) {
+                if (res[key].fetchError) {
+                    fluid.log("couldn't fetch" + res[key].href);
+                    fluid.log("status: " + res[key].fetchError.status +
+                        ", textStatus: " + res[key].fetchError.textStatus +
+                        ", errorThrown: " + res[key].fetchError.errorThrown);
+                } else if (key === "videoPlayer") {
+                    if ($.browser.msie && $.browser.version < 9) {
+                        that.events.onOldBrowserDetected.fire($.browser);
+                    }
+                    that.container.append(res[key].resourceText);
+                    that.refreshView();
+                    //if we're on an old browser there's no point in linking all the evets as they won't exist...
+                    if (!($.browser.msie && $.browser.version < 9)) {
+                        bindVideoPlayerDOMEvents(that);
+                        //create all the listeners to the model
+                        bindVideoPlayerModel(that);
+                    }
+                }
+            }
+            that.events.onTemplateReady.fire();
+        });
+
+        return that;
+    };
+        
+    //returns the time in format hh:mm:ss from a time in seconds 
+    fluid.videoPlayer.formatTime = function (time) {
+        var fullTime = Math.floor(time);
+        var sec = fullTime % 60;
+        sec = sec < 10 ? "0" + sec : sec;
+        fullTime = Math.floor(fullTime / 60);
+        var min = fullTime % 60;
+        fullTime = Math.floor(fullTime / 60);
+        var ret = "";
+        if (fullTime !== 0) {
+            ret = fullTime + ":";
+        }
+        return ret + min + ":" + sec;
+    };
+
     fluid.videoPlayer.mediaRenderers = {
         html5SourceTag: function (videoPlayer, mediaSource) {
             var sourceTag = $("<source />");
             sourceTag.attr(mediaSource);
-            videoPlayer.video.append(sourceTag);
+            videoPlayer.container.append(sourceTag);
             return sourceTag;
         },
-        
         youTubePlayer: function (videoPlayer, mediaSource) {
             var placeholder = $("<div/>"),
                 id = fluid.allocateSimpleId(placeholder);
-            videoPlayer.video.append(placeholder);
+            videoPlayer.container.append(placeholder);
             swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
             return placeholder;
         }
     };
-})(jQuery);
-
-(function ($) {
-    var indexCaptions = function (captions) {
-        var indexedCaptions = [];
-        $.each(captions, function (idx, caption) {
-            indexedCaptions[caption.inTimeMilli] = caption; 
-        });
-        return indexedCaptions;
-    };
     
-    var clearCurrentCaption = function (that) {
-        that.container.empty();
-        that.currentCaption = null;
-    };
-    
-    var findCaptionForTime = function (that, timeInMillis) {     
-        // TODO: This algorithm is totally evil and incorrect.
-        var timeRange = {
-            lower: timeInMillis - 333,
-            upper: timeInMillis + 333
-        };
-        
-        for (var x = timeRange.lower; x <= timeRange.upper; x++) {
-            var match = that.captions[x];
-            if (match) {
-                if (match.inTimeMilli <= x && match.outTimeMilli >= x) {
-                    return match; 
-                }      
-            }
-        }
-        
-        return null;
-    };
-    
-    var displayCaption = function (that, caption) {
-        that.currentCaption = caption;
-        that.container.text(caption.caption_text);
-    };
-    
-    var setupCaptionView = function (that) {
-        that.captions = indexCaptions(that.options.captions);
-        
-        that.video.bind("timeupdate", function () {
-            var timeInMillis = Math.round(this.currentTime * 1000);
-            that.timeUpdate(timeInMillis);
-        });
-    };
-    
-    /**
-     * SingleCaptionView is responsible for displaying captions in a one-at-a-time style.
-     * 
-     * @param {Object} container the container in which the captions should be displayed
-     * @param {Object} options configuration options for the component
-     */
-    fluid.videoPlayer.singleCaptionView = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer.singleCaptionView", container, options);
-        that.video = that.options.video;
-        that.currentCaption = null;
-        
-        that.timeUpdate = function (timeInMillis) {
-            // Clear out any caption that has hit its end time.
-            if (that.currentCaption && timeInMillis >= that.currentCaption.outTimeMilli) {
-                clearCurrentCaption(that);
-            }
-            
-            // Display a new caption.
-            var nextCaption = findCaptionForTime(that, timeInMillis);
-            if (nextCaption) {
-                displayCaption(that, nextCaption);
-            }
-        };
-        
-        setupCaptionView(that);
-        return that;
-    };
-    
-    fluid.defaults("fluid.videoPlayer.singleCaptionView", {
-        video: null,
-        captions: null
+    /************************************************
+     *      VideoPlayer Event Binders                *
+     ************************************************/   
+    fluid.defaults("fluid.videoPlayer.eventBinderControllers", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
     });
-})(jQuery);
 
-(function ($) {
-
-    var renderScrubber = function (that) {
-        var scrubber = $("<div class='flc-videoPlayer-controller-scrubber fl-player-scrubber'></div>");
-        that.container.append(scrubber);
-        return scrubber;
-    };
-    
-    var bindDOMEvents = function (that) {
-        var scrubber = that.locate("scrubber");
-        var jVideo = $(that.video);
-        
-        // Setup the scrubber when we know the duration of the video.
-        jVideo.bind("durationchange", function () {
-            var startTime = that.video.startTime || 0; // FF doesn't implement startTime from the HTML 5 spec.
-            scrubber.slider("option", "min", startTime);
-            scrubber.slider("option", "max", that.video.duration + startTime);
-            scrubber.slider("enable");
-        });
-        
-        // Bind to the video's timeupdate event so we can programmatically update the slider.
-        jVideo.bind("timeupdate", function () {
-            scrubber.slider("value", that.video.currentTime);    
-        });
-        
-        // Bind the scrubbers slide event to change the video's time.
-        that.locate("scrubber").bind("slide", function (evt, ui) {
-            that.video.currentTime = ui.value;
-        });
-        
-        // Bind the play button.
-        var playButton = that.locate("playButton");
-        playButton.click(function () {
-            if (that.video.paused) {
-                that.video.play();
-            } else {
-                that.video.pause();
+    fluid.demands("fluid.videoPlayer.eventBinderControllers",  ["fluid.videoPlayer", "fluid.videoPlayer.controllers"], {
+        options: {
+            listeners: {
+                "{controllers}.events.onTimeChange": "{videoPlayer}.events.onTimeChange.fire",
+                "{controllers}.events.onStartTimeChange": "{videoPlayer}.events.onStartTimeChange.fire",
+                "{controllers}.events.onVolumeChange": "{videoPlayer}.events.onVolumeChange.fire",
+                "{controllers}.events.afterTimeChange": "{videoPlayer}.events.afterTimeChange.fire"
             }
-        });
-        
-        // Bind the Play/Pause button's text status to the HTML 5 video events.
-        jVideo.bind("play", function () {
-            playButton.text(that.options.strings.pause);
-            playButton.removeClass("fl-videoPlayer-state-play").addClass("fl-videoPlayer-state-pause");
-        });
-        jVideo.bind("pause", function () {
-            playButton.text(that.options.strings.play);
-            playButton.removeClass("fl-videoPlayer-state-pause").addClass("fl-videoPlayer-state-play");
-        });
-        
-        // Enable the Play/Pause button when the video can start playing.
-        jVideo.bind("canplay", function () {
-            playButton.removeAttr("disabled");
-        });
-    };
-    
-    var setupController = function (that) {
-        // Render the play button if it's not already there.
-        var playButton = that.locate("playButton");
-        if (playButton.length === 0) {
-            playButton = $("<button class='flc-videoPlayer-controller-play fl-videoPlayer-state-play'/>").text(that.options.strings.play);
-            that.container.append(playButton);   
-        }
-
-        // Render the scrubber if it's not already there.
-        var scrubber = that.locate("scrubber");
-        if (scrubber.length === 0) {
-            scrubber = renderScrubber(that);
-        }
-                
-        // Initially disable the play button and scrubber until the video is ready to go.
-        playButton.attr("disabled", "disabled");
-        scrubber.slider({unittext: " seconds"}).slider("disable");
-        
-        bindDOMEvents(that);
-    };
-    
-    /**
-     * PlayAndScrubController is a simple video controller containing a play button and a time scrubber.
-     * 
-     * @param {Object} container the container which this component is rooted
-     * @param {Object} options configuration options for the component
-     */
-    fluid.videoPlayer.playAndScrubController = function (container, options) {
-        var that = fluid.initView("fluid.videoPlayer.playAndScrubController", container, options);
-        that.video = fluid.unwrap(that.options.video);
-        
-        setupController(that);
-        return that;
-    };
-    
-    fluid.defaults("fluid.videoPlayer.playAndScrubController", {        
-        video: null,
-        
-        selectors: {
-            playButton: ".flc-videoPlayer-controller-play",
-            scrubber: ".flc-videoPlayer-controller-scrubber"
-        },
-        
-        strings: {
-            play: "Play",
-            pause: "Pause"
         }
     });
+
+    fluid.defaults("fluid.videoPlayer.eventBinderCaptionner", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+
+    fluid.demands("fluid.videoPlayer.eventBinderCaptionner", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.afterTimeChange": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"               
+            }
+        }
+    });
+
+    fluid.defaults("fluid.videoPlayer.eventBinderMedia", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+
+    fluid.demands("fluid.videoPlayer.eventBinderMedia", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onTimeChange": "{media}.setTime",
+                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                "{videoPlayer}.events.onViewReady": "{media}.refresh"
+            }
+        }
+    });
+
+    //////////////// For future implementation
+    //this binds all the events of the videoPlayer to their listeners 
+    // That would be the clean way but there is a real issue with contexts
+    
+    
+    /*fluid.defaults("fluid.videoPlayer.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        events: {
+            onEventBinderReady: null,
+            afterTimeChange: null,
+            onCaptionsLoaded: null,
+            onTimeChage: null,
+            onVolumeChange: null,
+            onViewReady:null
+        }
+    });
+    
+    fluid.demands("fluid.videoPlayer.eventBinder", 
+           "fluid.videoPlayer", {
+            options: {
+                events: {
+                    afterTimeChange: "{controllers}.events.afterTimeChange",
+                    onCaptionsLoaded: "{captionLoader}.events.onCaptionsLoaded", 
+                    onTimeChange: "{controllers}.events.onTimeChange",
+                    onVolumeChange: "{controllers}.events.onVolumeChange",
+                    //onVolumeChange: "{videoPlayer}.events.onVolumeChange",
+                    onViewReady: "{videoPlayer}.events.onViewReady" 
+                },
+                listeners: {
+                    afterTimeChange: "{captionner}.resyncCaptions",
+                    onCaptionsLoaded: "{captionner}.resyncCaptions",
+                    onTimeChange: "{media}.setTime",
+                    //"{videoPlayer}.events.onTimeChange": "{media}.setTime",
+                    onVolumeChange: "{media}.setVolume",
+                    //"{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                    onViewReady: "{media}.refresh",
+                }
+            }
+    });  */ 
 
 })(jQuery);
