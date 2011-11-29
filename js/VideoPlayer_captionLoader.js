@@ -1,7 +1,5 @@
 /*
 Copyright 2009 University of Toronto
-Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -44,10 +42,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 captions = captions.captionCollection;
             }
             
-            that.applier.fireChangeRequest({
-                path: "captions.track",
-                value: captions
-            });
+            that.applier.requestChange("captions.track", captions);
             that.events.onCaptionsLoaded.fire(captions);
             return that;
         };  
@@ -85,10 +80,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         if (that.model.captions.sources && that.model.captions.currentTrack) {
             that.loadCaptions();
         } else {
-            that.applier.fireChangeRequest({
-                path: "states.displayCaptions",
-                value: false
-            });
+            that.applier.requestChange("states.displayCaptions", false);
         }
         that.events.onReady.fire();
         return that;

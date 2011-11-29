@@ -1,7 +1,5 @@
 /*
 Copyright 2009 University of Toronto
-Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -27,19 +25,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 modifier: that.options.keyBindings.fullscreen.modifier,
                 key: that.options.keyBindings.fullscreen.key,
                 activateHandler: function () {
-                    that.applier.fireChangeRequest({
-                        path: "states.fullscreen",
-                        value: !that.model.states.fullscreen
-                    });
+                    that.applier.requestChange("states.fullscreen", !that.model.states.fullscreen);
                 }
             }, {
                 modifier: that.options.keyBindings.captions.modifier,
                 key: that.options.keyBindings.captions.key,
                 activateHandler: function () {
-                    that.applier.fireChangeRequest({
-                        path: "states.displayCaptions",
-                        value: !that.model.states.displayCaptions
-                    });
+                    that.applier.requestChange("states.displayCaptions", !that.model.states.displayCaptions);
                 }
             }, {
                 modifier: that.options.keyBindings.volumePlus.modifier,
@@ -246,10 +238,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.preInit = function (that) {
         that.play = function (ev) {
-            that.applier.fireChangeRequest({
-                "path": "states.play",
-                "value": !that.model.states.play
-            });
+            that.applier.requestChange("states.play", !that.model.states.play);
         };
 
         that.fullscreen = function () {
