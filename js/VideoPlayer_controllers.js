@@ -574,18 +574,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.locate("captions").hide();
         that.locate("help").hide();
         that.locate("element").buttonset();
-        // Because UI buttons is not working properly with check
-        that.locate("label").click(function (e) {
-            e.preventDefault();
-            var id = "#" + $.escapeSelector($(this).attr('for'));
-            that.locate("input").removeAttr("checked");
-            $(id).attr('checked', true);
-            that.applier.fireChangeRequest({
-                path: "captions.currentTrack",
-                value: $(id).attr("value")
-            });
-        });
-        that.locate("menu").fluid("selectable");
+		that.locate("menu").fluid("selectable");
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.menu", {
