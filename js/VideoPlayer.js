@@ -20,12 +20,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 (function ($) {
     fluid.setLogging(false);
 
-    fluid.controls = {
-        CUSTOM: "custom",
-        NATIVE: "native",
-        NONE: "none"
-    };
-
     var bindKeyboardControl = function (that) {
         var opts = {
             additionalBindings: [{
@@ -177,7 +171,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
-        controls: fluid.controls.CUSTOM,
+        controls: "custom",
         model: {
             states: {
                 play: false,
@@ -221,7 +215,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             };
         }
         if (!($.browser.msie && $.browser.version < 9)) {
-            if (that.options.controls === fluid.controls.CUSTOM) {
+            if (that.options.controls === "custom") {
                 tree.controllers = {
                     decorators: [{
                         type: "fluid",
@@ -231,7 +225,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                         func: "fluid.videoPlayer.eventBinderControllers"
                     }]
                 };
-            } else if (that.options.controls === fluid.controls.NATIVE) {
+            } else if (that.options.controls === "native") {
                 tree.video.decorators.push({
                     type: "attrs",
                     attributes: {
