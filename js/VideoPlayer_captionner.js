@@ -13,6 +13,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 /*global jQuery, window, fluid*/
 
+// JSLint options 
+/*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
+
 
 (function ($) {
     var findCaptionForTime = function (that, timeInMillis) {     
@@ -157,11 +160,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
         
         that.hideCaptions = function () {
-        	that.container.hide();
+            that.container.hide();
         };
         
         that.showCaptions = function () {
-        	that.container.show();
+            that.container.show();
         };
     };
 

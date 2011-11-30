@@ -13,6 +13,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 /*global jQuery, window, swfobject, fluid*/
 
+// JSLint options 
+/*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
+
 
 (function ($) {
     fluid.setLogging(false);
@@ -168,7 +171,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
-        controllerType: "html", // "native", "html", "none" (or null),
+        controls: "custom",
         model: {
             states: {
                 play: false,
@@ -212,7 +215,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             };
         }
         if (!($.browser.msie && $.browser.version < 9)) {
-            if (that.options.controllerType === "html") {
+            if (that.options.controls === "custom") {
                 tree.controllers = {
                     decorators: [{
                         type: "fluid",
@@ -222,7 +225,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                         func: "fluid.videoPlayer.eventBinderControllers"
                     }]
                 };
-            } else if (that.options.controllerType === "native") {
+            } else if (that.options.controls === "native") {
                 tree.video.decorators.push({
                     type: "attrs",
                     attributes: {
@@ -253,15 +256,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
 
         that.fullscreen = function () {
-            // For real fullscreen (only on safari for the moment) but no captions available in that case...
-            /*if ($.browser.safari) {
-                var video = that.locate("video");
-                if (that.model.states.fullscreen === true) {
-                    video[0].webkitEnterFullscreen();
-                } else {
-                    video[0].webkitExitFullscreen();
-                }
-            } else {*/
+            // This won't do "real" full-screen in Safari
             var video = that.locate("video");
             if (that.model.states.fullscreen === true) {
                 that.videoWidth = that.container.css("width");
@@ -305,7 +300,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
             }
-        	that.events.afterTimeChange.fire();
+            that.events.afterTimeChange.fire();
         };
 
         that.decrTime = function () {
@@ -314,7 +309,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
             }
-        	that.events.afterTimeChange.fire();
+            that.events.afterTimeChange.fire();
         };
 
         that.refresh = function () {
@@ -431,45 +426,4 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
         }
     });
-
-    //////////////// For future implementation
-    //this binds all the events of the videoPlayer to their listeners 
-    // That would be the clean way but there is a real issue with contexts
-    
-    
-    /*fluid.defaults("fluid.videoPlayer.eventBinder", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        events: {
-            onEventBinderReady: null,
-            afterTimeChange: null,
-            onCaptionsLoaded: null,
-            onTimeChage: null,
-            onVolumeChange: null,
-            onViewReady:null
-        }
-    });
-    
-    fluid.demands("fluid.videoPlayer.eventBinder", 
-           "fluid.videoPlayer", {
-            options: {
-                events: {
-                    afterTimeChange: "{controllers}.events.afterTimeChange",
-                    onCaptionsLoaded: "{captionLoader}.events.onCaptionsLoaded", 
-                    onTimeChange: "{controllers}.events.onTimeChange",
-                    onVolumeChange: "{controllers}.events.onVolumeChange",
-                    //onVolumeChange: "{videoPlayer}.events.onVolumeChange",
-                    onViewReady: "{videoPlayer}.events.onViewReady" 
-                },
-                listeners: {
-                    afterTimeChange: "{captionner}.resyncCaptions",
-                    onCaptionsLoaded: "{captionner}.resyncCaptions",
-                    onTimeChange: "{media}.setTime",
-                    //"{videoPlayer}.events.onTimeChange": "{media}.setTime",
-                    onVolumeChange: "{media}.setVolume",
-                    //"{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
-                    onViewReady: "{media}.refresh",
-                }
-            }
-    });  */ 
-
 })(jQuery);
