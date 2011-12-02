@@ -15,7 +15,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 
 (function ($) {
-    fluid.setLogging(false);
+    fluid.setLogging(true);
 
     var bindKeyboardControl = function (that) {
         var opts = {
@@ -127,6 +127,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         postInitFunction: "fluid.videoPlayer.postInit",
+        preInitFunction: "fluid.videoPlayer.preInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             onReadyToLoadCaptions: null,
@@ -243,6 +244,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
         return tree;
     };
+    
+    fluid.videoPlayer.preInit = function (that) {
+        that.refresh = function () {
+            that.fullscreen();
+        };
+    };
 
     fluid.videoPlayer.postInit = function (that) {
         that.play = function (ev) {
@@ -251,7 +258,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 "value": !that.model.states.play
             });
         };
-
+        
         that.fullscreen = function () {
             // For real fullscreen (only on safari for the moment) but no captions available in that case...
             /*if ($.browser.safari) {
@@ -284,21 +291,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
             //}
         };
-
-        that.incrVolume = function () {
-            if (that.model.states.volume < 100) {
-                var newVol = (that.model.states.volume + 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
-            }
-        };
-
-        that.decrVolume = function () {
-            if (that.model.states.volume > 0) {
-                var newVol = (that.model.states.volume - 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
-            }
-        };
-
+        
         that.incrTime = function () {
 			that.events.onStartTimeChange.fire();
             if (that.model.states.currentTime < that.model.states.totalTime) {
@@ -316,11 +309,20 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
         	that.events.afterTimeChange.fire();
         };
-
-        that.refresh = function () {
-            that.fullscreen();
+        
+        that.incrVolume = function () {
+            if (that.model.states.volume < 100) {
+                var newVol = (that.model.states.volume + 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
+            }
         };
 
+        that.decrVolume = function () {
+            if (that.model.states.volume > 0) {
+                var newVol = (that.model.states.volume - 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
+            }
+        };
     };
     
     fluid.videoPlayer.finalInit = function (that) {

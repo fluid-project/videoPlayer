@@ -166,6 +166,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     fluid.videoPlayer.captionner.finalInit = function (that) {
+        //console.log("I'm here");
         createCaptionnerMarkup(that);
         bindCaptionnerModel(that);
 
