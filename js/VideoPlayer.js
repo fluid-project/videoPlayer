@@ -256,10 +256,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
 
         that.fullscreen = function () {
-            // This won't do "real" full-screen in Safari
             var video = that.locate("video");
             if (that.model.states.fullscreen === true) {
-                // minus 5 just cause it makes it more comfortable
                 that.container.css({
                     // TODO: This doesn't actually do full-screen, it simply tries to maximise
                     // to the current window size. (FLUID-4570)
@@ -269,10 +267,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
             } else {
                 that.container.css({
                     width: video[0].videoWidth,
-                    height: video[0].videoHeight,
+                    height: video[0].videoHeight
                 });
             }
-            //}
         };
 
         that.incrVolume = function () {
