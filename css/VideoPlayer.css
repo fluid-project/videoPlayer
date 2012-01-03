@@ -17,10 +17,17 @@
  * Controller area
  */
  
+.fl-videoPlayer-tooltip {
+    position    : absolute;
+    border      : 1px solid #CCCCCC;
+    padding     : 3px 5px;
+}
+
 .fl-videoPlayer-controller {
     width:100%;
     margin: 10px;
     text-align: center;
+    background-color: gray;
 }
 
 .fl-videoPlayer-controller * {
@@ -28,7 +35,21 @@
     margin: auto;
 }
 
-.fl-videoPlayer-controller-time {
+.fl-videoPlayer-playing, .fl-videoPlayer-paused {
+    width: 16px;
+    height: 16px;
+    background-color: black;
+    border: 1px solid black;
+    cursor: pointer;
+}
+.fl-videoPlayer-paused {
+    background-image: url('../images/play.png');
+}
+.fl-videoPlayer-playing {
+    background-image: url('../images/pause.png');
+}
+
+.fl-videoPlayer-time {
     /*margin: 0 5px;
     */padding: 0.4em;
     line-height: 1.4;
@@ -37,22 +58,22 @@
     text-align: center;
 }
 
-.fl-videoPlayer-controller-scrubberContainer {
+.fl-videoPlayer-scrubberContainer {
     width: 100%;
 }
-.fl-videoPlayer-controller-scrubberContainer * {
+.fl-videoPlayer-scrubberContainer * {
     margin: auto;
     display: inline-block;
 }
 
-.fl-videoPlayer-controller-volumeControl {
+.fl-videoPlayer-volumeControl {
     display: block;
     position: absolute;
     bottom: -40px;
     z-index: 100;
 }
 
-.fl-videoPlayer-controller-menu-captions {
+.fl-videoPlayer-menu-captions {
     display: block;
     position: absolute;
     bottom: -40px;
@@ -66,7 +87,7 @@
 .fl-videoPlayer-captionArea {
     bottom:0;
     left: 20%;
-	right: 20%;
+    right: 20%;
     position: absolute;
     text-align:center;
 }
@@ -80,7 +101,7 @@
 * mods to the coal theme
 */
 
-.fl-videoPlayer-controller-scrubber {
+.fl-videoPlayer-scrubber {
     width: 60%;
 }
 

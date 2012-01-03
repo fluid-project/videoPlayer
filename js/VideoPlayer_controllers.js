@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
+Copyright 2011-2012 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -85,15 +85,21 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
     };
     
+    // TODO: this function should probably be renamed, since it's not really creating markup
     var createControllerMarkup = function (that) {
-        that.locate("play").button({
-            icons: {
-                primary: that.model.states.play ? that.options.styles.pauseIcon : that.options.styles.playIcon
+
+        // Set up the Play/Pause button
+        var playButton = that.locate("play");
+        playButton.attr("role", "button").attr("aria-pressed", "false");
+        // TODO: tooltip should be a renderer decorator instead (waiting for a fix to FLUID-4571)
+        playButton.tooltip = fluid.tooltip(playButton, {
+            styles: {
+                tooltip: "fl-videoPlayer-tooltip"
             },
-            disabled: !that.model.states.canPlay,
-            text: false,
-            label: that.model.states.play ? that.options.strings.playOff : that.options.strings.playOn 
+            content: that.options.strings.play
         });
+        playButton.click(that.togglePlayView);
+
         that.locate("displayCaptions").button({
             icons: {
                 primary: that.options.styles.captionIcon
@@ -125,30 +131,30 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
 
         selectors: {
-            play: ".flc-videoPlayer-controller-play",
-            displayCaptions: ".flc-videoPlayer-controller-caption",
-            fullscreen: ".flc-videoPlayer-controller-fullscreen",
-            scrubberContainer: ".flc-videoPlayer-controller-scrubberContainer",
-            volumeContainer: ".flc-videoPlayer-controller-volumeContainer",
-            menuContainer: ".flc-videoPlayer-controller-menuContainer"
+            play: ".flc-videoPlayer-play",
+            displayCaptions: ".flc-videoPlayer-caption",
+            fullscreen: ".flc-videoPlayer-fullscreen",
+            scrubberContainer: ".flc-videoPlayer-scrubberContainer",
+            volumeContainer: ".flc-videoPlayer-volumeContainer",
+            menuContainer: ".flc-videoPlayer-menuContainer"
         },
 
         styles: {
-            playOn: "fl-videoPlayer-state-play",
-            playOff: "fl-videoPlayer-state-pause",
+            playing: "fl-videoPlayer-playing",
+            paused: "fl-videoPlayer-paused",
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
             displayCaptionsOff: "fl-videoPlayer-state-captionOff",
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
             fullscreenOff: "fl-videoPlayer-state-fullscreenOff",
-            pauseIcon: "ui-icon-pause",
-            playIcon: "ui-icon-play",
+            pauseIcon: "fl-videoPlayer-pause",
+            playIcon: "fl-videoPlayer-play",
             fullscreenIcon: "ui-icon-extlink",
             captionIcon: "ui-icon-comment"
         },
 
         strings: {
-            playOn: "Play",
-            playOff: "Pause",
+            play: "Play",
+            pause: "Pause",
             displayCaptionsOn: "Captions On",
             displayCaptionsOff: "Captions Off",
             fullscreenOn: "Fullscreen On",
@@ -166,21 +172,24 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.controllers.produceTree = function (that) {
         var tree = {};
         var value;
+        
         for (var item in that.model.states) {
             if (that.options.selectors[item]) {
                 tree[item] = {};
+                // TODO: this is temporary until the rest of the prototree is redesigned
+                if (item === "play") {
+                    continue;
+                }
+
                 if (item === "fullscreen" || item === "displayCaptions") {
                     tree[item].valuebinding = "states." + item;
                 }
-                if (item === "play" || item === "displayCaptions" || item === "fullscreen") {
+                if (item === "displayCaptions" || item === "fullscreen") {
                     value = that.model.states[item] ? "On" : "Off";
                     // render radio buttons
                     tree[item].decorators = {
                         addClass: that.options.styles[item + value]
                     };
-                    if (item === "play") {
-                        tree[item].decorators.attributes = {"disabled": "disabled"};
-                    }
                 }
             }
         }
@@ -208,6 +217,33 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 }]
             };
         }
+
+        // Play/pause button
+        tree.play = {
+            value: that.model.states.play,
+            valuebinding: "${that.states.play}",
+            decorators: [{
+                type: "addClass",
+                classes: (that.model.states.play ? that.options.styles.playing : that.options.styles.paused)
+            }
+/*
+            // TODO: Once FLUID-4571 is fixed, here's how to instantiate the tooltip as a decorator
+            ,
+            {
+                type: "fluid",
+                func: "fluid.tooltip",
+                container: that.locate("play"),
+                options: {
+                    styles: {
+                        tooltip: "fl-videoPlayer-tooltip"
+                    },
+                    content: that.options.strings.play
+                }
+           }
+*/
+           ]
+        }
+
         return tree;
     };
 
@@ -216,19 +252,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var play = that.locate("play");
             var options = {};
             if (that.model.states.play) {
-                play.removeClass(that.options.styles.playOn).addClass(that.options.styles.playOff);
-                options = {
-                    label: that.options.strings.playOff,
-                    icons: { primary: that.options.styles.pauseIcon}
-                };
+                play.removeClass(that.options.styles.paused).addClass(that.options.styles.playing);
+                play.attr("role", "button").attr("aria-pressed", "true");
             } else {
-                play.removeClass(that.options.styles.playOff).addClass(that.options.styles.playOn);
-                options = {
-                    label: that.options.strings.playOn,
-                    icons: { primary: that.options.styles.playIcon}
-                };
+                play.removeClass(that.options.styles.playing).addClass(that.options.styles.paused);
+                play.attr("role", "button").attr("aria-pressed", "false");
             }
-            play.button("option", options);
+            // TODO: Update the tooltip text appropriately (waiting on fix to FLUID-4571)
         };
 
         that.toggleCaptionsView = function () {
@@ -338,9 +368,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onStartScrub: null
         },
         selectors: {
-            totalTime: ".flc-videoPlayer-controller-total",
-            currentTime: ".flc-videoPlayer-controller-current",
-            scrubber: ".flc-videoPlayer-controller-scrubber"
+            totalTime: ".flc-videoPlayer-total",
+            currentTime: ".flc-videoPlayer-current",
+            scrubber: ".flc-videoPlayer-scrubber"
         },
         strings: {
             scrubber: "Time scrub"
@@ -434,7 +464,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     var createVolumeMarkup = function (that) {
-        var volumeElt = $("<button class='flc-videoPlayer-controller-volume'/>");
+        var volumeElt = $("<button class='flc-videoPlayer-volume'/>");
         volumeElt.addClass(that.options.styles.volume);
         volumeElt.button({
             "icons": {
@@ -445,7 +475,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             text: false
         });
         that.container.append(volumeElt);
-        var volumeControl = $("<div class='flc-videoPlayer-controller-volumeControl'/>");
+        var volumeControl = $("<div class='flc-videoPlayer-volumeControl'/>");
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
             orientation: "vertical",
@@ -475,12 +505,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onChange: null
         },
         selectors: {
-            volume: ".flc-videoPlayer-controller-volume",
-            volumeControl: ".flc-videoPlayer-controller-volumeControl"
+            volume: ".flc-videoPlayer-volume",
+            volumeControl: ".flc-videoPlayer-volumeControl"
         },
         styles: {
-            volume: "fl-videoPlayer-controller-volume",
-            volumeControl: "fl-videoPlayer-controller-volumeControl",
+            volume: "fl-videoPlayer-volume",
+            volumeControl: "fl-videoPlayer-volumeControl",
             buttonIcon: "ui-icon-signal"
         },
         strings: {
@@ -585,15 +615,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onMenuReady: null
         },
         selectors: {
-            menuButton: ".flc-videoPlayer-controller-menu-button",
-            menu: ".flc-videoPlayer-controller-menu-container",
-            captions: ".flc-videoPlayer-controller-menu-captions",
-            title: ".flc-videoPlayer-controller-menu-title",
-            input: ".flc-videoPlayer-controller-menu-input",
-            element: ".flc-videoPlayer-controller-menu-element",
-            label: ".flc-videoPlayer-controller-menu-label",
-            helpButton: ".flc-videoPlayer-controller-menu-helpButton",
-            help: ".flc-videoPlayer-controller-menu-help"
+            menuButton: ".flc-videoPlayer-menu-button",
+            menu: ".flc-videoPlayer-menu-container",
+            captions: ".flc-videoPlayer-menu-captions",
+            title: ".flc-videoPlayer-menu-title",
+            input: ".flc-videoPlayer-menu-input",
+            element: ".flc-videoPlayer-menu-element",
+            label: ".flc-videoPlayer-menu-label",
+            helpButton: ".flc-videoPlayer-menu-helpButton",
+            help: ".flc-videoPlayer-menu-help"
         },
         styles: {
             buttonIcon: "ui-icon-arrow",
