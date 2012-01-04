@@ -347,6 +347,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.events.onTemplateReady.fire();
         });
 
+        that.container.attr("role", "application");
         return that;
     };
         

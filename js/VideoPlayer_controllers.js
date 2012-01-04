@@ -19,6 +19,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 (function ($) {
 
+    var disableElement = function (jQel) {
+        jQel.attr("disabled", "disabled");
+    };
+    var enableElement = function (buttonEl) {
+        jQel.removeAttr("disabled");
+    };
+
     //change the classes/title/checked of the selected checkbox
     var toggleView = function (that, element) {
         var tag = that.locate(element);
@@ -48,11 +55,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.applier.modelChanged.addListener("states.canPlay", function () {
             var playButton = that.locate("play");
             if (that.model.states.canPlay === true) {
-                playButton.button("enable");
+                enableElement(playButton);
                 that.locate("displayCaptions").button("enable");
                 that.locate("fullscreen").button("enable");
             } else {
-                playButton.button("disable");
+                disableElement(playButton);
                 that.locate("displayCaptions").button("disable");
                 that.locate("fullscreen").button("disable");
             }
@@ -98,7 +105,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             },
             content: that.options.strings.play
         });
-        playButton.click(that.togglePlayView);
 
         that.locate("displayCaptions").button({
             icons: {
@@ -248,17 +254,20 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.preInit = function (that) {   
+
         that.togglePlayView = function () {
-            var play = that.locate("play");
+            var playButton = that.locate("play");
             var options = {};
             if (that.model.states.play) {
-                play.removeClass(that.options.styles.paused).addClass(that.options.styles.playing);
-                play.attr("role", "button").attr("aria-pressed", "true");
+                playButton.removeClass(that.options.styles.paused).addClass(that.options.styles.playing);
+                playButton.attr("role", "button").attr("aria-pressed", "true");
             } else {
-                play.removeClass(that.options.styles.playing).addClass(that.options.styles.paused);
-                play.attr("role", "button").attr("aria-pressed", "false");
+                playButton.removeClass(that.options.styles.playing).addClass(that.options.styles.paused);
+                playButton.attr("role", "button").attr("aria-pressed", "false");
             }
             // TODO: Update the tooltip text appropriately (waiting on fix to FLUID-4571)
+            // note that fluid.renderer.getDecoratorComponents will get *all* the decorators:
+            // will still need to figure out which on is the 'play' tooltip. Is there a better way?
         };
 
         that.toggleCaptionsView = function () {

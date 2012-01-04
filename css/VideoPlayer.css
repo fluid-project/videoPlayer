@@ -5,6 +5,11 @@
 .fl-videoPlayer {
     position: relative;
 }
+.fl-videoPlayer:focus,
+.fl-videoPlayer :focus {
+    /* TODO: This is a temporary style, to be replaced when we have the final designs */
+    border: 1px solid red;
+}
 
 /*
 * Video area
