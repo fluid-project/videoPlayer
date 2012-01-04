@@ -22,7 +22,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     var disableElement = function (jQel) {
         jQel.attr("disabled", "disabled");
     };
-    var enableElement = function (buttonEl) {
+    var enableElement = function (jQel) {
         jQel.removeAttr("disabled");
     };
 
@@ -103,7 +103,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
             styles: {
                 tooltip: "fl-videoPlayer-tooltip"
             },
-            content: that.options.strings.play
+            content: function () {
+                return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
+            }
         });
 
         that.locate("displayCaptions").button({
@@ -243,7 +245,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     styles: {
                         tooltip: "fl-videoPlayer-tooltip"
                     },
-                    content: that.options.strings.play
+                    content: function () {
+                        return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
+                    }
                 }
            }
 */
@@ -265,9 +269,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 playButton.removeClass(that.options.styles.playing).addClass(that.options.styles.paused);
                 playButton.attr("role", "button").attr("aria-pressed", "false");
             }
-            // TODO: Update the tooltip text appropriately (waiting on fix to FLUID-4571)
-            // note that fluid.renderer.getDecoratorComponents will get *all* the decorators:
-            // will still need to figure out which on is the 'play' tooltip. Is there a better way?
         };
 
         that.toggleCaptionsView = function () {
