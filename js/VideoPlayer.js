@@ -256,28 +256,20 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
 
         that.fullscreen = function () {
-            // This won't do "real" full-screen in Safari
             var video = that.locate("video");
             if (that.model.states.fullscreen === true) {
-                that.videoWidth = that.container.css("width");
-                that.videoHeight = that.container.css("height");
-                // minus 5 just cause it makes it more comfortable
                 that.container.css({
+                    // TODO: This doesn't actually do full-screen, it simply tries to maximise
+                    // to the current window size. (FLUID-4570)
                     width: window.innerWidth + "px",
                     height: window.innerHeight - 20 + "px"
-                });
-                video.css({
-                    width: "100%",
-                    height: "100%"
                 });
             } else {
                 that.container.css({
                     width: video[0].videoWidth,
-                    height: video[0].videoHeight,
-                    position: "relative"
+                    height: video[0].videoHeight
                 });
             }
-            //}
         };
 
         that.incrVolume = function () {
