@@ -19,10 +19,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
 
+        var templatePath = "../../html/";
+
         var videoPlayerTests = new jqUnit.TestCase("Video Player Tests");
 
         var initVideoPlayer = function (testOptions) {
             var opts = {
+                templatePath: templatePath,
                 model: {
                     video: {
                         sources: [
@@ -41,7 +44,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): valid path", function () {
             expect(1);
             var vidPlayer = initVideoPlayer({
-                templatePath: "../../html/",
                 listeners: {
                     onTemplateReady: function () {
                         jqUnit.assertTrue("The template should load", true);
