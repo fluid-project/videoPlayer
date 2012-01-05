@@ -226,9 +226,18 @@
             <tr>
                 <td>onTemplateReady</td>
                 <td>Default</td>
-                <td>Notice that all the templates have been loaded</td>
+                <td>Notice that all the templates have been successfully loaded. Note that if any one template fails to load, this event will not fire, and onTemplateLoadError will fire instead.</td>
                 <td></td>
                 <td></td>
+            </tr>
+            <tr>
+                <td>onTemplateLoadError</td>
+                <td>Default</td>
+                <td>Fires for any template that doesn't load.</td>
+                <td>key, href</td>
+                <td>key: the key related to the failed template<br />
+                    href: the URL of the failed template
+                </td>
             </tr>
             <tr>
                 <td>onReadyToLoadCaptions</td>
