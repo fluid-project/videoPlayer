@@ -143,7 +143,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onCaptionnerReady: null,
             afterTimeChange: null,
             onStartTimeChange: null,
-            onOldBrowserDetected: null
+            onOldBrowserDetected: null,
+            onTemplateLoadError: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -193,11 +194,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 track: undefined
             }
         },
+        templatePath: "../html/",
         templates: {
-            videoPlayer: {
-                forceCache: true,
-                href: "../html/videoPlayer_template.html"
-            }
+            videoPlayer: "videoPlayer_template.html"
         }
     });
 
@@ -318,18 +317,32 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     };
     
+    var buildResourceSpec = function (templates, path) {
+        var spec = {};
+        for (var key in templates) {
+            spec[key] = {
+                forceCache: true,
+                href: path + templates[key]
+            };
+        }
+        return spec;
+    };
+
     fluid.videoPlayer.finalInit = function (that) {
         that.applier = fluid.makeChangeApplier(that.model);
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
 
-        fluid.fetchResources(that.options.templates, function (res) {
+        fluid.fetchResources(buildResourceSpec(that.options.templates, that.options.templatePath), function (res) {
+            var fetchFailed = false;
             for (var key in res) {
                 if (res[key].fetchError) {
                     fluid.log("couldn't fetch" + res[key].href);
                     fluid.log("status: " + res[key].fetchError.status +
                         ", textStatus: " + res[key].fetchError.textStatus +
                         ", errorThrown: " + res[key].fetchError.errorThrown);
+                    that.events.onTemplateLoadError.fire(res[key].href);
+                    fetchFailed = true;
                 } else if (key === "videoPlayer") {
                     if ($.browser.msie && $.browser.version < 9) {
                         that.events.onOldBrowserDetected.fire($.browser);
@@ -344,7 +357,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     }
                 }
             }
-            that.events.onTemplateReady.fire();
+            if (!fetchFailed) {
+                that.events.onTemplateReady.fire();
+            }
         });
 
         return that;
