@@ -70,11 +70,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     var bindControllerDOMEvents = function (that) {
+        // TODO: This will not be necessary when we can autobind to a toggle button (FLUID-4573)
         that.locate("play").click(function () {
-            that.applier.fireChangeRequest({
-                "path": "states.play",
-                "value": !that.model.states.play
-            });
+            that.applier.requestChange("states.play", !that.model.states.play);
         });
 
         that.locate("fullscreen").fluid("activatable", function () {
@@ -129,7 +127,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
-        preInitFunction: "fluid.videoPlayer.controllers.preInit",
+        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         events: {
             onControllersReady: null,
             onVolumeChange: null,
@@ -228,8 +226,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         // Play/pause button
         tree.play = {
-            value: that.model.states.play,
-            valuebinding: "${that.states.play}",
+            // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
+            value: "${states.play}",
             decorators: [{
                 type: "addClass",
                 classes: (that.model.states.play ? that.options.styles.playing : that.options.styles.paused)
@@ -257,18 +255,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return tree;
     };
 
-    fluid.videoPlayer.controllers.preInit = function (that) {   
+    fluid.videoPlayer.controllers.postInit = function (that) {   
 
         that.togglePlayView = function () {
             var playButton = that.locate("play");
-            var options = {};
-            if (that.model.states.play) {
-                playButton.removeClass(that.options.styles.paused).addClass(that.options.styles.playing);
-                playButton.attr("role", "button").attr("aria-pressed", "true");
-            } else {
-                playButton.removeClass(that.options.styles.playing).addClass(that.options.styles.paused);
-                playButton.attr("role", "button").attr("aria-pressed", "false");
-            }
+            playButton.toggleClass(that.options.styles.paused + " " + that.options.styles.playing);
+            playButton.attr("aria-pressed", that.model.states.play);
         };
 
         that.toggleCaptionsView = function () {
@@ -370,7 +362,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
-        preInitFunction: "fluid.videoPlayer.controllers.scrubber.preInit",
+        postInitFunction: "fluid.videoPlayer.controllers.scrubber.postInit",
         events: {
             afterScrub: null,
             onScrub: null,
@@ -396,7 +388,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
     };
 
-    fluid.videoPlayer.controllers.scrubber.preInit = function (that) {
+    fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
             var scrubber = that.locate("scrubber");
@@ -509,7 +501,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers.volumeControl", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.volumeControl.finalInit",
-        preInitFunction: "fluid.videoPlayer.controllers.volumeControl.preInit",
+        postInitFunction: "fluid.videoPlayer.controllers.volumeControl.postInit",
         events: {
             onReady: null,
             onChange: null
@@ -528,7 +520,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
 
-    fluid.videoPlayer.controllers.volumeControl.preInit = function (that) {
+    fluid.videoPlayer.controllers.volumeControl.postInit = function (that) {
         
         that.toggleSlider = function (ev) {
             var volume = that.locate("volumeControl");
@@ -620,7 +612,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers.menu", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.menu.finalInit",
-        preInitFunction: "fluid.videoPlayer.controllers.menu.preInit",
+        postInitFunction: "fluid.videoPlayer.controllers.menu.postInit",
         events: {
             onMenuReady: null
         },
@@ -678,7 +670,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
     };
 
-    fluid.videoPlayer.controllers.menu.preInit = function (that) {
+    fluid.videoPlayer.controllers.menu.postInit = function (that) {
         that.toggleMenu = function () {
             var menu = that.locate("captions");
             menu.toggle();
