@@ -1,14 +1,14 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
+Copyright 2011-2012 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
 Licenses.
 
 You may obtain a copy of the ECL 2.0 License and BSD License at
-https://source.fluidproject.org/svn/LICENSE.txt
+https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 /*global jQuery, window, swfobject, fluid*/
@@ -194,9 +194,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 track: undefined
             }
         },
-        templatePath: "../html/",
         templates: {
-            videoPlayer: "videoPlayer_template.html"
+            videoPlayer: {
+                forceCache: true,
+                href: "../html/videoPlayer_template.html"
+            }
         }
     });
 
@@ -309,21 +311,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     };
     
-    var buildResourceSpec = function (templates, path) {
-        return fluid.transform(templates, function (object, index) {
-            return {
-                forceCache: true,
-                href: path + object
-            }
-        });
-    };
-
     fluid.videoPlayer.finalInit = function (that) {
         that.applier = fluid.makeChangeApplier(that.model);
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
 
-        fluid.fetchResources(buildResourceSpec(that.options.templates, that.options.templatePath), function (res) {
+        fluid.fetchResources(that.options.templates, function (res) {
             var fetchFailed = false;
             for (var key in res) {
                 if (res[key].fetchError) {
