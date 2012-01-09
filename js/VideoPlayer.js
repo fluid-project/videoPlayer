@@ -310,14 +310,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
     
     var buildResourceSpec = function (templates, path) {
-        var spec = {};
-        for (var key in templates) {
-            spec[key] = {
+        return fluid.transform(templates, function (object, index) {
+            return {
                 forceCache: true,
-                href: path + templates[key]
-            };
-        }
-        return spec;
+                href: path + object
+            }
+        });
     };
 
     fluid.videoPlayer.finalInit = function (that) {
