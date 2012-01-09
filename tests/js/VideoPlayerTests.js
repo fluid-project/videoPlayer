@@ -95,7 +95,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         jqUnit.assertEquals("Play button should have role of 'button'", "button", playButton.attr("role"));
                         jqUnit.assertEquals("Play button should have aria-pressed of 'false' initially", "false", playButton.attr("aria-pressed"));
 
-                        playButton.simulate("mouseover"); // tooltip not attached to button until first "used"
+                        playButton.mouseover(); // tooltip not attached to button until first "used"
                         var tooltipID = playButton.attr("aria-describedby");
                         jqUnit.assertNotEquals("Play button should have aria-describedby referencing the 'tooltip'", -1, tooltipID.indexOf("tooltip"));
                         var tooltip = $("#" + tooltipID);
@@ -105,13 +105,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
                         var jVid = $("#video");
                         jqUnit.assertTrue("Initially, video should not be playing", jVid[0].paused);
-                        playButton.simulate("click");
+                        playButton.click();
                         jqUnit.assertFalse("Activating Play button should cause video to play", jVid[0].paused);
                         jqUnit.assertEquals("After click, Play button should have aria-pressed of 'true'", "true", playButton.attr("aria-pressed"));
                         playButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain 'Pause'", "Pause", tooltip.text());
 
-                        playButton.simulate("click");
+                        playButton.click();
                         jqUnit.assertTrue("Activating Play button again should cause video to pause", jVid[0].paused);
                         jqUnit.assertEquals("Play button should have aria-pressed of 'false' again", "false", playButton.attr("aria-pressed"));
                         playButton.blur().focus();
