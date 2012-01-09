@@ -88,10 +88,16 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.captionner", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
+        components: {
+            captionnerEventBinder: {
+                type: "fluid.videoPlayer.captionner.eventBinder",
+                createOnEvent: "onCaptionnerReady"
+            }
+        },
         finalInitFunction:   "fluid.videoPlayer.captionner.finalInit",
         preInitFunction:   "fluid.videoPlayer.captionner.preInit",
         events: {
-            onCaptionnerReady: null
+            onCaptionnerReady: "{videoPlayer}.events.onCaptionnerReady"
         },
         selectors: {
             caption: ".flc-videoPlayer-caption-captionText"
@@ -184,12 +190,20 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return Math.round(secs * 1000);
     };
     
-    fluid.demands("fluid.videoPlayer.captionner", "fluid.videoPlayer", {
+    /*******************************************************************************************
+     * Captionner Event Binder: Binds events between components "videoPlayer" and "captionner" *
+     *******************************************************************************************/
+        
+    fluid.defaults("fluid.videoPlayer.captionner.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+
+    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
         options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
             listeners: {
-                onCaptionnerReady: "{videoPlayer}.events.onCaptionnerReady.fire"
+                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.afterTimeChange": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"               
             }
         }
     });
