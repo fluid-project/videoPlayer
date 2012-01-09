@@ -19,13 +19,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
 
-        var templatePath = "../../html/";
-
         var videoPlayerTests = new jqUnit.TestCase("Video Player Tests");
 
         var initVideoPlayer = function (testOptions) {
             var opts = {
-                templatePath: templatePath,
                 model: {
                     video: {
                         sources: [
@@ -34,6 +31,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                 type: "video/mp4"
                             }
                         ]
+                    }
+                },
+                templates: {
+                    videoPlayer: {
+                        // override the default template path
+                        // TODO: We need to refactor the VideoPlayer to better support
+                        //       overriding the path without needing to know file names
+                        href: "../../html/videoPlayer_template.html"
                     }
                 }
             };
@@ -59,9 +64,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): invalid path", function () {
             expect(1);
-            var badTestPath = "foo.bar/";
             var vidPlayer = initVideoPlayer({
-                templatePath: badTestPath,
+                templates: {
+                    videoPlayer: {
+                        href: "bad/test/path.html"
+                    }
+                },
                 listeners: {
                     onTemplateReady: function () {
                         jqUnit.assertTrue("The template should not load", false);
