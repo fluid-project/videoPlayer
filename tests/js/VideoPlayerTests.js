@@ -83,45 +83,5 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         });
 
-        videoPlayerTests.asyncTest("Play button (FLUID-4546)", function () {
-            expect(12);
-            var vidPlayer = initVideoPlayer({
-                listeners: {
-                    afterRender: function () {
-                        // TODO: this selector should not be hardcoded, but until the controllers
-                        // are a valid subcomponent, this is necessary
-                        var playButton = $(".flc-videoPlayer-play");
-                        jqUnit.assertEquals("There should be exactly one Play button", 1, playButton.length);
-                        jqUnit.assertEquals("Play button should have role of 'button'", "button", playButton.attr("role"));
-                        jqUnit.assertEquals("Play button should have aria-pressed of 'false' initially", "false", playButton.attr("aria-pressed"));
-
-                        playButton.mouseover(); // tooltip not attached to button until first "used"
-                        var tooltipID = playButton.attr("aria-describedby");
-                        jqUnit.assertNotEquals("Play button should have aria-describedby referencing the 'tooltip'", -1, tooltipID.indexOf("tooltip"));
-                        var tooltip = $("#" + tooltipID);
-                        // TODO: These strings should not be hard-coded, but until the controllers
-                        // are a valid subcomponent, this is necessary
-                        jqUnit.assertEquals("Tooltip should contain 'Play' initially", "Play", tooltip.text());
-
-                        var jVid = $("#video");
-                        jqUnit.assertTrue("Initially, video should not be playing", jVid[0].paused);
-                        playButton.click();
-                        jqUnit.assertFalse("Activating Play button should cause video to play", jVid[0].paused);
-                        jqUnit.assertEquals("After click, Play button should have aria-pressed of 'true'", "true", playButton.attr("aria-pressed"));
-                        playButton.blur().focus(); // tooltip not updated until 'requested' again
-                        jqUnit.assertEquals("After click, Tooltip should contain 'Pause'", "Pause", tooltip.text());
-
-                        playButton.click();
-                        jqUnit.assertTrue("Activating Play button again should cause video to pause", jVid[0].paused);
-                        jqUnit.assertEquals("Play button should have aria-pressed of 'false' again", "false", playButton.attr("aria-pressed"));
-                        playButton.blur().focus();
-                        jqUnit.assertEquals("Tooltip should contain 'Play' again", "Play", tooltip.text());
-
-                        start();
-                    }
-                }
-            });
-        });
-
     });
 })(jQuery);

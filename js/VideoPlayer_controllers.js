@@ -64,16 +64,18 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 that.locate("fullscreen").button("disable");
             }
         });
-        that.applier.modelChanged.addListener("states.play", that.togglePlayView);
+//        that.applier.modelChanged.addListener("states.play", that.togglePlayView);
         that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionsView);
         that.applier.modelChanged.addListener("states.fullscreen", that.toggleFullscreenView);
     };
 
     var bindControllerDOMEvents = function (that) {
         // TODO: This will not be necessary when we can autobind to a toggle button (FLUID-4573)
+/*
         that.locate("play").click(function () {
             that.applier.requestChange("states.play", !that.model.states.play);
         });
+*/
 
         that.locate("fullscreen").fluid("activatable", function () {
             that.applier.fireChangeRequest({
@@ -93,6 +95,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     // TODO: this function should probably be renamed, since it's not really creating markup
     var createControllerMarkup = function (that) {
 
+/*
         // Set up the Play/Pause button
         var playButton = that.locate("play");
         playButton.attr("role", "button").attr("aria-pressed", "false");
@@ -105,6 +108,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
             }
         });
+*/
 
         that.locate("displayCaptions").button({
             icons: {
@@ -128,6 +132,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         postInitFunction: "fluid.videoPlayer.controllers.postInit",
+        components: {
+            play: "fluid.videoPlayer.controllers.playButton"
+        },
         events: {
             onControllersReady: null,
             onVolumeChange: null,
@@ -146,8 +153,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
 
         styles: {
-            playing: "fl-videoPlayer-playing",
-            paused: "fl-videoPlayer-paused",
+            // playing: "fl-videoPlayer-playing",
+            // paused: "fl-videoPlayer-paused",
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
             displayCaptionsOff: "fl-videoPlayer-state-captionOff",
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
@@ -159,8 +166,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
 
         strings: {
-            play: "Play",
-            pause: "Pause",
+            // play: "Play",
+            // pause: "Pause",
             displayCaptionsOn: "Captions On",
             displayCaptionsOff: "Captions Off",
             fullscreenOn: "Fullscreen On",
@@ -257,11 +264,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.controllers.postInit = function (that) {   
 
+/*
         that.togglePlayView = function () {
             var playButton = that.locate("play");
             playButton.toggleClass(that.options.styles.paused + " " + that.options.styles.playing);
             playButton.attr("aria-pressed", that.model.states.play);
         };
+*/
 
         that.toggleCaptionsView = function () {
             toggleView(that, "displayCaptions");
@@ -705,4 +714,107 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
 
+    /**********************************************************
+        Play button subcomponent
+     **********************************************************/
+    fluid.defaults("fluid.videoPlayer.controllers.playButton", {
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        renderOnInit: true,
+        postInitFunction: "fluid.videoPlayer.controllers.playButton.postInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.playButton.finalInit",
+        produceTree: "fluid.videoPlayer.controllers.playButton.produceTree",
+        events: {
+            onReady: null
+        },
+        selectors: {
+            play: ".flc-videoPlayer-play"
+        },
+        styles: {
+            playing: "fl-videoPlayer-playing",
+            paused: "fl-videoPlayer-paused",
+        },
+        model: {
+            states: {
+                play: false,
+                currentTime: 0,
+                totalTime: 0,
+                displayCaptions: true,
+                fullscreen: false,
+                volume: 60,
+                canPlay: false
+            }
+        },
+        strings: {
+            play: "Play",
+            pause: "Pause",
+        },
+        rendererOptions: {
+            autoBind: true,
+            applier: "{playButton}.applier"
+        },
+    });
+
+    fluid.videoPlayer.controllers.playButton.produceTree = function (that) {
+        return {
+            play: {
+                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
+                value: "${states.play}",
+                decorators: [{
+                    type: "addClass",
+                    classes: (that.model.states.play ? that.options.styles.playing : that.options.styles.paused)
+                }
+/*
+                // TODO: Once FLUID-4571 is fixed, here's how to instantiate the tooltip as a decorator
+                ,
+                {
+                    type: "fluid",
+                    func: "fluid.tooltip",
+                    container: that.locate("play"),
+                    options: {
+                        styles: {
+                            tooltip: "fl-videoPlayer-tooltip"
+                        },
+                        content: function () {
+                            return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
+                        }
+                    }
+               }
+*/
+               ]
+            }
+        }
+    };
+
+    fluid.videoPlayer.controllers.playButton.postInit = function (that) {
+        that.activate = function () {
+            var playButton = that.locate("play");
+            playButton.toggleClass(that.options.styles.paused + " " + that.options.styles.playing);
+            playButton.attr("aria-pressed", that.model.states.play);
+        };
+    };
+
+    fluid.videoPlayer.controllers.playButton.finalInit = function (that) {
+        // Set up the Play/Pause button
+        var playButton = that.locate("play");
+        playButton.attr("role", "button").attr("aria-pressed", "false");
+        // TODO: tooltip should be a renderer decorator instead (waiting for a fix to FLUID-4571)
+        playButton.tooltip = fluid.tooltip(playButton, {
+            styles: {
+                tooltip: "fl-videoPlayer-tooltip"
+            },
+            content: function () {
+                return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
+            }
+        });
+        that.applier.modelChanged.addListener("states.play", that.activate);
+        that.locate("play").click(function () {
+            that.applier.requestChange("states.play", !that.model.states.play);
+        });
+        that.events.onReady.fire(that);
+    };
+    
+    fluid.demands("fluid.videoPlayer.controllers.playbutton", "fluid.videoPlayer", {
+        model: "{videoPlayer}.model",
+        applier: "{videoPlayer}.applier"
+    });
 })(jQuery);
