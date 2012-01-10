@@ -1,14 +1,14 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011 OCAD University
+Copyright 2011-2012 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
 Licenses.
 
 You may obtain a copy of the ECL 2.0 License and BSD License at
-https://source.fluidproject.org/svn/LICENSE.txt
+https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 /*global jQuery, window, swfobject, fluid*/
@@ -198,7 +198,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onOldBrowserDetected: null,
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionnerReady: null
+            onCreateCaptionnerReady: null,
+            onTemplateLoadError: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -344,12 +345,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
 
         fluid.fetchResources(that.options.templates, function (res) {
+            var fetchFailed = false;
             for (var key in res) {
                 if (res[key].fetchError) {
                     fluid.log("couldn't fetch" + res[key].href);
                     fluid.log("status: " + res[key].fetchError.status +
                         ", textStatus: " + res[key].fetchError.textStatus +
                         ", errorThrown: " + res[key].fetchError.errorThrown);
+                    that.events.onTemplateLoadError.fire(res[key].href);
+                    fetchFailed = true;
                 } else if (key === "videoPlayer") {
                     if ($.browser.msie && $.browser.version < 9) {
                         that.events.onOldBrowserDetected.fire($.browser);
@@ -364,16 +368,19 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     }
                 }
             }
-            that.events.onTemplateReady.fire();
 
-            if (that.canRenderMedia(that.model.video.sources)) {
-                that.events.onCreateMediaReady.fire();
-            }
-            if (that.canRenderControllers(that.options.controls)) {
-                that.events.onCreateControllersReady.fire();
-            }
-            if (!($.browser.msie && $.browser.version < 9)) {
-                that.events.onCreateCaptionnerReady.fire();
+            if (!fetchFailed) {
+                that.events.onTemplateReady.fire();
+
+                if (that.canRenderMedia(that.model.video.sources)) {
+                    that.events.onCreateMediaReady.fire();
+                }
+                if (that.canRenderControllers(that.options.controls)) {
+                    that.events.onCreateControllersReady.fire();
+                }
+                if (!($.browser.msie && $.browser.version < 9)) {
+                    that.events.onCreateCaptionnerReady.fire();
+                }
             }
         });
 
