@@ -43,7 +43,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             return fluid.videoPlayer.controllers.toggleButton("#basic-toggle-button-test", opts);
         };
 
-        videoPlayerControlsTests.asyncTest("Configurable template path (FLUID-4572): valid path", function () {
+        videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
             expect(11);
 
             var toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
@@ -77,7 +77,31 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
 
+        videoPlayerControlsTests.asyncTest("Toggle button, prevent the toggle", function () {
+            expect(4);
+            var testComponent = fluid.tests.initToggleButton({
+                listeners: {
+                    onPress: function () {
+                        // prevent the toggle from happening
+                        return false;
+                    },
+                    onReady: function (that) {
+                        var toggleButton = $(baseOpts.selectors.button);
+                        jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
+                        toggleButton.mouseover();
+                        var tooltip = $("#" + toggleButton.attr("aria-describedby"));
+                        jqUnit.assertEquals("Tooltip should contain '"+toggleButtonDefaults.strings.press+"' initially", toggleButtonDefaults.strings.press, tooltip.text());
 
+                        toggleButton.click();
+                        jqUnit.assertEquals("After click, toggle button should still have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
+                        toggleButton.blur().focus(); // tooltip not updated until 'requested' again
+                        jqUnit.assertEquals("After click, Tooltip should still contain '"+toggleButtonDefaults.strings.press+"'", toggleButtonDefaults.strings.press, tooltip.text());
+
+                        start();
+                    }
+                }
+            });
+        });
 /*
         var runToggleButtonTests = function (testFunc) {
             // load the template that the controls need
