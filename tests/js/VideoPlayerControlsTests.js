@@ -25,6 +25,8 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
 
         fluid.setLogging(true);
 
+        fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
+
         fluid.tests.pressEventHandler = function (state) {
             jqUnit.assertTrue("The onPress event should fire", true);
         };
@@ -46,7 +48,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
             expect(11);
 
-            var toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onPress: fluid.tests.pressEventHandler,
@@ -60,22 +61,23 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         var tooltipID = toggleButton.attr("aria-describedby");
                         jqUnit.assertNotEquals("Toggle button should have aria-describedby referencing the 'tooltip'", -1, tooltipID.indexOf("tooltip"));
                         var tooltip = $("#" + tooltipID);
-                        jqUnit.assertEquals("Tooltip should contain '"+toggleButtonDefaults.strings.press+"' initially", toggleButtonDefaults.strings.press, tooltip.text());
+                        jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' initially", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
 
                         toggleButton.click();
                         jqUnit.assertEquals("After click, toggle button should have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
-                        jqUnit.assertEquals("After click, Tooltip should contain '"+toggleButtonDefaults.strings.release+"'", toggleButtonDefaults.strings.release, tooltip.text());
+                        jqUnit.assertEquals("After click, Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.release + "'", fluid.tests.toggleButtonDefaults.strings.release, tooltip.text());
 
                         toggleButton.click();
                         jqUnit.assertEquals("After another click, toggle button should have aria-pressed of 'false' again", "false", toggleButton.attr("aria-pressed"));
                         toggleButton.blur().focus();
-                        jqUnit.assertEquals("Tooltip should contain '"+toggleButtonDefaults.strings.press+"' again", toggleButtonDefaults.strings.press, tooltip.text());
+                        jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' again", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
 
                         start();
                     }
                 }
             });
+        });
 
         videoPlayerControlsTests.asyncTest("Toggle button, prevent the toggle", function () {
             expect(4);
@@ -90,18 +92,45 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
                         toggleButton.mouseover();
                         var tooltip = $("#" + toggleButton.attr("aria-describedby"));
-                        jqUnit.assertEquals("Tooltip should contain '"+toggleButtonDefaults.strings.press+"' initially", toggleButtonDefaults.strings.press, tooltip.text());
+                        jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' initially", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
 
                         toggleButton.click();
                         jqUnit.assertEquals("After click, toggle button should still have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
-                        jqUnit.assertEquals("After click, Tooltip should still contain '"+toggleButtonDefaults.strings.press+"'", toggleButtonDefaults.strings.press, tooltip.text());
+                        jqUnit.assertEquals("After click, Tooltip should still contain '" + fluid.tests.toggleButtonDefaults.strings.press + "'", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
 
                         start();
                     }
                 }
             });
         });
+
+        videoPlayerControlsTests.asyncTest("Toggle button, overriding strings", function () {
+            expect(2);
+            var testStrings = {
+                press: "press me",
+                release: "release me"
+            };
+            var testComponent = fluid.tests.initToggleButton({
+                strings: testStrings,
+                listeners: {
+                    onReady: function (that) {
+                        var toggleButton = $(baseOpts.selectors.button);
+                        toggleButton.mouseover();
+                        var tooltip = $("#" + toggleButton.attr("aria-describedby"));
+                        jqUnit.assertEquals("Tooltip should contain '" + testStrings.press + "' initially", testStrings.press, tooltip.text());
+
+                        toggleButton.click();
+                        toggleButton.blur().focus(); // tooltip not updated until 'requested' again
+                        jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
+
+                        start();
+                    }
+                }
+            });
+        });
+
+
 /*
         var runToggleButtonTests = function (testFunc) {
             // load the template that the controls need
@@ -156,7 +185,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                     }
                 });
             });
-*/
         });
+*/
     });
 })(jQuery);
