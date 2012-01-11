@@ -715,53 +715,47 @@ https://source.fluidproject.org/svn/LICENSE.txt
     });
 
     /**********************************************************
-        Play button subcomponent
+        Toggle button subcomponent
+        Used for Play, Mute, Fullscreen, Captions
      **********************************************************/
-    fluid.defaults("fluid.videoPlayer.controllers.playButton", {
+    fluid.defaults("fluid.videoPlayer.controllers.toggleButton", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         renderOnInit: true,
-        postInitFunction: "fluid.videoPlayer.controllers.playButton.postInit",
-        finalInitFunction: "fluid.videoPlayer.controllers.playButton.finalInit",
-        produceTree: "fluid.videoPlayer.controllers.playButton.produceTree",
+        postInitFunction: "fluid.videoPlayer.controllers.toggleButton.postInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.toggleButton.finalInit",
+        produceTree: "fluid.videoPlayer.controllers.toggleButton.produceTree",
         events: {
+            onPress: "preventable", // listeners can prevent button from becoming pressed
             onReady: null
         },
-        selectors: {
-            play: ".flc-videoPlayer-play"
+        selectors: {    // Integrators may override this selector
+            button: ".flc-videoPlayer-button"
         },
-        styles: {
-            playing: "fl-videoPlayer-playing",
-            paused: "fl-videoPlayer-paused",
+        styles: {   // Integrators will likely override these styles
+            pressed: "fl-videoPlayer-pressed",
+            released: "fl-videoPlayer-released",
         },
         model: {
-            states: {
-                play: false,
-                currentTime: 0,
-                totalTime: 0,
-                displayCaptions: true,
-                fullscreen: false,
-                volume: 60,
-                canPlay: false
-            }
+            pressed: false
         },
-        strings: {
-            play: "Play",
-            pause: "Pause",
+        strings: {  // Integrators will likely override these strings
+            press: "Press",
+            release: "Release",
         },
         rendererOptions: {
             autoBind: true,
-            applier: "{playButton}.applier"
+            applier: "{toggleButton}.applier"
         },
     });
 
-    fluid.videoPlayer.controllers.playButton.produceTree = function (that) {
+    fluid.videoPlayer.controllers.toggleButton.produceTree = function (that) {
         return {
-            play: {
+            button: {
                 // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
-                value: "${states.play}",
+                value: "${pressed}",
                 decorators: [{
                     type: "addClass",
-                    classes: (that.model.states.play ? that.options.styles.playing : that.options.styles.paused)
+                    classes: (that.model.pressed ? that.options.styles.pressed : that.options.styles.released)
                 }
 /*
                 // TODO: Once FLUID-4571 is fixed, here's how to instantiate the tooltip as a decorator
@@ -769,13 +763,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 {
                     type: "fluid",
                     func: "fluid.tooltip",
-                    container: that.locate("play"),
+                    container: that.locate("button"),
                     options: {
                         styles: {
                             tooltip: "fl-videoPlayer-tooltip"
                         },
                         content: function () {
-                            return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
+                            return (that.model.pressed ? that.options.strings.release : that.options.strings.press);
                         }
                     }
                }
@@ -785,36 +779,48 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     };
 
-    fluid.videoPlayer.controllers.playButton.postInit = function (that) {
-        that.activate = function () {
-            var playButton = that.locate("play");
-            playButton.toggleClass(that.options.styles.paused + " " + that.options.styles.playing);
-            playButton.attr("aria-pressed", that.model.states.play);
+    fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
+        that.toggleButton = function () {
+            var button = that.locate("button");
+            button.toggleClass(that.options.styles.released + " " + that.options.styles.pressed);
+            button.attr("aria-pressed", that.model.pressed);
+        };
+        that.toggleState = function () {
+            that.applier.requestChange("pressed", !that.model.pressed);
+            return true;
         };
     };
 
-    fluid.videoPlayer.controllers.playButton.finalInit = function (that) {
-        // Set up the Play/Pause button
-        var playButton = that.locate("play");
-        playButton.attr("role", "button").attr("aria-pressed", "false");
+    var setUpToggleButton = function (that) {
+        var toggleButton = that.locate("button");
+        toggleButton.attr("role", "button").attr("aria-pressed", "false");
         // TODO: tooltip should be a renderer decorator instead (waiting for a fix to FLUID-4571)
-        playButton.tooltip = fluid.tooltip(playButton, {
+        toggleButton.tooltip = fluid.tooltip(toggleButton, {
             styles: {
                 tooltip: "fl-videoPlayer-tooltip"
             },
             content: function () {
-                return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
+                return (that.model.pressed ? that.options.strings.release : that.options.strings.press);
             }
         });
-        that.applier.modelChanged.addListener("states.play", that.activate);
-        that.locate("play").click(function () {
-            that.applier.requestChange("states.play", !that.model.states.play);
+    };
+
+    var bindToggleButtonEvents = function (that) {
+        that.locate("button").click(function () {
+            that.events.onPress.fire();
         });
+
+        that.events.onPress.addListener(that.toggleState, undefined, undefined, "last");
+
+        that.applier.modelChanged.addListener("pressed", function () {
+            that.toggleButton();
+        });
+    };
+
+    fluid.videoPlayer.controllers.toggleButton.finalInit = function (that) {
+        setUpToggleButton(that);
+        bindToggleButtonEvents(that);
         that.events.onReady.fire(that);
     };
     
-    fluid.demands("fluid.videoPlayer.controllers.playbutton", "fluid.videoPlayer", {
-        model: "{videoPlayer}.model",
-        applier: "{videoPlayer}.applier"
-    });
 })(jQuery);
