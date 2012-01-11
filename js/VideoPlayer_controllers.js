@@ -8,7 +8,7 @@ BSD license. You may not use this file except in compliance with one these
 Licenses.
 
 You may obtain a copy of the ECL 2.0 License and BSD License at
-https://source.fluidproject.org/svn/LICENSE.txt
+https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 /*global jQuery, window, fluid*/
@@ -151,8 +151,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             displayCaptionsOff: "fl-videoPlayer-state-captionOff",
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
             fullscreenOff: "fl-videoPlayer-state-fullscreenOff",
-            pauseIcon: "fl-videoPlayer-pause",
-            playIcon: "fl-videoPlayer-play",
             fullscreenIcon: "ui-icon-extlink",
             captionIcon: "ui-icon-comment"
         },
@@ -693,19 +691,19 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
         styles: {   // Integrators will likely override these styles
             pressed: "fl-videoPlayer-pressed",
-            released: "fl-videoPlayer-released",
+            released: "fl-videoPlayer-released"
         },
         model: {
             pressed: false
         },
         strings: {  // Integrators will likely override these strings
             press: "Press",
-            release: "Release",
+            release: "Release"
         },
         rendererOptions: {
             autoBind: true,
             applier: "{toggleButton}.applier"
-        },
+        }
     });
 
     fluid.videoPlayer.controllers.toggleButton.produceTree = function (that) {
@@ -736,7 +734,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 */
                ]
             }
-        }
+        };
     };
 
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
