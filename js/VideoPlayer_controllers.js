@@ -64,19 +64,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 that.locate("fullscreen").button("disable");
             }
         });
-//        that.applier.modelChanged.addListener("states.play", that.togglePlayView);
         that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionsView);
         that.applier.modelChanged.addListener("states.fullscreen", that.toggleFullscreenView);
     };
 
     var bindControllerDOMEvents = function (that) {
-        // TODO: This will not be necessary when we can autobind to a toggle button (FLUID-4573)
-/*
-        that.locate("play").click(function () {
-            that.applier.requestChange("states.play", !that.model.states.play);
-        });
-*/
-
         that.locate("fullscreen").fluid("activatable", function () {
             that.applier.fireChangeRequest({
                 "path": "states.fullscreen",
@@ -94,21 +86,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     // TODO: this function should probably be renamed, since it's not really creating markup
     var createControllerMarkup = function (that) {
-
-/*
-        // Set up the Play/Pause button
-        var playButton = that.locate("play");
-        playButton.attr("role", "button").attr("aria-pressed", "false");
-        // TODO: tooltip should be a renderer decorator instead (waiting for a fix to FLUID-4571)
-        playButton.tooltip = fluid.tooltip(playButton, {
-            styles: {
-                tooltip: "fl-videoPlayer-tooltip"
-            },
-            content: function () {
-                return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
-            }
-        });
-*/
 
         that.locate("displayCaptions").button({
             icons: {
@@ -130,11 +107,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
-        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         postInitFunction: "fluid.videoPlayer.controllers.postInit",
-        components: {
-            play: "fluid.videoPlayer.controllers.playButton"
-        },
+        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onControllersReady: null,
             onVolumeChange: null,
@@ -143,8 +117,28 @@ https://source.fluidproject.org/svn/LICENSE.txt
             afterTimeChange: null
         },
 
+        components: {
+            playButton: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+                createOnEvent: "afterRender",
+                container: "{controllers}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-play"
+                    },
+                    styles: {
+                        pressed: "fl-videoPlayer-playing",
+                        released: "fl-videoPlayer-paused"
+                    },
+                    strings: {
+                        press: "Play",
+                        release: "Pause"
+                    }
+                }
+            }
+        },
+
         selectors: {
-            play: ".flc-videoPlayer-play",
             displayCaptions: ".flc-videoPlayer-caption",
             fullscreen: ".flc-videoPlayer-fullscreen",
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
@@ -153,8 +147,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
 
         styles: {
-            // playing: "fl-videoPlayer-playing",
-            // paused: "fl-videoPlayer-paused",
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
             displayCaptionsOff: "fl-videoPlayer-state-captionOff",
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
@@ -166,8 +158,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
 
         strings: {
-            // play: "Play",
-            // pause: "Pause",
             displayCaptionsOn: "Captions On",
             displayCaptionsOff: "Captions Off",
             fullscreenOn: "Fullscreen On",
@@ -231,46 +221,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
             };
         }
 
-        // Play/pause button
-        tree.play = {
-            // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
-            value: "${states.play}",
-            decorators: [{
-                type: "addClass",
-                classes: (that.model.states.play ? that.options.styles.playing : that.options.styles.paused)
-            }
-/*
-            // TODO: Once FLUID-4571 is fixed, here's how to instantiate the tooltip as a decorator
-            ,
-            {
-                type: "fluid",
-                func: "fluid.tooltip",
-                container: that.locate("play"),
-                options: {
-                    styles: {
-                        tooltip: "fl-videoPlayer-tooltip"
-                    },
-                    content: function () {
-                        return (that.model.states.play ? that.options.strings.pause : that.options.strings.play);
-                    }
-                }
-           }
-*/
-           ]
-        }
-
         return tree;
     };
 
     fluid.videoPlayer.controllers.postInit = function (that) {   
-
-/*
-        that.togglePlayView = function () {
-            var playButton = that.locate("play");
-            playButton.toggleClass(that.options.styles.paused + " " + that.options.styles.playing);
-            playButton.attr("aria-pressed", that.model.states.play);
-        };
-*/
 
         that.toggleCaptionsView = function () {
             toggleView(that, "displayCaptions");
@@ -290,6 +244,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
         createControllerMarkup(that);
         bindControllerModel(that);
         bindControllerDOMEvents(that);
+
+        // TODO: This will not be necessary when we can autobind to a toggle button (FLUID-4573)
+        that.playButton.events.onPress.addListener(function () {
+            that.applier.requestChange("states.play", !that.model.states.play);
+            return true;
+        });
 
         that.events.onControllersReady.fire();
     };
@@ -714,10 +674,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
 
-    /**********************************************************
+    /*****************************************************************************
         Toggle button subcomponent
         Used for Play, Mute, Fullscreen, Captions
-     **********************************************************/
+     *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.toggleButton", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         renderOnInit: true,

@@ -33,16 +33,41 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
 
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
-        var baseOpts = {
+        var baseToggleButtonOpts = {
             selectors: {
                 button: ".test-toggle-button"
             }
         };
-
         fluid.tests.initToggleButton = function (testOpts) {
-            var opts = fluid.copy(baseOpts);
+            var opts = fluid.copy(baseToggleButtonOpts);
             $.extend(true, opts, testOpts);
             return fluid.videoPlayer.controllers.toggleButton("#basic-toggle-button-test", opts);
+        };
+
+        var baseVideoPlayerOpts = {
+            model: {
+                video: {
+                    sources: [
+                        {
+                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
+                            type: "video/mp4"
+                        }
+                    ]
+                }
+            },
+            templates: {
+                videoPlayer: {
+                    // override the default template path
+                    // TODO: We need to refactor the VideoPlayer to better support
+                    //       overriding the path without needing to know file names
+                    href: "../../html/videoPlayer_template.html"
+                }
+            }
+        };
+        fluid.tests.initVideoPlayer = function (testOpts) {
+            var opts = fluid.copy(baseVideoPlayerOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer("#videoPlayer", opts);
         };
 
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
@@ -52,7 +77,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 listeners: {
                     onPress: fluid.tests.pressEventHandler,
                     onReady: function (that) {
-                        var toggleButton = $(baseOpts.selectors.button);
+                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
                         jqUnit.assertEquals("There should be exactly one toggle button", 1, toggleButton.length);
                         jqUnit.assertEquals("Toggle button should have role of 'button'", "button", toggleButton.attr("role"));
                         jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
@@ -88,7 +113,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         return false;
                     },
                     onReady: function (that) {
-                        var toggleButton = $(baseOpts.selectors.button);
+                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
                         jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
                         toggleButton.mouseover();
                         var tooltip = $("#" + toggleButton.attr("aria-describedby"));
@@ -115,7 +140,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 strings: testStrings,
                 listeners: {
                     onReady: function (that) {
-                        var toggleButton = $(baseOpts.selectors.button);
+                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
                         toggleButton.mouseover();
                         var tooltip = $("#" + toggleButton.attr("aria-describedby"));
                         jqUnit.assertEquals("Tooltip should contain '" + testStrings.press + "' initially", testStrings.press, tooltip.text());
@@ -130,62 +155,36 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             });
         });
 
+        videoPlayerControlsTests.asyncTest("Play button", function () {
+            expect(9);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    afterRender: function (that) {
+                        var playButton = $(".flc-videoPlayer-play");
+                        jqUnit.assertEquals("There should be exactly one Play button", 1, playButton.length);
+                        jqUnit.assertEquals("Play button should have role of 'button'", "button", playButton.attr("role"));
+                        jqUnit.assertEquals("Play button should have aria-pressed of 'false' initially", "false", playButton.attr("aria-pressed"));
+                        jqUnit.assertTrue("Play button should have the paused style initially", playButton.hasClass("fl-videoPlayer-paused"));
 
-/*
-        var runToggleButtonTests = function (testFunc) {
-            // load the template that the controls need
-            fluid.fetchResources({
-                videoPlayer: {
-                    forceCache: true,
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }, testFunc);
-        };
+                        playButton.mouseover();
+                        var tooltip = $("#" + playButton.attr("aria-describedby"));
+                        jqUnit.assertEquals("Tooltip should contain 'Play' initially", "Play", tooltip.text());
 
-        runToggleButtonTests(function (resourceSpec) {
-            // inject the template into the DOM
-            $("#main").html(resourceSpec.videoPlayer.resourceText);
+                        playButton.click();
+                        jqUnit.assertTrue("After clicking, play button should have the playing style", playButton.hasClass("fl-videoPlayer-playing"));
+                        playButton.blur().focus(); // tooltip not updated until 'requested' again
+                        jqUnit.assertEquals("After click, Tooltip should contain 'Pause'", "Pause", tooltip.text());
 
-            // run the tests
-            videoPlayerControlsTests.asyncTest("Configurable template path (FLUID-4572): valid path", function () {
-                expect(11);
+                        playButton.click();
+                        jqUnit.assertTrue("After clickign again, play button should have the paused style again", playButton.hasClass("fl-videoPlayer-paused"));
+                        playButton.blur().focus();
+                        jqUnit.assertEquals("Tooltip should contain 'Play' again", "Play", tooltip.text());
 
-
-                var toggleButton = fluid.tests.initToggleButton({
-                    listeners: {
-                        onPress: pressEventHandler,
-                        onReady: function (that) {
-                            // TODO: this selector should not be hardcoded, but until the controllers
-                            // are a valid subcomponent, this is necessary
-                            var toggleButton = $(baseOpts.selectors.button);
-                            jqUnit.assertEquals("There should be exactly one Play button", 1, toggleButton.length);
-                            jqUnit.assertEquals("Play button should have role of 'button'", "button", toggleButton.attr("role"));
-                            jqUnit.assertEquals("Play button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
-    
-                            toggleButton.mouseover();
-                            var tooltipID = toggleButton.attr("aria-describedby");
-                            jqUnit.assertNotEquals("Play button should have aria-describedby referencing the 'tooltip'", -1, tooltipID.indexOf("tooltip"));
-                            var tooltip = $("#" + tooltipID);
-                            // TODO: These strings should not be hard-coded, but until the controllers
-                            // are a valid subcomponent, this is necessary
-                            jqUnit.assertEquals("Tooltip should contain 'Play' initially", "Play", tooltip.text());
-    
-                            toggleButton.click();
-                            jqUnit.assertEquals("After click, Play button should have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
-                            toggleButton.blur().focus(); // tooltip not updated until 'requested' again
-                            jqUnit.assertEquals("After click, Tooltip should contain 'Pause'", "Pause", tooltip.text());
-    
-                            toggleButton.click();
-                            jqUnit.assertEquals("Play button should have aria-pressed of 'false' again", "false", toggleButton.attr("aria-pressed"));
-                            toggleButton.blur().focus();
-                            jqUnit.assertEquals("Tooltip should contain 'Play' again", "Play", tooltip.text());
-                            
-                            start();
-                        }
+                        start();
                     }
-                });
+                }
             });
         });
-*/
+
     });
 })(jQuery);
