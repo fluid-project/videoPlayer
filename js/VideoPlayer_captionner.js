@@ -178,7 +178,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         createCaptionnerMarkup(that);
         bindCaptionnerModel(that);
 
-        that.events.onCaptionnerReady.fire();
+        that.events.onCaptionnerReady.fire(that);
     };
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
     // time is in the format hh:mm:ss:mmm

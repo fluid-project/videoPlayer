@@ -111,6 +111,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             text: false,
             label: that.model.states.fullscreen ? that.options.strings.fullscreenOff : that.options.strings.fullscreenOn
         });
+        
+        that.events.onMarkupReady.fire();
     };
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
@@ -119,7 +121,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
                 container: "{controllers}.dom.scrubberContainer",
-                createOnEvent: "onControllersReady",
+                createOnEvent: "onMarkupReady",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
@@ -133,7 +135,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             volumeControl: {
                 type: "fluid.videoPlayer.controllers.volumeControl",
                 container: "{controllers}.dom.volumeContainer",
-                createOnEvent: "onControllersReady",
+                createOnEvent: "onMarkupReady",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
@@ -145,7 +147,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             menu: {
                 type: "fluid.videoPlayer.controllers.menu",
                 container: "{controllers}.dom.menuContainer",
-                createOnEvent: "onControllersReady",
+                createOnEvent: "onMarkupReady",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
@@ -159,7 +161,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onVolumeChange: null,
             onStartTimeChange: null,
             onTimeChange: null,
-            afterTimeChange: null
+            afterTimeChange: null,
+            onMarkupReady: null
         },
 
         selectors: {
@@ -265,7 +268,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         bindControllerModel(that);
         bindControllerDOMEvents(that);
 
-        that.events.onControllersReady.fire();
+        that.events.onControllersReady.fire(that);
     };
     
     /********************************************
@@ -359,6 +362,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             totalTime: "${states.totalTime}",
             scrubber: {}
         };
+        
+        return tree;
     };
 
     fluid.videoPlayer.controllers.scrubber.preInit = function (that) {

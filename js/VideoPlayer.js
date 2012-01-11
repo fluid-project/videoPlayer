@@ -20,6 +20,197 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.setLogging(false);
 
+    /*******************************************************************************
+     * Browser type detection: html5 or non-html5.                                 *
+     *                                                                             *
+     * Add type tags of html5 into static environment for the html5 browsers.      * 
+     *******************************************************************************/
+    
+    fluid.registerNamespace("fluid.browser");
+
+    fluid.browser.html5 = function () {
+        var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
+        return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
+    };
+
+    var features = {
+        browserHtml5: fluid.browser.html5()
+    };
+    
+    fluid.merge(null, fluid.staticEnvironment, features);
+    
+    fluid.hasFeature = function (tagName) {
+        return fluid.find(fluid.staticEnvironment, function (value) {
+            return value && value.typeName === tagName ? true : undefined;
+        });
+    };
+
+    
+    /*******************************************************************************
+     * Video Player                                                                *
+     *                                                                             *
+     * Renders HTML 5 video player at the detection of HTML5 browsers. It degrades * 
+     * gracefully to the browser built-in video player when the browser does not   *
+     * support HTML5.                                                              * 
+     *******************************************************************************/
+    
+    //This is the default key bindings
+    var defaultKeys = {
+        play: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 80
+        },
+        captions: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 67
+        },
+        fullscreen: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 70
+        },
+        volumePlus: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.UP
+        },
+        volumeMinus: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.DOWN
+        },
+        forward: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.RIGHT
+        },
+        rewind: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: $.ui.keyCode.LEFT
+        }
+    };
+
+    /**
+     * Video player renders HTML 5 video content and degrades gracefully to an alternative.
+     * 
+     * @param {Object} container the container in which video and (optionally) captions are displayed
+     * @param {Object} options configuration options for the component
+     */
+
+    fluid.defaults("fluid.videoPlayer", {
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        components: {
+            media: {
+                type: "fluid.videoPlayer.media",
+                container: "{videoPlayer}.dom.video",
+                createOnEvent: "onCreateMediaReady",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    events: {
+                        onMediaReady: "{videoPlayer}.events.onMediaReady"
+                    }
+                }
+            },
+            controllers: {
+                type: "fluid.videoPlayer.controllers",
+                container: "{videoPlayer}.dom.controllers",
+                createOnEvent: "onCreateControllersReady",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    events: {
+                        onControllersReady: "{videoPlayer}.events.onControllersReady",
+                        onVolumeChange: "{videoPlayer}.events.onVolumeChange",
+                        onStartTimeChange: "{videoPlayer}.events.onStartTimeChange",
+                        onTimeChange: "{videoPlayer}.events.onTimeChange",
+                        afterTimeChange: "{videoPlayer}.events.afterTimeChange"
+                    }
+                }
+            },
+            captionner: {
+                type: "fluid.videoPlayer.captionner",
+                container: "{videoPlayer}.dom.caption",
+                createOnEvent: "onCreateCaptionnerReady",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier"
+                }
+            },
+            captionLoader: {
+                type: "fluid.videoPlayer.captionLoader",
+                container: "{videoPlayer}.container",
+                createOnEvent: "onTemplateReady",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier"
+                }
+            },
+            browserCompatibility: {
+                type: "demo.html5BackwardsCompatability",
+                createOnEvent: "onOldBrowserDetected"
+            }
+        },
+        preInitFunction: "fluid.videoPlayer.preInit",
+        finalInitFunction: "fluid.videoPlayer.finalInit",
+        events: {
+            onReadyToLoadCaptions: null,
+            onCaptionsLoaded: null,
+            onVolumeChange: null,
+            onTimeChange: null,
+            onTemplateReady: null,
+            onViewReady: null,
+            onMediaReady: null,
+            onControllersReady: null,
+            onCaptionnerReady: null,
+            afterTimeChange: null,
+            onStartTimeChange: null,
+            onOldBrowserDetected: null,
+            onTemplateLoadError: null,
+            onReady: null,
+            
+            // The following events are private
+            onCreateControllersReady: null,
+            onCreateMediaReady: null,
+            onCreateCaptionnerReady: null
+        },
+        listeners: {
+            onViewReady: "{videoPlayer}.refresh"
+        },
+        selectors: {
+            video: ".flc-videoPlayer-video",
+            caption: ".flc-videoPlayer-captionArea",
+            controllers: ".flc-videoPlayer-controller"
+        },
+        selectorsToIgnore: ["caption"],
+        keyBindings: defaultKeys,
+        produceTree: "fluid.videoPlayer.produceTree",
+        controls: "custom",
+        model: {
+            states: {
+                play: false,
+                currentTime: 0,
+                totalTime: 0,
+                displayCaptions: true,
+                fullscreen: false,
+                volume: 60,
+                canPlay: false
+            },
+            video: {
+                sources: null
+            },
+            captions: {
+                sources: null,
+                currentTrack: undefined,
+                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                maxNumber: 3,
+                track: undefined
+            }
+        },
+        templates: {
+            videoPlayer: {
+                forceCache: true,
+                href: "../html/videoPlayer_template.html"
+            }
+        }
+    });
+
     var bindKeyboardControl = function (that) {
         var opts = {
             additionalBindings: [{
@@ -88,164 +279,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onViewReady.fire();
         });
     };
-    
-    //This is the default key bindings
-    var defaultKeys = {
-        play: {
-            modifier: $.ui.keyCode.SHIFT,
-            key: 80
-        },
-        captions: {
-            modifier: $.ui.keyCode.SHIFT,
-            key: 67
-        },
-        fullscreen: {
-            modifier: $.ui.keyCode.SHIFT,
-            key: 70
-        },
-        volumePlus: {
-            modifier: $.ui.keyCode.SHIFT,
-            key: $.ui.keyCode.UP
-        },
-        volumeMinus: {
-            modifier: $.ui.keyCode.SHIFT,
-            key: $.ui.keyCode.DOWN
-        },
-        forward: {
-            modifier: $.ui.keyCode.SHIFT,
-            key: $.ui.keyCode.RIGHT
-        },
-        rewind: {
-            modifier: $.ui.keyCode.SHIFT,
-            key: $.ui.keyCode.LEFT
-        }
-    };
-
-    /**
-     * Video player renders HTML 5 video content and degrades gracefully to an alternative.
-     * 
-     * @param {Object} container the container in which video and (optionally) captions are displayed
-     * @param {Object} options configuration options for the component
-     */
-    fluid.defaults("fluid.videoPlayer", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
-        components: {
-        	media: {
-        		type: "fluid.videoPlayer.media",
-        		container: "{videoPlayer}.dom.video",
-        		createOnEvent: "onCreateMediaReady",
-        		options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
-                    events: {
-                        onMediaReady: "{videoPlayer}.events.onMediaReady"
-                    },
-        		}
-        	},
-        	controllers: {
-        		type: "fluid.videoPlayer.controllers",
-                container: "{videoPlayer}.dom.controllers",
-                createOnEvent: "onCreateControllersReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
-                    events: {
-                        onControllersReady: "{videoPlayer}.events.onControllersReady",
-                        onVolumeChange: "{videoPlayer}.events.onVolumeChange",
-                        onStartTimeChange: "{videoPlayer}.events.onStartTimeChange",
-                        onTimeChange: "{videoPlayer}.events.onTimeChange",
-                        afterTimeChange: "{videoPlayer}.events.afterTimeChange"
-                    }
-                }
-        	},
-            captionner: {
-                type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.dom.caption",
-                createOnEvent: "onCreateCaptionnerReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            captionLoader: {
-                type: "fluid.videoPlayer.captionLoader",
-                container: "{videoPlayer}.container",
-                createOnEvent: "onTemplateReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            browserCompatibility: {
-                type: "demo.html5BackwardsCompatability",
-                createOnEvent: "onOldBrowserDetected"
-            }
-        },
-        preInitFunction: "fluid.videoPlayer.preInit",
-        finalInitFunction: "fluid.videoPlayer.finalInit",
-        events: {
-            onReadyToLoadCaptions: null,
-            onCaptionsLoaded: null,
-            onVolumeChange: null,
-            onTimeChange: null,
-            onTemplateReady: null,
-            onViewReady: null,
-            onMediaReady: null,
-            onControllersReady: null,
-            onCaptionnerReady: null,
-            afterTimeChange: null,
-            onStartTimeChange: null,
-            onOldBrowserDetected: null,
-            onCreateControllersReady: null,
-            onCreateMediaReady: null,
-            onCreateCaptionnerReady: null,
-            onTemplateLoadError: null
-        },
-        listeners: {
-            onViewReady: "{videoPlayer}.refresh"
-        },
-        selectors: {
-            video: ".flc-videoPlayer-video",
-            caption: ".flc-videoPlayer-captionArea",
-            controllers: ".flc-videoPlayer-controller"
-        },
-        selectorsToIgnore: ["caption"],
-        keyBindings: defaultKeys,
-        produceTree: "fluid.videoPlayer.produceTree",
-        controls: "custom",
-        model: {
-            states: {
-                play: false,
-                currentTime: 0,
-                totalTime: 0,
-                displayCaptions: true,
-                fullscreen: false,
-                volume: 60,
-                canPlay: false
-            },
-            video: {
-                sources: null
-            },
-            captions: {
-                sources: null,
-                currentTrack: undefined,
-                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                maxNumber: 3,
-                track: undefined
-            }
-        },
-        templates: {
-            videoPlayer: {
-                forceCache: true,
-                href: "../html/videoPlayer_template.html"
-            }
-        }
-    });
 
     fluid.videoPlayer.produceTree = function (that) {
         var tree = {};
         
-        if (!($.browser.msie && $.browser.version < 9) && that.options.controls === "native") {
+        if (fluid.hasFeature("fluid.browser.html5") && that.options.controls === "native") {
             // Use browser built-in video player
             tree.video = {
                 decorators: [{
@@ -270,11 +308,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.preInit = function (that) {
         that.canRenderControllers = function (controlsType) {
-            return (!($.browser.msie && $.browser.version < 9) && controlsType === "custom") ? true : false;
+            return (fluid.hasFeature("fluid.browser.html5") && controlsType === "custom") ? true : false;
         };
         
         that.canRenderMedia = function (videoSource) {
-        	return videoSource ? true : false;
+            return videoSource ? true : false;
         };
         
         that.play = function (ev) {
@@ -355,13 +393,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.events.onTemplateLoadError.fire(res[key].href);
                     fetchFailed = true;
                 } else if (key === "videoPlayer") {
-                    if ($.browser.msie && $.browser.version < 9) {
+                    if (!fluid.hasFeature("fluid.browser.html5")) {
                         that.events.onOldBrowserDetected.fire($.browser);
                     }
                     that.container.append(res[key].resourceText);
                     that.refreshView();
                     //if we're on an old browser there's no point in linking all the evets as they won't exist...
-                    if (!($.browser.msie && $.browser.version < 9)) {
+                    if (fluid.hasFeature("fluid.browser.html5")) {
                         bindVideoPlayerDOMEvents(that);
                         //create all the listeners to the model
                         bindVideoPlayerModel(that);
@@ -378,12 +416,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
                 }
-                if (!($.browser.msie && $.browser.version < 9)) {
+                if (fluid.hasFeature("fluid.browser.html5")) {
                     that.events.onCreateCaptionnerReady.fire();
                 }
             }
-        });
 
+            that.events.onReady.fire(that);
+        });
+        
         return that;
     };
         
