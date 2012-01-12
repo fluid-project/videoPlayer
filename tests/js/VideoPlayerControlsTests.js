@@ -45,7 +45,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         };
 
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
-            expect(11);
+            expect(24);
 
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
@@ -55,22 +55,37 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("There should be exactly one toggle button", 1, toggleButton.length);
                         jqUnit.assertEquals("Toggle button should have role of 'button'", "button", toggleButton.attr("role"));
                         jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Toggle button should not have the 'focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.focused));
+                        jqUnit.assertTrue("Toggle button should have the 'not focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.notFocused));
+                        jqUnit.assertFalse("Toggle button should not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+                        jqUnit.assertTrue("Toggle button should have the 'not released' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.released));
 
                         toggleButton.mouseover();
                         var tooltipID = toggleButton.attr("aria-describedby");
                         jqUnit.assertNotEquals("Toggle button should have aria-describedby referencing the 'tooltip'", -1, tooltipID.indexOf("tooltip"));
                         var tooltip = $("#" + tooltipID);
                         jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' initially", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
+                        jqUnit.assertTrue("After mouseover, button should have the 'focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.focused));
+                        jqUnit.assertFalse("After mouseover, button should not have the 'not focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.notFocused));
+                        jqUnit.assertFalse("After mouseover, button should still not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+
+                        toggleButton.mouseout();
+                        jqUnit.assertFalse("After mouseout, button should not have the 'focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.focused));
+                        jqUnit.assertTrue("After mouseout,Toggle button should have the 'not focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.notFocused));
 
                         toggleButton.click();
                         jqUnit.assertEquals("After click, toggle button should have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.release + "'", fluid.tests.toggleButtonDefaults.strings.release, tooltip.text());
+                        jqUnit.assertTrue("After click, button should have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+                        jqUnit.assertFalse("After click, button should not have the 'not released' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.released));
 
                         toggleButton.click();
                         jqUnit.assertEquals("After another click, toggle button should have aria-pressed of 'false' again", "false", toggleButton.attr("aria-pressed"));
                         toggleButton.blur().focus();
                         jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' again", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
+                        jqUnit.assertFalse("Button should again not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+                        jqUnit.assertTrue("Button should again have the 'not released' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.released));
 
                         start();
                     }
@@ -195,7 +210,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         };
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
-//            expect(9);
+            expect(19);
             var testVolumeControls = fluid.tests.initVolumeControls({
                 listeners: {
                     onReady: function (that) {
@@ -232,9 +247,9 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.notVisible("On container blur, the slider should hide again", volumeSlider);
 
                         muteButton.click();
-                        jqUnit.assertTrue("On click, the mute button should have the active stye", muteButton.hasClass("fl-videoPlayer-volume-active"));
+                        jqUnit.assertTrue("On click, the mute button should have the muted stye", muteButton.hasClass("fl-videoPlayer-volume-muted"));
                         muteButton.click();
-                        jqUnit.assertFalse("On click again, the mute button should lose the active stye", muteButton.hasClass("fl-videoPlayer-volume-active"));
+                        jqUnit.assertFalse("On click again, the mute button should lose the muted stye", muteButton.hasClass("fl-videoPlayer-volume-muted"));
 
                         start();
                     }

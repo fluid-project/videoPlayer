@@ -404,13 +404,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     *           To control the volume                       *
     *********************************************************/
     var bindVolumeDOMEvents = function (that) {
-        var volumeButton = that.locate("mute");
-        var volumeControl = that.locate("volumeControl");
-        // hide the volume slider when the button is clicked
-        volumeButton.click(that.toggleSlider);
-        volumeControl.focusout(that.toggleSlider);
+        // show/hide the volume slider on mousein/out and on focus/blur
+        that.container.mouseover(that.showVolumeControl).mouseout(that.hideVolumeControl);
+        that.container.focus(that.showVolumeControl).blur(that.hideVolumeControl);
+
         // Bind the volume Control slide event to change the video's volume and its image.
-        volumeControl.bind("slide", function (evt, ui) {
+        that.locate("volumeControl").bind("slide", function (evt, ui) {
             that.events.onChange.fire(ui.value / 100.0);
         });
     };
@@ -426,10 +425,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    var createVolumeMarkup = function (that) {
-        var muteButton = that.locate("mute");;
-        muteButton.addClass(that.options.styles.volume);
-
+    var setUpVolumeControls = function (that) {
         var volumeControl = that.locate("volumeControl");
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
@@ -448,6 +444,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "role": "slider"
         });
         volumeControl.hide();
+
+        that.container.attr("tabindex", 0);
+        that.locate("mute").attr("tabindex", -1);
+        volumeControl.attr("tabindex", -1);
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
@@ -481,23 +481,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         components: {
             muteButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
-//                createOnEvent: "afterRender",
-//                container: "{controllers}.container",
                 options: {
                     selectors: {
                         button: ".flc-videoPlayer-mute"
                     },
                     styles: {
-                        pressed: "fl-videoPlayer-muted",
-                        released: ""
+                        pressed: "fl-videoPlayer-volume-muted",
+                        released: "",
+                        focused: "fl-videoPlayer-volume-active",
+                        notFocused: ""
                     },
                     strings: {
                         press: "Mute",
                         release: "Un-mute"
                     },
-                    events: {
-                        onReady: "{volumeControls}.events.onReady"
-                    }
+                    focusStyling: false
                 }
             }
         }
@@ -506,15 +504,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.volumeControls.postInit = function (that) {
         that.options.components.muteButton.container = that.container;
         
-        that.toggleSlider = function (ev) {
-            var volume = that.locate("volumeControl");
-            if (volume.css("display") !== "none") {
-                volume.hide();
-                that.locate("mute").focus();
-            } else {
-                //is there a more correct way?
-                volume.show().find(".ui-slider-handle").focus();
-            }
+        that.showVolumeControl = function () {
+            that.muteButton.setStyleFocused();
+            that.locate("volumeControl").show();
+        };
+        that.hideVolumeControl = function () {
+            that.muteButton.setStyleNotFocused();
+            that.locate("volumeControl").hide();
         };
 
         that.updateVolume = function () {
@@ -529,9 +525,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.volumeControls.finalInit = function (that) {
-        createVolumeMarkup(that);
+        setUpVolumeControls(that);
         bindVolumeDOMEvents(that);
         bindVolumeModel(that);
+        that.events.onReady.fire(that);
     };
 
     fluid.videoPlayer.controllers.volumeControls.produceTree = function (that) {
@@ -723,8 +720,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             button: ".flc-videoPlayer-button"
         },
         styles: {   // Integrators will likely override these styles
-            pressed: "fl-videoPlayer-pressed",
-            released: "fl-videoPlayer-released"
+            pressed: "fl-videoPlayer-button-pressed",
+            released: "fl-videoPlayer-button-released",
+            focused: "fl-videoPlayer-button-focused",
+            notFocused: "fl-videoPlayer-button-notfocused"
         },
         model: {
             pressed: false
@@ -736,7 +735,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         rendererOptions: {
             autoBind: true,
             applier: "{toggleButton}.applier"
-        }
+        },
+        focusStyling: true
     });
 
     fluid.videoPlayer.controllers.toggleButton.produceTree = function (that) {
@@ -747,6 +747,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 decorators: [{
                     type: "addClass",
                     classes: (that.model.pressed ? that.options.styles.pressed : that.options.styles.released)
+                },{
+                    type: "addClass",
+                    classes: that.options.styles.notFocused
                 }
 /*
                 // TODO: Once FLUID-4571 is fixed, here's how to instantiate the tooltip as a decorator
@@ -771,14 +774,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
-console.log("toggleButton postInit");
-        that.toggleButton = function () {
+        that.toggleButton = function (evt) {
             var button = that.locate("button");
-            button.toggleClass(that.options.styles.released + " " + that.options.styles.pressed);
+            button.toggleClass(that.options.styles.pressed + " " + that.options.styles.released);
             button.attr("aria-pressed", that.model.pressed);
         };
-        that.toggleState = function () {
+        that.setStyleFocused = function (evt) {
+            that.locate("button").addClass(that.options.styles.focused).removeClass(that.options.styles.notFocused);
+        };
+        that.setStyleNotFocused = function (evt) {
+            that.locate("button").addClass(that.options.styles.notFocused).removeClass(that.options.styles.focused);
+        };
+        that.toggleState = function (evt) {
             that.applier.requestChange("pressed", !that.model.pressed);
+            evt.stopPropagation();
             return true;
         };
     };
@@ -798,14 +807,19 @@ console.log("toggleButton postInit");
     };
 
     var bindToggleButtonEvents = function (that) {
-        that.locate("button").click(function () {
-            that.events.onPress.fire();
+        var button = that.locate("button");
+        if (that.options.focusStyling) {
+            button.focus(that.setStyleFocused).blur(that.setStyleNotFocused);
+            button.mouseover(that.setStyleFocused).mouseout(that.setStyleNotFocused);
+        }
+        button.click(function (evt) {
+            that.events.onPress.fire(evt);
         });
 
         that.events.onPress.addListener(that.toggleState, undefined, undefined, "last");
 
-        that.applier.modelChanged.addListener("pressed", function () {
-            that.toggleButton();
+        that.applier.modelChanged.addListener("pressed", function (evt) {
+            that.toggleButton(evt);
         });
     };
 
