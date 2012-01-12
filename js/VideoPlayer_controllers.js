@@ -551,10 +551,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.demands("fluid.videoPlayer.controllers.volumeControls", "fluid.videoPlayer.controllers", {
         options: {
             model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
-            listeners: {
-                onChange: "{controllers}.events.onVolumeChange.fire"
-            }
+            applier: "{videoPlayer}.applier"
         }
     });
 
