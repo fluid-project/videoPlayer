@@ -118,12 +118,17 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.media", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
+        components: {
+            mediaEventBinder: {
+                type: "fluid.videoPlayer.media.eventBinder",
+                createOnEvent: "onMediaReady"
+            }
+        },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onMediaReady: null
         },
-
         mediaRenderers: {
             "video/mp4": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
             "video/webm": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
@@ -160,15 +165,23 @@ https://source.fluidproject.org/svn/LICENSE.txt
         renderSources(that);
         bindMediaModel(that);
         bindMediaDOMEvents(that);
-        that.events.onMediaReady.fire();
+        that.events.onMediaReady.fire(that);
     };
 
-    fluid.demands("fluid.videoPlayer.media", "fluid.videoPlayer", {
+    /*********************************************************************************
+     * Media Event Binder: Binds events between components "videoPlayer" and "media" *
+     *********************************************************************************/
+        
+    fluid.defaults("fluid.videoPlayer.media.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+
+    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
             listeners: {
-                onMediaReady: "{videoPlayer}.events.onMediaReady.fire"
+                "{videoPlayer}.events.onTimeChange": "{media}.setTime",
+                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                "{videoPlayer}.events.onViewReady": "{media}.refresh"
             }
         }
     });

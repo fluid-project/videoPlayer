@@ -43,6 +43,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         tag.button("refresh");
     };
+    
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
      *      a volume controller, a button to put captions on/off and a menu
@@ -103,21 +104,49 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             text: false,
             label: that.model.states.fullscreen ? that.options.strings.fullscreenOff : that.options.strings.fullscreenOn
         });
+        
+        that.events.onMarkupReady.fire();
     };
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
         postInitFunction: "fluid.videoPlayer.controllers.postInit",
-        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
-        events: {
-            onControllersReady: null,
-            onVolumeChange: null,
-            onStartTimeChange: null,
-            onTimeChange: null,
-            afterTimeChange: null
-        },
-
         components: {
+            scrubber: {
+                type: "fluid.videoPlayer.controllers.scrubber",
+                container: "{controllers}.dom.scrubberContainer",
+                createOnEvent: "onMarkupReady",
+                options: {
+                    model: "{controllers}.model",
+                    applier: "{controllers}.applier",
+                    events: {
+                        onScrub: "{controllers}.events.onTimeChange",
+                        afterScrub: "{controllers}.events.afterTimeChange",
+                        onStartScrub: "{controllers}.events.onStartTimeChange"
+                    }
+                }
+            },
+            volumeControl: {
+                type: "fluid.videoPlayer.controllers.volumeControls",
+                container: "{controllers}.dom.volumeContainer",
+                createOnEvent: "onMarkupReady",
+                options: {
+                    model: "{controllers}.model",
+                    applier: "{controllers}.applier",
+                    events: {
+                        onChange: "{controllers}.events.onVolumeChange"
+                    }
+                }
+            },
+            menu: {
+                type: "fluid.videoPlayer.controllers.menu",
+                container: "{controllers}.dom.menuContainer",
+                createOnEvent: "onMarkupReady",
+                options: {
+                    model: "{controllers}.model",
+                    applier: "{controllers}.applier"
+                }
+            },
             playButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
                 createOnEvent: "afterRender",
@@ -137,6 +166,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
+        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
+        events: {
+            onControllersReady: null,
+            onVolumeChange: null,
+            onStartTimeChange: null,
+            onTimeChange: null,
+            afterTimeChange: null,
+            onMarkupReady: null
+        },
 
         selectors: {
             displayCaptions: ".flc-videoPlayer-caption",
@@ -145,6 +183,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             volumeContainer: ".flc-videoPlayer-volumeContainer",
             menuContainer: ".flc-videoPlayer-menuContainer"
         },
+        selectorsToIgnore: ["scrubberContainer", "volumeContainer", "menuContainer"],
 
         styles: {
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
@@ -194,31 +233,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         }
-        if (that.options.selectors.scrubberContainer) {
-            tree.scrubberContainer = {
-                decorators: [{
-                    type: "fluid",
-                    func: "fluid.videoPlayer.controllers.scrubber"
-                }]
-            };
-        }
-        if (that.options.selectors.volumeContainer) {
-            tree.volumeContainer = {
-                decorators: [{
-                    type: "fluid",
-                    func: "fluid.videoPlayer.controllers.volumeControls"
-                }]
-            };
-        }
-        if (that.options.selectors.menuContainer) {
-            tree.menuContainer = {
-                decorators: [{
-                    type: "fluid",
-                    func: "fluid.videoPlayer.controllers.menu"
-                }]
-            };
-        }
-
         return tree;
     };
 
@@ -249,18 +263,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             return true;
         });
 
-        that.events.onControllersReady.fire();
+        that.events.onControllersReady.fire(that);
     };
-    
-    fluid.demands("fluid.videoPlayer.controllers", "fluid.videoPlayer", {
-        options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
-            listeners: {
-                onControllersReady: "{videoPlayer}.events.onControllersReady.fire"
-            }
-        }
-    });
     
     /********************************************
     * scrubber: a slider to follow the progress *
@@ -353,6 +357,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             totalTime: "${states.totalTime}",
             scrubber: {}
         };
+        
+        return tree;
     };
 
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
@@ -392,18 +398,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.events.onScrubberReady.fire();
     };
-
-    fluid.demands("fluid.videoPlayer.controllers.scrubber", "fluid.videoPlayer.controllers", {
-        options: {
-            model: "{controllers}.model",
-            applier: "{controllers}.applier",
-            listeners: {
-                onScrub: "{controllers}.events.onTimeChange.fire",
-                afterScrub: "{controllers}.events.afterTimeChange.fire",
-                onStartScrub: "{controllers}.events.onStartTimeChange.fire"
-            }
-        }
-    });
 
     /********************************************************
     * Volume Control: a button that turns into a slider     *
@@ -820,5 +814,5 @@ console.log("toggleButton postInit");
         bindToggleButtonEvents(that);
         that.events.onReady.fire(that);
     };
-    
+ 
 })(jQuery);

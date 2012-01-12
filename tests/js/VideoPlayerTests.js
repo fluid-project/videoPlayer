@@ -83,5 +83,94 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         });
 
+        function setupEnvironment(withHtml5) {
+            delete fluid.staticEnvironment.browserHtml5;
+            
+            if (withHtml5) {
+                fluid.staticEnvironment.browserHtml5 = fluid.typeTag("fluid.browser.html5");
+            }
+        }
+        
+        videoPlayerTests.asyncTest("HTML5: video player instantiation with customized controller", function () {
+            expect(5);
+            
+            setupEnvironment(true);
+            
+            initVideoPlayer({
+                controls: "custom",
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
+                        jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
+                        jqUnit.assertNotUndefined("The sub-component captionner has been instantiated", videoPlayer.captionner);
+                        jqUnit.assertNotUndefined("The sub-component captionLoader has been instantiated", videoPlayer.captionLoader);
+                        jqUnit.assertUndefined("The sub-component browserCompatibility has NOT been instantiated", videoPlayer.browserCompatibility);
+                        
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerTests.asyncTest("HTML5: video player instantiation with native controller", function () {
+            expect(5);
+            
+            setupEnvironment(true);
+            
+            initVideoPlayer({
+                controls: "native",
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
+                        jqUnit.assertUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
+                        jqUnit.assertNotUndefined("The sub-component captionner has been instantiated", videoPlayer.captionner);
+                        jqUnit.assertNotUndefined("The sub-component captionLoader has been instantiated", videoPlayer.captionLoader);
+                        jqUnit.assertUndefined("The sub-component browserCompatibility has NOT been instantiated", videoPlayer.browserCompatibility);
+                        
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerTests.asyncTest("HTML5: Controllers instantiation", function () {
+            expect(3);
+            
+            setupEnvironment(true);
+            
+            initVideoPlayer({
+                controls: "custom",
+                listeners: {
+                    onControllersReady: function (controllers) {
+                        jqUnit.assertNotUndefined("The sub-component scrubber has been instantiated", controllers.scrubber);
+                        jqUnit.assertNotUndefined("The sub-component volumeControl has been instantiated", controllers.volumeControl);
+                        jqUnit.assertNotUndefined("The sub-component menu has been instantiated", controllers.menu);
+                        
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerTests.asyncTest("NON-HTML5: video player instantiation", function () {
+            expect(5);
+            
+            setupEnvironment(false);
+            
+            initVideoPlayer({
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
+                        jqUnit.assertUndefined("The sub-component controllers has NOT been instantiated", videoPlayer.controllers);
+                        jqUnit.assertUndefined("The sub-component captionner has NOT been instantiated", videoPlayer.captionner);
+                        jqUnit.assertNotUndefined("The sub-component captionLoader has been instantiated", videoPlayer.captionLoader);
+                        jqUnit.assertNotUndefined("The sub-component browserCompatibility has been instantiated", videoPlayer.browserCompatibility);
+                        
+                        start();
+                    }
+                }
+            });
+        });
+
     });
 })(jQuery);

@@ -44,7 +44,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             return fluid.videoPlayer.controllers.toggleButton("#basic-toggle-button-test", opts);
         };
 
-/*
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
             expect(11);
 
@@ -129,7 +128,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
-*/
 
         var baseVideoPlayerOpts = {
             model: {
@@ -157,12 +155,11 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             return fluid.videoPlayer("#videoPlayer", opts);
         };
 
-/*
         videoPlayerControlsTests.asyncTest("Play button", function () {
             expect(9);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
-                    afterRender: function (that) {
+                    onControllersReady: function (that) {
                         var playButton = $(".flc-videoPlayer-play");
                         jqUnit.assertEquals("There should be exactly one Play button", 1, playButton.length);
                         jqUnit.assertEquals("Play button should have role of 'button'", "button", playButton.attr("role"));
@@ -188,7 +185,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
-*/
 
         var baseVolumeOpts = {};
 
