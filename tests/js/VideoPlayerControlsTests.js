@@ -23,7 +23,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
 (function ($) {
     $(document).ready(function () {
 
-        fluid.setLogging(true);
+        fluid.setLogging(false);
 
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
 
@@ -44,32 +44,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             return fluid.videoPlayer.controllers.toggleButton("#basic-toggle-button-test", opts);
         };
 
-        var baseVideoPlayerOpts = {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
-                            type: "video/mp4"
-                        }
-                    ]
-                }
-            },
-            templates: {
-                videoPlayer: {
-                    // override the default template path
-                    // TODO: We need to refactor the VideoPlayer to better support
-                    //       overriding the path without needing to know file names
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }
-        };
-        fluid.tests.initVideoPlayer = function (testOpts) {
-            var opts = fluid.copy(baseVideoPlayerOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer("#videoPlayer", opts);
-        };
-
+/*
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
             expect(11);
 
@@ -154,7 +129,35 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
+*/
 
+        var baseVideoPlayerOpts = {
+            model: {
+                video: {
+                    sources: [
+                        {
+                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
+                            type: "video/mp4"
+                        }
+                    ]
+                }
+            },
+            templates: {
+                videoPlayer: {
+                    // override the default template path
+                    // TODO: We need to refactor the VideoPlayer to better support
+                    //       overriding the path without needing to know file names
+                    href: "../../html/videoPlayer_template.html"
+                }
+            }
+        };
+        fluid.tests.initVideoPlayer = function (testOpts) {
+            var opts = fluid.copy(baseVideoPlayerOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer("#videoPlayer", opts);
+        };
+
+/*
         videoPlayerControlsTests.asyncTest("Play button", function () {
             expect(9);
             var testPlayer = fluid.tests.initVideoPlayer({
@@ -179,6 +182,63 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertTrue("After clickign again, play button should have the paused style again", playButton.hasClass("fl-videoPlayer-paused"));
                         playButton.blur().focus();
                         jqUnit.assertEquals("Tooltip should contain 'Play' again", "Play", tooltip.text());
+
+                        start();
+                    }
+                }
+            });
+        });
+*/
+
+        var baseVolumeOpts = {};
+
+        fluid.tests.initVolumeControls = function (testOpts) {
+            var opts = fluid.copy(baseVolumeOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.volumeControls("#basic-volume-controls-test", opts);
+        };
+
+        videoPlayerControlsTests.asyncTest("Volume controls", function () {
+//            expect(9);
+            var testVolumeControls = fluid.tests.initVolumeControls({
+                listeners: {
+                    onReady: function (that) {
+                        var container = $("#basic-volume-controls-test");
+                        var muteButton = $(".flc-videoPlayer-mute");
+                        var volumeSlider = $(".flc-videoPlayer-volumeControl");
+
+                        jqUnit.assertEquals("There should be exactly one Mute button", 1, muteButton.length);
+                        jqUnit.assertEquals("Mute button should have role of 'button'", "button", muteButton.attr("role"));
+                        jqUnit.assertEquals("Mute button should have aria-pressed of 'false' initially", "false", muteButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Mute button should not have the muted style initially", muteButton.hasClass("fl-videoPlayer-volume-muted"));
+                        jqUnit.assertFalse("Mute button should not have the active style initially", muteButton.hasClass("fl-videoPlayer-volume-active"));
+
+                        jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
+                        var sliderHandle = $(".ui-slider-handle", volumeSlider);
+                        jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
+                        jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
+                        jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
+
+                        container.mouseover();
+                        jqUnit.assertTrue("On container mouseover, the Mute button should have the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
+                        jqUnit.isVisible("On container mouseover, the slider should become visible", volumeSlider);
+
+                        container.mouseout();
+                        jqUnit.assertFalse("On container mouseout, the Mute button should lose the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
+                        jqUnit.notVisible("On container mouseout, the slider should hide again", volumeSlider);
+
+                        container.focus();
+                        jqUnit.assertTrue("On container focus, the Mute button should have the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
+                        jqUnit.isVisible("On container focus, the slider should become visible", volumeSlider);
+
+                        container.blur();
+                        jqUnit.assertFalse("On container blur, the Mute button should lose the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
+                        jqUnit.notVisible("On container blur, the slider should hide again", volumeSlider);
+
+                        muteButton.click();
+                        jqUnit.assertTrue("On click, the mute button should have the active stye", muteButton.hasClass("fl-videoPlayer-volume-active"));
+                        muteButton.click();
+                        jqUnit.assertFalse("On click again, the mute button should lose the active stye", muteButton.hasClass("fl-videoPlayer-volume-active"));
 
                         start();
                     }

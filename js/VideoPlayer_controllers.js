@@ -206,7 +206,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             tree.volumeContainer = {
                 decorators: [{
                     type: "fluid",
-                    func: "fluid.videoPlayer.controllers.volumeControl"
+                    func: "fluid.videoPlayer.controllers.volumeControls"
                 }]
             };
         }
@@ -410,7 +410,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     *           To control the volume                       *
     *********************************************************/
     var bindVolumeDOMEvents = function (that) {
-        var volumeButton = that.locate("volume");
+        var volumeButton = that.locate("mute");
         var volumeControl = that.locate("volumeControl");
         // hide the volume slider when the button is clicked
         volumeButton.click(that.toggleSlider);
@@ -425,75 +425,98 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("states.volume", that.updateVolume);
         that.applier.modelChanged.addListener("states.canPlay", function () {
             if (that.model.states.canPlay === true) {
-                that.locate("volume").button("enable");
+                that.locate("mute").button("enable");
             } else {
-                that.locate("volume").button("disable");
+                that.locate("mute").button("disable");
             }
         });
     };
 
     var createVolumeMarkup = function (that) {
-        var volumeElt = $("<button class='flc-videoPlayer-volume'/>");
-        volumeElt.addClass(that.options.styles.volume);
-        volumeElt.button({
-            "icons": {
-                primary: that.options.styles.buttonIcon
-            },
-            disabled: !that.model.states.canPlay,
-            label: that.options.strings.volume,
-            text: false
-        });
-        that.container.append(volumeElt);
-        var volumeControl = $("<div class='flc-videoPlayer-volumeControl'/>");
+        var muteButton = that.locate("mute");;
+        muteButton.addClass(that.options.styles.volume);
+
+        var volumeControl = that.locate("volumeControl");
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
             orientation: "vertical",
             range: "min",
-            min: 0,
-            max: 100,
-            value: that.model.states.volume
+            min: that.model.minVolume,
+            max: that.model.maxVolume,
+            value: that.model.volume
         });
         volumeControl.find(".ui-slider-handle").attr({
             "aria-label": that.options.strings.volume,
-            "aria-valuemin": 0,
-            "aria-valuemax": 100,
-            "aria-valuenow": that.model.states.volume,
-            "aria-valuetext": that.model.states.volume + "%",
+            "aria-valuemin": that.model.minVolume,
+            "aria-valuemax": that.model.maxVolume,
+            "aria-valuenow": that.model.volume,
+            "aria-valuetext": that.model.volume + "%",
             "role": "slider"
         });
         volumeControl.hide();
-        that.container.append(volumeControl);
     };
 
-    fluid.defaults("fluid.videoPlayer.controllers.volumeControl", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.controllers.volumeControl.finalInit",
-        postInitFunction: "fluid.videoPlayer.controllers.volumeControl.postInit",
+    fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        renderOnInit: true,
+        postInitFunction: "fluid.videoPlayer.controllers.volumeControls.postInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.volumeControls.finalInit",
+        produceTree: "fluid.videoPlayer.controllers.volumeControls.produceTree",
         events: {
             onReady: null,
             onChange: null
         },
+        model: {
+            muted: false,
+            volume: 60,
+            minVolume: 0,
+            maxVolume: 100
+        },
         selectors: {
-            volume: ".flc-videoPlayer-volume",
+            mute: ".flc-videoPlayer-mute",
             volumeControl: ".flc-videoPlayer-volumeControl"
         },
         styles: {
-            volume: "fl-videoPlayer-volume",
+            mute: "fl-videoPlayer-mute",
             volumeControl: "fl-videoPlayer-volumeControl",
             buttonIcon: "ui-icon-signal"
         },
         strings: {
             volume: "Volume"
+        },
+        components: {
+            muteButton: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+//                createOnEvent: "afterRender",
+//                container: "{controllers}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-mute"
+                    },
+                    styles: {
+                        pressed: "fl-videoPlayer-muted",
+                        released: ""
+                    },
+                    strings: {
+                        press: "Mute",
+                        release: "Un-mute"
+                    },
+                    events: {
+                        onReady: "{volumeControls}.events.onReady"
+                    }
+                }
+            }
         }
     });
 
-    fluid.videoPlayer.controllers.volumeControl.postInit = function (that) {
+    fluid.videoPlayer.controllers.volumeControls.postInit = function (that) {
+        that.options.components.muteButton.container = that.container;
         
         that.toggleSlider = function (ev) {
             var volume = that.locate("volumeControl");
             if (volume.css("display") !== "none") {
                 volume.hide();
-                that.locate("volume").focus();
+                that.locate("mute").focus();
             } else {
                 //is there a more correct way?
                 volume.show().find(".ui-slider-handle").focus();
@@ -511,14 +534,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.videoPlayer.controllers.volumeControl.finalInit = function (that) {
+    fluid.videoPlayer.controllers.volumeControls.finalInit = function (that) {
         createVolumeMarkup(that);
         bindVolumeDOMEvents(that);
         bindVolumeModel(that);
-        that.events.onReady.fire();
     };
 
-    fluid.demands("fluid.videoPlayer.controllers.volumeControl", "fluid.videoPlayer.controllers", {
+    fluid.videoPlayer.controllers.volumeControls.produceTree = function (that) {
+        return {
+            mute: {
+                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
+                value: "${muted}",
+                decorators: [{
+                    type: "addClass",
+                    classes: (that.model.pressed ? that.options.styles.pressed : that.options.styles.released)
+                }]
+            },
+            volumeControl: {
+                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
+                value: "${value}"
+            }
+        };
+    };
+
+    fluid.demands("fluid.videoPlayer.controllers.volumeControls", "fluid.videoPlayer.controllers", {
         options: {
             model: "{videoPlayer}.model",
             applier: "{videoPlayer}.applier",
@@ -738,6 +777,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
+console.log("toggleButton postInit");
         that.toggleButton = function () {
             var button = that.locate("button");
             button.toggleClass(that.options.styles.released + " " + that.options.styles.pressed);
