@@ -31,14 +31,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.captionLoader", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.captionLoader.finalInit",
-        preInitFunction: "fluid.videoPlayer.captionLoader.preInit",
+        postInitFunction: "fluid.videoPlayer.captionLoader.postInit",
         events: {
             onReady: null,
             onCaptionsLoaded: null
         }
     });
     
-    fluid.videoPlayer.captionLoader.preInit = function (that) {
+    fluid.videoPlayer.captionLoader.postInit = function (that) {
         that.setCaptions = function (captions) {
             // Render the caption area if necessary
             captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;

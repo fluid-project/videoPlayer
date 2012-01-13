@@ -18,7 +18,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
-    fluid.setLogging(false);
+    fluid.setLogging(true);
 
     var bindKeyboardControl = function (that) {
         var opts = {
@@ -129,6 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      */
     fluid.defaults("fluid.videoPlayer", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
+        postInitFunction: "fluid.videoPlayer.postInit",
         preInitFunction: "fluid.videoPlayer.preInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
@@ -247,15 +248,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         return tree;
     };
-
+    
     fluid.videoPlayer.preInit = function (that) {
+        that.refresh = function () {
+            that.fullscreen();
+        };
+    };
+
+    fluid.videoPlayer.postInit = function (that) {
         that.play = function (ev) {
             that.applier.fireChangeRequest({
                 "path": "states.play",
                 "value": !that.model.states.play
             });
         };
-
+        
         that.fullscreen = function () {
             var video = that.locate("video");
             if (that.model.states.fullscreen === true) {
@@ -272,21 +279,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 });
             }
         };
-
-        that.incrVolume = function () {
-            if (that.model.states.volume < 100) {
-                var newVol = (that.model.states.volume + 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
-            }
-        };
-
-        that.decrVolume = function () {
-            if (that.model.states.volume > 0) {
-                var newVol = (that.model.states.volume - 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
-            }
-        };
-
+        
         that.incrTime = function () {
 			that.events.onStartTimeChange.fire();
             if (that.model.states.currentTime < that.model.states.totalTime) {
@@ -304,15 +297,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             that.events.afterTimeChange.fire();
         };
-
-        that.refresh = function () {
-            that.fullscreen();
+        
+        that.incrVolume = function () {
+            if (that.model.states.volume < 100) {
+                var newVol = (that.model.states.volume + 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
+            }
         };
 
+        that.decrVolume = function () {
+            if (that.model.states.volume > 0) {
+                var newVol = (that.model.states.volume - 10) / 100.0;
+                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
+            }
+        };
     };
     
     fluid.videoPlayer.finalInit = function (that) {
-        that.applier = fluid.makeChangeApplier(that.model);
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
 

@@ -119,7 +119,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.media", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
-        preInitFunction: "fluid.videoPlayer.media.preInit",
+        postInitFunction: "fluid.videoPlayer.media.postInit",
         events: {
             onMediaReady: null
         },
@@ -133,7 +133,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
 
-    fluid.videoPlayer.media.preInit = function (that) {
+    fluid.videoPlayer.media.postInit = function (that) {
         that.setTime = function (time) {
             that.container[0].currentTime = time;
         };
