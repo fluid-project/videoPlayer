@@ -41,7 +41,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
     var makeCaption = function (that, caption) {
         var captionElt = $("<div class='flc-videoPlayer-caption-captionText'>" + caption.caption + "</div>");
         captionElt.addClass(that.options.styles.caption);
-        captionElt.css(caption.textStyles);
+        if (caption.textStyles) {
+            captionElt.css(caption.textStyles);
+        }
         that.container.append(captionElt); 
         return captionElt;
     };
