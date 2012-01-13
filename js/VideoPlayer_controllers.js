@@ -417,6 +417,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.locate("volumeControl").bind("slide", function (evt, ui) {
             that.events.onChange.fire(ui.value / 100.0);
         });
+
+        that.locate("volumeControl").bind("slidechange", function (evt, ui) {
+            that.events.onChange.fire(ui.value / 100.0);
+        });
+
     };
 
     var bindVolumeModel = function (that) {
@@ -428,6 +433,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.locate("mute").button("disable");
             }
         });
+    };
+
+    fluid.videoPlayer.arrowKeys = {
+        LEFT: 37,
+        UP: 38,
+        RIGHT: 39,
+        DOWN: 40,
     };
 
     var setUpVolumeControls = function (that) {
@@ -450,9 +462,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         volumeControl.hide();
 
-        that.container.attr("tabindex", 0);
-        that.locate("mute").attr("tabindex", -1);
-        volumeControl.attr("tabindex", -1);
+        fluid.tabindex(that.container, 0);
+        fluid.tabindex(that.locate("mute"), -1);
+        fluid.tabindex(volumeControl, -1);
+
+        fluid.activatable(that.container, function (evt) {
+            that.muteButton.activate(evt);
+        });
+        that.container.keydown(function (evt) {
+            var volumeControl = that.locate("volumeControl");
+            var code = evt.which? evt.which : evt.keyCode;
+            if ((code === fluid.videoPlayer.arrowKeys.UP)  || (code === fluid.videoPlayer.arrowKeys.RIGHT)) {
+                volumeControl.slider("value", volumeControl.slider("value")+1);
+            } else if ((code === fluid.videoPlayer.arrowKeys.DOWN)  || (code === fluid.videoPlayer.arrowKeys.LEFT)) {
+                volumeControl.slider("value", volumeControl.slider("value")-1);
+            } else {
+                return true;
+            }
+            return false;
+        });
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
@@ -776,6 +804,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
+        that.activate = function (evt) {
+            that.events.onPress.fire(evt);
+        };
         that.toggleButton = function (evt) {
             var button = that.locate("button");
             button.toggleClass(that.options.styles.pressed + " " + that.options.styles.released);
@@ -815,7 +846,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             button.mouseover(that.setStyleFocused).mouseout(that.setStyleNotFocused);
         }
         button.click(function (evt) {
-            that.events.onPress.fire(evt);
+            that.activate(evt);
         });
 
         that.events.onPress.addListener(that.toggleState, undefined, undefined, "last");
