@@ -257,5 +257,24 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             });
         });
 
+        videoPlayerControlsTests.asyncTest("Volume controls integration: mute", function () {
+            expect(3);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        var video = $("video")[0];
+                        var muteButton = $(".flc-videoPlayer-mute");
+
+                        jqUnit.assertFalse("Initially, video should not be muted", video.muted);
+                        muteButton.click();
+                        jqUnit.assertTrue("After clicking mute button, video should be muted", video.muted);
+                        muteButton.click();
+                        jqUnit.assertFalse("After clicking mute button again, video should again not be muted", video.muted);
+
+                        start();
+                    }
+                }
+            });
+        });
     });
 })(jQuery);

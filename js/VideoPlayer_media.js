@@ -38,6 +38,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     var bindMediaModel = function (that) {
         that.applier.modelChanged.addListener("states.play", that.play);
+        that.applier.modelChanged.addListener("states.muted", that.mute);
     };
 
     var getcanPlayData = function (data) {
@@ -153,6 +154,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
             } else {
                 that.container[0].pause();
             }
+        };
+
+        that.mute = function () {
+            that.container[0].muted = that.model.states.muted;
         };
 
         that.refresh = function () {

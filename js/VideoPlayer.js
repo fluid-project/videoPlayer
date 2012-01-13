@@ -190,6 +190,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 displayCaptions: true,
                 fullscreen: false,
                 volume: 60,
+                muted: false,
                 canPlay: false
             },
             video: {

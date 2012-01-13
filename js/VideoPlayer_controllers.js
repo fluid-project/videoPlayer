@@ -263,6 +263,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             return true;
         });
 
+        // TODO: This will not be necessary when we can autobind to a toggle button (FLUID-4573)
+        that.volumeControl.muteButton.events.onPress.addListener(function () {
+            that.applier.requestChange("states.muted", !that.model.states.muted);
+            return true;
+        });
         that.events.onControllersReady.fire(that);
     };
     
