@@ -448,16 +448,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         volumeControl.slider({
             orientation: "vertical",
             range: "min",
-            min: that.model.minVolume,
-            max: that.model.maxVolume,
-            value: that.model.volume
+            min: that.model.states.minVolume,
+            max: that.model.states.maxVolume,
+            value: that.model.states.volume
         });
         volumeControl.find(".ui-slider-handle").attr({
             "aria-label": that.options.strings.volume,
-            "aria-valuemin": that.model.minVolume,
-            "aria-valuemax": that.model.maxVolume,
-            "aria-valuenow": that.model.volume,
-            "aria-valuetext": that.model.volume + "%",
+            "aria-valuemin": that.model.states.minVolume,
+            "aria-valuemax": that.model.states.maxVolume,
+            "aria-valuenow": that.model.states.volume,
+            "aria-valuetext": that.model.states.volume + "%",
             "role": "slider"
         });
         volumeControl.hide();
@@ -494,10 +494,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onChange: null
         },
         model: {
-            muted: false,
-            volume: 60,
-            minVolume: 0,
-            maxVolume: 100
+            // TODO: the 'states' is to mimic the videoPlayer model layout
+            // Ideally, the volumeControls should operate without requiring that knowledge.
+            states: {
+                muted: false,
+                volume: 50,
+                minVolume: 0,
+                maxVolume: 100
+            }
         },
         selectors: {
             mute: ".flc-videoPlayer-mute",
@@ -528,7 +532,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         press: "Mute",
                         release: "Un-mute"
                     },
-                    focusStyling: false
+                    manageFocusStyling: false
                 }
             }
         }
@@ -580,13 +584,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
     };
-
-    fluid.demands("fluid.videoPlayer.controllers.volumeControls", "fluid.videoPlayer.controllers", {
-        options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier"
-        }
-    });
 
     /********************************************************
     * Menu: a menu to choose the caption and other options  *
@@ -766,7 +763,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             autoBind: true,
             applier: "{toggleButton}.applier"
         },
-        focusStyling: true
+        manageFocusStyling: true
     });
 
     fluid.videoPlayer.controllers.toggleButton.produceTree = function (that) {
@@ -841,7 +838,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
-        if (that.options.focusStyling) {
+        if (that.options.manageFocusStyling) {
             button.focus(that.setStyleFocused).blur(that.setStyleNotFocused);
             button.mouseover(that.setStyleFocused).mouseout(that.setStyleNotFocused);
         }

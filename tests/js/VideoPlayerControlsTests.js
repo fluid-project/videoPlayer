@@ -227,7 +227,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
                         var sliderHandle = $(".ui-slider-handle", volumeSlider);
                         jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
-                        jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
+                        jqUnit.assertEquals("The slider button should have valuenow of '50'", "50", sliderHandle.attr("aria-valuenow"));
                         jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
 
                         container.mouseover();
@@ -257,8 +257,8 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             });
         });
 
-        videoPlayerControlsTests.asyncTest("Volume controls integration: mute", function () {
-            expect(3);
+        videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
+            expect(4);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -270,6 +270,10 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertTrue("After clicking mute button, video should be muted", video.muted);
                         muteButton.click();
                         jqUnit.assertFalse("After clicking mute button again, video should again not be muted", video.muted);
+
+                        var volumeSlider = $(".flc-videoPlayer-volumeControl");
+                        var sliderHandle = $(".ui-slider-handle", volumeSlider);
+                        jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
 
                         start();
                     }
