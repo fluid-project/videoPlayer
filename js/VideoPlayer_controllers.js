@@ -736,8 +736,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers.captionControls", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         renderOnInit: true,
-        rendererOpts: {
-            debugMode: true
+        rendererOptions: {
+            autoBind: true
         },
         preInitFunction: "fluid.videoPlayer.controllers.captionControls.preInit",
         postInitFunction: "fluid.videoPlayer.controllers.captionControls.postInit",
@@ -750,28 +750,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         model: {
             // TODO: the 'captions' is to mimic the videoPlayer model layout
             // Ideally, the captionControls should operate without requiring that knowledge.
-            captionsx: {
+            captions: {
+                selection: "none",
+                choices: [],
+                names: [],
                 show: false,
                 sources: null,
-                currentTrack: undefined,
+                currentTrack: "none",
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined
-            },
-            captions: {
-                selection: [],
-                choices: [],
-                names: []
             }
         },
         selectors: {
+            button: ".flc-videoPlayer-captions-button",
+            languageList: ".flc-videoPlayer-captions-languageList",
             languageRow: ".flc-videoPlayer-captions-language",
             languageButton: ".flc-videoPlayer-captions-languageButton",
-            languageLabel: ".flc-videoPlayer-captions-languageLabel",
-
-            button: ".flc-videoPlayer-caption",
+            languageLabel: ".flc-videoPlayer-captions-languageLabel"
         },
         repeatingSelectors: ["languageRow"],
+        selectorsToIgnore: ["languageList"],
         styles: {
             button: "fl-videoPlayer-caption",
             volumeControl: "fl-videoPlayer-caption-languages"
@@ -779,14 +778,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         strings: {
             captionOff: "Captions OFF",
             turnCaptionOff: "Turn Captions OFF"
-/*
         },
         components: {
             captionButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
                 options: {
                     selectors: {
-                        button: ".flc-videoPlayer-caption"
+                        button: ".flc-videoPlayer-captions-button"
                     },
                     styles: {
                         pressed: "fl-videoPlayer-caption",
@@ -800,7 +798,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     manageFocusStyling: false
                 }
             }
-*/
         }
     });
 
@@ -811,19 +808,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         that.options.model.captions.choices.push("none");
         that.options.model.captions.names.push("None");
-        that.options.model.captions.selection = "none";
     };
 
     fluid.videoPlayer.controllers.captionControls.postInit = function (that) {
-//        that.options.components.captionButton.container = that.container;
+        that.options.components.captionButton.container = that.container;
+    };
+
+    var setUpCaptionControls = function (that) {
+        that.locate("languageList").hide();
+    };
+
+    var bindCaptionDOMEvents = function (that) {
+        that.locate("button").click(function () {
+            that.locate("languageList").toggle();
+        });
+        
+        // TODO: This shouldn't be necessary with the autoBinding on; need to investigate
+        that.locate("languageButton").click(function (e) {
+            that.applier.requestChange("captions.selection", e.currentTarget.value);
+        });
     };
 
     fluid.videoPlayer.controllers.captionControls.finalInit = function (that) {
-        that.events.onReady.fire();
+        setUpCaptionControls(that);
+        bindCaptionDOMEvents(that);
+  //      bindCaptionModel(that);
+        that.events.onReady.fire(that);
     };
     fluid.videoPlayer.controllers.captionControls.produceTree = function (that) {
         return {
-/*
             button: {
                 // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
                 value: "${captions.show}",
@@ -832,7 +845,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     classes: ("foofer")
                 }]
             },
-*/
             expander: {
                 type: "fluid.renderer.selection.inputs",
                 rowID: "languageRow",

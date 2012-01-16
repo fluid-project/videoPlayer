@@ -310,13 +310,26 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         videoPlayerControlsTests.asyncTest("Caption controls", function () {
 //            expect(19);
             var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
-            var testVolumeControls = fluid.tests.initCaptionControls({
+            var testCaptionControls = fluid.tests.initCaptionControls({
                 listeners: {
-                    afterRender: function (that) {
-                        var captionsButton = $(".flc-videoPlayer-caption");
+                    onReady: function (that) {
+                        var captionsButton = $(".flc-videoPlayer-captions-button");
                         var languageRadioButtons = $(".flc-videoPlayer-captions-languageButton");
+                        var languageList = $(".flc-videoPlayer-captions-languageList");
+
                         jqUnit.assertEquals("There should be one captions button", 1, captionsButton.length);
                         jqUnit.assertEquals("There should be " + numLangs + " languages", numLangs, languageRadioButtons.length);
+                        jqUnit.notVisible("The list of languages should not be visible initially", languageList);
+
+                        captionsButton.click();
+                        jqUnit.isVisible("When caption button clicked, the list of languages should show", languageList);
+                        captionsButton.click();
+                        jqUnit.notVisible("When caption button clicked again, the list of languages should hide", languageList);
+
+                        captionsButton.click();
+                        jqUnit.assertEquals("Initially, 'none' should be selected", "none", that.model.captions.selection);
+                        languageRadioButtons[1].click();
+                        jqUnit.assertEquals("After clicking a radio button, another language should be selected", "mandarin", that.model.captions.selection);
                         start();
                     }
                 }
