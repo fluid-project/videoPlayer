@@ -439,7 +439,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         LEFT: 37,
         UP: 38,
         RIGHT: 39,
-        DOWN: 40,
+        DOWN: 40
     };
 
     var setUpVolumeControls = function (that) {
@@ -728,6 +728,125 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             applier: "{videoPlayer}.applier"
         }
     });
+
+    /*****************************************************************************
+        Caption controls
+        Toggle button plus language selection pull-down
+     *****************************************************************************/
+    fluid.defaults("fluid.videoPlayer.controllers.captionControls", {
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        renderOnInit: true,
+        rendererOpts: {
+            debugMode: true
+        },
+        preInitFunction: "fluid.videoPlayer.controllers.captionControls.preInit",
+        postInitFunction: "fluid.videoPlayer.controllers.captionControls.postInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.captionControls.finalInit",
+        produceTree: "fluid.videoPlayer.controllers.captionControls.produceTree",
+        events: {
+            onReady: null,
+            onChange: null
+        },
+        model: {
+            // TODO: the 'captions' is to mimic the videoPlayer model layout
+            // Ideally, the captionControls should operate without requiring that knowledge.
+            captionsx: {
+                show: false,
+                sources: null,
+                currentTrack: undefined,
+                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                maxNumber: 3,
+                track: undefined
+            },
+            captions: {
+                selection: [],
+                choices: [],
+                names: []
+            }
+        },
+        selectors: {
+            languageRow: ".flc-videoPlayer-captions-language",
+            languageButton: ".flc-videoPlayer-captions-languageButton",
+            languageLabel: ".flc-videoPlayer-captions-languageLabel",
+
+            button: ".flc-videoPlayer-caption",
+        },
+        repeatingSelectors: ["languageRow"],
+        styles: {
+            button: "fl-videoPlayer-caption",
+            volumeControl: "fl-videoPlayer-caption-languages"
+        },
+        strings: {
+            captionOff: "Captions OFF",
+            turnCaptionOff: "Turn Captions OFF"
+/*
+        },
+        components: {
+            captionButton: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-caption"
+                    },
+                    styles: {
+                        pressed: "fl-videoPlayer-caption",
+                        released: "",
+                        focused: "fl-videoPlayer-caption-active",
+                        notFocused: ""
+                    },
+                    strings: {
+                        press: "Captions"
+                    },
+                    manageFocusStyling: false
+                }
+            }
+*/
+        }
+    });
+
+    fluid.videoPlayer.controllers.captionControls.preInit = function (that) {
+        fluid.each(that.options.model.captions.sources, function (value, key) {
+            that.options.model.captions.choices.push(key);
+            that.options.model.captions.names.push(key);
+        });
+        that.options.model.captions.choices.push("none");
+        that.options.model.captions.names.push("None");
+        that.options.model.captions.selection = "none";
+    };
+
+    fluid.videoPlayer.controllers.captionControls.postInit = function (that) {
+//        that.options.components.captionButton.container = that.container;
+    };
+
+    fluid.videoPlayer.controllers.captionControls.finalInit = function (that) {
+        that.events.onReady.fire();
+    };
+    fluid.videoPlayer.controllers.captionControls.produceTree = function (that) {
+        return {
+/*
+            button: {
+                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
+                value: "${captions.show}",
+                decorators: [{
+                    type: "addClass",
+                    classes: ("foofer")
+                }]
+            },
+*/
+            expander: {
+                type: "fluid.renderer.selection.inputs",
+                rowID: "languageRow",
+                labelID: "languageLabel",
+                inputID: "languageButton",
+                selectID: "captionLanguages",
+                tree: {
+                    selection: "${captions.selection}",
+                    optionlist: "${captions.choices}",
+                    optionnames: "${captions.names}"
+                }
+            }
+        };
+    };
 
     /*****************************************************************************
         Toggle button subcomponent

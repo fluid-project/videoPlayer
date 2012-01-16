@@ -280,5 +280,47 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
+
+        var baseCaptionOpts = {
+            model: {
+                captions: {
+                    sources: {
+                        esperanto: {
+                            src: "Test.esp.json",
+                            type: "JSONcc"
+                        }, 
+                        mandarin: {
+                            src: "Test.mand.json",
+                            type: "JSONcc"
+                        },
+                        lolspeak: {
+                            src: "Test.lol.json",
+                            type: "JSONcc"
+                        }
+                    }
+                }
+            }
+        };
+        fluid.tests.initCaptionControls = function (testOpts) {
+            var opts = fluid.copy(baseCaptionOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.captionControls("#basic-caption-controls-test", opts);
+        };
+
+        videoPlayerControlsTests.asyncTest("Caption controls", function () {
+//            expect(19);
+            var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
+            var testVolumeControls = fluid.tests.initCaptionControls({
+                listeners: {
+                    afterRender: function (that) {
+                        var captionsButton = $(".flc-videoPlayer-caption");
+                        var languageRadioButtons = $(".flc-videoPlayer-captions-languageButton");
+                        jqUnit.assertEquals("There should be one captions button", 1, captionsButton.length);
+                        jqUnit.assertEquals("There should be " + numLangs + " languages", numLangs, languageRadioButtons.length);
+                        start();
+                    }
+                }
+            });
+        });
     });
 })(jQuery);
