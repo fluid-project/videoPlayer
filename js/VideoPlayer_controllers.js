@@ -740,12 +740,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             autoBind: true
         },
         preInitFunction: "fluid.videoPlayer.controllers.captionControls.preInit",
-        postInitFunction: "fluid.videoPlayer.controllers.captionControls.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.captionControls.finalInit",
         produceTree: "fluid.videoPlayer.controllers.captionControls.produceTree",
         events: {
-            onReady: null,
-            onChange: null
+            onReady: null
         },
         model: {
             // TODO: the 'captions' is to mimic the videoPlayer model layout
@@ -772,17 +770,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         repeatingSelectors: ["languageRow"],
         selectorsToIgnore: ["languageList"],
         styles: {
-            button: "fl-videoPlayer-caption",
-            volumeControl: "fl-videoPlayer-caption-languages",
             selected: "fl-videoPlayer-caption-selected"
         },
         strings: {
-            captionOff: "Captions OFF",
-            turnCaptionOff: "Turn Captions OFF"
+            captionsOff: "Captions OFF",
+            turnCaptionsOff: "Turn Captions OFF"
         },
         components: {
             captionButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
+                container: "{captionControls}.container",
                 options: {
                     selectors: {
                         button: ".flc-videoPlayer-captions-button"
@@ -804,28 +801,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.videoPlayer.controllers.captionControls.preInit = function (that) {
+        // build the 'choices' from the caption list provided
         fluid.each(that.options.model.captions.sources, function (value, key) {
             that.options.model.captions.choices.push(key);
             that.options.model.captions.names.push(key);
         });
+        // add the 'turn captions off' option
         that.options.model.captions.choices.push("none");
-        that.options.model.captions.names.push(that.options.strings.captionOff);
-    };
-
-    fluid.videoPlayer.controllers.captionControls.postInit = function (that) {
-        that.options.components.captionButton.container = that.container;
+        that.options.model.captions.names.push(that.options.strings.captionsOff);
     };
 
     var setUpCaptionControls = function (that) {
+        that.captionsOffOption = $(that.locate("languageLabel")[that.model.captions.choices.indexOf("none")]);
         that.locate("languageList").hide();
-        $(that.locate("languageLabel")[that.model.captions.choices.indexOf("none")]).addClass(that.options.styles.selected);
+        that.captionsOffOption.addClass(that.options.styles.selected);
     };
 
     var bindCaptionDOMEvents = function (that) {
         that.captionButton.events.onPress.addListener(function (evt) {
             that.locate("languageList").toggle();
-
-            // prevent the default onPress handler from toggling the button state
+            // prevent the default onPress handler from toggling the button state:
+            //   it should only toggle if the user turns captions on or off
             return false;
         });
         
@@ -837,20 +833,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var bindCaptionModel = function (that) {
         that.applier.modelChanged.addListener("captions.selection", function (model, oldModel, changeRequest) {
-            var oldIndex = model.captions.choices.indexOf(oldModel.captions.selection);
-            var newIndex = model.captions.choices.indexOf(model.captions.selection);
-            var labels = that.locate("languageLabel");
-            $(labels[oldIndex]).removeClass(that.options.styles.selected);
-            $(labels[newIndex]).addClass(that.options.styles.selected);
+            var oldSel = oldModel.captions.selection;
+            var newSel = model.captions.selection;
+            if (oldSel !== newSel) {
+                var labels = that.locate("languageLabel");
+                $(labels[model.captions.choices.indexOf(oldSel)]).removeClass(that.options.styles.selected);
+                $(labels[model.captions.choices.indexOf(newSel)]).addClass(that.options.styles.selected);
 
-            if ((oldModel.captions.selection === "none") || (model.captions.selection === "none")) {
-                that.captionButton.toggleState();
-            }
-
-            if (model.captions.selection === "none") {
-                $(labels[that.model.captions.choices.length-1]).text(that.options.strings.captionOff);
-            } else {
-                $(labels[that.model.captions.choices.length-1]).text(that.options.strings.turnCaptionOff);
+                if ((oldSel === "none") || (newSel === "none")) {
+                    that.captionButton.toggleState();
+                    if (newSel === "none") {
+                        that.captionsOffOption.text(that.options.strings.captionsOff);
+                    } else if (oldSel === "none") {
+                        that.captionsOffOption.text(that.options.strings.turnCaptionsOff);
+                    }
+                }
             }
         });
     };

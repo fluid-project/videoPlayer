@@ -33,7 +33,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
 
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
-/*
         var baseToggleButtonOpts = {
             selectors: {
                 button: ".test-toggle-button"
@@ -281,7 +280,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
-*/
 
         var baseCaptionOpts = {
             model: {
@@ -291,8 +289,8 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                             src: "Test.esp.json",
                             type: "JSONcc"
                         }, 
-                        mandarin: {
-                            src: "Test.mand.json",
+                        klingon: {
+                            src: "Test.kling.json",
                             type: "JSONcc"
                         },
                         lolspeak: {
@@ -310,7 +308,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         };
 
         videoPlayerControlsTests.asyncTest("Caption controls", function () {
-            expect(27);
+            expect(30);
             var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
             var testCaptionControls = fluid.tests.initCaptionControls({
                 listeners: {
@@ -323,9 +321,10 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("There should be one captions button", 1, captionsButton.length);
                         jqUnit.assertEquals("Captions button should have role of 'button'", "button", captionsButton.attr("role"));
                         jqUnit.assertEquals("Captions button should have aria-pressed of 'false' initially", "false", captionsButton.attr("aria-pressed"));
-                        jqUnit.assertFalse("Captions button should not have the active style initially", captionsButton.hasClass("fl-videoPlayer-captions-active"));
-                        jqUnit.assertEquals("'none' option should say 'Captions OFF' initially", "Captions OFF", languageLabels[numLangs-1].textContent);
+                        jqUnit.assertFalse("Captions button should not have the active style initially", captionsButton.hasClass(that.captionButton.options.styles.pressed));
+                        jqUnit.assertEquals("'none' option should say '" + that.options.strings.captionsOff + "' initially", that.options.strings.captionsOff, languageLabels[numLangs-1].textContent);
                         jqUnit.assertTrue("'none' option should have the 'selected' style", $(languageLabels[numLangs-1]).hasClass(that.options.styles.selected));
+                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
 
                         captionsButton.mouseover();
                         var tooltip = $("#" + captionsButton.attr("aria-describedby"));
@@ -346,20 +345,24 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         captionsButton.click();
                         jqUnit.assertEquals("Initially, 'none' should be selected", "none", that.model.captions.selection);
                         languageRadioButtons[1].click();
-                        jqUnit.assertEquals("After clicking a radio button, another language should be selected", "mandarin", that.model.captions.selection);
+                        jqUnit.assertEquals("After clicking a radio button, another language should be selected", "klingon", that.model.captions.selection);
                         jqUnit.assertTrue("After selecting a language, captions button should have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
                         jqUnit.assertEquals("After selecting a language, Captions button should have aria-pressed of 'true'", "true", captionsButton.attr("aria-pressed"));
-                        jqUnit.assertEquals("After selecting a language, 'none' option should say 'Turn Captions OFF'", "Turn Captions OFF", languageLabels[numLangs-1].textContent);
-                        jqUnit.assertFalse("'none' option should not have the 'selected' style", $(languageLabels[numLangs-1]).hasClass(that.options.styles.selected));
+                        jqUnit.assertEquals("After selecting a language, 'none' option should say '" + that.options.strings.turnCaptionsOff + "'", that.options.strings.turnCaptionsOff, languageLabels[numLangs-1].textContent);
                         jqUnit.assertTrue("Selected option should have the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
+                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
+
+                        languageRadioButtons[1].click();
+                        jqUnit.assertTrue("Selected the same option should not change the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
+                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
 
                         languageRadioButtons[3].click();
                         jqUnit.assertEquals("After clicking last radio button (i.e. captions off), 'none' should be selected", "none", that.model.captions.selection);
                         jqUnit.assertFalse("After turning captions off, captions button should not have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
                         jqUnit.assertEquals("After turning captions off, Captions button should have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
-                        jqUnit.assertEquals("After turning captions off, 'none' option should say 'Captions OFF'", "Captions OFF", languageLabels[numLangs-1].textContent);
+                        jqUnit.assertEquals("After turning captions off, 'none' option should say '" + that.options.strings.captionsOff + "'", that.options.strings.captionsOff, languageLabels[numLangs-1].textContent);
                         jqUnit.assertTrue("After turning captions off, 'none' option should have the 'selected' style", $(languageLabels[numLangs-1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertFalse("After turning captions off, previously selected option should not have the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
+                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
 
                         start();
                     }
