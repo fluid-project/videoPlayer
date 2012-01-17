@@ -46,7 +46,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
-     *      a volume controller, a button to put captions on/off and a menu
+     *      a volume controller, a button to put captions on/off
      * 
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
@@ -147,15 +147,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{controllers}.applier"
                 }
             },
-            menu: {
-                type: "fluid.videoPlayer.controllers.menu",
-                container: "{controllers}.dom.menuContainer",
-                createOnEvent: "onMarkupReady",
-                options: {
-                    model: "{controllers}.model",
-                    applier: "{controllers}.applier"
-                }
-            },
             playButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
                 createOnEvent: "afterRender",
@@ -190,10 +181,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullscreen: ".flc-videoPlayer-fullscreen",
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
             volumeContainer: ".flc-videoPlayer-volumeContainer",
-            captionControlsContainer: ".flc-videoPlayer-captionControls-container",
-            menuContainer: ".flc-videoPlayer-menuContainer"
+            captionControlsContainer: ".flc-videoPlayer-captionControls-container"
         },
-        selectorsToIgnore: ["scrubberContainer", "volumeContainer", "captionControlsContainer", "menuContainer"],
+        selectorsToIgnore: ["scrubberContainer", "volumeContainer", "captionControlsContainer"],
 
         styles: {
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
@@ -595,149 +585,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    /********************************************************
-    * Menu: a menu to choose the caption and other options  *
-    *********************************************************/
-    var bindMenuDOMEvents = function (that) {
-        that.locate("menuButton").click(that.toggleMenu);
-        that.locate("helpButton").click(that.toggleHelp);
-        that.locate("help").mouseleave(that.toggleHelp);
-        that.locate("helpButton").focusout(that.hideHelp);
-        that.locate("captions").mouseleave(that.toggleMenu);
-    };
-
-    var bindMenuModel = function (that) {
-        that.applier.modelChanged.addListener("states.canPlay", function () {
-            if (that.model.states.canPlay === true) {
-                that.locate("menuButton").button("enable");
-                that.locate("helpButton").button("enable");
-            } else {
-                that.locate("menuButton").button("disable");
-                that.locate("helpButton").button("disable");
-            }
-        });
-    };
-
-    var createMenuMarkup = function (that) {
-        that.locate("menuButton").button({
-            icons: {
-                primary: that.options.styles.buttonIcon
-            },
-            disabled: !that.model.states.canPlay,
-            label: that.options.strings.menuButton,
-            text: false
-        });
-        
-        that.locate("helpButton").button({
-            icons: {
-                primary: that.options.styles.helpIcon
-            },
-            disabled: !that.model.states.canPlay,
-            label: that.options.strings.helpButton,
-            text: false        
-        });
-
-        that.locate("captions").hide();
-        that.locate("help").hide();
-        that.locate("element").buttonset();
-		that.locate("menu").fluid("selectable");
-    };
-
-    fluid.defaults("fluid.videoPlayer.controllers.menu", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.controllers.menu.finalInit",
-        postInitFunction: "fluid.videoPlayer.controllers.menu.postInit",
-        events: {
-            onMenuReady: null
-        },
-        selectors: {
-            menuButton: ".flc-videoPlayer-menu-button",
-            menu: ".flc-videoPlayer-menu-container",
-            captions: ".flc-videoPlayer-menu-captions",
-            title: ".flc-videoPlayer-menu-title",
-            input: ".flc-videoPlayer-menu-input",
-            element: ".flc-videoPlayer-menu-element",
-            label: ".flc-videoPlayer-menu-label",
-            helpButton: ".flc-videoPlayer-menu-helpButton",
-            help: ".flc-videoPlayer-menu-help"
-        },
-        styles: {
-            buttonIcon: "ui-icon-arrow",
-            helpIcon: "ui-icon-info"
-        },
-        strings: {
-            menuButton: "Subtitle selection Menu",
-            helpButton: "Help menu (keyboard shortcuts)",
-            help: "HELP"
-        },
-        rendererOptions: {
-            autoBind: true
-        },
-        repeatingSelectors: ["element"],
-        produceTree: "fluid.videoPlayer.controllers.menu.produceTree"
-    });
-
-    fluid.videoPlayer.controllers.menu.produceTree = function (that) {
-        var list = [];
-        for (var key in that.model.captions.sources) {
-            list.push(key);
-        }
-        return {
-            captions: {},
-            title: {},
-            menuButton: {},
-            menu: {},
-            expander: [{
-                type: "fluid.renderer.selection.inputs",
-                rowID: "element",
-                labelID: "label",
-                inputID: "input",
-                selectID: "caption",
-                tree: {
-                    "selection": "${captions.currentTrack}",
-                    "optionlist": list,
-                    "optionnames": list
-                }
-            }],
-            helpButton: {},
-            help: {}
-        };
-    };
-
-    fluid.videoPlayer.controllers.menu.postInit = function (that) {
-        that.toggleMenu = function () {
-            var menu = that.locate("captions");
-            menu.toggle();
-            if (menu.css("display") !== "none") {
-                that.locate("input").first().focus();
-            } else {
-                that.locate("menuButton").focus();
-            }
-        };
-        
-        that.toggleHelp = function () {
-            that.locate("help").toggle();
-        };
-        
-        that.hideHelp = function () {
-            that.locate("help").hide();
-        };
-    };
-
-    fluid.videoPlayer.controllers.menu.finalInit = function (that) {
-        that.refreshView();
-        createMenuMarkup(that);
-        bindMenuDOMEvents(that);
-        bindMenuModel(that);
-        that.events.onMenuReady.fire();
-    };
-
-    fluid.demands("fluid.videoPlayer.controllers.menu", "fluid.videoPlayer.controllers", {
-        options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier"
-        }
-    });
 
     /*****************************************************************************
         Caption controls
