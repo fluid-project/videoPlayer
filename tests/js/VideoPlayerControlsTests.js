@@ -31,6 +31,32 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             jqUnit.assertTrue("The onPress event should fire", true);
         };
 
+        var baseVideoPlayerOpts = {
+            model: {
+                video: {
+                    sources: [
+                        {
+                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
+                            type: "video/mp4"
+                        }
+                    ]
+                }
+            },
+            templates: {
+                videoPlayer: {
+                    // override the default template path
+                    // TODO: We need to refactor the VideoPlayer to better support
+                    //       overriding the path without needing to know file names
+                    href: "../../html/videoPlayer_template.html"
+                }
+            }
+        };
+        fluid.tests.initVideoPlayer = function (testOpts) {
+            var opts = fluid.copy(baseVideoPlayerOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer("#videoPlayer", opts);
+        };
+
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
         var baseToggleButtonOpts = {
@@ -143,32 +169,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
-
-        var baseVideoPlayerOpts = {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
-                            type: "video/mp4"
-                        }
-                    ]
-                }
-            },
-            templates: {
-                videoPlayer: {
-                    // override the default template path
-                    // TODO: We need to refactor the VideoPlayer to better support
-                    //       overriding the path without needing to know file names
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }
-        };
-        fluid.tests.initVideoPlayer = function (testOpts) {
-            var opts = fluid.copy(baseVideoPlayerOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer("#videoPlayer", opts);
-        };
 
         videoPlayerControlsTests.asyncTest("Play button", function () {
             expect(9);
@@ -301,6 +301,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             }
         };
+
         fluid.tests.initCaptionControls = function (testOpts) {
             var opts = fluid.copy(baseCaptionOpts);
             $.extend(true, opts, testOpts);
@@ -369,5 +370,41 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
+
+        videoPlayerControlsTests.asyncTest("Caption controls integration", function () {
+            expect(4);
+            var captionOpts = fluid.copy(baseCaptionOpts);
+            $.extend(true, captionOpts, {
+                listeners: {
+                    onControllersReady: function (that) {
+                        var captionButton = $(".flc-videoPlayer-captions-button");
+                        var languageRadioButtons = $(".flc-videoPlayer-captions-languageButton");
+                        var languageLabels = $(".flc-videoPlayer-captions-languageLabel");
+                        var languageList = $(".flc-videoPlayer-captions-languageList");
+                        var captionArea = $(".flc-videoPlayer-captionArea");
+
+                        jqUnit.assertEquals("Initially, captions should not be showing", "none", that.model.captions.selection);
+                        jqUnit.notVisible("The list of languages should not be visible initially", languageList);
+                        jqUnit.notVisible("The caption area should be hidden initially", captionArea);
+
+                        captionButton.click();
+                        jqUnit.isVisible("When caption button clicked, the list of languages should show", languageList);
+
+                        languageRadioButtons[2].click();
+                        captionArea = $(".flc-videoPlayer-caption-captionText");
+                        jqUnit.assertEquals("After clicking a radio button, a caption should be selected", "klingon", that.model.captions.selection);
+                        jqUnit.isVisible("The caption area should show", captionArea);
+
+                        languageRadioButtons[4].click();
+                        jqUnit.assertEquals("After clicking the 'none' radio button, no caption should be selected", "none", that.model.captions.selection);
+                        jqUnit.notVisible("The caption area should hide", captionArea);
+
+                        start();
+                    }
+                }
+            });
+            var testPlayer = fluid.tests.initVideoPlayer(captionOpts);
+        });
+
     });
 })(jQuery);

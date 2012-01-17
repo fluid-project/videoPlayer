@@ -1,6 +1,6 @@
 
 
-<video class="flc-videoPlayer-video fl-videoPlayer-video" alt="A video demonstrating the Infusion video player"/>
+<video class="flc-videoPlayer-video fl-videoPlayer-video" alt="A video demonstrating the Infusion video player"></video>
 
 <div class="flc-videoPlayer-captionArea fl-videoPlayer-captionArea"></div>
 
@@ -19,10 +19,20 @@
         <div class="flc-videoPlayer-volumeControl"></div>
     </div>
 
-    <input type="checkbox" class="flc-videoPlayer-caption fl-videoPlayer-captionButton"/>
+    <div class="flc-videoPlayer-captionControls-container">
+        <button type="button" class="flc-videoPlayer-captions-button fl-videoPlayer-captions-button"></button>
+        <ul class="flc-videoPlayer-captions-languageList fl-videoPlayer-captions-languageList">
+            <li class="flc-videoPlayer-captions-language">
+                <label for="radioid" class="flc-videoPlayer-captions-languageLabel">label</label> 
+                <input type="radio" id="radioid" class="flc-videoPlayer-captions-languageButton fl-hidden-accessible" />
+            </li>
+        </ul>
+    </div>
+
+    <input id="displayCaptions" type="checkbox" class="flc-videoPlayer-caption fl-videoPlayer-captionButton"/>
     <label for="displayCaptions"></label>
 
-    <input type="checkbox" class="flc-videoPlayer-fullscreen fl-videoPlayer-fullscreenButton"/>
+    <input id="fullscreen" type="checkbox" class="flc-videoPlayer-fullscreen fl-videoPlayer-fullscreenButton"/>
     <label for="fullscreen"></label>
  
     <div class="flc-videoPlayer-menuContainer fl-videoPlayer-menuContainer">
@@ -33,7 +43,7 @@
             <ul class="flc-videoPlayer-menu-container fl-videoPlayer-menu-container">
                 <li class="flc-videoPlayer-menu-element fl-videoPlayer-menu-element">
                     <input type="radio" class="flc-videoPlayer-menu-input" id="input"/>
-                    <label for="input" class="flc-videoPlayer-menu-label"/>
+                    <label for="input" class="flc-videoPlayer-menu-label"></label>
                 </li>
             </ul>
 

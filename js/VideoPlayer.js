@@ -136,7 +136,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
-                createOnEvent: "onTemplateReady",
+                createOnEvent: "onControllersReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier"
@@ -197,8 +197,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 sources: null
             },
             captions: {
+/*
                 sources: null,
                 currentTrack: undefined,
+                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                maxNumber: 3,
+                track: undefined
+*/
+                selection: "none",
+                choices: [],
+                names: [],
+                show: false,
+                sources: null,
+                currentTrack: "none",
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined

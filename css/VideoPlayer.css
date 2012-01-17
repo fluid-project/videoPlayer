@@ -55,10 +55,6 @@
     background-image: url('../images/pause.png');
 }
 
-.fl-videoPlayer-volumeContainer {
-    border: 1px solid blue;
-}
-
 .fl-videoPlayer-volume-mute {
     width: 35px;
     height: 35px;
@@ -79,8 +75,26 @@
     z-index: 100;
 }
 
-
-
+.fl-videoPlayer-captions-button {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    background-image: url('../images/captions.png');
+}
+.fl-videoPlayer-captions-button.fl-videoPlayer-caption-active {
+    background-image: url('../images/captions-active.png');
+}
+ul.fl-videoPlayer-captions-languageList,
+ul.fl-videoPlayer-captions-languageList li {
+    display: block;
+}
+ul.fl-videoPlayer-captions-languageList li input{
+    clip: rect(0, 0, 0, 0);
+    position: absolute;
+}
+ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
+    color: yellow;
+}
 .fl-videoPlayer-time {
     /*margin: 0 5px;
     */padding: 0.4em;

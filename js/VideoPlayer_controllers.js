@@ -138,6 +138,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             },
+            captionControls: {
+                type: "fluid.videoPlayer.controllers.captionControls",
+                container: "{controllers}.dom.captionControlsContainer",
+                createOnEvent: "onMarkupReady",
+                options: {
+                    model: "{controllers}.model",
+                    applier: "{controllers}.applier"
+                }
+            },
             menu: {
                 type: "fluid.videoPlayer.controllers.menu",
                 container: "{controllers}.dom.menuContainer",
@@ -181,9 +190,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullscreen: ".flc-videoPlayer-fullscreen",
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
             volumeContainer: ".flc-videoPlayer-volumeContainer",
+            captionControlsContainer: ".flc-videoPlayer-captionControls-container",
             menuContainer: ".flc-videoPlayer-menuContainer"
         },
-        selectorsToIgnore: ["scrubberContainer", "volumeContainer", "menuContainer"],
+        selectorsToIgnore: ["scrubberContainer", "volumeContainer", "captionControlsContainer", "menuContainer"],
 
         styles: {
             displayCaptionsOn: "fl-videoPlayer-state-captionOn",
