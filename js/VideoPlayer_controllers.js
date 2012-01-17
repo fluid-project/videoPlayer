@@ -57,15 +57,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var playButton = that.locate("play");
             if (that.model.states.canPlay === true) {
                 enableElement(playButton);
-                that.locate("displayCaptions").button("enable");
                 that.locate("fullscreen").button("enable");
             } else {
                 disableElement(playButton);
-                that.locate("displayCaptions").button("disable");
                 that.locate("fullscreen").button("disable");
             }
         });
-        that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionsView);
         that.applier.modelChanged.addListener("states.fullscreen", that.toggleFullscreenView);
     };
 
@@ -76,26 +73,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "value": !that.model.states.fullscreen
             });
         });
-
-        that.locate("displayCaptions").fluid("activatable", function () {
-            that.applier.fireChangeRequest({
-                "path": "states.displayCaptions",
-                "value": !that.model.states.displayCaptions
-            });
-        });
     };
     
     // TODO: this function should probably be renamed, since it's not really creating markup
     var createControllerMarkup = function (that) {
 
-        that.locate("displayCaptions").button({
-            icons: {
-                primary: that.options.styles.captionIcon
-            },
-            disabled: !that.model.states.canPlay,
-            text: false,
-            label: that.model.states.displayCaptions ? that.options.strings.displayCaptionsOff : that.options.strings.displayCaptionsOn
-        });
         that.locate("fullscreen").button({
             icons: {
                 primary: that.options.styles.fullscreenIcon
@@ -177,7 +159,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
 
         selectors: {
-            displayCaptions: ".flc-videoPlayer-caption",
             fullscreen: ".flc-videoPlayer-fullscreen",
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
             volumeContainer: ".flc-videoPlayer-volumeContainer",
@@ -186,8 +167,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectorsToIgnore: ["scrubberContainer", "volumeContainer", "captionControlsContainer"],
 
         styles: {
-            displayCaptionsOn: "fl-videoPlayer-state-captionOn",
-            displayCaptionsOff: "fl-videoPlayer-state-captionOff",
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
             fullscreenOff: "fl-videoPlayer-state-fullscreenOff",
             fullscreenIcon: "ui-icon-extlink",
@@ -195,8 +174,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
 
         strings: {
-            displayCaptionsOn: "Captions On",
-            displayCaptionsOff: "Captions Off",
             fullscreenOn: "Fullscreen On",
             fullscreenOff: "Fullscreen Off"
         },
@@ -221,10 +198,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     continue;
                 }
 
-                if (item === "fullscreen" || item === "displayCaptions") {
+                if (item === "fullscreen") {
                     tree[item].valuebinding = "states." + item;
-                }
-                if (item === "displayCaptions" || item === "fullscreen") {
                     value = that.model.states[item] ? "On" : "Off";
                     // render radio buttons
                     tree[item].decorators = {
@@ -237,11 +212,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.postInit = function (that) {   
-
-        that.toggleCaptionsView = function () {
-            toggleView(that, "displayCaptions");
-        };
-
         that.toggleFullscreenView = function () {
             toggleView(that, "fullscreen");
         };
@@ -590,6 +560,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         Caption controls
         Toggle button plus language selection pull-down
      *****************************************************************************/
+    // TODO: show/hide of captions not yet working; turning off just switches to English
     fluid.defaults("fluid.videoPlayer.controllers.captionControls", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         renderOnInit: true,
@@ -611,7 +582,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 names: [],
                 show: false,
                 sources: null,
-                currentTrack: "none",
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined

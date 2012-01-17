@@ -26,7 +26,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
      */
     var bindCaptionLoaderModel = function (that) {
         that.applier.modelChanged.addListener("captions.selection", that.loadCaptions);
-//        that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions);
     };
 
     fluid.defaults("fluid.videoPlayer.captionLoader", {
@@ -64,7 +63,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 // TODO: Need a better strategy for this!!
                 caps = that.model.captions.sources[that.model.captions.choices[0]];
             }
-//            var caps = that.model.captions.sources[that.model.captions.currentTrack];
             if (caps.type !== "JSONcc") {
                 $.ajax({
                     type: "GET",
@@ -93,7 +91,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         bindCaptionLoaderModel(that);
         //if we provided default captions when we created the component we load it
         if (that.model.captions.sources && that.model.captions.selection) {
-//        if (that.model.captions.sources && that.model.captions.currentTrack) {
             that.loadCaptions();
         } else {
             that.applier.fireChangeRequest({
