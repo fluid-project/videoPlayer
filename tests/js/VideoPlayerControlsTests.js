@@ -372,7 +372,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         });
 
         videoPlayerControlsTests.asyncTest("Caption controls integration", function () {
-            expect(4);
+            expect(8);
             var captionOpts = fluid.copy(baseCaptionOpts);
             $.extend(true, captionOpts, {
                 listeners: {
