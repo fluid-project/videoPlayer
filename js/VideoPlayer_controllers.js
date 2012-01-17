@@ -773,7 +773,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectorsToIgnore: ["languageList"],
         styles: {
             button: "fl-videoPlayer-caption",
-            volumeControl: "fl-videoPlayer-caption-languages"
+            volumeControl: "fl-videoPlayer-caption-languages",
+            selected: "fl-videoPlayer-caption-selected"
         },
         strings: {
             captionOff: "Captions OFF",
@@ -787,13 +788,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: ".flc-videoPlayer-captions-button"
                     },
                     styles: {
-                        pressed: "fl-videoPlayer-caption",
+                        pressed: "fl-videoPlayer-caption-active",
                         released: "",
-                        focused: "fl-videoPlayer-caption-active",
+                        focused: "",
                         notFocused: ""
                     },
                     strings: {
-                        press: "Captions"
+                        press: "Captions",
+                        release: "Captions"
                     },
                     manageFocusStyling: false
                 }
@@ -807,7 +809,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.options.model.captions.names.push(key);
         });
         that.options.model.captions.choices.push("none");
-        that.options.model.captions.names.push("None");
+        that.options.model.captions.names.push(that.options.strings.captionOff);
     };
 
     fluid.videoPlayer.controllers.captionControls.postInit = function (that) {
@@ -816,11 +818,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var setUpCaptionControls = function (that) {
         that.locate("languageList").hide();
+        $(that.locate("languageLabel")[that.model.captions.choices.indexOf("none")]).addClass(that.options.styles.selected);
     };
 
     var bindCaptionDOMEvents = function (that) {
-        that.locate("button").click(function () {
+        that.captionButton.events.onPress.addListener(function (evt) {
             that.locate("languageList").toggle();
+
+            // prevent the default onPress handler from toggling the button state
+            return false;
         });
         
         // TODO: This shouldn't be necessary with the autoBinding on; need to investigate
@@ -829,21 +835,38 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    var bindCaptionModel = function (that) {
+        that.applier.modelChanged.addListener("captions.selection", function (model, oldModel, changeRequest) {
+            var oldIndex = model.captions.choices.indexOf(oldModel.captions.selection);
+            var newIndex = model.captions.choices.indexOf(model.captions.selection);
+            var labels = that.locate("languageLabel");
+            $(labels[oldIndex]).removeClass(that.options.styles.selected);
+            $(labels[newIndex]).addClass(that.options.styles.selected);
+
+            if ((oldModel.captions.selection === "none") || (model.captions.selection === "none")) {
+                that.captionButton.toggleState();
+            }
+
+            if (model.captions.selection === "none") {
+                $(labels[that.model.captions.choices.length-1]).text(that.options.strings.captionOff);
+            } else {
+                $(labels[that.model.captions.choices.length-1]).text(that.options.strings.turnCaptionOff);
+            }
+        });
+    };
+
     fluid.videoPlayer.controllers.captionControls.finalInit = function (that) {
         setUpCaptionControls(that);
         bindCaptionDOMEvents(that);
-  //      bindCaptionModel(that);
+        bindCaptionModel(that);
         that.events.onReady.fire(that);
     };
+
     fluid.videoPlayer.controllers.captionControls.produceTree = function (that) {
         return {
             button: {
                 // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
-                value: "${captions.show}",
-                decorators: [{
-                    type: "addClass",
-                    classes: ("foofer")
-                }]
+                value: "${captions.show}"
             },
             expander: {
                 type: "fluid.renderer.selection.inputs",
@@ -948,7 +971,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.toggleState = function (evt) {
             that.applier.requestChange("pressed", !that.model.pressed);
-            evt.stopPropagation();
+            if (evt) {
+                evt.stopPropagation();
+            }
             return true;
         };
     };

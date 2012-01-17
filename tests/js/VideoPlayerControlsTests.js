@@ -33,6 +33,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
 
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
+/*
         var baseToggleButtonOpts = {
             selectors: {
                 button: ".test-toggle-button"
@@ -280,6 +281,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 }
             });
         });
+*/
 
         var baseCaptionOpts = {
             model: {
@@ -308,28 +310,57 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         };
 
         videoPlayerControlsTests.asyncTest("Caption controls", function () {
-//            expect(19);
+            expect(27);
             var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
             var testCaptionControls = fluid.tests.initCaptionControls({
                 listeners: {
                     onReady: function (that) {
                         var captionsButton = $(".flc-videoPlayer-captions-button");
                         var languageRadioButtons = $(".flc-videoPlayer-captions-languageButton");
+                        var languageLabels = $(".flc-videoPlayer-captions-languageLabel");
                         var languageList = $(".flc-videoPlayer-captions-languageList");
 
                         jqUnit.assertEquals("There should be one captions button", 1, captionsButton.length);
+                        jqUnit.assertEquals("Captions button should have role of 'button'", "button", captionsButton.attr("role"));
+                        jqUnit.assertEquals("Captions button should have aria-pressed of 'false' initially", "false", captionsButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Captions button should not have the active style initially", captionsButton.hasClass("fl-videoPlayer-captions-active"));
+                        jqUnit.assertEquals("'none' option should say 'Captions OFF' initially", "Captions OFF", languageLabels[numLangs-1].textContent);
+                        jqUnit.assertTrue("'none' option should have the 'selected' style", $(languageLabels[numLangs-1]).hasClass(that.options.styles.selected));
+
+                        captionsButton.mouseover();
+                        var tooltip = $("#" + captionsButton.attr("aria-describedby"));
+                        jqUnit.assertEquals("Tooltip should contain 'Captions'", "Captions", tooltip.text());
+
                         jqUnit.assertEquals("There should be " + numLangs + " languages", numLangs, languageRadioButtons.length);
                         jqUnit.notVisible("The list of languages should not be visible initially", languageList);
 
                         captionsButton.click();
                         jqUnit.isVisible("When caption button clicked, the list of languages should show", languageList);
+                        jqUnit.assertEquals("While no caption selected, Captions button should still have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
+                        captionsButton.blur().focus(); // tooltip not updated until 'requested' again
+                        jqUnit.assertEquals("After click, Tooltip should still contain 'Captions'", "Captions", tooltip.text());
                         captionsButton.click();
                         jqUnit.notVisible("When caption button clicked again, the list of languages should hide", languageList);
+                        jqUnit.assertEquals("While no caption selected, Captions button should still have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
 
                         captionsButton.click();
                         jqUnit.assertEquals("Initially, 'none' should be selected", "none", that.model.captions.selection);
                         languageRadioButtons[1].click();
                         jqUnit.assertEquals("After clicking a radio button, another language should be selected", "mandarin", that.model.captions.selection);
+                        jqUnit.assertTrue("After selecting a language, captions button should have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
+                        jqUnit.assertEquals("After selecting a language, Captions button should have aria-pressed of 'true'", "true", captionsButton.attr("aria-pressed"));
+                        jqUnit.assertEquals("After selecting a language, 'none' option should say 'Turn Captions OFF'", "Turn Captions OFF", languageLabels[numLangs-1].textContent);
+                        jqUnit.assertFalse("'none' option should not have the 'selected' style", $(languageLabels[numLangs-1]).hasClass(that.options.styles.selected));
+                        jqUnit.assertTrue("Selected option should have the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
+
+                        languageRadioButtons[3].click();
+                        jqUnit.assertEquals("After clicking last radio button (i.e. captions off), 'none' should be selected", "none", that.model.captions.selection);
+                        jqUnit.assertFalse("After turning captions off, captions button should not have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
+                        jqUnit.assertEquals("After turning captions off, Captions button should have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
+                        jqUnit.assertEquals("After turning captions off, 'none' option should say 'Captions OFF'", "Captions OFF", languageLabels[numLangs-1].textContent);
+                        jqUnit.assertTrue("After turning captions off, 'none' option should have the 'selected' style", $(languageLabels[numLangs-1]).hasClass(that.options.styles.selected));
+                        jqUnit.assertFalse("After turning captions off, previously selected option should not have the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
+
                         start();
                     }
                 }
