@@ -55,6 +55,24 @@
     background-image: url('../images/pause.png');
 }
 
+.fl-videoPlayer-fullscreen-off, .fl-videoPlayer-fullscreen-on {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+.fl-videoPlayer-fullscreen-off {
+    background-image: url('../images/fullscreen.png');
+}
+.fl-videoPlayer-fullscreen-on {
+    background-image: url('../images/fullscreen-exit.png');
+}
+.fl-videoPlayer-fullscreen-off.fl-videoPlayer-fullscreen-hover {
+    background-image: url('../images/fullscreen-hover.png');
+}
+.fl-videoPlayer-fullscreen-on.fl-videoPlayer-fullscreen-hover {
+    background-image: url('../images/fullscreen-exit-hover.png');
+}
+
 .fl-videoPlayer-volume-mute {
     width: 35px;
     height: 35px;

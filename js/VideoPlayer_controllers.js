@@ -54,42 +54,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     //add all the modelChanged listener to the applier
     var bindControllerModel = function (that) {
         that.applier.modelChanged.addListener("states.canPlay", function () {
-            var playButton = that.locate("play");
             if (that.model.states.canPlay === true) {
-                enableElement(playButton);
-                that.locate("fullscreen").button("enable");
+                enableElement(that.locate("play"));
+                enableElement(that.locate("fullscreen"));
             } else {
-                disableElement(playButton);
-                that.locate("fullscreen").button("disable");
+                disableElement(that.locate("play"));
+                disableElement(that.locate("fullscreen"));
             }
         });
         that.applier.modelChanged.addListener("states.fullscreen", that.toggleFullscreenView);
     };
 
     var bindControllerDOMEvents = function (that) {
-        that.locate("fullscreen").fluid("activatable", function () {
-            that.applier.fireChangeRequest({
-                "path": "states.fullscreen",
-                "value": !that.model.states.fullscreen
-            });
+        // TODO: These should not be necessary when we can autobind to a toggle button (FLUID-4573)
+        that.playButton.events.onPress.addListener(function () {
+            that.applier.requestChange("states.play", !that.model.states.play);
+            return true;
+        });
+
+        that.volumeControl.muteButton.events.onPress.addListener(function () {
+            that.applier.requestChange("states.muted", !that.model.states.muted);
+            return true;
+        });
+
+        that.fullScreenButton.events.onPress.addListener(function () {
+            that.applier.requestChange("states.fullscreen", !that.model.states.fullscreen);
+            return true;
         });
     };
     
-    // TODO: this function should probably be renamed, since it's not really creating markup
-    var createControllerMarkup = function (that) {
-
-        that.locate("fullscreen").button({
-            icons: {
-                primary: that.options.styles.fullscreenIcon
-            },
-            disabled: !that.model.states.canPlay,
-            text: false,
-            label: that.model.states.fullscreen ? that.options.strings.fullscreenOff : that.options.strings.fullscreenOn
-        });
-        
-        that.events.onMarkupReady.fire();
-    };
-
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.rendererComponent", "autoInit"], 
         postInitFunction: "fluid.videoPlayer.controllers.postInit",
@@ -144,6 +137,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     strings: {
                         press: "Play",
                         release: "Pause"
+                    }
+                }
+            },
+            fullScreenButton: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+                createOnEvent: "afterRender",
+                container: "{controllers}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-fullscreen"
+                    },
+                    styles: {
+                        pressed: "fl-videoPlayer-fullscreen-on",
+                        released: "fl-videoPlayer-fullscreen-off",
+                        focused: "fl-videoPlayer-fullscreen-hover",
+                        notFocused: "fl-videoPlayer-fullscreen-notfocused"
+                    },
+                    strings: {
+                        press: "Full screen",
+                        release: "Exit full screen mode"
                     }
                 }
             }
@@ -217,27 +230,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.refresh = function () {
-            createControllerMarkup(that);
+            that.events.onMarkupReady.fire();
         };
     };
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         that.renderer.refreshView();
-        createControllerMarkup(that);
+        that.events.onMarkupReady.fire();
         bindControllerModel(that);
         bindControllerDOMEvents(that);
 
-        // TODO: This will not be necessary when we can autobind to a toggle button (FLUID-4573)
-        that.playButton.events.onPress.addListener(function () {
-            that.applier.requestChange("states.play", !that.model.states.play);
-            return true;
-        });
-
-        // TODO: This will not be necessary when we can autobind to a toggle button (FLUID-4573)
-        that.volumeControl.muteButton.events.onPress.addListener(function () {
-            that.applier.requestChange("states.muted", !that.model.states.muted);
-            return true;
-        });
         that.events.onControllersReady.fire(that);
     };
     
@@ -397,6 +399,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindVolumeModel = function (that) {
         that.applier.modelChanged.addListener("states.volume", that.updateVolume);
         that.applier.modelChanged.addListener("states.canPlay", function () {
+
+// TODO: Check this: mute is not a button anymore!
             if (that.model.states.canPlay === true) {
                 that.locate("mute").button("enable");
             } else {
@@ -712,11 +716,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         Used for Play, Mute, Fullscreen, Captions
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.toggleButton", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
-        renderOnInit: true,
+        gradeNames: ["fluid.viewComponent", "autoInit"],
         postInitFunction: "fluid.videoPlayer.controllers.toggleButton.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.toggleButton.finalInit",
-        produceTree: "fluid.videoPlayer.controllers.toggleButton.produceTree",
         events: {
             onPress: "preventable", // listeners can prevent button from becoming pressed
             onReady: null
@@ -737,46 +739,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             press: "Press",
             release: "Release"
         },
-        rendererOptions: {
-            autoBind: true,
-            applier: "{toggleButton}.applier"
-        },
         manageFocusStyling: true
     });
-
-    fluid.videoPlayer.controllers.toggleButton.produceTree = function (that) {
-        return {
-            button: {
-                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
-                value: "${pressed}",
-                decorators: [{
-                    type: "addClass",
-                    classes: (that.model.pressed ? that.options.styles.pressed : that.options.styles.released)
-                },{
-                    type: "addClass",
-                    classes: that.options.styles.notFocused
-                }
-/*
-                // TODO: Once FLUID-4571 is fixed, here's how to instantiate the tooltip as a decorator
-                ,
-                {
-                    type: "fluid",
-                    func: "fluid.tooltip",
-                    container: that.locate("button"),
-                    options: {
-                        styles: {
-                            tooltip: "fl-videoPlayer-tooltip"
-                        },
-                        content: function () {
-                            return (that.model.pressed ? that.options.strings.release : that.options.strings.press);
-                        }
-                    }
-               }
-*/
-               ]
-            }
-        };
-    };
 
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
         that.activate = function (evt) {
@@ -805,8 +769,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var setUpToggleButton = function (that) {
         var toggleButton = that.locate("button");
         toggleButton.attr("role", "button").attr("aria-pressed", "false");
-        // TODO: tooltip should be a renderer decorator instead (waiting for a fix to FLUID-4571)
-        toggleButton.tooltip = fluid.tooltip(toggleButton, {
+        toggleButton.addClass(that.model.pressed ? that.options.styles.pressed : that.options.styles.released);
+        toggleButton.addClass(that.options.styles.notFocused);
+
+        that.tooltip = fluid.tooltip(toggleButton, {
             styles: {
                 tooltip: "fl-videoPlayer-tooltip"
             },

@@ -406,5 +406,50 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             var testPlayer = fluid.tests.initVideoPlayer(captionOpts);
         });
 
+        videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
+            expect(19);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        var fullScreenButton = $(".flc-videoPlayer-fullscreen");
+                        jqUnit.assertEquals("There should be exactly one Fullscreen button", 1, fullScreenButton.length);
+                        jqUnit.assertEquals("Fullscreen button should have role of 'button'", "button", fullScreenButton.attr("role"));
+                        jqUnit.assertEquals("Fullscreen button should have aria-pressed of 'false' initially", "false", fullScreenButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Fullscreen button should not have the active style initially", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-on"));
+                        jqUnit.assertFalse("Fullscreen button should not have the hover style initially", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
+                        jqUnit.assertFalse("Initally, video should not be in full screen mode", that.model.fullscreen);
+
+                        fullScreenButton.mouseover();
+                        var tooltip = $("#" + fullScreenButton.attr("aria-describedby"));
+                        jqUnit.assertEquals("Tooltip should contain 'Full screen' initially", "Full screen", tooltip.text());
+
+                        jqUnit.assertTrue("On mouseover, Fullscreen button should get the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
+                        fullScreenButton.mouseout();
+                        jqUnit.assertFalse("Fullscreen button should not have the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
+
+                        fullScreenButton.click();
+                        jqUnit.assertEquals("After clicking, Fullscreen button should have aria-pressed of 'true'", "true", fullScreenButton.attr("aria-pressed"));
+                        jqUnit.assertTrue("Fullscreen button should have the active style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-on"));
+                        fullScreenButton.blur().focus(); // tooltip not updated until 'requested' again
+                        jqUnit.assertEquals("Tooltip should contain 'Exit full screen mode'", "Exit full screen mode", tooltip.text());
+                        jqUnit.assertTrue("Video should be in full screen mode", that.model.states.fullscreen);
+
+                        jqUnit.assertTrue("On mouseover now, Fullscreen button should get the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
+                        fullScreenButton.mouseout();
+                        jqUnit.assertFalse("Fullscreen button should not have the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
+
+                        fullScreenButton.click();
+                        jqUnit.assertEquals("After clicking again, Fullscreen button should have aria-pressed of 'false' initially", "false", fullScreenButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Fullscreen button not should have the active style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-on"));
+                        fullScreenButton.blur().focus();
+                        jqUnit.assertEquals("Tooltip should contain 'Full screen' again", "Full screen", tooltip.text());
+                        jqUnit.assertFalse("Video should not be in full screen mode", that.model.fullscreen);
+
+                        start();
+                    }
+                }
+            });
+        });
+
     });
 })(jQuery);
