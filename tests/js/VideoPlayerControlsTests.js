@@ -376,7 +376,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             var captionOpts = fluid.copy(baseCaptionOpts);
             $.extend(true, captionOpts, {
                 listeners: {
-                    onControllersReady: function (that) {
+                    onReady: function (that) {
                         var captionButton = $(".flc-videoPlayer-captions-button");
                         var languageRadioButtons = $(".flc-videoPlayer-captions-languageButton");
                         var languageLabels = $(".flc-videoPlayer-captions-languageLabel");

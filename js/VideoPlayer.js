@@ -136,7 +136,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
-                createOnEvent: "onControllersReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier"
@@ -148,6 +147,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
+        postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             onReadyToLoadCaptions: null,
@@ -177,6 +177,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller"
+        },
+        strings: {
+            captionsOff: "Captions OFF",
+            turnCaptionsOff: "Turn Captions OFF"
         },
         selectorsToIgnore: ["caption"],
         keyBindings: defaultKeys,
@@ -311,6 +315,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
+/*
+        // build the 'choices' from the caption list provided
+        fluid.each(that.options.model.captions.sources, function (value, key) {
+            that.options.model.captions.choices.push(key);
+            that.options.model.captions.names.push(key);
+        });
+        // add the 'turn captions off' option
+        that.options.model.captions.choices.push("none");
+        that.options.model.captions.names.push(that.options.strings.captionsOff);
+*/
+    };
+
+    fluid.videoPlayer.postInit = function (that) {
         that.canRenderControllers = function (controlsType) {
             return (fluid.hasFeature("fluid.browser.html5") && controlsType === "custom") ? true : false;
         };
@@ -378,7 +395,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.refresh = function () {
             that.fullscreen();
         };
-
     };
     
     fluid.videoPlayer.finalInit = function (that) {
