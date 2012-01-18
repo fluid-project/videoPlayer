@@ -134,7 +134,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("HTML5: Controllers instantiation", function () {
-            expect(3);
+            expect(5);
             
             setupEnvironment(true);
             
@@ -144,7 +144,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     onControllersReady: function (controllers) {
                         jqUnit.assertNotUndefined("The sub-component scrubber has been instantiated", controllers.scrubber);
                         jqUnit.assertNotUndefined("The sub-component volumeControl has been instantiated", controllers.volumeControl);
-                        jqUnit.assertNotUndefined("The sub-component menu has been instantiated", controllers.menu);
+                        jqUnit.assertNotUndefined("The sub-component captionControls has been instantiated", controllers.captionControls);
+                        jqUnit.assertNotUndefined("The sub-component playButton has been instantiated", controllers.playButton);
+                        jqUnit.assertNotUndefined("The sub-component fullScreenButton has been instantiated", controllers.fullScreenButton);
                         
                         start();
                     }

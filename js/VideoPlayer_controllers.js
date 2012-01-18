@@ -19,31 +19,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
 
-    var disableElement = function (jQel) {
-        jQel.attr("disabled", "disabled");
-    };
-    var enableElement = function (jQel) {
-        jQel.removeAttr("disabled");
+    var enableElement = function (jQel, enable) {
+        if (enable) {
+            jQel.removeAttr("disabled");
+        } else {
+            jQel.attr("disabled", "disabled");
+        }
     };
 
-    //change the classes/title/checked of the selected checkbox
-    var toggleView = function (that, element) {
-        var tag = that.locate(element);
-        if (that.model.states[element] === false) {
-            tag.removeAttr("checked");
-            tag.button("option", "label", that.options.strings[element + "On"]);
-            tag.removeClass(that.options.styles[element + "Off"]).addClass(that.options.styles[element + "On"]);                
-        } else {
-            tag.attr({
-                "checked": "checked"
-            });
-            tag.button("option", "label", that.options.strings[element + "Off"]);
-            
-            tag.removeClass(that.options.styles[element + "On"]).addClass(that.options.styles[element + "Off"]);
-        }
-        tag.button("refresh");
-    };
-    
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
      *      a volume controller, a button to put captions on/off
@@ -54,15 +37,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     //add all the modelChanged listener to the applier
     var bindControllerModel = function (that) {
         that.applier.modelChanged.addListener("states.canPlay", function () {
-            if (that.model.states.canPlay === true) {
-                enableElement(that.locate("play"));
-                enableElement(that.locate("fullscreen"));
-            } else {
-                disableElement(that.locate("play"));
-                disableElement(that.locate("fullscreen"));
-            }
+            enableElement(that.locate("play"), that.model.states.canPlay);
+            enableElement(that.locate("fullscreen"), that.model.states.canPlay);
         });
-        that.applier.modelChanged.addListener("states.fullscreen", that.toggleFullscreenView);
     };
 
     var bindControllerDOMEvents = function (that) {
@@ -84,13 +61,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.defaults("fluid.videoPlayer.controllers", { 
-        gradeNames: ["fluid.rendererComponent", "autoInit"], 
-        postInitFunction: "fluid.videoPlayer.controllers.postInit",
+        gradeNames: ["fluid.viewComponent", "autoInit"], 
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
                 container: "{controllers}.dom.scrubberContainer",
-                createOnEvent: "onMarkupReady",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
@@ -104,7 +79,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             volumeControl: {
                 type: "fluid.videoPlayer.controllers.volumeControls",
                 container: "{controllers}.dom.volumeContainer",
-                createOnEvent: "onMarkupReady",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
@@ -116,7 +90,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionControls: {
                 type: "fluid.videoPlayer.controllers.captionControls",
                 container: "{controllers}.dom.captionControlsContainer",
-                createOnEvent: "onMarkupReady",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
@@ -124,7 +97,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             playButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
-                createOnEvent: "afterRender",
                 container: "{controllers}.container",
                 options: {
                     selectors: {
@@ -142,7 +114,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             fullScreenButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
-                createOnEvent: "afterRender",
                 container: "{controllers}.container",
                 options: {
                     selectors: {
@@ -167,76 +138,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onVolumeChange: null,
             onStartTimeChange: null,
             onTimeChange: null,
-            afterTimeChange: null,
-            onMarkupReady: null
+            afterTimeChange: null
         },
 
         selectors: {
-            fullscreen: ".flc-videoPlayer-fullscreen",
+            play: ".flc-videoPlayer-play",
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
             volumeContainer: ".flc-videoPlayer-volumeContainer",
-            captionControlsContainer: ".flc-videoPlayer-captionControls-container"
+            captionControlsContainer: ".flc-videoPlayer-captionControls-container",
+            fullscreen: ".flc-videoPlayer-fullscreen"
         },
-        selectorsToIgnore: ["scrubberContainer", "volumeContainer", "captionControlsContainer"],
 
         styles: {
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
             fullscreenOff: "fl-videoPlayer-state-fullscreenOff",
             fullscreenIcon: "ui-icon-extlink",
             captionIcon: "ui-icon-comment"
-        },
-
-        strings: {
-            fullscreenOn: "Fullscreen On",
-            fullscreenOff: "Fullscreen Off"
-        },
-
-        rendererOptions: {
-            autoBind: true,
-            applier: "{controllers}.applier"
-        },
-
-        produceTree: "fluid.videoPlayer.controllers.produceTree"
+        }
     });
 
-    fluid.videoPlayer.controllers.produceTree = function (that) {
-        var tree = {};
-        var value;
-        
-        for (var item in that.model.states) {
-            if (that.options.selectors[item]) {
-                tree[item] = {};
-                // TODO: this is temporary until the rest of the prototree is redesigned
-                if (item === "play") {
-                    continue;
-                }
-
-                if (item === "fullscreen") {
-                    tree[item].valuebinding = "states." + item;
-                    value = that.model.states[item] ? "On" : "Off";
-                    // render radio buttons
-                    tree[item].decorators = {
-                        addClass: that.options.styles[item + value]
-                    };
-                }
-            }
-        }
-        return tree;
-    };
-
-    fluid.videoPlayer.controllers.postInit = function (that) {   
-        that.toggleFullscreenView = function () {
-            toggleView(that, "fullscreen");
-        };
-
-        that.refresh = function () {
-            that.events.onMarkupReady.fire();
-        };
-    };
-
     fluid.videoPlayer.controllers.finalInit = function (that) {
-        that.renderer.refreshView();
-        that.events.onMarkupReady.fire();
         bindControllerModel(that);
         bindControllerDOMEvents(that);
 
@@ -445,11 +366,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         that.container.keydown(function (evt) {
             var volumeControl = that.locate("volumeControl");
-            var code = evt.which? evt.which : evt.keyCode;
+            var code = evt.which ? evt.which : evt.keyCode;
             if ((code === fluid.videoPlayer.arrowKeys.UP)  || (code === fluid.videoPlayer.arrowKeys.RIGHT)) {
-                volumeControl.slider("value", volumeControl.slider("value")+1);
+                volumeControl.slider("value", volumeControl.slider("value") + 1);
             } else if ((code === fluid.videoPlayer.arrowKeys.DOWN)  || (code === fluid.videoPlayer.arrowKeys.LEFT)) {
-                volumeControl.slider("value", volumeControl.slider("value")-1);
+                volumeControl.slider("value", volumeControl.slider("value") - 1);
             } else {
                 return true;
             }
