@@ -176,14 +176,4 @@ https://source.fluidproject.org/svn/LICENSE.txt
         gradeNames: ["fluid.eventedComponent", "autoInit"]
     });
 
-    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onTimeChange": "{media}.setTime",
-                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
-                "{videoPlayer}.events.onViewReady": "{media}.refresh"
-            }
-        }
-    });
-
 })(jQuery);

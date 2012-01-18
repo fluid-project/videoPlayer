@@ -198,14 +198,4 @@ https://source.fluidproject.org/svn/LICENSE.txt
         gradeNames: ["fluid.eventedComponent", "autoInit"]
     });
 
-    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterTimeChange": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"               
-            }
-        }
-    });
-
 })(jQuery);
