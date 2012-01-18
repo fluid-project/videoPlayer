@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid*/
+/*global jQuery, window, fluid*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -25,7 +25,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *                                                                             *
      * Add type tags of html5 into static environment for the html5 browsers.      * 
      *******************************************************************************/
-    
     fluid.registerNamespace("fluid.browser");
 
     fluid.browser.html5 = function () {
@@ -356,7 +355,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.incrTime = function () {
-			that.events.onStartTimeChange.fire();
+            that.events.onStartTimeChange.fire();
             if (that.model.states.currentTime < that.model.states.totalTime) {
                 var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
                 that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
@@ -444,42 +443,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return ret + min + ":" + sec;
     };
 
-    fluid.videoPlayer.mediaRenderers = {
-        html5SourceTag: function (videoPlayer, mediaSource) {
-            var sourceTag = $("<source />");
-            sourceTag.attr(mediaSource);
-            videoPlayer.container.append(sourceTag);
-            return sourceTag;
-        },
-        youTubePlayer: function (videoPlayer, mediaSource) {
-            var placeholder = $("<div/>"),
-                id = fluid.allocateSimpleId(placeholder);
-            videoPlayer.container.append(placeholder);
-            swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
-            return placeholder;
-        }
-    };
-    
     /*********************************************************************************
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
         
+    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onTimeChange":   "{media}.setTime",
+                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                "{videoPlayer}.events.onViewReady":    "{media}.refresh",
+            }
+        }
+    });
+
     fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
         options: {
             listeners: {
                 "{videoPlayer}.events.onCaptionsLoaded":  "{captionner}.resyncCaptions",
                 "{videoPlayer}.events.afterTimeChange":   "{captionner}.resyncCaptions",
                 "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"
-            }
-        }
-    });
-
-    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onTimeChange":   "{media}.setTime",
-                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
-                "{videoPlayer}.events.onViewReady":    "{media}.refresh"
             }
         }
     });
