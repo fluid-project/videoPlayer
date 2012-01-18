@@ -90,10 +90,16 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.captionner", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
+        components: {
+            captionnerEventBinder: {
+                type: "fluid.videoPlayer.captionner.eventBinder",
+                createOnEvent: "onCaptionnerReady"
+            }
+        },
         finalInitFunction:   "fluid.videoPlayer.captionner.finalInit",
         preInitFunction:   "fluid.videoPlayer.captionner.preInit",
         events: {
-            onCaptionnerReady: null
+            onCaptionnerReady: "{videoPlayer}.events.onCaptionnerReady"
         },
         selectors: {
             caption: ".flc-videoPlayer-caption-captionText"
@@ -174,7 +180,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         createCaptionnerMarkup(that);
         bindCaptionnerModel(that);
 
-        that.events.onCaptionnerReady.fire();
+        that.events.onCaptionnerReady.fire(that);
     };
     // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
     // time is in the format hh:mm:ss:mmm
@@ -186,14 +192,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return Math.round(secs * 1000);
     };
     
-    fluid.demands("fluid.videoPlayer.captionner", "fluid.videoPlayer", {
-        options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
-            listeners: {
-                onCaptionnerReady: "{videoPlayer}.events.onCaptionnerReady.fire"
-            }
-        }
+    /*******************************************************************************************
+     * Captionner Event Binder: Binds events between components "videoPlayer" and "captionner" *
+     *******************************************************************************************/
+        
+    fluid.defaults("fluid.videoPlayer.captionner.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
     });
 
 })(jQuery);
