@@ -35,10 +35,23 @@ https://source.fluidproject.org/svn/LICENSE.txt
         events: {
             onReady: null,
             onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
-        }
+        },
+        intervalList: null
     });
     
     fluid.videoPlayer.captionLoader.preInit = function (that) {
+        /**
+         * time: in the format hh:mm:ss:mmm
+         * TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
+         */
+        that.convertToMilli = function (time) {
+            var splitTime = time.split(":");
+            var hours = parseFloat(splitTime[0]);
+            var mins = parseFloat(splitTime[1]) + (hours * 60);
+            var secs = parseFloat(splitTime[2]) + (mins * 60);
+            return Math.round(secs * 1000);
+        };
+
         that.setCaptions = function (captions) {
             // Render the caption area if necessary
             captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
@@ -47,10 +60,17 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 captions = captions.captionCollection;
             }
             
-            that.applier.fireChangeRequest({
-                path: "captions.track",
-                value: captions
+            that.applier.requestChange("captions.track", captions);
+            
+            // generate intervalList that's used by timeUpdateAdapter to fire intervalChange event
+            that.options.intervalList = new Array();
+            fluid.each(captions, function(value, key) {
+                that.options.intervalList[key] = {
+                    begin: that.convertToMilli(value.inTime),
+                    end: that.convertToMilli(value.outTime)
+                };
             });
+            
             that.events.onCaptionsLoaded.fire(captions);
             return that;
         };  

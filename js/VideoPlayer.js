@@ -149,11 +149,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             timeUpdateAdapter: {
                 type: "fluid.videoPlayer.timeUpdateAdapter",
-                createOnEvent: "onReady",
+                createOnEvent: "onCaptionsLoaded",
                 options: {
                     video: "{media}.container",
+                    intervalList: "{captionLoader}.options.intervalList",
                     events: {
-                        onTimeChange: "{videoPlayer}.events.onTimeChange"
+                        onTimeChange: "{videoPlayer}.events.onTimeChange",
+                        onIntervalChange: "{videoPlayer}.events.onIntervalChange"
                     }
                 }
             }
@@ -178,6 +180,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             // public, time events
             onTimeChange: null,
+            onIntervalChange: null,
             
             // The following events are private
             onCreateControllersReady: null,
@@ -477,7 +480,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             listeners: {
                 "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
                 "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions"
+                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
+                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
             }
         }
     });
