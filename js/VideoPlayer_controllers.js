@@ -43,7 +43,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var bindControllerDOMEvents = function (that) {
-        // TODO: These should not be necessary when we can autobind to a toggle button (FLUID-4573)
+        // TODO: These bindings will not be necessary when we can autobind to a toggle button (FLUID-4573)
         that.playButton.events.onPress.addListener(function () {
             that.applier.requestChange("states.play", !that.model.states.play);
             return true;
@@ -320,13 +320,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindVolumeModel = function (that) {
         that.applier.modelChanged.addListener("states.volume", that.updateVolume);
         that.applier.modelChanged.addListener("states.canPlay", function () {
-
-// TODO: Check this: mute is not a button anymore!
-            if (that.model.states.canPlay === true) {
-                that.locate("mute").button("enable");
-            } else {
-                that.locate("mute").button("disable");
-            }
+            enableElement(that.locate("mute"), that.model.states.canPlay);
         });
     };
 
@@ -465,8 +459,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.volumeControls.produceTree = function (that) {
         return {
+            // TODO: Note that until FLUID-4573 is fixed, these bindings don't actually do anything
             mute: {
-                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
                 value: "${muted}",
                 decorators: [{
                     type: "addClass",
@@ -474,7 +468,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }]
             },
             volumeControl: {
-                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
                 value: "${value}"
             }
         };
@@ -563,11 +556,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // prevent the default onPress handler from toggling the button state:
             //   it should only toggle if the user turns captions on or off
             return false;
-        });
-        
-        // TODO: This shouldn't be necessary with the autoBinding on; need to investigate
-        that.locate("languageButton").click(function (e) {
-            that.applier.requestChange("captions.selection", e.currentTarget.value);
         });
     };
 
