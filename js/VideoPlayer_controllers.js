@@ -126,9 +126,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
                     events: {
-                        onScrub: "{controllers}.events.onTimeChange",
-                        afterScrub: "{controllers}.events.afterTimeChange",
-                        onStartScrub: "{controllers}.events.onStartTimeChange"
+                        onScrub: "{controllers}.events.onScrub",
+                        afterScrub: "{controllers}.events.afterScrub",
+                        onStartScrub: "{controllers}.events.onStartScrub"
                     }
                 }
             },
@@ -159,9 +159,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         events: {
             onControllersReady: null,
             onVolumeChange: null,
-            onStartTimeChange: null,
-            onTimeChange: null,
-            afterTimeChange: null,
+            onStartScrub: null,
+            onScrub: null,
+            afterScrub: null,
             onMarkupReady: null
         },
 

@@ -31,25 +31,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             mediaEventBinder: {
                 type: "fluid.videoPlayer.media.eventBinder",
                 createOnEvent: "onMediaReady"
-            },
-            timeUpdateAdapter: {
-                type: "fluid.videoPlayer.timeUpdateAdapter",
-                options: {
-                    video: "{media}.container",
-                    events: {
-                        onMediaTimeChange: "{media}.events.onMediaTimeChange"
-                    }
-                }
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
-            onMediaTimeChange: null,
             onMediaReady: null
-        },
-        listeners: {
-            onMediaTimeChange: "{media}.updateCurrentTime"
         },
         sourceRenderers: {
             "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
@@ -201,26 +188,5 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.media.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"]
     });
-
-    /*********************************************************************************
-     * fluid.videoPlayer.timeUpdateAdapter                                           *
-     *                                                                               *
-     * The re-wiring of video timeupdate event that tranlates it into video player   *
-     * needed time events                                                            *
-     *********************************************************************************/
-        
-    fluid.defaults("fluid.videoPlayer.timeUpdateAdapter", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.timeUpdateAdapter.finalInit",
-        events: {
-            onMediaTimeChange: null
-        }
-    });
-    
-    fluid.videoPlayer.timeUpdateAdapter.finalInit = function (that) {
-        that.options.video.bind("timeupdate", function (ev) {
-            that.events.onMediaTimeChange.fire(ev.currentTarget.currentTime);
-        });
-    };
 
 })(jQuery);

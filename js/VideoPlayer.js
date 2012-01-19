@@ -23,7 +23,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /*******************************************************************************
      * Browser type detection: html5 or non-html5.                                 *
      *                                                                             *
-     * Add type tags of html5 into static environment for the html5 browsers.      * 
+     * Add type tags of html5 into static environment for the html5 browsers.      *
      *******************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
@@ -119,9 +119,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
                         onVolumeChange: "{videoPlayer}.events.onVolumeChange",
-                        onStartTimeChange: "{videoPlayer}.events.onStartTimeChange",
-                        onTimeChange: "{videoPlayer}.events.onTimeChange",
-                        afterTimeChange: "{videoPlayer}.events.afterTimeChange"
+                        onStartScrub: "{videoPlayer}.events.onStartScrub",
+                        onScrub: "{videoPlayer}.events.onScrub",
+                        afterScrub: "{videoPlayer}.events.afterScrub"
                     }
                 }
             },
@@ -146,6 +146,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             browserCompatibility: {
                 type: "demo.html5BackwardsCompatability",
                 createOnEvent: "onOldBrowserDetected"
+            },
+            timeUpdateAdapter: {
+                type: "fluid.videoPlayer.timeUpdateAdapter",
+                createOnEvent: "onReady",
+                options: {
+                    video: "{media}.container",
+                    events: {
+                        onTimeChange: "{videoPlayer}.events.onTimeChange"
+                    }
+                }
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -154,17 +164,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReadyToLoadCaptions: null,
             onCaptionsLoaded: null,
             onVolumeChange: null,
-            onTimeChange: null,
+            onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
             onCaptionnerReady: null,
-            afterTimeChange: null,
-            onStartTimeChange: null,
+            afterScrub: null,
+            onStartScrub: null,
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
             onReady: null,
+            
+            // public, time events
+            onTimeChange: null,
             
             // The following events are private
             onCreateControllersReady: null,
@@ -355,21 +368,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.incrTime = function () {
-            that.events.onStartTimeChange.fire();
+            that.events.onStartScrub.fire();
             if (that.model.states.currentTime < that.model.states.totalTime) {
                 var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
-                that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
+                that.events.onScrub.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
             }
-            that.events.afterTimeChange.fire();
+            that.events.afterScrub.fire();
         };
 
         that.decrTime = function () {
-			that.events.onStartTimeChange.fire();
+            that.events.onStartScrub.fire();
+            
             if (that.model.states.currentTime > 0) {
                 var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
-                that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
+                that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
             }
-            that.events.afterTimeChange.fire();
+            that.events.afterScrub.fire();
         };
 
         that.refresh = function () {
@@ -450,9 +464,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
-                "{videoPlayer}.events.onTimeChange":   "{media}.setTime",
+                "{videoPlayer}.events.onScrub": "{media}.setTime",
                 "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
-                "{videoPlayer}.events.onViewReady":    "{media}.refresh",
+                "{videoPlayer}.events.onViewReady": "{media}.refresh",
+                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
             }
         }
     });
@@ -460,9 +475,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
         options: {
             listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded":  "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterTimeChange":   "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"
+                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions"
             }
         }
     });
