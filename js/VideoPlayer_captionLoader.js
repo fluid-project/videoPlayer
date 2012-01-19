@@ -57,7 +57,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         
         //Creates an ajax query and uses or not a convertor for the captions
         that.loadCaptions = function () {
-console.log("loadCaptions called");
             var caps = that.model.captions.sources[that.model.captions.selection];
             if (!caps) {
                 // load the first caption by default, if nothing actually selected

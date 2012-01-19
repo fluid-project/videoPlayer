@@ -136,9 +136,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
+                createOnEvent: "onReadyToLoadCaptions",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
+                    applier: "{videoPlayer}.applier",
+                    events: {
+                        onReady: "{videoPlayer}.events.onCreateCaptionnerReady"
+                    }
                 }
             },
             browserCompatibility: {
@@ -315,7 +319,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
-/*
         // build the 'choices' from the caption list provided
         fluid.each(that.options.model.captions.sources, function (value, key) {
             that.options.model.captions.choices.push(key);
@@ -324,7 +327,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // add the 'turn captions off' option
         that.options.model.captions.choices.push("none");
         that.options.model.captions.names.push(that.options.strings.captionsOff);
-*/
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -439,8 +441,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
                 }
+                // TODO: Once we have a non-html5 fall-back for captions
+                //    (i.e. captionator and/or mediaelement.js), we will
+                //    not need to do this.
                 if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onCreateCaptionnerReady.fire();
+                    that.events.onReadyToLoadCaptions.fire();
                 }
             }
 

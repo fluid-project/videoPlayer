@@ -100,6 +100,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 controls: "custom",
                 listeners: {
                     onReady: function (videoPlayer) {
+                        console.log("onReady fired");
                         jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
                         jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
                         jqUnit.assertNotUndefined("The sub-component captionner has been instantiated", videoPlayer.captionner);
@@ -165,7 +166,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
                         jqUnit.assertUndefined("The sub-component controllers has NOT been instantiated", videoPlayer.controllers);
                         jqUnit.assertUndefined("The sub-component captionner has NOT been instantiated", videoPlayer.captionner);
-                        jqUnit.assertNotUndefined("The sub-component captionLoader has been instantiated", videoPlayer.captionLoader);
+                        jqUnit.assertUndefined("The sub-component captionLoader has NOT been instantiated", videoPlayer.captionLoader);
                         jqUnit.assertNotUndefined("The sub-component browserCompatibility has been instantiated", videoPlayer.browserCompatibility);
                         
                         start();

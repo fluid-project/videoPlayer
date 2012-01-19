@@ -297,7 +297,10 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                             src: "Test.lol.json",
                             type: "JSONcc"
                         }
-                    }
+                    },
+                    choices: ["esperanto", "klingon", "lolspeak", "none"],
+                    names: ["esperanto", "klingon", "lolspeak", "Captions OFF"],
+                    selection: "none"
                 }
             }
         };

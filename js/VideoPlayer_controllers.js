@@ -492,7 +492,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         rendererOptions: {
             autoBind: true
         },
-        preInitFunction: "fluid.videoPlayer.controllers.captionControls.preInit",
         finalInitFunction: "fluid.videoPlayer.controllers.captionControls.finalInit",
         produceTree: "fluid.videoPlayer.controllers.captionControls.produceTree",
         events: {
@@ -551,17 +550,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-
-    fluid.videoPlayer.controllers.captionControls.preInit = function (that) {
-        // build the 'choices' from the caption list provided
-        fluid.each(that.options.model.captions.sources, function (value, key) {
-            that.options.model.captions.choices.push(key);
-            that.options.model.captions.names.push(key);
-        });
-        // add the 'turn captions off' option
-        that.options.model.captions.choices.push("none");
-        that.options.model.captions.names.push(that.options.strings.captionsOff);
-    };
 
     var setUpCaptionControls = function (that) {
         that.captionsOffOption = $(that.locate("languageLabel")[that.model.captions.choices.indexOf("none")]);
