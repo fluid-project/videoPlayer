@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid*/
+/*global jQuery, fluid*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -49,11 +49,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
             if (that.options.intervalList) {
                 var currentTimeInMillis = Math.round(currentTime * 1000);
 
-                fluid.each(that.options.intervalList, function(interval, intervalId) {
+                fluid.each(that.options.intervalList, function (interval, intervalId) {
                     if (interval.begin <= currentTimeInMillis && interval.end >= currentTimeInMillis) {
                         that.events.onIntervalChange.fire(intervalId);
                     }
-                })
+                });
             }
         });
     };

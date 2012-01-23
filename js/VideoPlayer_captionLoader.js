@@ -34,22 +34,25 @@ https://source.fluidproject.org/svn/LICENSE.txt
         preInitFunction: "fluid.videoPlayer.captionLoader.preInit",
         events: {
             onReady: null,
-            onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
+            onCaptionsLoaded: null
         },
         intervalList: null
     });
     
     fluid.videoPlayer.captionLoader.preInit = function (that) {
         /**
-         * time: in the format hh:mm:ss:mmm
+         * time: in the format hh:mm:ss.mmm
          * TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
          */
         that.convertToMilli = function (time) {
+            if (!time || !time.match(/^\d{2}:\d{2}:\d{2}.\d{1,3}$/)) return null;
+            
             var splitTime = time.split(":");
+            var splitSec = splitTime[2].split(".");
             var hours = parseFloat(splitTime[0]);
             var mins = parseFloat(splitTime[1]) + (hours * 60);
-            var secs = parseFloat(splitTime[2]) + (mins * 60);
-            return Math.round(secs * 1000);
+            var secs = parseFloat(splitSec[0]) + (mins * 60);
+            return Math.round(secs * 1000 + parseInt(splitSec[1]));
         };
 
         that.setCaptions = function (captions) {

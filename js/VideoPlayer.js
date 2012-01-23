@@ -140,7 +140,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
+                    applier: "{videoPlayer}.applier",
+                    events: {
+                        onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
+                    }
                 }
             },
             browserCompatibility: {
