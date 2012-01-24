@@ -34,7 +34,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         preInitFunction: "fluid.videoPlayer.captionLoader.preInit",
         events: {
             onReady: null,
-            onCaptionsLoaded: null
+            onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
         }
     });
     
@@ -97,12 +97,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return that;
     };
 
-    fluid.demands("fluid.videoPlayer.captionLoader", "fluid.videoPlayer", {
-        options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier"
-        }
-    });    
 })(jQuery);
 
 
