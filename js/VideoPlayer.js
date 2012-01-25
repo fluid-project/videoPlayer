@@ -29,6 +29,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.registerNamespace("fluid.browser");
 
     fluid.browser.html5 = function () {
+        // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
+        // Needs re-work at the integration of mediaElement.
         var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
@@ -486,4 +488,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
     
+    /*********************************************************************************
+     * Demands blocks for event binding components                                   *
+     *********************************************************************************/
+        
+    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onCaptionsLoaded":  "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.afterTimeChange":   "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"
+            }
+        }
+    });
+
+    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onTimeChange":   "{media}.setTime",
+                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                "{videoPlayer}.events.onViewReady":    "{media}.refresh"
+            }
+        }
+    });
+
 })(jQuery);

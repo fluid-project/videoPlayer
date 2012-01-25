@@ -29,7 +29,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         $.each(that.model.video.sources, function (idx, source) {
             var renderer = that.options.mediaRenderers[source.type];
             if ($.isFunction(renderer)) {
-                renderer.apply(that, source);
+                renderer.apply(null, [that, source]);
             } else {
                 fluid.invokeGlobalFunction(renderer, [that, source]); 
             }                                      
@@ -179,16 +179,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
     fluid.defaults("fluid.videoPlayer.media.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"]
-    });
-
-    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onTimeChange": "{media}.setTime",
-                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
-                "{videoPlayer}.events.onViewReady": "{media}.refresh"
-            }
-        }
     });
 
 })(jQuery);

@@ -200,14 +200,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.eventedComponent", "autoInit"]
     });
 
-    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterTimeChange": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"               
-            }
-        }
-    });
-
 })(jQuery);
