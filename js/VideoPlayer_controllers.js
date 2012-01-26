@@ -190,10 +190,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var bindScrubberModel = function (that) {
+        that.applier.modelChanged.addListener("states.currentTime", that.updateCurrentTime);
+        that.applier.modelChanged.addListener("states.totalTime", that.updateTotalTime);
+
         // Setup the scrubber when we know the duration of the video.
         that.applier.modelChanged.addListener("states.startTime", that.updateMin);
         that.applier.modelChanged.addListener("states.startTime", that.updateMax);
         that.applier.modelChanged.addListener("states.totalTime", that.updateMax);
+
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         that.applier.modelChanged.addListener("states.currentTime", that.updateCurrent);
 
@@ -227,7 +231,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
         postInitFunction: "fluid.videoPlayer.controllers.scrubber.postInit",
         events: {
@@ -243,21 +247,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         strings: {
             scrubber: "Time scrub"
-        },
-        produceTree: "fluid.videoPlayer.controllers.scrubber.produceTree"
+        }
     });
 
-    fluid.videoPlayer.controllers.scrubber.produceTree = function (that) {
-        var tree = {
-            currentTime: "${states.currentTime}",
-            totalTime: "${states.totalTime}",
-            scrubber: {}
-        };
-        
-        return tree;
-    };
-
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
+        that.updateCurrentTime = function () {
+            that.locate("currentTime").text(that.model.states.currentTime);
+        };
+
+        that.updateTotalTime = function () {
+            that.locate("totalTime").text(that.model.states.totalTime);
+        };
+
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
             var scrubber = that.locate("scrubber");
