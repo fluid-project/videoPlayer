@@ -372,11 +372,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
-        renderOnInit: true,
+        gradeNames: ["fluid.viewComponent", "autoInit"],
         postInitFunction: "fluid.videoPlayer.controllers.volumeControls.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.volumeControls.finalInit",
-        produceTree: "fluid.videoPlayer.controllers.volumeControls.produceTree",
         events: {
             onReady: null,
             onChange: null
@@ -438,8 +436,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value", volume);
             volumeControl.find(".ui-slider-handle").attr({
-                "aria-valuenow": that.model.states.volume,
-                "aria-valuetext": Math.round(that.model.states.volume) + "%"
+                "aria-valuenow": volume,
+                "aria-valuetext": Math.round(volume) + "%"
             });
         };
     };
@@ -449,22 +447,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         bindVolumeDOMEvents(that);
         bindVolumeModel(that);
         that.events.onReady.fire(that);
-    };
-
-    fluid.videoPlayer.controllers.volumeControls.produceTree = function (that) {
-        return {
-            // TODO: Note that until FLUID-4573 is fixed, these bindings don't actually do anything
-            mute: {
-                value: "${muted}",
-                decorators: [{
-                    type: "addClass",
-                    classes: (that.model.pressed ? that.options.styles.pressed : that.options.styles.released)
-                }]
-            },
-            volumeControl: {
-                value: "${value}"
-            }
-        };
     };
 
 
