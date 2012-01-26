@@ -126,22 +126,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             },
-            captionner: {
-                type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.dom.caption",
-                createOnEvent: "onCreateCaptionnerReady",
+            html5Captionator: {
+                type: "fluid.videoPlayer.html5Captionator",
+                container: "{videoPlayer}.dom.video",
+                createOnEvent: "onCreateCaptionerReady",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            captionLoader: {
-                type: "fluid.videoPlayer.captionLoader",
-                container: "{videoPlayer}.container",
-                createOnEvent: "onTemplateReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
+                    applier: "{videoPlayer}.applier",
+                    captions: "{videoPlayer}.model.captions",
+                    events: {
+                        onCaptionified: "{videoPlayer}.events.onCaptionified"
+                    }
                 }
             },
             browserCompatibility: {
@@ -152,8 +147,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.videoPlayer.preInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            onReadyToLoadCaptions: null,
-            onCaptionsLoaded: null,
+//            onReadyToLoadCaptions: null,
+//            onCaptionsLoaded: null,
+            onCaptionified: null,
             onVolumeChange: null,
             onTimeChange: null,
             onTemplateReady: null,
@@ -170,7 +166,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionnerReady: null
+            onCreateCaptionerReady: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -419,7 +415,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.events.onCreateControllersReady.fire();
                 }
                 if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onCreateCaptionnerReady.fire();
+                    that.events.onCreateCaptionerReady.fire();
                 }
             }
 
