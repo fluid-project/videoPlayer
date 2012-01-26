@@ -86,3 +86,10 @@
     width: 60%;
 }
 
+/*
+*Allow clicking through captionator.DIV.element
+*/
+
+.captionator-cue-canvas {
+    pointer-events:none;
+}
