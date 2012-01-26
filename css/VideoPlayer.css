@@ -41,6 +41,9 @@
     margin: auto;
 }
 
+/*
+ * Play button
+ */
 .fl-videoPlayer-playing, .fl-videoPlayer-paused {
     width: 16px;
     height: 16px;
@@ -55,6 +58,9 @@
     background-image: url('../images/pause.png');
 }
 
+/*
+ * Fullscreen button
+ */
 .fl-videoPlayer-fullscreen-off, .fl-videoPlayer-fullscreen-on {
     width: 35px;
     height: 35px;
@@ -66,26 +72,31 @@
 .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-exit.png');
 }
-.fl-videoPlayer-fullscreen-off.fl-videoPlayer-fullscreen-hover {
+.fl-videoPlayer-fullscreen-off:hover, .fl-videoPlayer-fullscreen-off:focus {
     background-image: url('../images/fullscreen-hover.png');
 }
-.fl-videoPlayer-fullscreen-on.fl-videoPlayer-fullscreen-hover {
+.fl-videoPlayer-fullscreen-on:hover, .fl-videoPlayer-fullscreen-on:focus {
     background-image: url('../images/fullscreen-exit-hover.png');
 }
 
-.fl-videoPlayer-volume-mute {
+/*
+ * Volume controls
+ */
+.fl-videoPlayer-mute {
     width: 35px;
     height: 35px;
     cursor: pointer;
     background-image: url('../images/volume.png');
 }
-.fl-videoPlayer-volume-muted {
-    background-image: url('../images/volume-muted.png');
-}
-.fl-videoPlayer-volume-active {
+.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
     background-image: url('../images/volume-active.png');
 }
-.fl-videoPlayer-volume-muted.fl-videoPlayer-volume-active {
+.fl-videoPlayer-muted {
+    background-image: url('../images/volume-muted.png');
+}
+.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-muted,
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
     background-image: url('../images/volume-muted-active.png');
 }
 .fl-videoPlayer-volumeControl {
@@ -93,6 +104,10 @@
     z-index: 100;
 }
 
+
+/*
+ * Caption controls
+ */
 .fl-videoPlayer-captions-button {
     width: 34px;
     height: 34px;
@@ -122,6 +137,9 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     text-align: center;
 }
 
+/*
+ * Scrub bar controls
+ */
 .fl-videoPlayer-scrubberContainer {
     width: 100%;
 }

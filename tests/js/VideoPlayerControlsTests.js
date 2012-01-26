@@ -71,7 +71,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         };
 
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
-            expect(24);
+            expect(18);
 
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
@@ -81,8 +81,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("There should be exactly one toggle button", 1, toggleButton.length);
                         jqUnit.assertEquals("Toggle button should have role of 'button'", "button", toggleButton.attr("role"));
                         jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
-                        jqUnit.assertFalse("Toggle button should not have the 'focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.focused));
-                        jqUnit.assertTrue("Toggle button should have the 'not focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.notFocused));
                         jqUnit.assertFalse("Toggle button should not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
                         jqUnit.assertTrue("Toggle button should have the 'not released' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.released));
 
@@ -91,13 +89,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertNotEquals("Toggle button should have aria-describedby referencing the 'tooltip'", -1, tooltipID.indexOf("tooltip"));
                         var tooltip = $("#" + tooltipID);
                         jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' initially", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
-                        jqUnit.assertTrue("After mouseover, button should have the 'focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.focused));
-                        jqUnit.assertFalse("After mouseover, button should not have the 'not focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.notFocused));
                         jqUnit.assertFalse("After mouseover, button should still not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-
-                        toggleButton.mouseout();
-                        jqUnit.assertFalse("After mouseout, button should not have the 'focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.focused));
-                        jqUnit.assertTrue("After mouseout,Toggle button should have the 'not focused' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.notFocused));
 
                         toggleButton.click();
                         jqUnit.assertEquals("After click, toggle button should have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
@@ -210,7 +202,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         };
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            expect(19);
+            expect(11);
             var testVolumeControls = fluid.tests.initVolumeControls({
                 listeners: {
                     onReady: function (that) {
@@ -221,7 +213,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("There should be exactly one Mute button", 1, muteButton.length);
                         jqUnit.assertEquals("Mute button should have role of 'button'", "button", muteButton.attr("role"));
                         jqUnit.assertEquals("Mute button should have aria-pressed of 'false' initially", "false", muteButton.attr("aria-pressed"));
-                        jqUnit.assertFalse("Mute button should not have the muted style initially", muteButton.hasClass("fl-videoPlayer-volume-muted"));
+                        jqUnit.assertFalse("Mute button should not have the muted style initially", muteButton.hasClass("fl-videoPlayer-muted"));
                         jqUnit.assertFalse("Mute button should not have the active style initially", muteButton.hasClass("fl-videoPlayer-volume-active"));
 
                         jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
@@ -230,26 +222,10 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("The slider button should have valuenow of '50'", "50", sliderHandle.attr("aria-valuenow"));
                         jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
 
-                        container.mouseover();
-                        jqUnit.assertTrue("On container mouseover, the Mute button should have the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
-                        jqUnit.isVisible("On container mouseover, the slider should become visible", volumeSlider);
-
-                        container.mouseout();
-                        jqUnit.assertFalse("On container mouseout, the Mute button should lose the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
-                        jqUnit.notVisible("On container mouseout, the slider should hide again", volumeSlider);
-
-                        container.focus();
-                        jqUnit.assertTrue("On container focus, the Mute button should have the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
-                        jqUnit.isVisible("On container focus, the slider should become visible", volumeSlider);
-
-                        container.blur();
-                        jqUnit.assertFalse("On container blur, the Mute button should lose the active style", muteButton.hasClass("fl-videoPlayer-volume-active"));
-                        jqUnit.notVisible("On container blur, the slider should hide again", volumeSlider);
-
                         muteButton.click();
-                        jqUnit.assertTrue("On click, the mute button should have the muted stye", muteButton.hasClass("fl-videoPlayer-volume-muted"));
+                        jqUnit.assertTrue("On click, the mute button should have the muted stye", muteButton.hasClass("fl-videoPlayer-muted"));
                         muteButton.click();
-                        jqUnit.assertFalse("On click again, the mute button should lose the muted stye", muteButton.hasClass("fl-videoPlayer-volume-muted"));
+                        jqUnit.assertFalse("On click again, the mute button should lose the muted stye", muteButton.hasClass("fl-videoPlayer-muted"));
 
                         start();
                     }
@@ -410,7 +386,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         });
 
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
-            expect(19);
+            expect(14);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -419,16 +395,11 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("Fullscreen button should have role of 'button'", "button", fullScreenButton.attr("role"));
                         jqUnit.assertEquals("Fullscreen button should have aria-pressed of 'false' initially", "false", fullScreenButton.attr("aria-pressed"));
                         jqUnit.assertFalse("Fullscreen button should not have the active style initially", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-on"));
-                        jqUnit.assertFalse("Fullscreen button should not have the hover style initially", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
                         jqUnit.assertFalse("Initally, video should not be in full screen mode", that.model.fullscreen);
 
                         fullScreenButton.mouseover();
                         var tooltip = $("#" + fullScreenButton.attr("aria-describedby"));
                         jqUnit.assertEquals("Tooltip should contain 'Full screen' initially", "Full screen", tooltip.text());
-
-                        jqUnit.assertTrue("On mouseover, Fullscreen button should get the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
-                        fullScreenButton.mouseout();
-                        jqUnit.assertFalse("Fullscreen button should not have the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
 
                         fullScreenButton.click();
                         jqUnit.assertEquals("After clicking, Fullscreen button should have aria-pressed of 'true'", "true", fullScreenButton.attr("aria-pressed"));
@@ -436,10 +407,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         fullScreenButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("Tooltip should contain 'Exit full screen mode'", "Exit full screen mode", tooltip.text());
                         jqUnit.assertTrue("Video should be in full screen mode", that.model.states.fullscreen);
-
-                        jqUnit.assertTrue("On mouseover now, Fullscreen button should get the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
-                        fullScreenButton.mouseout();
-                        jqUnit.assertFalse("Fullscreen button should not have the hover style", fullScreenButton.hasClass("fl-videoPlayer-fullscreen-hover"));
 
                         fullScreenButton.click();
                         jqUnit.assertEquals("After clicking again, Fullscreen button should have aria-pressed of 'false' initially", "false", fullScreenButton.attr("aria-pressed"));

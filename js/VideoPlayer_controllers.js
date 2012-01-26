@@ -121,9 +121,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     styles: {
                         pressed: "fl-videoPlayer-fullscreen-on",
-                        released: "fl-videoPlayer-fullscreen-off",
-                        focused: "fl-videoPlayer-fullscreen-hover",
-                        notFocused: "fl-videoPlayer-fullscreen-notfocused"
+                        released: "fl-videoPlayer-fullscreen-off"
                     },
                     strings: {
                         press: "Full screen",
@@ -412,16 +410,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: ".flc-videoPlayer-mute"
                     },
                     styles: {
-                        pressed: "fl-videoPlayer-volume-muted",
-                        released: "",
-                        focused: "fl-videoPlayer-volume-active",
-                        notFocused: ""
+                        pressed: "fl-videoPlayer-muted",
+                        released: ""
                     },
                     strings: {
                         press: "Mute",
                         release: "Un-mute"
-                    },
-                    manageFocusStyling: false
+                    }
                 }
             }
         }
@@ -431,11 +426,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.options.components.muteButton.container = that.container;
         
         that.showVolumeControl = function () {
-            that.muteButton.setStyleFocused();
             that.locate("volumeControl").show();
         };
         that.hideVolumeControl = function () {
-            that.muteButton.setStyleNotFocused();
             that.locate("volumeControl").hide();
         };
 
@@ -530,15 +523,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     styles: {
                         pressed: "fl-videoPlayer-caption-active",
-                        released: "",
-                        focused: "",
-                        notFocused: ""
+                        released: ""
                     },
                     strings: {
                         press: "Captions",
                         release: "Captions"
-                    },
-                    manageFocusStyling: false
+                    }
                 }
             }
         }
@@ -626,9 +616,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         styles: {   // Integrators will likely override these styles
             pressed: "fl-videoPlayer-button-pressed",
-            released: "fl-videoPlayer-button-released",
-            focused: "fl-videoPlayer-button-focused",
-            notFocused: "fl-videoPlayer-button-notfocused"
+            released: "fl-videoPlayer-button-released"
         },
         model: {
             pressed: false
@@ -636,8 +624,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         strings: {  // Integrators will likely override these strings
             press: "Press",
             release: "Release"
-        },
-        manageFocusStyling: true
+        }
     });
 
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
@@ -648,12 +635,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var button = that.locate("button");
             button.toggleClass(that.options.styles.pressed + " " + that.options.styles.released);
             button.attr("aria-pressed", that.model.pressed);
-        };
-        that.setStyleFocused = function (evt) {
-            that.locate("button").addClass(that.options.styles.focused).removeClass(that.options.styles.notFocused);
-        };
-        that.setStyleNotFocused = function (evt) {
-            that.locate("button").addClass(that.options.styles.notFocused).removeClass(that.options.styles.focused);
         };
         that.toggleState = function (evt) {
             that.applier.requestChange("pressed", !that.model.pressed);
@@ -668,7 +649,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var toggleButton = that.locate("button");
         toggleButton.attr("role", "button").attr("aria-pressed", "false");
         toggleButton.addClass(that.model.pressed ? that.options.styles.pressed : that.options.styles.released);
-        toggleButton.addClass(that.options.styles.notFocused);
 
         that.tooltip = fluid.tooltip(toggleButton, {
             styles: {
@@ -682,10 +662,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
-        if (that.options.manageFocusStyling) {
-            button.focus(that.setStyleFocused).blur(that.setStyleNotFocused);
-            button.mouseover(that.setStyleFocused).mouseout(that.setStyleNotFocused);
-        }
         button.click(function (evt) {
             that.activate(evt);
         });
