@@ -58,31 +58,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         //Creates an ajax query and uses or not a convertor for the captions
         that.loadCaptions = function () {
             var caps = that.model.captions.sources[that.model.captions.selection];
-            if (!caps) {
-                // load the first caption by default, if nothing actually selected
-                // TODO: Need a better strategy for this!!
-                caps = that.model.captions.sources[that.model.captions.choices[0]];
-            }
-            if (caps.type !== "JSONcc") {
-                $.ajax({
+            if (caps) {
+                var opts = {
                     type: "GET",
                     dataType: "text",
-                    url: that.model.captions.conversionServiceUrl,
-                    data: {
+                    success: that.setCaptions
+                };
+                if (caps.type !== "JSONcc") {
+                    opts.url = that.model.captions.conversionServiceUrl;
+                    opts.data = {
                         cc_result: 0,
                         cc_url: caps.src,
                         cc_target: "JSONcc",
                         cc_name: "__no_name"
-                    },
-                    success: that.setCaptions
-                });
-            } else {
-                $.ajax({
-                    type: "GET",
-                    dataType: "text",
-                    url: caps.src,
-                    success: that.setCaptions
-                });
+                    };
+                } else {
+                    opts.url = caps.src;
+                    
+                }
+                $.ajax(opts);
             }
         };
     };

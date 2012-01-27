@@ -100,8 +100,12 @@
     background-image: url('../images/volume-muted-active.png');
 }
 .fl-videoPlayer-volumeControl {
-    display: block;
+    display: none;
     z-index: 100;
+}
+.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-volumeControl,
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
+    display: block;
 }
 
 
@@ -121,7 +125,7 @@ ul.fl-videoPlayer-captions-languageList,
 ul.fl-videoPlayer-captions-languageList li {
     display: block;
 }
-ul.fl-videoPlayer-captions-languageList li input{
+ul.fl-videoPlayer-captions-languageList li input {
     clip: rect(0, 0, 0, 0);
     position: absolute;
 }

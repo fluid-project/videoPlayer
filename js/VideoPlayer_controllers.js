@@ -19,14 +19,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
 
-    var enableElement = function (jQel, enable) {
-        if (enable) {
-            jQel.removeAttr("disabled");
-        } else {
-            jQel.attr("disabled", "disabled");
-        }
-    };
-
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
      *      a volume controller, a button to put captions on/off
@@ -37,9 +29,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     //add all the modelChanged listener to the applier
     var bindControllerModel = function (that) {
         that.applier.modelChanged.addListener("states.canPlay", function () {
-            enableElement(that.locate("play"), that.model.states.canPlay);
-            enableElement(that.locate("fullscreen"), that.model.states.canPlay);
-        });
+            that.locate("play").attr("disabled", !that.model.states.canPlay);
+            that.locate("fullscreen").attr("disabled", !that.model.states.canPlay);
+       });
     };
 
     var bindControllerDOMEvents = function (that) {
@@ -301,10 +293,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     *           To control the volume                       *
     *********************************************************/
     var bindVolumeDOMEvents = function (that) {
-        // show/hide the volume slider on mousein/out and on focus/blur
-        that.container.mouseover(that.showVolumeControl).mouseout(that.hideVolumeControl);
-        that.container.focus(that.showVolumeControl).blur(that.hideVolumeControl);
-
         // Bind the volume Control slide event to change the video's volume and its image.
         that.locate("volumeControl").bind("slide", function (evt, ui) {
             that.events.onChange.fire(ui.value / 100.0);
@@ -319,15 +307,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindVolumeModel = function (that) {
         that.applier.modelChanged.addListener("states.volume", that.updateVolume);
         that.applier.modelChanged.addListener("states.canPlay", function () {
-            enableElement(that.locate("mute"), that.model.states.canPlay);
+            that.locate("mute").attr("disabled", !that.model.states.canPlay);
         });
-    };
-
-    fluid.videoPlayer.arrowKeys = {
-        LEFT: 37,
-        UP: 38,
-        RIGHT: 39,
-        DOWN: 40
     };
 
     var setUpVolumeControls = function (that) {
@@ -348,7 +329,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "aria-valuetext": that.model.states.volume + "%",
             "role": "slider"
         });
-        volumeControl.hide();
 
         fluid.tabindex(that.container, 0);
         fluid.tabindex(that.locate("mute"), -1);
@@ -360,9 +340,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.container.keydown(function (evt) {
             var volumeControl = that.locate("volumeControl");
             var code = evt.which ? evt.which : evt.keyCode;
-            if ((code === fluid.videoPlayer.arrowKeys.UP)  || (code === fluid.videoPlayer.arrowKeys.RIGHT)) {
+            if ((code === $.ui.keyCode.UP)  || (code === $.ui.keyCode.RIGHT)) {
                 volumeControl.slider("value", volumeControl.slider("value") + 1);
-            } else if ((code === fluid.videoPlayer.arrowKeys.DOWN)  || (code === fluid.videoPlayer.arrowKeys.LEFT)) {
+            } else if ((code === $.ui.keyCode.DOWN)  || (code === $.ui.keyCode.LEFT)) {
                 volumeControl.slider("value", volumeControl.slider("value") - 1);
             } else {
                 return true;
