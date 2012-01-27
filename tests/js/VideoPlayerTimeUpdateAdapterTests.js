@@ -21,12 +21,80 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var videoPlayerTimeUpdateAdapterTests = new jqUnit.TestCase("Video Player Time Update Adapter Tests");
 
+        var initTimeUpdateAdapterWithoutMediaTimer = function (testOptions) {
+            var options = {
+                components: {
+                    html5MediaTimer: {
+                        type: "fluid.emptySubcomponent"
+                    }
+                }
+            };
+            
+            $.extend(true, options, testOptions);
+            return fluid.videoPlayer.timeUpdateAdapter(options);
+        };
+        
+        var testIsNumeric = function (input, expected, desc) {
+            var that = initTimeUpdateAdapterWithoutMediaTimer();
+            var result = that.isNumeric(input);
+            
+            jqUnit.assertEquals(input + ": " + desc, expected, result);
+        };
+        
+        videoPlayerTimeUpdateAdapterTests.test("isNumberic", function () {
+            // fail cases
+            var undefinedTime;
+            testIsNumeric(undefinedTime, false, "Undefined value");  // undefined input
+            testIsNumeric("", false, "Empty string");
+            testIsNumeric(" ", false, "White space string");
+            testIsNumeric("abc", false, "Alphabetic character string");
+            testIsNumeric("abc123", false, "Alphanumberic character string");
+            
+            // pass cases
+            testIsNumeric("0", true, "Zero string");
+            testIsNumeric("123", true, "Postive integer string");
+            testIsNumeric("-123", true, "Negative integer string");
+            testIsNumeric("123.455", true, "Positive floating string");
+            testIsNumeric("-123.455", true, "Negative floating string");
+
+            testIsNumeric(0, true, "Zero number");
+            testIsNumeric(123, true, "Postive integer number");
+            testIsNumeric(-123, true, "Negative integer number");
+            testIsNumeric(123.455, true, "Positive floating number");
+            testIsNumeric(-123.455, true, "Negative floating number");
+        });
+        
+        var testIntervalList = [0: {begin: 1000, end: 2000},
+                                0: {begin: 1500, end: 3000},
+                                0: {begin: 4000, end: 5000}];
+            
+        var testProcessIntervalChange = function (currentTime, previousIntervalList, expected) {
+            var that = initTimeUpdateAdapterWithoutMediaTimer();
+            var result = that.processIntervalChange(currentTime, testIntervalList, previousIntervalList);
+            
+            jqUnit.assertEquals(input + ": " + desc, expected, result);
+        };
+        
+        videoPlayerTimeUpdateAdapterTests.test("processIntervalChange", function () {
+            // fail cases
+            // undefined input
+            var undefinedTime;
+            testProcessIntervalChange(undefinedTime, false, "Undefined value");
+        });
+        
         var videoContainer = $(".flc-video");
+        
         videoPlayerTimeUpdateAdapterTests.asyncTest("Test onTimeChange event", function () {
             var timeToSet = 10;
             
             fluid.videoPlayer.timeUpdateAdapter({
-                video: videoContainer,
+                components: {
+                    html5MediaTimer: {
+                        options: {
+                            mediaElement: videoContainer
+                        }
+                    }
+                },
                 listeners: {
                     onTimeChange: function (time) {
                         jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);
@@ -42,17 +110,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             stop();
         });
 
-        var intervalId = 0;
-        
-        var testIntervalList = [];
-        testIntervalList[intervalId] = {
-            begin: 1000,
-            end: 2000
-        };
-            
         videoPlayerTimeUpdateAdapterTests.asyncTest("Test onIntervalChange event: true scenario", function () {
             fluid.videoPlayer.timeUpdateAdapter({
-                video: videoContainer,
+                components: {
+                    html5MediaTimer: {
+                        options: {
+                            mediaElement: videoContainer
+                        }
+                    }
+                },
                 intervalList: testIntervalList,
                 listeners: {
                     onIntervalChange: function (Id) {
@@ -71,7 +137,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         videoPlayerTimeUpdateAdapterTests.asyncTest("Test onIntervalChange event: false scenario", function () {
             fluid.videoPlayer.timeUpdateAdapter({
-                video: videoContainer,
+                components: {
+                    html5MediaTimer: {
+                        options: {
+                            mediaElement: videoContainer
+                        }
+                    }
+                },
                 intervalList: testIntervalList,
                 listeners: {
                     onTimeChange: function (time) {

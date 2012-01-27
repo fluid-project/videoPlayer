@@ -154,7 +154,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.timeUpdateAdapter",
                 createOnEvent: "onCaptionsLoaded",
                 options: {
-                    video: "{media}.container",
+                    components: {
+                        html5MediaTimer: {
+                            options: {
+                                mediaElement: "{media}.container"
+                            }
+                        }
+                    },
+//                    video: "{media}.container",
                     intervalList: "{captionLoader}.options.intervalList",
                     events: {
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
@@ -466,7 +473,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /*********************************************************************************
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
-        
+    
     fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
@@ -489,4 +496,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    /*********************************************************************************
+     * Private constants                                                             *
+     *********************************************************************************/
+        
+    fluid.videoPlayer.expiredState = "expired";
+    fluid.videoPlayer.ongoingState = "ongoing";
+    
 })(jQuery);
