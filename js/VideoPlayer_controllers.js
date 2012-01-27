@@ -34,24 +34,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
        });
     };
 
-    var bindControllerDOMEvents = function (that) {
-        // TODO: These bindings will not be necessary when we can autobind to a toggle button (FLUID-4573)
-        that.playButton.events.onPress.addListener(function () {
-            that.applier.requestChange("states.play", !that.model.states.play);
-            return true;
-        });
-
-        that.volumeControl.muteButton.events.onPress.addListener(function () {
-            that.applier.requestChange("states.muted", !that.model.states.muted);
-            return true;
-        });
-
-        that.fullScreenButton.events.onPress.addListener(function () {
-            that.applier.requestChange("states.fullscreen", !that.model.states.fullscreen);
-            return true;
-        });
-    };
-    
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent", "autoInit"], 
         components: {
@@ -101,7 +83,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     strings: {
                         press: "Play",
                         release: "Pause"
-                    }
+                    },
+                    model: "{controllers}.model",
+                    modelPath: "states.play",
+                    applier: "{controllers}.applier"
                 }
             },
             fullScreenButton: {
@@ -118,7 +103,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     strings: {
                         press: "Full screen",
                         release: "Exit full screen mode"
-                    }
+                    },
+                    model: "{controllers}.model",
+                    modelPath: "states.fullscreen",
+                    applier: "{controllers}.applier"
                 }
             }
         },
@@ -149,7 +137,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
-        bindControllerDOMEvents(that);
 
         that.events.onControllersReady.fire(that);
     };
@@ -395,7 +382,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     strings: {
                         press: "Mute",
                         release: "Un-mute"
-                    }
+                    },
+                    model: "{volumeControls}.model",
+                    modelPath: "states.muted",
+                    applier: "{volumeControls}.applier"
                 }
             }
         }
@@ -584,6 +574,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         model: {
             pressed: false
         },
+        modelPath: "pressed",
         strings: {  // Integrators will likely override these strings
             press: "Press",
             release: "Release"
@@ -594,13 +585,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.activate = function (evt) {
             that.events.onPress.fire(evt);
         };
-        that.toggleButton = function (evt) {
+        that.toggleButton = function () {
             var button = that.locate("button");
             button.toggleClass(that.options.styles.pressed + " " + that.options.styles.released);
-            button.attr("aria-pressed", that.model.pressed);
+            button.attr("aria-pressed", fluid.get(that.model, that.options.modelPath));
         };
         that.toggleState = function (evt) {
-            that.applier.requestChange("pressed", !that.model.pressed);
+            that.applier.requestChange(that.options.modelPath, !fluid.get(that.model, that.options.modelPath));
             if (evt) {
                 evt.stopPropagation();
             }
@@ -611,14 +602,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var setUpToggleButton = function (that) {
         var toggleButton = that.locate("button");
         toggleButton.attr("role", "button").attr("aria-pressed", "false");
-        toggleButton.addClass(that.model.pressed ? that.options.styles.pressed : that.options.styles.released);
+        toggleButton.addClass(fluid.get(that.model, that.options.modelPath) ? that.options.styles.pressed : that.options.styles.released);
 
         that.tooltip = fluid.tooltip(toggleButton, {
             styles: {
                 tooltip: "fl-videoPlayer-tooltip"
             },
             content: function () {
-                return (that.model.pressed ? that.options.strings.release : that.options.strings.press);
+                return (fluid.get(that.model, that.options.modelPath) ? that.options.strings.release : that.options.strings.press);
             }
         });
     };
@@ -631,8 +622,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.events.onPress.addListener(that.toggleState, undefined, undefined, "last");
 
-        that.applier.modelChanged.addListener("pressed", function (evt) {
-            that.toggleButton(evt);
+        that.applier.modelChanged.addListener(that.options.modelPath, function (model, oldModel, changeReqquest) {
+            that.toggleButton();
         });
     };
 
