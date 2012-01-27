@@ -39,9 +39,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
     });
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var trackTag = $("<track />");
         
         for (var key in that.options.captions.sources) {
+            var trackTag = $("<track />");
             var caption = that.options.captions.sources[key];
             
             trackTag.attr("kind", caption.kind);
