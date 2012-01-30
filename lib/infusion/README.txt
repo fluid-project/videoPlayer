@@ -4,4 +4,4 @@ Build the minified MyInfusion.js:
 ant customBuild -Dinclude="renderer, uploader, jQueryUIWidgets"
 
 Build the un-minified MyInfusion.js:
-ant customBuild -Dinclude="renderer, uploader, jQueryUIWidgets" -DnoMinify="true"
+ant customBuild -Dinclude="uiOptions, swfobject" -DnoMinify="true"
