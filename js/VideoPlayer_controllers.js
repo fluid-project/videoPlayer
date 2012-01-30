@@ -31,7 +31,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("states.canPlay", function () {
             that.locate("play").attr("disabled", !that.model.states.canPlay);
             that.locate("fullscreen").attr("disabled", !that.model.states.canPlay);
-       });
+        });
     };
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
@@ -298,6 +298,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    /**
+     * Create an event handler that will adjust the value of a jQuery UI slider
+     * @param   slider  the jQuery slider
+     * @param   increase    a boolean indicating whether the value should increase or decrease
+     * @param   step    the value by which to adjust the slider
+     */
+    fluid.videoPlayer.makeSliderAdjuster = function (slider, increase, step) {
+        return function (evt) {
+            evt.preventDefault();
+            slider.slider("value", slider.slider("value") + (increase ? step : -step));
+        };
+    };
     var setUpVolumeControls = function (that) {
         var volumeControl = that.locate("volumeControl");
         volumeControl.addClass(that.options.styles.volumeControl);
@@ -317,25 +329,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "role": "slider"
         });
 
-        fluid.tabindex(that.container, 0);
+        // define the arrow key bindings for the volume slider
+        var arrowKeyBindings = [];
+        fluid.each(that.options.keyDirections, function (item, key) {
+            arrowKeyBindings.push({
+                key: item.key, 
+                activateHandler: fluid.videoPlayer.makeSliderAdjuster(volumeControl, item.increase, that.model.states.step)
+            });
+        });
+        
+        // Make the mute button and slider keyboard activatable
+        fluid.activatable(that.container, that.muteButton.activate, {
+            additionalBindings: arrowKeyBindings
+        });
+
+        fluid.tabbable(that.container, 0);
         fluid.tabindex(that.locate("mute"), -1);
         fluid.tabindex(volumeControl, -1);
-
-        fluid.activatable(that.container, function (evt) {
-            that.muteButton.activate(evt);
-        });
-        that.container.keydown(function (evt) {
-            var volumeControl = that.locate("volumeControl");
-            var code = evt.which ? evt.which : evt.keyCode;
-            if ((code === $.ui.keyCode.UP)  || (code === $.ui.keyCode.RIGHT)) {
-                volumeControl.slider("value", volumeControl.slider("value") + 1);
-            } else if ((code === $.ui.keyCode.DOWN)  || (code === $.ui.keyCode.LEFT)) {
-                volumeControl.slider("value", volumeControl.slider("value") - 1);
-            } else {
-                return true;
-            }
-            return false;
-        });
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
@@ -352,6 +362,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             states: {
                 muted: false,
                 volume: 50,
+                step: 1,
                 minVolume: 0,
                 maxVolume: 100
             }
@@ -388,7 +399,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{volumeControls}.applier"
                 }
             }
-        }
+        },
+        keyDirections: [
+            { key: $.ui.keyCode.UP,
+                increase: true },
+            { key: $.ui.keyCode.DOWN,
+                increase: false },
+            { key: $.ui.keyCode.LEFT,
+                increase: false },
+            { key: $.ui.keyCode.RIGHT,
+                increase: true }
+        ]
     });
 
     fluid.videoPlayer.controllers.volumeControls.postInit = function (that) {
