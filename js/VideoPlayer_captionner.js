@@ -34,10 +34,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         caption.container = makeCaption(that, caption).fadeIn("fast", "linear");
         var temp = that.model.captions.currentCaptions;
         temp.push(caption);
-        that.applier.fireChangeRequest({
-            path: "captions.currentCaptions",
-            value: temp
-        });
+        that.model.captions.currentCaptions = temp;
     };
 
     //delete and undisplay a piece of caption
@@ -47,14 +44,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
         var temp = that.model.captions.currentCaptions;
         temp.splice(elt, 1);
-        that.applier.fireChangeRequest({
-            path: "captions.currentCaptions",
-            value: temp
-        });
+        that.model.captions.currentCaptions = temp;
     };
 
     var bindCaptionnerModel = function (that) {
-        that.applier.modelChanged.addListener("captions.currentCaptions", that.refreshView);
         that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionView);
     };
     
@@ -100,25 +93,26 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
             that.container.empty();
-            that.applier.fireChangeRequest({
-                path: "captions.currentCaptions", 
-                value: []
-            });
+            that.model.captions.currentCaptions = [];
+            that.model.captions.currentIndice = 0;
             
-            that.applier.fireChangeRequest({
-                path: "captions.currentIndice", 
-                value: 0
-            });
             that.showCaptions();
         };
 
-        that.displayCaptionForInterval = function (trackId) {
+        that.displayCaptionForInterval = function (trackId, previousTrackId) {
             if (that.model.captions.track) {
-                // Display a new caption.
-                that.applier.requestChange("captions.currentIndice", trackId + 1);
-                var nextCaption = that.model.captions.track[trackId];
-                if (nextCaption !== null && $.inArray(nextCaption, that.model.captions.currentCaptions) === -1) {
-                    displayCaption(that, nextCaption);
+                // Remove the previous caption
+                if (previousTrackId) {
+                    removeCaption(that, that.model.captions.track[previousTrackId]);
+                }
+                
+                // Display the current caption
+                if (trackId) {
+                    that.model.captions.currentIndice = trackId + 1;
+                    var nextCaption = that.model.captions.track[trackId];
+                    if (nextCaption !== null && $.inArray(nextCaption, that.model.captions.currentCaptions) === -1) {
+                        displayCaption(that, nextCaption);
+                    }
                 }
             }
             
@@ -132,21 +126,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
         };
 
-        that.refreshView = function () {
-            // Clear out any caption that has hit its end time.
-            var timeInMillis = Math.round(that.model.states.currentTime * 1000);
-            fluid.each(that.model.captions.currentCaptions, function (elt) {
-                if (timeInMillis >= elt.outMilliTime) {
-                    removeCaption(that, elt);
-                }
-            });
-
-            //if there's too many captions remove the oldest one
-            if (that.model.captions.currentCaptions && that.model.captions.currentCaptions.length > that.model.captions.maxNumber) {
-                removeCaption(that, that.model.captions.currentCaptions[0]);
-            }
-        };
-        
         that.hideCaptions = function () {
             that.container.hide();
         };
