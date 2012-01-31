@@ -27,6 +27,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * @param {Object} options configuration options for the component
      */
     //add all the modelChanged listener to the applier
+    // TODO: Privacy is inherited. Consider making this public
     var bindControllerModel = function (that) {
         that.applier.modelChanged.addListener("states.canPlay", function () {
             that.locate("play").attr("disabled", !that.model.states.canPlay);
@@ -146,12 +147,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     *           of the video                    *
     ********************************************/
         
+    // TODO: Privacy is inherited. Consider making this public
     //change the text of the selected time
     var updateTime = function (that, element) {
         var time = that.locate(element);
         time.text(fluid.videoPlayer.formatTime(that.model.states[element]));
     };
     
+    // TODO: Privacy is inherited. Consider making this public
     var bindScrubberDOMEvents = function (that) {
         // Bind the scrubbers slide event to change the video's time.
         var scrubber = that.locate("scrubber");
@@ -168,6 +171,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    // TODO: Privacy is inherited. Consider making this public
     var bindScrubberModel = function (that) {
         that.applier.modelChanged.addListener("states.currentTime", that.updateCurrentTime);
         that.applier.modelChanged.addListener("states.totalTime", that.updateTotalTime);
@@ -190,6 +194,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    // TODO: Privacy is inherited. Consider making this public
     var createScrubberMarkup = function (that) {
         var scrubber = that.locate("scrubber");
         scrubber.slider({
@@ -279,6 +284,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     * Volume Control: a button that turns into a slider     *
     *           To control the volume                       *
     *********************************************************/
+    // TODO: Privacy is inherited. Consider making this public
     var bindVolumeDOMEvents = function (that) {
         // Bind the volume Control slide event to change the video's volume and its image.
         that.locate("volumeControl").bind("slide", function (evt, ui) {
@@ -291,6 +297,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     };
 
+    // TODO: Privacy is inherited. Consider making this public
     var bindVolumeModel = function (that) {
         that.applier.modelChanged.addListener("states.volume", that.updateVolume);
         that.applier.modelChanged.addListener("states.canPlay", function () {
@@ -298,6 +305,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    // TODO: Privacy is inherited. Consider making this public
     var setUpVolumeControls = function (that) {
         var volumeControl = that.locate("volumeControl");
         volumeControl.addClass(that.options.styles.volumeControl);
@@ -487,13 +495,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    var setUpCaptionControls = function (that) {
+    fluid.videoPlayer.controllers.captionControls.setUpCaptionControls = function (that) {
         that.captionsOffOption = $(that.locate("languageLabel")[that.model.captions.choices.indexOf("none")]);
         that.locate("languageList").hide();
         that.captionsOffOption.addClass(that.options.styles.selected);
     };
 
-    var bindCaptionDOMEvents = function (that) {
+    fluid.videoPlayer.controllers.captionControls.bindCaptionDOMEvents = function (that) {
         that.captionButton.events.onPress.addListener(function (evt) {
             that.locate("languageList").toggle();
             // prevent the default onPress handler from toggling the button state:
@@ -502,7 +510,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    var bindCaptionModel = function (that) {
+    fluid.videoPlayer.controllers.captionControls.bindCaptionModel = function (that) {
         that.applier.modelChanged.addListener("captions.selection", function (model, oldModel, changeRequest) {
             var oldSel = oldModel.captions.selection;
             var newSel = model.captions.selection;
@@ -525,9 +533,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.captionControls.finalInit = function (that) {
-        setUpCaptionControls(that);
-        bindCaptionDOMEvents(that);
-        bindCaptionModel(that);
+        fluid.videoPlayer.controllers.captionControls.setUpCaptionControls(that);
+        fluid.videoPlayer.controllers.captionControls.bindCaptionDOMEvents(that);
+        fluid.videoPlayer.controllers.captionControls.bindCaptionModel(that);
         that.events.onReady.fire(that);
     };
 
@@ -599,7 +607,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    var setUpToggleButton = function (that) {
+    fluid.videoPlayer.controllers.toggleButton.setUpToggleButton = function (that) {
         var toggleButton = that.locate("button");
         toggleButton.attr("role", "button").attr("aria-pressed", "false");
         toggleButton.addClass(fluid.get(that.model, that.options.modelPath) ? that.options.styles.pressed : that.options.styles.released);
@@ -614,7 +622,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    var bindToggleButtonEvents = function (that) {
+    fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
         button.click(function (evt) {
             that.activate(evt);
@@ -628,8 +636,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.toggleButton.finalInit = function (that) {
-        setUpToggleButton(that);
-        bindToggleButtonEvents(that);
+        fluid.videoPlayer.controllers.toggleButton.setUpToggleButton(that);
+        fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents(that);
         that.events.onReady.fire(that);
     };
  
