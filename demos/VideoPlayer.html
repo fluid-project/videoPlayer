@@ -7,7 +7,7 @@
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
 
         <!-- Fluid and jQuery Dependencies -->
-        <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
+        <script type="text/javascript" src="../lib/infusion/MyInfusion-noMin.js"></script>
         <!-- Utils -->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
         <!--[if lt IE 9]>
@@ -29,6 +29,7 @@
         </div>
 
         <script type="text/javascript">
+fluid.setLogging(true);
             var vp = fluid.videoPlayer(".videoPlayer", {
                 model: {
                     video: {
@@ -58,7 +59,15 @@
                                 type: "JSONcc"
                             }
                         },
-                        currentTrack: "english"
+                        currentTrack: "english",
+
+                        selection: "none",
+                        choices: [],
+                        names: [],
+                        show: false,
+                        conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                        maxNumber: 3,
+                        track: undefined
                     }
 
                 }

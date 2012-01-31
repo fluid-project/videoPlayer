@@ -138,10 +138,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
-                createOnEvent: "onTemplateReady",
+                createOnEvent: "onReadyToLoadCaptions",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
+                    applier: "{videoPlayer}.applier",
+                    events: {
+                        onReady: "{videoPlayer}.events.onCreateCaptionnerReady"
+                    }
                 }
             },
             browserCompatibility: {
@@ -150,6 +153,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
+        postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             onReadyToLoadCaptions: null,
@@ -180,6 +184,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller"
         },
+        strings: {
+            captionsOff: "Captions OFF",
+            turnCaptionsOff: "Turn Captions OFF"
+        },
         selectorsToIgnore: ["caption"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
@@ -192,14 +200,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 displayCaptions: true,
                 fullscreen: false,
                 volume: 60,
+                muted: false,
                 canPlay: false
             },
             video: {
                 sources: null
             },
             captions: {
+                selection: "none",
+                choices: [],
+                names: [],
+                show: false,
                 sources: null,
-                currentTrack: undefined,
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined
@@ -309,6 +321,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
+        // build the 'choices' from the caption list provided
+        fluid.each(that.options.model.captions.sources, function (value, key) {
+            that.options.model.captions.choices.push(key);
+            that.options.model.captions.names.push(key);
+        });
+        // add the 'turn captions off' option
+        that.options.model.captions.choices.push("none");
+        that.options.model.captions.names.push(that.options.strings.captionsOff);
+
+        // TODO: find out why attaching this in postInit is too late for it to be bound as a listener in the defaults
+        that.refresh = function () {
+            that.fullscreen();
+        };
+    };
+
+    fluid.videoPlayer.postInit = function (that) {
         that.canRenderControllers = function (controlsType) {
             return (fluid.hasFeature("fluid.browser.html5") && controlsType === "custom") ? true : false;
         };
@@ -372,14 +400,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             that.events.afterTimeChange.fire();
         };
-
-        that.refresh = function () {
-            that.fullscreen();
-        };
-
     };
     
     fluid.videoPlayer.finalInit = function (that) {
+
+        that.container.attr("role", "application");
+
         that.applier = fluid.makeChangeApplier(that.model);
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
@@ -418,8 +444,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
                 }
+                // TODO: Once we have a non-html5 fall-back for captions
+                //    (i.e. captionator and/or mediaelement.js), we will
+                //    not need to do this.
                 if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onCreateCaptionnerReady.fire();
+                    that.events.onReadyToLoadCaptions.fire();
                 }
             }
 

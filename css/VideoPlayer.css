@@ -5,6 +5,11 @@
 .fl-videoPlayer {
     position: relative;
 }
+.fl-videoPlayer:focus,
+.fl-videoPlayer :focus {
+    /* TODO: This is a temporary style, to be replaced when we have the final designs */
+    border: 1px solid red;
+}
 
 /*
 * Video area
@@ -19,10 +24,16 @@
  * Controller area
  */
  
+.fl-videoPlayer-tooltip {
+    position    : absolute;
+    border      : 1px solid #CCCCCC;
+    padding     : 3px 5px;
+}
+
 .fl-videoPlayer-controller {
     width:100%;
-    margin: 10px;
     text-align: center;
+    background-color: gray;
 }
 
 .fl-videoPlayer-controller * {
@@ -30,7 +41,98 @@
     margin: auto;
 }
 
-.fl-videoPlayer-controller-time {
+/*
+ * Play button
+ */
+.fl-videoPlayer-playing, .fl-videoPlayer-paused {
+    width: 16px;
+    height: 16px;
+    background-color: black;
+    border: 1px solid black;
+    cursor: pointer;
+}
+.fl-videoPlayer-paused {
+    background-image: url('../images/play.png');
+}
+.fl-videoPlayer-playing {
+    background-image: url('../images/pause.png');
+}
+
+/*
+ * Fullscreen button
+ */
+.fl-videoPlayer-fullscreen-off, .fl-videoPlayer-fullscreen-on {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+.fl-videoPlayer-fullscreen-off {
+    background-image: url('../images/fullscreen.png');
+}
+.fl-videoPlayer-fullscreen-on {
+    background-image: url('../images/fullscreen-exit.png');
+}
+.fl-videoPlayer-fullscreen-off:hover, .fl-videoPlayer-fullscreen-off:focus {
+    background-image: url('../images/fullscreen-hover.png');
+}
+.fl-videoPlayer-fullscreen-on:hover, .fl-videoPlayer-fullscreen-on:focus {
+    background-image: url('../images/fullscreen-exit-hover.png');
+}
+
+/*
+ * Volume controls
+ */
+.fl-videoPlayer-mute {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    background-image: url('../images/volume.png');
+}
+.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-image: url('../images/volume-active.png');
+}
+.fl-videoPlayer-muted {
+    background-image: url('../images/volume-muted.png');
+}
+.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-muted,
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-image: url('../images/volume-muted-active.png');
+}
+.fl-videoPlayer-volumeControl {
+    display: none;
+    z-index: 100;
+}
+.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-volumeControl,
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
+    display: block;
+}
+
+
+/*
+ * Caption controls
+ */
+.fl-videoPlayer-captions-button {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    background-image: url('../images/captions.png');
+}
+.fl-videoPlayer-captions-button.fl-videoPlayer-caption-active {
+    background-image: url('../images/captions-active.png');
+}
+ul.fl-videoPlayer-captions-languageList,
+ul.fl-videoPlayer-captions-languageList li {
+    display: block;
+}
+ul.fl-videoPlayer-captions-languageList li input {
+    clip: rect(0, 0, 0, 0);
+    position: absolute;
+}
+ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
+    color: yellow;
+}
+.fl-videoPlayer-time {
     /*margin: 0 5px;
     */padding: 0.4em;
     line-height: 1.4;
@@ -39,22 +141,18 @@
     text-align: center;
 }
 
-.fl-videoPlayer-controller-scrubberContainer {
+/*
+ * Scrub bar controls
+ */
+.fl-videoPlayer-scrubberContainer {
     width: 100%;
 }
-.fl-videoPlayer-controller-scrubberContainer * {
+.fl-videoPlayer-scrubberContainer * {
     margin: auto;
     display: inline-block;
 }
 
-.fl-videoPlayer-controller-volumeControl {
-    display: block;
-    position: absolute;
-    bottom: -40px;
-    z-index: 100;
-}
-
-.fl-videoPlayer-controller-menu-captions {
+.fl-videoPlayer-menu-captions {
     display: block;
     position: absolute;
     bottom: -40px;
@@ -66,10 +164,8 @@
  */
  
 .fl-videoPlayer-captionArea {
-    bottom:0;
-    left: 20%;
-	right: 20%;
-    position: absolute;
+    bottom:1.5em;
+    position: relative;
     text-align:center;
 }
 
@@ -82,7 +178,7 @@
 * mods to the coal theme
 */
 
-.fl-videoPlayer-controller-scrubber {
+.fl-videoPlayer-scrubber {
     width: 60%;
 }
 
