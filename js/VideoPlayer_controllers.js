@@ -520,7 +520,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 $(labels[model.captions.choices.indexOf(newSel)]).addClass(that.options.styles.selected);
 
                 if ((oldSel === "none") || (newSel === "none")) {
-                    that.captionButton.toggleState();
+                    that.captionButton.requestStateChange();
                     if (newSel === "none") {
                         that.captionsOffOption.text(that.options.strings.captionsOff);
                     } else if (oldSel === "none") {
@@ -598,7 +598,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             button.toggleClass(that.options.styles.pressed + " " + that.options.styles.released);
             button.attr("aria-pressed", fluid.get(that.model, that.options.modelPath));
         };
-        that.toggleState = function (evt) {
+        that.requestStateChange = function (evt) {
             that.applier.requestChange(that.options.modelPath, !fluid.get(that.model, that.options.modelPath));
             if (evt) {
                 evt.stopPropagation();
@@ -628,7 +628,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.activate(evt);
         });
 
-        that.events.onPress.addListener(that.toggleState, undefined, undefined, "last");
+        that.events.onPress.addListener(that.requestStateChange, undefined, undefined, "last");
 
         that.applier.modelChanged.addListener(that.options.modelPath, function (model, oldModel, changeReqquest) {
             that.toggleButton();
