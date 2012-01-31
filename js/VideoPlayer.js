@@ -101,6 +101,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.media",
                 container: "{videoPlayer}.dom.video",
                 createOnEvent: "onCreateMediaReady",
+                priority: "first",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -150,18 +151,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "demo.html5BackwardsCompatability",
                 createOnEvent: "onOldBrowserDetected"
             },
-            timeUpdateAdapter: {
-                type: "fluid.videoPlayer.timeUpdateAdapter",
+            intervalEventsConductor: {
+                type: "fluid.videoPlayer.intervalEventsConductor",
                 createOnEvent: "onCaptionsLoaded",
                 options: {
                     components: {
                         html5MediaTimer: {
+                            type: "fluid.videoPlayer.html5MediaTimer",
                             options: {
                                 mediaElement: "{media}.container"
                             }
                         }
                     },
-//                    video: "{media}.container",
                     intervalList: "{captionLoader}.options.intervalList",
                     events: {
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
@@ -226,7 +227,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 sources: null,
                 currentTrack: undefined,
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                maxNumber: 3,
                 track: undefined
             }
         },
@@ -496,11 +496,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    /*********************************************************************************
-     * Private constants                                                             *
-     *********************************************************************************/
-        
-    fluid.videoPlayer.expiredState = "expired";
-    fluid.videoPlayer.ongoingState = "ongoing";
-    
 })(jQuery);
