@@ -81,6 +81,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         pressed: "fl-videoPlayer-playing",
                         released: "fl-videoPlayer-paused"
                     },
+                    // TODO: Strings should be moved out into a single top-leve bundle
                     strings: {
                         press: "Play",
                         release: "Pause"
@@ -101,6 +102,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         pressed: "fl-videoPlayer-fullscreen-on",
                         released: "fl-videoPlayer-fullscreen-off"
                     },
+                    // TODO: Strings should be moved out into a single top-leve bundle
                     strings: {
                         press: "Full screen",
                         release: "Exit full screen mode"
@@ -204,6 +206,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "role": "slider"
         });
         
+        // TODO: This in inherited. Do we need to add aria to sliders ourselves?
         scrubber.find(".ui-slider-handle").attr({
             "aria-label": that.options.strings.scrubber,
             "aria-valuemin": 0,
@@ -229,6 +232,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             currentTime: ".flc-videoPlayer-current",
             scrubber: ".flc-videoPlayer-scrubber"
         },
+        // TODO: Strings should be moved out into a single top-leve bundle
         strings: {
             scrubber: "Time scrub"
         }
@@ -316,6 +320,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             max: that.model.states.maxVolume,
             value: that.model.states.volume
         });
+        // TODO: This in inherited. Do we need to add aria to sliders ourselves?
         volumeControl.find(".ui-slider-handle").attr({
             "aria-label": that.options.strings.volume,
             "aria-valuemin": that.model.states.minVolume,
@@ -330,8 +335,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tabindex(volumeControl, -1);
 
         fluid.activatable(that.container, function (evt) {
-            that.muteButton.activate(evt);
+            that.muteButton.events.onPress.fire(evt);
         });
+        // TODO: This will be converted to use the activatable plugin
+        // as part of FLUID-4552
         that.container.keydown(function (evt) {
             var volumeControl = that.locate("volumeControl");
             var code = evt.which ? evt.which : evt.keyCode;
@@ -373,6 +380,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             volumeControl: "fl-videoPlayer-volumeControl",
             buttonIcon: "ui-icon-signal"
         },
+        // TODO: Strings should be moved out into a single top-leve bundle
         strings: {
             volume: "Volume"
         },
@@ -387,6 +395,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         pressed: "fl-videoPlayer-muted",
                         released: ""
                     },
+                    // TODO: Strings should be moved out into a single top-leve bundle
                     strings: {
                         press: "Mute",
                         release: "Un-mute"
@@ -470,6 +479,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         styles: {
             selected: "fl-videoPlayer-caption-selected"
         },
+        // TODO: Strings should be moved out into a single top-leve bundle
         strings: {
             captionsOff: "Captions OFF",
             turnCaptionsOff: "Turn Captions OFF"
@@ -486,6 +496,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         pressed: "fl-videoPlayer-caption-active",
                         released: ""
                     },
+                    // TODO: Strings should be moved out into a single top-leve bundle
                     strings: {
                         press: "Captions",
                         release: "Captions"
@@ -514,20 +525,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("captions.selection", function (model, oldModel, changeRequest) {
             var oldSel = oldModel.captions.selection;
             var newSel = model.captions.selection;
-            if (oldSel !== newSel) {
-                var labels = that.locate("languageLabel");
-                $(labels[model.captions.choices.indexOf(oldSel)]).removeClass(that.options.styles.selected);
-                $(labels[model.captions.choices.indexOf(newSel)]).addClass(that.options.styles.selected);
-
-                if ((oldSel === "none") || (newSel === "none")) {
-                    that.captionButton.requestStateChange();
-                    if (newSel === "none") {
-                        that.captionsOffOption.text(that.options.strings.captionsOff);
-                    } else if (oldSel === "none") {
-                        that.captionsOffOption.text(that.options.strings.turnCaptionsOff);
-                    }
-                }
+            if (oldSel === newSel) {
+                return true;
             }
+
+            // TODO: can we do this in CSS?
+            var labels = that.locate("languageLabel");
+            $(labels[model.captions.choices.indexOf(oldSel)]).removeClass(that.options.styles.selected);
+            $(labels[model.captions.choices.indexOf(newSel)]).addClass(that.options.styles.selected);
+
+            // TODO: Can we move the responsibility to requestStateChange elsewhere?
+            if ((oldSel === "none") || (newSel === "none")) {
+                that.captionButton.requestStateChange();
+                that.captionsOffOption.text(newSel === "none"? that.options.strings.captionsOff:that.options.strings.turnCaptionsOff );
+            }
+
             return true;
         }, "captionControls");
     };
@@ -583,6 +595,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             pressed: false
         },
         modelPath: "pressed",
+        // TODO: Strings should be moved out into a single top-leve bundle
         strings: {  // Integrators will likely override these strings
             press: "Press",
             release: "Release"
@@ -590,9 +603,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
-        that.activate = function (evt) {
-            that.events.onPress.fire(evt);
-        };
         that.toggleButton = function () {
             var button = that.locate("button");
             button.toggleClass(that.options.styles.pressed + " " + that.options.styles.released);
@@ -625,7 +635,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
         button.click(function (evt) {
-            that.activate(evt);
+            that.events.onPress.fire(evt);
         });
 
         that.events.onPress.addListener(that.requestStateChange, undefined, undefined, "last");
