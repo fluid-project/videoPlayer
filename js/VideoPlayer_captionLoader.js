@@ -25,7 +25,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
      * Note: when the caption is loaded by Ajax the event onCaptionsLoaded is fired
      */
     var bindCaptionLoaderModel = function (that) {
-        that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions);
+        that.applier.modelChanged.addListener("captions.currentTracks", that.loadCaptions);
     };
 
     fluid.defaults("fluid.videoPlayer.captionLoader", {
@@ -57,7 +57,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         
         //Creates an ajax query and uses or not a convertor for the captions
         that.loadCaptions = function () {
-            var caps = that.model.captions.sources[that.model.captions.currentTrack];
+            var caps = that.model.captions.sources[that.model.captions.currentTracks];
             if (caps.type !== "JSONcc") {
                 $.ajax({
                     type: "GET",
@@ -85,7 +85,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.captionLoader.finalInit = function (that) {
         bindCaptionLoaderModel(that);
         //if we provided default captions when we created the component we load it
-        if (that.model.captions.sources && that.model.captions.currentTrack) {
+        if (that.model.captions.sources && that.model.captions.currentTracks) {
             that.loadCaptions();
         } else {
             that.applier.fireChangeRequest({

@@ -29,36 +29,76 @@ https://source.fluidproject.org/svn/LICENSE.txt
         gradeNames: ["fluid.viewComponent", "autoInit"],
         container: null,
         finalInitFunction: "fluid.videoPlayer.html5Captionator.finalInit",
+        preInitFunction:   "fluid.videoPlayer.html5Captionator.preInit",
         captions: {
             sources: null,
-            currentTrack: undefined
+            currentTracks: undefined
         },
         events: {
             onCaptionified: null
         }
     });
+    
+    
+    var bindCaptionatorModel = function (that) {
+        that.applier.modelChanged.addListener("captions.currentTracks", that.changeCaptions);
+        that.applier.modelChanged.addListener("states.displayCaptions", that.displayCaptions);
+    };
+    
+    
+    fluid.videoPlayer.html5Captionator.preInit = function (that) {
+        // hide all captions
+        that.hideAllTracks = function () {
+            fluid.each(that.container.tracks, function (element) {
+                element.mode = captionator.TextTrack.OFF;
+            });
+        };
+        
+        // show captions depending on which one is on in the model
+        that.showCurrentTracks = function (currentTracks) {
+            fluid.each(that.container.tracks, function (element) {
+                if ($.inArray(element.label, currentTracks) > -1) {
+                    element.mode = captionator.TextTrack.SHOWING;
+                } else {
+                    element.mode = captionator.TextTrack.OFF;
+                }
+            });
+        };
+        
+        that.displayCaptions = function () {
+            if (that.model.states.displayCaptions === true) {
+                that.showCurrentTracks(that.model.captions.currentTracks);
+            } else {
+                that.hideAllTracks();
+            }
+        };
+
+        that.changeCaptions = function () {
+            that.showCurrentTracks(that.model.captions.currentTracks);
+        };
+    };
+
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        
-        for (var key in that.options.captions.sources) {
+        fluid.each(that.options.captions.sources, function (element, key) {
             var trackTag = $("<track />");
-            var caption = that.options.captions.sources[key];
             
-            trackTag.attr("kind", caption.kind);
-            trackTag.attr("src", caption.src);
-            trackTag.attr("type", caption.type);
-            trackTag.attr("srclang", caption.srclang);
-            trackTag.attr("label", caption.label);
+            trackTag.attr("kind", element.kind);
+            trackTag.attr("src", element.src);
+            trackTag.attr("type", element.type);
+            trackTag.attr("srclang", element.srclang);
+            trackTag.attr("label", element.label);
             
-            if ($.inArray(key, that.options.captions.currentTrack) > -1) {
+            if ($.inArray(key, that.options.captions.currentTracks) > -1) {
                 trackTag.attr("default", true);
             }
 
             that.container.append(trackTag);
-        }
+        });
 
         captionator.captionify(that.container[0]);
         
+        bindCaptionatorModel(that);
         that.events.onCaptionified.fire(that);
     };
 
