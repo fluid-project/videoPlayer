@@ -128,14 +128,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
                 container: "{videoPlayer}.dom.video",
-                createOnEvent: "onCreateCaptionerReady",
+                createOnEvent: "onCreateCaptionatorReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.model.captions",
-                    events: {
-                        onCaptionified: "{videoPlayer}.events.onCaptionified"
-                    }
+                    captions: "{videoPlayer}.model.captions"
                 }
             },
             browserCompatibility: {
@@ -144,7 +141,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             timeUpdateAdapter: {
                 type: "fluid.videoPlayer.timeUpdateAdapter",
-                createOnEvent: "onCaptionified",
+                createOnEvent: "onReady",
                 options: {
                     video: "{media}.container",
                     events: {
@@ -159,14 +156,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
 //            onReadyToLoadCaptions: null,
 //            onCaptionsLoaded: null,
-            onCaptionified: null,
             onVolumeChange: null,
             onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
-            onCaptionnerReady: null,
+//            onCaptionnerReady: null,
             afterScrub: null,
             onStartScrub: null,
             onOldBrowserDetected: null,
@@ -180,7 +176,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionerReady: null
+            onCreateCaptionatorReady: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -349,6 +345,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     height: video[0].videoHeight
                 });
             }
+            
+            if (fluid.hasFeature("fluid.browser.html5")) {
+                that.events.onCreateCaptionatorReady.fire();
+            }
         };
 
         that.incrVolume = function () {
@@ -429,9 +429,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
                 }
-                if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onCreateCaptionerReady.fire();
-                }
             }
 
             that.events.onReady.fire(that);
@@ -470,15 +467,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
-                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
-            }
-        }
-    });
+
+//fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
+//        options: {
+//            listeners: {
+//                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+//                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
+//                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
+//                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
+//            }
+//        }
+//    });
+
 
 })(jQuery);
