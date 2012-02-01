@@ -195,7 +195,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             captions: {
                 sources: null,
-                currentTracks: undefined,
+                currentTrack: undefined,
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined
