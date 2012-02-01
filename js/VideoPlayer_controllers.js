@@ -583,8 +583,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         listeners: {
             onPress: {
-                // TODO: Why is full component name necessary instead of nickname?
-                listener: "{fluid.videoPlayer.controllers.toggleButton}.requestStateChange",
+                listener: "{toggleButton}.requestStateChange",
                 priority: "last"
             }
         },
