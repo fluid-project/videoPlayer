@@ -616,7 +616,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 inputID: "input",
                 selectID: "caption",
                 tree: {
-                    "selection": "${captions.currentTracks}",
+                    "selection": "${captions.currentTrack}",
                     "optionlist": list,
                     "optionnames": list
                 }
