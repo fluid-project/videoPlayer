@@ -130,6 +130,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{videoPlayer}.dom.video",
                 createOnEvent: "onCreateCaptionerReady",
                 options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.model.captions",
                     events: {
                         onCaptionified: "{videoPlayer}.events.onCaptionified"
@@ -207,7 +209,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             captions: {
                 sources: null,
-                currentTrack: undefined,
+                currentTracks: undefined,
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                 maxNumber: 3,
                 track: undefined
