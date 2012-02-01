@@ -129,14 +129,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
                 container: "{videoPlayer}.dom.video",
-                createOnEvent: "onCreateCaptionerReady",
+                createOnEvent: "onCreateCaptionatorReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.model.captions",
-                    events: {
-                        onCaptionified: "{videoPlayer}.events.onCaptionified"
-                    }
+                    captions: "{videoPlayer}.model.captions"
                 }
             },
             browserCompatibility: {
@@ -149,7 +146,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
 //            onReadyToLoadCaptions: null,
 //            onCaptionsLoaded: null,
-            onCaptionified: null,
             onVolumeChange: null,
             onTimeChange: null,
             onTemplateReady: null,
@@ -166,7 +162,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionerReady: null
+            onCreateCaptionatorReady: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -335,6 +331,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     height: video[0].videoHeight
                 });
             }
+            
+            if (fluid.hasFeature("fluid.browser.html5")) {
+                that.events.onCreateCaptionatorReady.fire();
+            }
         };
 
         that.incrVolume = function () {
@@ -414,9 +414,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
                 }
-                if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onCreateCaptionerReady.fire();
-                }
             }
 
             that.events.onReady.fire(that);
@@ -470,6 +467,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+<<<<<<< HEAD
     fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
@@ -479,5 +477,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
+=======
+
+//fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
+//        options: {
+//            listeners: {
+//                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+//                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
+//                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
+//                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
+//            }
+//        }
+//    });
+
+>>>>>>> 5ebe80e... #FLUID-4554: Cleaned up the code by removing old files. Cindy came up with a great idea of how to fix captionator's big sizes when it is initialized. All code is done, next step is tests.
 
 })(jQuery);

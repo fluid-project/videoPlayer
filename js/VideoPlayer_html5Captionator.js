@@ -35,7 +35,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             currentTrack: undefined
         },
         events: {
-            onCaptionified: null
+            onReady: null
         }
     });
     
@@ -46,43 +46,40 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
     
     
-    fluid.videoPlayer.html5Captionator.preInit = function (that) {
-
-        // ?? Ask if we need to put those functions as public outside of preInit ??
-        
-        // hide all captions
-        that.hideAllTracks = function () {
-            fluid.each(that.container[0].tracks, function (element) {
+    fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
+        fluid.each(tracks, function (element) {
                 element.mode = captionator.TextTrack.OFF;
-            });
-        };
-        
-        // show captions depending on which one is on in the model
-        that.showCurrentTrack = function (currentTrack) {
-            var index = 0; 
-            var tracks = that.container[0].tracks;
-            fluid.each(that.model.captions.sources, function (element, key) {
-                // TODO: We want to have a multi caption support!!!
-                if (key === currentTrack) {
-                    tracks[index].mode = captionator.TextTrack.SHOWING;
-                } else {
-                    tracks[index].mode = captionator.TextTrack.OFF;
-                }
-                
-                index = index + 1;
-            });
-        };
-        
+        });
+    };
+    
+    // show captions depending on which one is on in the model
+    fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentTrack, tracks, sources) {
+        var index = 0; 
+        fluid.each(sources, function (element, key) {
+            // TODO: We want to have a multi caption support!!!
+            if (key === currentTrack) {
+                tracks[index].mode = captionator.TextTrack.SHOWING;
+            } else {
+                tracks[index].mode = captionator.TextTrack.OFF;
+            }
+            
+            index = index + 1;
+        });
+    };
+
+    // hide all captions
+    fluid.videoPlayer.html5Captionator.preInit = function (that) {
+  
         that.displayCaptions = function () {
             if (that.model.states.displayCaptions === true) {
-                that.showCurrentTrack(that.model.captions.currentTrack);
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, that.container[0].tracks, that.model.captions.sources);
             } else {
-                that.hideAllTracks();
+                fluid.videoPlayer.html5Captionator.hideAllTracks(that.container[0].tracks);
             }
         };
 
         that.changeCaptions = function () {
-            that.showCurrentTrack(that.model.captions.currentTrack);
+            fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, that.container[0].tracks, that.model.captions.sources);
         };
     };
 
@@ -108,7 +105,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         captionator.captionify(that.container[0]);
         
         bindCaptionatorModel(that);
-        that.events.onCaptionified.fire(that);
+        that.events.onReady.fire(that);
     };
 
 })(jQuery);
