@@ -71,7 +71,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
         };
 
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
-            expect(18);
+            expect(15);
 
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
@@ -82,7 +82,6 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("Toggle button should have role of 'button'", "button", toggleButton.attr("role"));
                         jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
                         jqUnit.assertFalse("Toggle button should not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-                        jqUnit.assertTrue("Toggle button should have the 'not released' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.released));
 
                         toggleButton.mouseover();
                         var tooltipID = toggleButton.attr("aria-describedby");
@@ -96,14 +95,40 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.release + "'", fluid.tests.toggleButtonDefaults.strings.release, tooltip.text());
                         jqUnit.assertTrue("After click, button should have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-                        jqUnit.assertFalse("After click, button should not have the 'not released' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.released));
 
                         toggleButton.click();
                         jqUnit.assertEquals("After another click, toggle button should have aria-pressed of 'false' again", "false", toggleButton.attr("aria-pressed"));
                         toggleButton.blur().focus();
                         jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' again", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
                         jqUnit.assertFalse("Button should again not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-                        jqUnit.assertTrue("Button should again have the 'not released' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.released));
+
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerControlsTests.asyncTest("Toggle button, press and release", function () {
+            expect(10);
+
+            var testComponent = fluid.tests.initToggleButton({
+                listeners: {
+                    onReady: function (that) {
+                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
+                        jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Toggle button should not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+                        that.requestRelease();
+                        jqUnit.assertEquals("Releasing when already released, button should still have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Toggle button should not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+                        that.requestPress();
+                        jqUnit.assertEquals("After press, button should have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
+                        jqUnit.assertTrue("After click, button should have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+                        that.requestPress();
+                        jqUnit.assertEquals("pressing when already pressed, button should still have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
+                        jqUnit.assertTrue("After click, button should have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
+                        that.requestRelease();
+                        jqUnit.assertEquals("After release, button should have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
+                        jqUnit.assertFalse("Toggle button should not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
 
                         start();
                     }
@@ -171,19 +196,19 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         jqUnit.assertEquals("There should be exactly one Play button", 1, playButton.length);
                         jqUnit.assertEquals("Play button should have role of 'button'", "button", playButton.attr("role"));
                         jqUnit.assertEquals("Play button should have aria-pressed of 'false' initially", "false", playButton.attr("aria-pressed"));
-                        jqUnit.assertTrue("Play button should have the paused style initially", playButton.hasClass("fl-videoPlayer-paused"));
+                        jqUnit.assertFalse("Play button should not have the 'pressed' style", playButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
 
                         playButton.mouseover();
                         var tooltip = $("#" + playButton.attr("aria-describedby"));
                         jqUnit.assertEquals("Tooltip should contain 'Play' initially", "Play", tooltip.text());
 
                         playButton.click();
-                        jqUnit.assertTrue("After clicking, play button should have the playing style", playButton.hasClass("fl-videoPlayer-playing"));
+                        jqUnit.assertFalse("After clicking, play button should have the 'pressed' style", playButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
                         playButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain 'Pause'", "Pause", tooltip.text());
 
                         playButton.click();
-                        jqUnit.assertTrue("After clickign again, play button should have the paused style again", playButton.hasClass("fl-videoPlayer-paused"));
+                        jqUnit.assertFalse("After clicking again, play button should have the 'pressed' style again", playButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
                         playButton.blur().focus();
                         jqUnit.assertEquals("Tooltip should contain 'Play' again", "Play", tooltip.text());
 

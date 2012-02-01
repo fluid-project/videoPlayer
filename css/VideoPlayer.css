@@ -44,14 +44,12 @@
 /*
  * Play button
  */
-.fl-videoPlayer-playing, .fl-videoPlayer-paused {
+.fl-videoPlayer-play {
     width: 16px;
     height: 16px;
     background-color: black;
     border: 1px solid black;
     cursor: pointer;
-}
-.fl-videoPlayer-paused {
     background-image: url('../images/play.png');
 }
 .fl-videoPlayer-playing {
@@ -61,21 +59,19 @@
 /*
  * Fullscreen button
  */
-.fl-videoPlayer-fullscreen-off, .fl-videoPlayer-fullscreen-on {
+.fl-videoPlayer-fullscreen {
     width: 35px;
     height: 35px;
     cursor: pointer;
-}
-.fl-videoPlayer-fullscreen-off {
     background-image: url('../images/fullscreen.png');
 }
 .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-exit.png');
 }
-.fl-videoPlayer-fullscreen-off:hover, .fl-videoPlayer-fullscreen-off:focus {
+.fl-videoPlayer-fullscreen:hover, .fl-videoPlayer-fullscreen:focus {
     background-image: url('../images/fullscreen-hover.png');
 }
-.fl-videoPlayer-fullscreen-on:hover, .fl-videoPlayer-fullscreen-on:focus {
+.fl-videoPlayer-fullscreen.fl-videoPlayer-fullscreen-on:hover, .fl-videoPlayer-fullscreen.fl-videoPlayer-fullscreen-on:focus {
     background-image: url('../images/fullscreen-exit-hover.png');
 }
 
