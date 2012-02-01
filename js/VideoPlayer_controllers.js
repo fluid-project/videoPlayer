@@ -32,7 +32,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("states.canPlay", function () {
             that.locate("play").attr("disabled", !that.model.states.canPlay);
             that.locate("fullscreen").attr("disabled", !that.model.states.canPlay);
-       });
+        });
     };
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
@@ -533,7 +533,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // TODO: Can we move the responsibility to requestStateChange elsewhere?
             if ((oldSel === "none") || (newSel === "none")) {
                 that.captionButton.requestStateChange();
-                that.captionsOffOption.text(newSel === "none"? that.options.strings.captionsOff:that.options.strings.turnCaptionsOff );
+                that.captionsOffOption.text(newSel === "none" ? that.options.strings.captionsOff : that.options.strings.turnCaptionsOff);
             }
 
             return true;
@@ -574,21 +574,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.toggleButton", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
+        preInitFunction: "fluid.videoPlayer.controllers.toggleButton.preInit",
         postInitFunction: "fluid.videoPlayer.controllers.toggleButton.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.toggleButton.finalInit",
         events: {
             onPress: "preventable", // listeners can prevent button from becoming pressed
             onReady: null
         },
+        listeners: {
+            onPress: {
+                // TODO: Why is full component name necessary instead of nickname?
+                listener: "{fluid.videoPlayer.controllers.toggleButton}.requestStateChange",
+                priority: "last"
+            }
+        },
         selectors: {    // Integrators may override this selector
             button: ".flc-videoPlayer-button"
         },
         styles: {
-            pressed: "fl-videoPlayer-button-pressed"
+            pressed: "fl-videoPlayer-button-pressed",
+            tooltip: "fl-videoPlayer-tooltip"
         },
-        model: {
-            pressed: false
-        },
+        model: {},
         modelPath: "pressed",
         // TODO: Strings should be moved out into a single top-leve bundle
         strings: {  // Integrators will likely override these strings
@@ -597,6 +604,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    fluid.videoPlayer.controllers.toggleButton.preInit = function (that) {
+        that.requestStateChange = function () {
+            that.applier.requestChange(that.options.modelPath, !fluid.get(that.model, that.options.modelPath));
+        };
+    };
+
     fluid.videoPlayer.controllers.toggleButton.postInit = function (that) {
         that.requestPress = function () {
             that.applier.requestChange(that.options.modelPath, true);
@@ -604,49 +617,44 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.requestRelease = function () {
             that.applier.requestChange(that.options.modelPath, false);
         };
-        that.requestStateChange = function (evt) {
-            that.applier.requestChange(that.options.modelPath, !fluid.get(that.model, that.options.modelPath));
-        };
-        that.setPressedState = function () {
+        that.updatePressedState = function () {
             var button = that.locate("button");
-            var pressed = fluid.get(that.model, that.options.modelPath);
+            var pressed = !!fluid.get(that.model, that.options.modelPath);
             button.toggleClass(that.options.styles.pressed, pressed);
-            button.attr("aria-pressed", pressed);
+            button.attr("aria-pressed", pressed.toString());
+        };
+        that.enabled = function (state) {
+            that.locate("button").prop("disabled", !state);
         };
     };
 
     fluid.videoPlayer.controllers.toggleButton.setUpToggleButton = function (that) {
         var toggleButton = that.locate("button");
-        var pressed = fluid.get(that.model, that.options.modelPath);
-        toggleButton.attr("role", "button").attr("aria-pressed", pressed);
-        toggleButton.toggleClass(that.options.styles.pressed, pressed);
+        toggleButton.attr("role", "button");
 
         that.tooltip = fluid.tooltip(toggleButton, {
             styles: {
-                tooltip: "fl-videoPlayer-tooltip"
+                tooltip: that.options.styles.tooltip
             },
             content: function () {
-                return (pressed ? that.options.strings.release : that.options.strings.press);
+                return (fluid.get(that.model, that.options.modelPath) ? that.options.strings.release : that.options.strings.press);
             }
         });
+
+        that.updatePressedState();
     };
 
     fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
         button.click(function (evt) {
             that.events.onPress.fire(evt);
-        });
-
-        that.events.onPress.addListener(function (evt) {
-            that.requestStateChange();
             if (evt) {
                 evt.stopPropagation();
             }
-            return true;
-        }, undefined, undefined, "last");
+        });
 
         that.applier.modelChanged.addListener(that.options.modelPath, function (model, oldModel, changeRequest) {
-            that.setPressedState();
+            that.updatePressedState();
         });
     };
 
