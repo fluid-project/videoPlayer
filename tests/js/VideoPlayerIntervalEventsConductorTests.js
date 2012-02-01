@@ -22,10 +22,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var videoPlayerIntervalEventsConductorTests = new jqUnit.TestCase("Video Player Interval Events Conductor Tests");
     
         // Test data used across all the tests
-        var testIntervalList = [];
-        testIntervalList[0] = {begin: 1000, end: 2000};
-        testIntervalList[1] = {begin: 1500, end: 3000};
-        testIntervalList[2] = {begin: 4000, end: 5000};
+        var testIntervalList = 
+            [{
+                begin: 1000, 
+                end: 2000
+            }, {
+                begin: 1500, 
+                end: 3000
+            }, {
+                begin: 4000, 
+                end: 5000
+            }];
         // End of the test data
         
         videoPlayerIntervalEventsConductorTests.asyncTest("HTML5 Media Timer", function () {
@@ -82,7 +89,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 expect(2);
                 var that = fluid.videoPlayer.intervalEventsConductor({
                     intervalList: testIntervalList,
-                    previousIntervalId: expectedPreviousInterval,
+                    model: {
+                        previousIntervalId: expectedPreviousInterval
+                    },
                     listeners: {
                         onIntervalChange: function (currentInterval, previousInterval) {
                             jqUnit.assertEquals("The event onIntervalChange is fired with currentInterval " + currentInterval, expectedCurrentInterval, currentInterval);
@@ -101,21 +110,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var testIntervalChangeError = function (timeToSet, previousInterval, desc) {
             videoPlayerIntervalEventsConductorTests.test("Error case of testing onIntervalChange event: " + desc, function () {
                 expect(1);
+                
+                var onIntervalChangeFired = false;
 
                 var that = fluid.videoPlayer.intervalEventsConductor({
                     intervalList: testIntervalList,
-                    previousIntervalId: previousInterval,
+                    model: {
+                        previousIntervalId: previousInterval
+                    },
                     listeners: {
-                        onTimeChange: function (time) {
-                            jqUnit.assertTrue("The event onIntervalChange is NOT fired", true);
-                        },
                         onIntervalChange: function (Id) {
-                            jqUnit.assertTrue("The event onIntervalChange IS fired with argument and should not", false);
+                            onIntervalChangeFired = true;
                         }
                     }
                 });
           
                 that.events.onTick.fire(timeToSet);
+                jqUnit.assertFalse("The event onIntervalChange is not fired", onIntervalChangeFired);
             });
         };
         

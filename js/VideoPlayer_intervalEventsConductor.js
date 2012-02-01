@@ -29,7 +29,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     });
 
     /*********************************************************************************
-     * fluid.videoPlayer.intervalEventsConductor                                           *
+     * fluid.videoPlayer.intervalEventsConductor                                     *
      *                                                                               *
      * The re-wiring of video timeupdate event that is tranlated into video player   *
      * needed time events                                                            *
@@ -37,6 +37,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     fluid.defaults("fluid.videoPlayer.intervalEventsConductor", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.intervalEventsConductor.finalInit",
         events: {
             onTimeChange: null,
             onIntervalChange: null,
@@ -53,15 +54,19 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // Example: Array[intervalID] = {begin: beginTimeInMilli, end: endTimeInMilli}
         intervalList: null,
         
-        // The saved interval that was fired at the previous intervalChange event
-        previousIntervalId: null
-    });
-
-    var inInterval = function (currentTimeInMillis, interval) {
-        if (interval.begin <= currentTimeInMillis && interval.end >= currentTimeInMillis) {
-            return true;
+        model: {
+            // The saved interval that was fired at the previous intervalChange event
+            previousIntervalId: null
         }
-        return false;
+    });
+    
+    fluid.videoPlayer.intervalEventsConductor.finalInit = function (that) {
+        that.applier = fluid.makeChangeApplier(that.options.model);
+        
+    };
+
+    fluid.videoPlayer.intervalEventsConductor.inInterval = function (currentTimeInMillis, interval) {
+        return interval.begin <= currentTimeInMillis && interval.end >= currentTimeInMillis;
     };
     
     /**
@@ -80,11 +85,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         // Find out if the current time is still within the range of the previousInterval 
         // to avoid the immediate looping-thru of the entire interval list
-        if (previousInterval && inInterval(currentTimeInMillis, intervalList[previousInterval])) return previousInterval;
+        if (previousInterval && fluid.videoPlayer.intervalEventsConductor.inInterval(currentTimeInMillis, intervalList[previousInterval])) {
+            return previousInterval;
+        }
         
         // Find out the interval that the current time fits in
         for (var intervalId in intervalList) {
-            if (inInterval(currentTimeInMillis, intervalList[intervalId])) return intervalId;
+            if (fluid.videoPlayer.intervalEventsConductor.inInterval(currentTimeInMillis, intervalList[intervalId])) {
+                return intervalId;
+            }
         }
         
         // The current time does not fit in any interval
@@ -98,11 +107,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.events.onTimeChange.fire(currentTime);
         
         if (that.options.intervalList) {
-            var previousInterval = that.options.previousIntervalId;
+            var previousInterval = that.options.model.previousIntervalId;
             var currentInterval = fluid.videoPlayer.intervalEventsConductor.findCurrentInterval(currentTime, that.options.intervalList, previousInterval);
             
             if (currentInterval !== previousInterval) {
-                that.options.previousIntervalId = currentInterval;
+                that.applier.requestChange("previousIntervalId", currentInterval);
                 that.events.onIntervalChange.fire(currentInterval, previousInterval);
             }
         }

@@ -34,7 +34,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         caption.container = makeCaption(that, caption).fadeIn("fast", "linear");
         var temp = that.model.captions.currentCaptions;
         temp.push(caption);
-        that.model.captions.currentCaptions = temp;
+        that.applier.fireChangeRequest({
+            path: "captions.currentCaptions",
+            value: temp
+        });
     };
 
     //delete and undisplay a piece of caption
@@ -44,7 +47,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
         var temp = that.model.captions.currentCaptions;
         temp.splice(elt, 1);
-        that.model.captions.currentCaptions = temp;
+        that.applier.fireChangeRequest({
+            path: "captions.currentCaptions",
+            value: temp
+        });
     };
 
     var bindCaptionnerModel = function (that) {
@@ -84,7 +90,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         model: {
             captions: {
                 currentCaptions: [],
-                currentIndice: 0
+                currentIndex: 0
             }
         }
     });
@@ -93,8 +99,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.resyncCaptions = function () {
             //we clean the screen of the captions that were there
             that.container.empty();
-            that.model.captions.currentCaptions = [];
-            that.model.captions.currentIndice = 0;
+            that.applier.fireChangeRequest({
+                path: "captions.currentCaptions", 
+                value: []
+            });
+            that.applier.fireChangeRequest({
+                path: "captions.currentIndex", 
+                value: 0
+            });
             
             that.showCaptions();
         };
@@ -108,7 +120,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 
                 // Display the current caption
                 if (trackId) {
-                    that.model.captions.currentIndice = trackId + 1;
+                    that.applier.fireChangeRequest({
+                        path: "captions.currentIndex", 
+                        value: trackId + 1
+                    });
+                    
                     var nextCaption = that.model.captions.track[trackId];
                     if (nextCaption !== null && $.inArray(nextCaption, that.model.captions.currentCaptions) === -1) {
                         displayCaption(that, nextCaption);

@@ -22,10 +22,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var videoPlayerIntervalEventsConductorIntegrationTests = new jqUnit.TestCase("Video Player Interval Events Conductor Integration Tests");
     
         // Test data used across all the tests
-        var testIntervalList = [];
-        testIntervalList[0] = {begin: 1000, end: 2000};
-        testIntervalList[1] = {begin: 1500, end: 3000};
-        testIntervalList[2] = {begin: 4000, end: 5000};
+        var testIntervalList = 
+            [{
+                begin: 1000, 
+                end: 2000
+            }, {
+                begin: 1500, 
+                end: 3000
+            }, {
+                begin: 4000, 
+                end: 5000
+            }];
         // End of the test data
         
         videoPlayerIntervalEventsConductorIntegrationTests.asyncTest("Integration test: intervalEventsConductor with html5MediaTimer", function () {
@@ -44,7 +51,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 },
                 intervalList: testIntervalList,
-                previousIntervalId: previousInterval,
+                model: {
+                    previousIntervalId: previousInterval
+                },
                 listeners: {
                     onTimeChange: function (time) {
                         jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);

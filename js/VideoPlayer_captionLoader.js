@@ -39,22 +39,27 @@ https://source.fluidproject.org/svn/LICENSE.txt
         intervalList: null
     });
     
-    fluid.videoPlayer.captionLoader.preInit = function (that) {
-        /**
-         * time: in the format hh:mm:ss.mmm
-         * TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
-         */
-        that.convertToMilli = function (time) {
-            if (!time || !time.match(/^\d{2}:\d{2}:\d{2}.\d{1,3}$/)) return null;
-            
-            var splitTime = time.split(":");
-            var splitSec = splitTime[2].split(".");
-            var hours = parseFloat(splitTime[0]);
-            var mins = parseFloat(splitTime[1]) + (hours * 60);
-            var secs = parseFloat(splitSec[0]) + (mins * 60);
-            return Math.round(secs * 1000 + parseInt(splitSec[1]));
-        };
+    /**
+     * Convert the time in the format of hh:mm:ss.mmm to milliseconds.
+     * 
+     * @param time: in the format hh:mm:ss.mmm
+     * @return a number in millisecond
+     * TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
+     */
+    fluid.videoPlayer.captionLoader.convertToMilli = function (time) {
+        if (!time || !time.match(/^\d{2}:\d{2}:\d{2}\.\d{1,3}$/)) {
+            return null;
+        }
+        
+        var splitTime = time.split(":");
+        var splitSec = splitTime[2].split(".");
+        var hours = parseFloat(splitTime[0]);
+        var mins = parseFloat(splitTime[1]) + (hours * 60);
+        var secs = parseFloat(splitSec[0]) + (mins * 60);
+        return Math.round(secs * 1000 + parseInt(splitSec[1], 10));
+    };
 
+    fluid.videoPlayer.captionLoader.preInit = function (that) {
         that.setCaptions = function (captions) {
             // Render the caption area if necessary
             captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
@@ -65,12 +70,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             
             that.applier.requestChange("captions.track", captions);
             
-            // generate intervalList that's used by timeUpdateAdapter to fire intervalChange event
-            that.options.intervalList = new Array();
-            fluid.each(captions, function(value, key) {
+            // Construct intervalList that's used by intervalEventsConductor to fire intervalChange event
+            that.options.intervalList = [];
+            fluid.each(captions, function (value, key) {
                 that.options.intervalList[key] = {
-                    begin: that.convertToMilli(value.inTime),
-                    end: that.convertToMilli(value.outTime)
+                    begin: fluid.videoPlayer.captionLoader.convertToMilli(value.inTime),
+                    end: fluid.videoPlayer.captionLoader.convertToMilli(value.outTime)
                 };
             });
             
@@ -121,5 +126,3 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
 })(jQuery);
-
-

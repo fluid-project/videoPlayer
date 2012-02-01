@@ -19,7 +19,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
 
-        fluid.setLogging(true);
         var videoPlayerCaptionLoaderTests = new jqUnit.TestCase("Video Player Caption Loader Tests");
 
         var initCaptionLoader = function (testOptions) {
@@ -45,8 +44,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         
         var testConvertToMilli = function (input, expected) {
-            var that = initCaptionLoader();
-            var convertedValue = that.convertToMilli(input);
+            var convertedValue = fluid.videoPlayer.captionLoader.convertToMilli(input);
             
             jqUnit.assertEquals(input + " has been converted to " + convertedValue, expected, convertedValue);
         };
