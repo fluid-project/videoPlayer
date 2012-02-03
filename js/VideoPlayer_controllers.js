@@ -80,7 +80,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     styles: {
                         pressed: "fl-videoPlayer-playing"
                     },
-                    // TODO: Strings should be moved out into a single top-leve bundle
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
                     strings: {
                         press: "Play",
                         release: "Pause"
@@ -100,7 +100,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     styles: {
                         pressed: "fl-videoPlayer-fullscreen-on"
                     },
-                    // TODO: Strings should be moved out into a single top-leve bundle
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
                     strings: {
                         press: "Full screen",
                         release: "Exit full screen mode"
@@ -171,8 +171,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    // TODO: Privacy is inherited. Consider making this public
+    // TODO: This function is inherited. Consider making this public
     var bindScrubberModel = function (that) {
+        // TODO: These listeners could be added declaratively
         that.applier.modelChanged.addListener("states.currentTime", that.updateCurrentTime);
         that.applier.modelChanged.addListener("states.totalTime", that.updateTotalTime);
 
@@ -230,13 +231,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             currentTime: ".flc-videoPlayer-current",
             scrubber: ".flc-videoPlayer-scrubber"
         },
-        // TODO: Strings should be moved out into a single top-leve bundle
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
             scrubber: "Time scrub"
         }
     });
 
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
+        // TODO: these methods should be public functions, since people might like to alter them
+        //       (inherited code)
         that.updateCurrentTime = function () {
             that.locate("currentTime").text(that.model.states.currentTime);
         };
@@ -378,7 +381,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             volumeControl: "fl-videoPlayer-volumeControl",
             buttonIcon: "ui-icon-signal"
         },
-        // TODO: Strings should be moved out into a single top-leve bundle
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
             volume: "Volume"
         },
@@ -392,7 +395,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     styles: {
                         pressed: "fl-videoPlayer-muted"
                     },
-                    // TODO: Strings should be moved out into a single top-leve bundle
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
                     strings: {
                         press: "Mute",
                         release: "Un-mute"
@@ -476,7 +479,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         styles: {
             selected: "fl-videoPlayer-caption-selected"
         },
-        // TODO: Strings should be moved out into a single top-leve bundle
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
             captionsOff: "Captions OFF",
             turnCaptionsOff: "Turn Captions OFF"
@@ -492,7 +495,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     styles: {
                         pressed: "fl-videoPlayer-caption-active"
                     },
-                    // TODO: Strings should be moved out into a single top-leve bundle
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
                     strings: {
                         press: "Captions",
                         release: "Captions"
@@ -517,6 +520,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    // TODO: FLUID-4589 Restructre the caption model to reduce the code logic here
     fluid.videoPlayer.controllers.captionControls.bindCaptionModel = function (that) {
         that.applier.modelChanged.addListener("captions.selection", function (model, oldModel, changeRequest) {
             var oldSel = oldModel.captions.selection;
@@ -596,7 +600,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         model: {},
         modelPath: "pressed",
-        // TODO: Strings should be moved out into a single top-leve bundle
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {  // Integrators will likely override these strings
             press: "Press",
             release: "Release"
