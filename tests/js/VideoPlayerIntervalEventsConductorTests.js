@@ -35,25 +35,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }];
         // End of the test data
         
-        videoPlayerIntervalEventsConductorTests.asyncTest("HTML5 Media Timer", function () {
-            var timeToSet = 10;
-            var videoContainer = $(".flc-video");
-
-            var timer = fluid.videoPlayer.html5MediaTimer({
-                mediaElement: videoContainer,
-                listeners: {
-                    onTick: function (time) {
-                        jqUnit.assertEquals("The event onTick is fired with argument " + time, timeToSet, time);
-                        start();
-                    }
-                }
-            });
-          
-            setTimeout(function () {
-                timer.options.mediaElement[0].currentTime = timeToSet;
-            }, 10);
-        });
-
         var testFindCurrentInterval = function (currentTime, previousInterval, expected) {
             expect(1);
             var result = fluid.videoPlayer.intervalEventsConductor.findCurrentInterval(currentTime, testIntervalList, previousInterval);
@@ -84,8 +65,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onTick.fire(timeToSet);
         });
 
-        var testIntervalChangeSuccess = function (timeToSet, expectedCurrentInterval, expectedPreviousInterval, desc) {
-            videoPlayerIntervalEventsConductorTests.test("Success case of testing onIntervalChange event: " + desc, function () {
+        var testIntervalChangeFired = function (timeToSet, expectedCurrentInterval, expectedPreviousInterval, desc) {
+            videoPlayerIntervalEventsConductorTests.test("onIntervalChange event gets fired: " + desc, function () {
                 expect(2);
                 var that = fluid.videoPlayer.intervalEventsConductor({
                     intervalList: testIntervalList,
@@ -103,12 +84,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         };
         
-        testIntervalChangeSuccess(1.5, "0", null, "Interval is changed from none to one");
-        testIntervalChangeSuccess(2.1, "1", "0", "Interval is changed from one to another one");
-        testIntervalChangeSuccess(3.5, null, "1", "Interval is changed from one to none");
+        testIntervalChangeFired(1.5, "0", null, "Interval is changed from none to one");
+        testIntervalChangeFired(2.1, "1", "0", "Interval is changed from one to another one");
+        testIntervalChangeFired(3.5, null, "1", "Interval is changed from one to none");
 
-        var testIntervalChangeError = function (timeToSet, previousInterval, desc) {
-            videoPlayerIntervalEventsConductorTests.test("Error case of testing onIntervalChange event: " + desc, function () {
+        var testIntervalChangeNotFired = function (timeToSet, previousInterval, desc) {
+            videoPlayerIntervalEventsConductorTests.test("onIntervalChange event does NOT get fired: " + desc, function () {
                 expect(1);
                 
                 var onIntervalChangeFired = false;
@@ -130,8 +111,63 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         };
         
-        testIntervalChangeError(0.1, null, "Interval is changed from none to none");
-        testIntervalChangeError(1.5, "0", "Interval is changed to the same one");
+        testIntervalChangeNotFired(0.1, null, "Interval is changed from none to none");
+        testIntervalChangeNotFired(1.5, "0", "Interval is changed to the same one");
+
+        /*********************************************************************************
+         * Test case with a synthetic, test-driven timer component                       *
+         *********************************************************************************/
+
+        fluid.defaults("fluid.videoPlayer.testTimer", {
+            gradeNames: ["fluid.eventedComponent", "autoInit"],
+            finalInitFunction: "fluid.videoPlayer.testTimer.finalInit",
+            timeToTick: null,
+            events: {
+                onTick: null
+            }
+        });
+
+        fluid.videoPlayer.testTimer.finalInit = function (that) {
+            setTimeout(function () {
+                that.events.onTick.fire(that.options.timeToTick);
+            }, 1);
+        };
+
+        videoPlayerIntervalEventsConductorTests.asyncTest("intervalEventsConductor with a synthetic timer", function () {
+            expect(3);
+            
+            var timeToSet = 1;
+            var previousInterval = null;
+            var expectedCurrentInterval = "0";
+
+            var that = fluid.videoPlayer.intervalEventsConductor({
+                components: {
+                    testTimer: {
+                        type: "fluid.videoPlayer.testTimer",
+                        options: {
+                            timeToTick: timeToSet,
+                            events: {
+                                onTick: "{intervalEventsConductor}.events.onTick"
+                            }
+                        }
+                    }
+                },
+                intervalList: testIntervalList,
+                model: {
+                    previousIntervalId: previousInterval
+                },
+                listeners: {
+                    onTimeChange: function (time) {
+                        jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);
+                    },
+                    onIntervalChange: function (currentInterval, previousInterval) {
+                        jqUnit.assertEquals("The event onIntervalChange is fired with currentInterval " + expectedCurrentInterval, "0", currentInterval);
+                        jqUnit.assertEquals("The event onIntervalChange is fired with previousInterval " + previousInterval, previousInterval, previousInterval);
+                        start();
+                    }
+                }
+            });
+        });
 
     });
 })(jQuery);

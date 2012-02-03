@@ -36,8 +36,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
      *********************************************************************************/
     
     fluid.defaults("fluid.videoPlayer.intervalEventsConductor", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.intervalEventsConductor.finalInit",
+        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         events: {
             onTimeChange: null,
             onIntervalChange: null,
@@ -60,11 +59,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
     
-    fluid.videoPlayer.intervalEventsConductor.finalInit = function (that) {
-        that.applier = fluid.makeChangeApplier(that.options.model);
-        
-    };
-
     fluid.videoPlayer.intervalEventsConductor.inInterval = function (currentTimeInMillis, interval) {
         return interval.begin <= currentTimeInMillis && interval.end >= currentTimeInMillis;
     };

@@ -41,6 +41,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     /**
      * Convert the time in the format of hh:mm:ss.mmm to milliseconds.
+     * The time is normally extracted from the subtitle files in WebVTT or json format.
      * 
      * @param time: in the format hh:mm:ss.mmm
      * @return a number in millisecond
