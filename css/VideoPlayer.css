@@ -34,6 +34,7 @@
     width:100%;
     text-align: center;
     background-color: gray;
+    padding-bottom: 0.5em;
 }
 
 .fl-videoPlayer-controller * {
@@ -45,15 +46,17 @@
  * Play button
  */
 .fl-videoPlayer-play {
-    width: 16px;
-    height: 16px;
-    background-color: black;
-    border: 1px solid black;
+    width: 35px;
+    height: 35px;
+    border: 0;
     cursor: pointer;
-    background-image: url('../images/play.png');
+    background: #ffffff url('../images/play-black.png') no-repeat center center;
 }
 .fl-videoPlayer-playing {
-    background-image: url('../images/pause.png');
+    background-image: url('../images/pause-black.png');
+}
+.fl-videoPlayer-play:hover, .fl-videoPlayer-playing:hover {
+    background-color: yellow;
 }
 
 /*
@@ -63,16 +66,16 @@
     width: 35px;
     height: 35px;
     cursor: pointer;
-    background-image: url('../images/fullscreen.png');
+    border: 0;
+    background: #ffffff url('../images/fullscreen-black.png') no-repeat center center;
 }
 .fl-videoPlayer-fullscreen-on {
-    background-image: url('../images/fullscreen-exit.png');
+    background-image: url('../images/fullscreen-on-black.png');
 }
 .fl-videoPlayer-fullscreen:hover, .fl-videoPlayer-fullscreen:focus {
-    background-image: url('../images/fullscreen-hover.png');
+    background-color: yellow;
 }
 .fl-videoPlayer-fullscreen.fl-videoPlayer-fullscreen-on:hover, .fl-videoPlayer-fullscreen.fl-videoPlayer-fullscreen-on:focus {
-    background-image: url('../images/fullscreen-exit-hover.png');
 }
 
 /*
@@ -82,18 +85,19 @@
     width: 35px;
     height: 35px;
     cursor: pointer;
-    background-image: url('../images/volume.png');
+    border: 0;
+    background: #ffffff url('../images/volume-black.png') no-repeat center center;
 }
 .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
-    background-image: url('../images/volume-active.png');
+    background-color: yellow;
 }
 .fl-videoPlayer-muted {
-    background-image: url('../images/volume-muted.png');
+    background-image: url('../images/volume-muted-black.png');
 }
 .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-muted,
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
-    background-image: url('../images/volume-muted-active.png');
+    background-color: orange;
 }
 .fl-videoPlayer-volumeControl {
     display: none;
@@ -112,11 +116,19 @@
     width: 34px;
     height: 34px;
     cursor: pointer;
-    background-image: url('../images/captions.png');
+    border: 0;
+    background: #ffffff url('../images/captions-black.png') no-repeat center center;
+}
+.fl-videoPlayer-captions-button:hover {
+    background-color: yellow;
 }
 .fl-videoPlayer-captions-button.fl-videoPlayer-caption-active {
-    background-image: url('../images/captions-active.png');
+    background-color: orange;
 }
+.fl-videoPlayer-captions-button.fl-videoPlayer-caption-active:hover {
+    background-color: wheat;
+}
+
 ul.fl-videoPlayer-captions-languageList,
 ul.fl-videoPlayer-captions-languageList li {
     display: block;
