@@ -51,13 +51,14 @@
     display: block;
     position: absolute;
     bottom: -40px;
-    z-index: 100;
+    z-index: 101;   /* To make our div showin on top since captionator has 100 so */
 }
 
 .fl-videoPlayer-controller-menu-captions {
     display: block;
     position: absolute;
     bottom: -40px;
+    z-index: 101;   /* To make our div showin on top since captionator has 100 so */
 }
 
 

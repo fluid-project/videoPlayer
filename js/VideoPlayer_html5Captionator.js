@@ -19,6 +19,32 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 (function ($) {
 
+    /*******************************************************************************
+     * Browser type detection: html5 or non-html5.                                 *
+     *                                                                             *
+     * Add type tags of html5 into static environment for the html5 browsers.      *
+     *******************************************************************************/
+    fluid.registerNamespace("fluid.browser");
+
+    fluid.browser.html5 = function () {
+        // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
+        // Needs re-work at the integration of mediaElement.
+        var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
+        return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
+    };
+
+    var features = {
+        browserHtml5: fluid.browser.html5()
+    };
+    
+    fluid.merge(null, fluid.staticEnvironment, features);
+    
+    fluid.hasFeature = function (tagName) {
+        return fluid.find(fluid.staticEnvironment, function (value) {
+            return value && value.typeName === tagName ? true : undefined;
+        });
+    };
+    
     /********************************************************************
      * HTML5 Captionator                                                *
      * A wrapper component of captionatorjs (http://captionatorjs.com/) *
@@ -48,7 +74,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (element) {
-                element.mode = captionator.TextTrack.OFF;
+            element.mode = captionator.TextTrack.OFF;
         });
     };
     
@@ -69,12 +95,17 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     // hide all captions
     fluid.videoPlayer.html5Captionator.preInit = function (that) {
+        // Stop before we do anything. Captionator works only in HTML5 browser
+        if (!fluid.hasFeature("fluid.browser.html5")) {
+            return false;
+        }
   
         that.displayCaptions = function () {
+            var tracks = that.container[0].tracks;
             if (that.model.states.displayCaptions === true) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, that.container[0].tracks, that.model.captions.sources);
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, tracks, that.model.captions.sources);
             } else {
-                fluid.videoPlayer.html5Captionator.hideAllTracks(that.container[0].tracks);
+                fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
             }
         };
 
@@ -85,6 +116,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
+        // Stop before we do anything. Captionator works only in HTML5 browser
+        if (!fluid.hasFeature("fluid.browser.html5")) {
+            return false;
+        }
+        
         fluid.each(that.options.captions.sources, function (element, key) {
             var trackTag = $("<track />");
             
