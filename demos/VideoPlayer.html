@@ -1,8 +1,22 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>Video Player Demo</title>
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-layout.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-text.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-bw-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-wb-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-by-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-yb-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-text-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-wb/wb.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-bw/bw.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-by/by.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-yb/yb.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/FatPanelUIOptions.css" />
+
+        
         <link type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
 
@@ -22,13 +36,31 @@
 
         </head>
     <body>
-	    <h1>Infusion HTML 5 Video Player</h1>
+        <script>
+            fluid.pageEnhancer({
+                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+            });
+        </script>
+
+        <div class="flc-uiOptions fl-uiOptions-fatPanel">
+            <div class="flc-slidingPanel-panel flc-uiOptions-iframe"></div>
+            <div class="fl-panelBar">
+                <button class="flc-slidingPanel-toggleButton fl-toggleButton">Show/Hide</button>
+            </div>
+        </div>
+        <div class="flc-toc-tocContainer"> </div>
+
+        <h1>Infusion HTML 5 Video Player</h1>
 
         <div class="videoPlayer fl-videoPlayer">
         	
         </div>
 
-        <script type="text/javascript">
+        <script>
+            fluid.uiOptions.fatPanel(".flc-uiOptions", {
+                prefix: "../lib/infusion/components/uiOptions/html/"
+            });
+
             var vp = fluid.videoPlayer(".videoPlayer", {
                 model: {
                     video: {

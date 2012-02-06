@@ -86,3 +86,32 @@
     width: 60%;
 }
 
+
+/***********************************************************
+ * Styling overrides for the controls when using UIO themes
+ ***********************************************************/
+
+.fl-theme-uio-wb .ui-state-active .ui-button-text,
+.fl-theme-uio-wb .ui-state-active .ui-icon,
+.fl-theme-uio-wb .ui-state-default.ui-state-hover .ui-button-text,
+.fl-theme-uio-wb .ui-state-default.ui-state-hover .ui-icon {
+    background-color: #fff !important;
+}
+
+.fl-theme-uio-bw .ui-state-active .ui-button-text,
+.fl-theme-uio-bw .ui-state-active .ui-icon,
+.fl-theme-uio-bw .ui-state-default.ui-state-hover .ui-button-text,
+.fl-theme-uio-bw .ui-state-default.ui-state-hover .ui-icon,
+.fl-theme-uio-by .ui-state-active .ui-button-text,
+.fl-theme-uio-by .ui-state-active .ui-icon,
+.fl-theme-uio-by .ui-state-default.ui-state-hover .ui-button-text,
+.fl-theme-uio-by .ui-state-default.ui-state-hover .ui-icon {
+    background-color: #000 !important;
+}
+
+.fl-theme-uio-yb .ui-state-active .ui-button-text,
+.fl-theme-uio-yb .ui-state-active .ui-icon,
+.fl-theme-uio-yb .ui-state-default.ui-state-hover .ui-button-text,
+.fl-theme-uio-yb .ui-state-default.ui-state-hover .ui-icon {
+    background-color: #ff0 !important;
+}
