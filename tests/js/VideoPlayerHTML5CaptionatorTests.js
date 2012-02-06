@@ -18,12 +18,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
     $(document).ready(function () {
-
-        var container = ".videoPlayer";
-
         fluid.setLogging(false);    // disable it not to mess up with FireBug in FF
-        var videoPlayerCaptionLoaderTests = new jqUnit.TestCase("HTML5 Video Player Captionator Test Suite");
-
+        
+        var container = ".videoPlayer";
+        var videoPlayerCaptionatorTests = new jqUnit.TestCase("Video Player HTML5 Captionator Test Suite");
+        
         var testOptions1 = {
             model: {
                 video: {
@@ -53,18 +52,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     currentTrack: "english"
                 }
-
+            },
+            templates: {
+                videoPlayer: {
+                    href: "../../html/videoPlayer_template.html"
+                }
             }
         };
         
-        function setupEnvironment(withHtml5) {
-            delete fluid.staticEnvironment.browserHtml5;
-            
-            if (withHtml5) {
-                fluid.staticEnvironment.browserHtml5 = fluid.typeTag("fluid.browser.html5");
-            }
-        }
-
         var initVideoPlayer = function (options, callback) {
             options = options || {};
             
@@ -78,32 +73,38 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             return fluid.videoPlayer(container, options);
         };
+
+        function setupEnvironment(withHtml5) {
+            if (withHtml5) {
+                fluid.staticEnvironment.browserHtml5 = fluid.typeTag("fluid.browser.html5");
+            } else {
+                fluid.staticEnvironment.browserHtml5 = undefined;
+            }
+        }
         
-        /*
-videoPlayerCaptionLoaderTests.asyncTest("Check that html5Captionator rendered in HTML5 browser", function () {
+        videoPlayerCaptionatorTests.asyncTest("HTML5: html5Captionator was initialized", function () {
             expect(1);
             
             setupEnvironment(true);
             
             initVideoPlayer(testOptions1, function (videoPlayer) {
-                jqUnit.assertEquals("test test", 0, 0);
-                
+                videoPlayer.events.onViewReady.fire();
+                jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
                 start();
             });
         });
-        
-        videoPlayerCaptionLoaderTests.asyncTest("Check that html5Captionator did not render in non HTML5 browser", function () {
+
+        videoPlayerCaptionatorTests.asyncTest("NO HTML5: html5Captionator was not initialized", function () {
             expect(1);
             
             setupEnvironment(false);
             
             initVideoPlayer(testOptions1, function (videoPlayer) {
-                jqUnit.assertEquals("test test", 0, 0);
-                
+                videoPlayer.events.onViewReady.fire();     
+                jqUnit.assertUndefined("html5Captionator has NOT been instantiated", videoPlayer.html5Captionator);
                 start();
             });
         });
-*/
 
     });
 })(jQuery);
