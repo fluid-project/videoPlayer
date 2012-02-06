@@ -2,35 +2,37 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>HTML5 Video Player Captionator Test Suite</title>
+        <title>Video Player HTML5 Captionator Test Suite</title>
 
         <link rel="stylesheet" type="text/css" media="screen" href="../lib/qunit/css/qunit.css" />
 
         <script type="text/javascript" src="../../lib/infusion/MyInfusion.js"></script>
-        
-        <!-- VideoPlayer dependencies -->
+        <script type="text/javascript" src="../../lib/jquery-ui/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_timeUpdateAdapter.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_html5Captionator.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_media.js"></script>
-        <script type="text/javascript" src="../../js/VideoPlayer_timeUpdateAdapter.js"></script>
-
+        <script type="text/javascript" src="../../js/HTML5-backcompat.js"></script>
+        <script type="text/javascript" src="../../lib/captionator/js/captionator.js"></script>
+        
         <!--  jqUnit test framework js files -->
         <script type="text/javascript" src="../lib/qunit/js/qunit.js"></script>
-        <script type="text/javascript" src="../lib/jqUnit/js/jqUnit.js"></script>  
+        <script type="text/javascript" src="../lib/jqUnit/js/jqUnit.js"></script>
+        <script type="text/javascript" src="../lib/jquery-ui/js/jquery.simulate.js"></script>        
 
         <!--  These are tests that have been written using this page as data and test supports -->
         <script type="text/javascript" src="../js/VideoPlayerHTML5CaptionatorTests.js"></script>
 
     </head>
     <body id="body">
-        <!-- This is the markup that jqUnit will look for when running tests and displaying the results -->
-        <h1 id="qunit-header">HTML5 Video Player Captionator Test Suite</h1>
-        <h2 id="qunit-banner"></h2>
-        <div id="qunit-testrunner-toolbar"></div>
-        <h2 id="qunit-userAgent"></h2>
-        <ol id="qunit-tests"></ol>
-        <div id="main">
+      <!-- This is the markup that jqUnit will look for when running tests and displaying the results -->
+      <h1 id="qunit-header">Video Player HTML5 Captionator Test Suite</h1>
+      <h2 id="qunit-banner"></h2>
+      <div id="qunit-testrunner-toolbar"></div>
+      <h2 id="qunit-userAgent"></h2>
+      <ol id="qunit-tests"></ol>
+      <div id="main">
 
         <div class="videoPlayer fl-videoPlayer">
             
