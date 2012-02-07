@@ -70,6 +70,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{controllers}.applier"
                 }
             },
+            playButtonCenter: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+                container: "{controllers}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-play-center"
+                    },
+                    styles: {
+                        pressed: "fl-videoPlayer-playing"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: {
+                        press: "Play",
+                        release: "Pause"
+                    },
+                    model: "{controllers}.model",
+                    modelPath: "states.play",
+                    applier: "{controllers}.applier"
+                }
+            },
             playButton: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
                 container: "{controllers}.container",
@@ -315,7 +335,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var volumeControl = that.locate("volumeControl");
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
-            orientation: "vertical",
+            orientation: "horizontal",
             range: "min",
             min: that.model.states.minVolume,
             max: that.model.states.maxVolume,
