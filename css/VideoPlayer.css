@@ -24,6 +24,7 @@
  * Controller area
  */
  
+/*  ========== is this tooltip style used?? ============== */
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 3px 5px;
@@ -45,16 +46,16 @@
     display: inline-block;
     margin: auto;
 }
+.fl-videoPlayer-button {
+    width: 3em;
+    height: 3em;
+    border: 0;
+    cursor: pointer;
+}
 
 /*
  * Play button
  */
-.fl-videoPlayer-play {
-    width: 35px;
-    height: 35px;
-    border: 0;
-    cursor: pointer;
-}
 .fl-videoPlayer-theme .fl-videoPlayer-play {
     background: #ffffff url('../images/play-black.png') no-repeat center center;
 }
@@ -69,12 +70,6 @@
 /*
  * Fullscreen button
  */
-.fl-videoPlayer-fullscreen {
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    border: 0;
-}
 .fl-videoPlayer-theme .fl-videoPlayer-fullscreen {
     background: #ffffff url('../images/fullscreen-black.png') no-repeat center center;
 }
@@ -89,12 +84,6 @@
 /*
  * Volume controls
  */
-.fl-videoPlayer-mute {
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    border: 0;
-}
 .fl-videoPlayer-theme .fl-videoPlayer-mute {
     background: #ffffff url('../images/volume-black.png') no-repeat center center;
 }
@@ -122,12 +111,6 @@
 /*
  * Caption controls
  */
-.fl-videoPlayer-captions-button {
-    width: 34px;
-    height: 34px;
-    cursor: pointer;
-    border: 0;
-}
 .fl-videoPlayer-theme .fl-videoPlayer-captions-button {
     background: #ffffff url('../images/captions-black.png') no-repeat center center;
 }
@@ -145,16 +128,11 @@ ul.fl-videoPlayer-captions-languageList,
 ul.fl-videoPlayer-captions-languageList li {
     display: block;
 }
-ul.fl-videoPlayer-captions-languageList li input {
-    clip: rect(0, 0, 0, 0);
-    position: absolute;
-}
 ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     color: yellow;
 }
 .fl-videoPlayer-time {
-    /*margin: 0 5px;
-    */padding: 0.4em;
+    padding: 0.4em;
     line-height: 1.4;
     font-size: 1.1em;
     height: 100%;
@@ -175,7 +153,6 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
 .fl-videoPlayer-menu-captions {
     display: block;
     position: absolute;
-    bottom: -40px;
 }
 
 

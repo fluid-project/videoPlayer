@@ -177,7 +177,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCreateCaptionnerReady: null
         },
         listeners: {
-            onViewReady: "{videoPlayer}.refresh"
+            onViewReady: "{videoPlayer}.fullscreen"
         },
         selectors: {
             video: ".flc-videoPlayer-video",
@@ -330,9 +330,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.options.model.captions.choices.push("none");
         that.options.model.captions.names.push(that.options.strings.captionsOff);
 
-        // TODO: find out why attaching this in postInit is too late for it to be bound as a listener in the defaults
-        that.refresh = function () {
-            that.fullscreen();
+        that.fullscreen = function () {
+            var video = that.locate("video");
+            if (that.model.states.fullscreen === true) {
+                that.container.css({
+                    // TODO: This doesn't actually do full-screen, it simply tries to maximise
+                    // to the current window size. (FLUID-4570)
+                    width: window.innerWidth + "px",
+                    height: window.innerHeight - 20 + "px"
+                });
+            } else {
+                that.container.css({
+                    width: video[0].videoWidth,
+                    height: video[0].videoHeight
+                });
+            }
         };
     };
 
@@ -350,23 +362,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "path": "states.play",
                 "value": !that.model.states.play
             });
-        };
-
-        that.fullscreen = function () {
-            var video = that.locate("video");
-            if (that.model.states.fullscreen === true) {
-                that.container.css({
-                    // TODO: This doesn't actually do full-screen, it simply tries to maximise
-                    // to the current window size. (FLUID-4570)
-                    width: window.innerWidth + "px",
-                    height: window.innerHeight - 20 + "px"
-                });
-            } else {
-                that.container.css({
-                    width: video[0].videoWidth,
-                    height: video[0].videoHeight
-                });
-            }
         };
 
         that.incrVolume = function () {
