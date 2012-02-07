@@ -33,12 +33,14 @@
     bottom: 0;
     right: 0;
     padding-right: 0.5em;
+    padding-bottom: 0.3em;
 }
 .fl-videoPlayer-bottomLeftControls {
     position: absolute;
     bottom: 0;
     left: 0;
     padding-left: 0.5em;
+    padding-bottom: 0.3em;
 }
 
 /*  ========== is this tooltip style used?? ============== */
@@ -146,14 +148,19 @@
 
 ul.fl-videoPlayer-captions-languageList {
     position: absolute;
-    bottom: 0;
+    bottom: 3em;
+    padding-left: 0;
 }
+
 ul.fl-videoPlayer-captions-languageList,
 ul.fl-videoPlayer-captions-languageList li {
     display: block;
 }
-ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
-    color: yellow;
+.fl-videoPlayer-theme .fl-videoPlayer-captions-languageList {
+    background: #FFFFFF;
+}
+.fl-videoPlayer-theme ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
+    color: red;
 }
 .fl-videoPlayer-time {
     padding: 0.1em;
@@ -195,8 +202,8 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
  */
  
 .fl-videoPlayer-captionArea {
-    bottom:1.5em;
-    position: relative;
+    bottom:3.5em;
+    position: absolute;
     text-align:center;
 }
 
