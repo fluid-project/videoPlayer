@@ -71,7 +71,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.applier.modelChanged.addListener("states.displayCaptions", that.displayCaptions);
     };
     
-    
+    // Hide all tracks
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (element) {
             element.mode = captionator.TextTrack.OFF;
@@ -95,11 +95,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     // hide all captions
     fluid.videoPlayer.html5Captionator.preInit = function (that) {
-        // Stop before we do anything. Captionator works only in HTML5 browser
-        if (!fluid.hasFeature("fluid.browser.html5")) {
-            return false;
-        }
   
+        // listener for hiding/showing all captions
         that.displayCaptions = function () {
             var tracks = that.container[0].tracks;
             if (that.model.states.displayCaptions === true) {
@@ -109,6 +106,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
         };
 
+        // listener for changed selected currentTrack
         that.changeCaptions = function () {
             fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, that.container[0].tracks, that.model.captions.sources);
         };
@@ -116,12 +114,35 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
+        var sources = that.options.captions.sources;
+        var currentTrack = that.options.captions.currentTrack;
+        
         // Stop before we do anything. Captionator works only in HTML5 browser
         if (!fluid.hasFeature("fluid.browser.html5")) {
+            that.events.onReady.fire(that);
             return false;
         }
         
-        fluid.each(that.options.captions.sources, function (element, key) {
+        // Do not do anything if there are no sources to add
+        if (!that.options.captions || !sources || sources.length === 0) {
+            that.events.onReady.fire(that);
+            return false;
+        }
+        
+        // If currentTrack is not specified, then default it to the first track
+        if (!currentTrack) {
+            for (var key in sources) {
+                if (sources.hasOwnProperty(key)) {
+                    fluid.merge(undefined, that.options.captions, {
+                        currentTrack: key
+                    });
+                    break;
+                }
+            }
+        }
+        
+        // Start adding tracks to the video tag
+        fluid.each(sources, function (element, key) {
             var trackTag = $("<track />");
             
             trackTag.attr("kind", element.kind);
@@ -130,7 +151,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             trackTag.attr("srclang", element.srclang);
             trackTag.attr("label", element.label);
             
-            // TODO: We want to have a multi caption support!!!
+            // TODO: We want to have a multi caption support in future
             if (key === that.options.captions.currentTrack) {
                 trackTag.attr("default", true);
             }
@@ -138,6 +159,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.container.append(trackTag);
         });
 
+        // Create captionator code which will add a captionator div to the HTML
         captionator.captionify(that.container[0]);
         
         bindCaptionatorModel(that);
