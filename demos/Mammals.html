@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>What is a mammal?</title>
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-reset-global.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-layout.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-text.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-bw-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-wb-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-by-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-yb-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-text-uio.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-wb/wb.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-bw/bw.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-by/by.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-yb/yb.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/FatPanelUIOptions.css" />
+
+        <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
+        <link type="text/css" href="mammals.css" rel="stylesheet" />
+
+        <!-- Fluid and jQuery Dependencies -->
+        <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
+        <!-- Utils -->
+        <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
+        <!--[if lt IE 9]>
+        	<script type="text/javascript" src="../js/HTML5-backcompat.js"></script>
+        <![endif]-->      
+        <!-- VideoPlayer dependencies -->
+        <script type="text/javascript" src="../js/VideoPlayer.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_captionner.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_captionLoader.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
+
+        </head>
+    <body>
+        <script>
+            fluid.pageEnhancer({
+                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+            });
+        </script>
+
+        <div class="flc-uiOptions fl-uiOptions-fatPanel">
+            <div class="flc-slidingPanel-panel flc-uiOptions-iframe"></div>
+            <div class="fl-panelBar">
+                <button class="flc-slidingPanel-toggleButton fl-toggleButton">Show/Hide</button>
+            </div>
+        </div>
+        <div class="flc-toc-tocContainer"> </div>
+
+        <header class="fl-clearfix">
+            <img class="logo" alt="Beyond Penguins and Polar Bears Logo" src="images/logo.png" />
+
+            <div class="top-nav">
+                <nav>
+                    <ul>
+                        <li>Archive</li>
+                        <li>Stories for Students</li>
+                        <li>Browse Columns</li>
+                        <li>Podcasts</li>
+                        <li>Standards</li>
+                        <li>Web Seminars</li>
+                        <li>Print On Demand</li>
+                        <li>Contributors</li>
+                        <li class="last">Email Updates</li>
+                    </ul>
+                </nav>
+        
+                <form class="search">
+        	        <label class="fl-hidden-accessible" for="search-field">Search</label>
+        	        <input type="search" id="search-field" placeholder="Search" />
+        	        <input class="fl-hidden" type="submit" value="Search" />
+                </form>
+            </div>
+        </header>
+        
+        <div class="content">
+            <nav class="breadcrumbs">
+                <ul>
+    		        <li><a>Home</a> &raquo;</li>
+                    <li><a>Polar Mammals</a> &raquo;</li>
+                    <li>What is a Mammal? Answers from Ross MacPhee	</li>
+                </ul>
+            </nav>
+        
+            <article>
+                <section>
+                    <h1>What is a Mammal? Answers from Ross MacPhee</h1>
+                    <p>To bring you some basic facts about mammals, we interviewed Ross MacPhee, curator in the Department of Mammalogy of the American Museum of Natural History (AMNH). A paleomammalogist, he travels around the world studying mammals of the ancient past as well as those of today. In particular, MacPhee studies woolly mammoths, the not-so-distant relatives of our present-day elephants.</p>
+                    <div class="pic">
+                        <img src="http://beyondpenguins.ehe.osu.edu/files/2011/06/web_macphee.jpg" alt="Dr. Macphee"/>
+                        <p>Dr. Ross MacPhee. Photo courtesy of Clare Fleming, AMNH.</p>
+                    </div>
+                    <p>For more on his research, be sure to read our article What Killed the Mammoths? Ross MacPhee Looks for Answers, also in this issue.</p>
+                    <p>You can read excerpts of this interview here or listen to our accompanying podcasts that we’ve created in partnership with AMNH for you and your students. Or listen to excerpts in our podcasts.</p>
+                </section>
+                
+                <section>
+                    <h2>What is a mammal?</h2>
+                    <p><strong>MacPhee</strong>: Mammals are a group of animals known as vertebrates: animals with backbones and four legs [tetrapods], whose young develop through a series of complex birth membranes. They are the only animals that have distinct characteristics of hair, feed from mother&#8217;s milk, and have three tiny bones that interpret sound into the brain.</p>
+                    <p>You can also watch this podcast in <a href="http://www.youtube.com/watch?v=0jw74pfWfxA">YouTube</a>.</p>
+                    <div class="mammals-video fl-videoPlayer"></div>
+                </section>
+            
+                <section>
+                    <h2>What kind of mammals do you find in the Arctic?</h2>
+                    <p><strong>MacPhee</strong>: There aren’t that many completely distinctive Arctic animals when it comes to land mammals. They live in larger ranges beyond the Arctic. Some of the mammals that live in Arctic regions include large herbivores like musk ox and caribou; carnivores such as polar bears and arctic foxes; and smaller animals like arctic hares and other animals within rodent groups.</p>
+                    <p>Sea mammals are very diverse. They consist of the whale family, which includes animals like porpoises and orcas; the seal group, consisting of walruses, sea lions, and ribbon seals.</p>
+                    <div class="polar-mammals-video fl-videoPlayer"></div>
+                </section>
+
+                <section>
+                    <h2>What about Antarctic mammals?</h2>
+                    <p><strong>MacPhee</strong>: There are no land mammals in Antarctica and there haven&#8217;t been for at least 30 million years because the conditions are permanently cold, unlike the Arctic. Just like in the Arctic, the seas are home to seals, whales, and porpoises, but, of course, comprised of different species. Baleen whales rely on krill and plankton that they eat in great quantities in the ocean. Krill also serve as a rich food source for seals.</p>
+                </section>
+            
+                <section>
+                    <h2>What adaptations enable mammals to live in a polar environment?</h2>
+                    <p><strong>MacPhee</strong>: One of the main ways that mammals adapt to the polar regions is through mechanisms providing insulation, such as fur, blubber, and an efficient circulatory system. For marine mammals, insulation is less of a problem than you may think. As long as they&#8217;re in water that&#8217;s not frozen at 32 degrees Fahrenheit [0 degrees Celsius], a few inches of blubber and fur patterning that is high in R-value [thermal resistance] are sufficient insulation to keep them warm.</p>
+                    <p>On land, the extreme temperatures require that animals have other adaptations, one of the most significant ones being hibernation. Some mammals go into a true deep sleep while others go into what is known as estivation, reducing their activity in order to save their energy.</p>
+                    <p>For example, female polar bears give birth while they hibernate. They dig a cave in the snow and stay there until their pups are born, providing a warm enclosure for them and reducing any need to depart from their pups into the early stages of their development after they&#8217;ve been born.</p>
+                    <p>Smaller mammals like rodents usually stay active the entire winter. As the snow melts, you can see runways underneath where they feed on grass shoots or roots-anything preserved under the snow for them to eat.</p>
+                    <div class="polar-adapt-video fl-videoPlayer"></div>
+                    <p>You can also watch this podcast in <a href="http://www.youtube.com/watch?v=3_3p2ylZDAE">YouTube</a>.</p>
+                    <p>Another way in which polar mammals survive is migration. This behavioral adaptation allows mammals to locate suitable feeding and breeding grounds. Both terrestrial mammals, such as caribou, and marine mammals, such as whales, migrate.</p>
+                </section>
+            </article>
+            
+            <aside>
+                <h2>Resources</h2>
+                <ul class="resources">
+                    <li><a href="http://animal.discovery.com/guides/mammals/mammals.html">Mammal Guide</a>
+                        <span class="desc">Explore the world of mammals through categories such as Body Basics, Senses, Social Behavior, Mammal Watching, and Mammals by Biome.</span>
+                    </li>
+                    <li><a href="http://www.ucmp.berkeley.edu/mammal/mammal.html">The Hall of Mammals</a>
+                        <span class="desc">Information about four major groups of mammals: placental mammals, marsupials, monotremes, and the extinct multituberculata group.</span>
+                    </li>
+                    <li><a href="http://animals.nationalgeographic.com/animals/mammals.html">Mammals</a>
+                        <span class="desc">An overview of mammals, and articles, sounds, and images of individual mammals.</span>
+                    </li>
+                    <li><a title="Mammal podcast" href="http://beyondpenguins.ehe.osu.edu/issue/polar-mammals/why-polar-bears-dont-eat-penguins-podcast-episode-2">Polar Podcasts: Mammals</a>
+                        <span class="desc">Listen to excerpts from our interview with Ross MacPhee and learn about highlights from our magazine and blog in this podcast. Our new monthly podcast series is also available on the NSDL <a href="http://deimos3.apple.com/WebObjects/Core.woa/Browse/ucar.edu.1801055818.01801055820">section</a> of iTunes U: Beyond Campus.</span>
+                    </li>
+                </ul>
+            </aside>
+        
+            <aside class="standards">
+                <h2><i>NATIONAL SCIENCE EDUCATION STANDARDS</i>: SCIENCE CONTENT STANDARDS</h2>
+                <p><em>The entire <a href="http://books.nap.edu/catalog.php?record_id=4962">National Science Education Standards</a> document can be read online or downloaded for free from the National Academies Press web site. The following excerpt was taken from <a href="http://books.nap.edu/openbook.php?record_id=4962&amp;page=103">Chapter 6</a>.</em></p>
+                <p>A study of mammals aligns with the Life Science content standards of the <i>National Science Education Standards</i>. In grades K-4, students focus on the characteristics and life cycles of organisms and the way in which organisms live in their environments. Students in grades 5-8 expand on this understanding by focusing on populations, communities of species, and the ways they interact with each other and with their environment.</p>
+                <p>Teaching about mammals can meet a wide variety of fundamental concepts and principles, including:</p>
+
+                <h3>K-4 Life Science</h3>
+                <ul>
+                    <li>The Characteristics of Organisms</li>
+                    <li>Life Cycles of Organisms</li>
+                    <li>Organisms and Their Environments</li>
+                </ul>
+                <h3>5-8 Life Science</h3>
+                <ul>
+                    <li>Reproduction and Heredity</li>
+                    <li>Regulation and Behavior</li>
+                    <li>Populations and Ecosystems</li>
+                    <li>Diversity and Adaptations of Organisms</li>
+                </ul>
+            </aside>
+        
+            <p class="author">This article was written by Robert Payo. For more information, see the <a title="Contributors" href="http://beyondpenguins.ehe.osu.edu/contributors">Contributors</a> page. Email Robert at <a href="mailto:beyondpenguins@msteacher.org">beyondpenguins@msteacher.org</a>.</p>
+            <p class="copyright">Copyright January 2009 &#8211; The Ohio State University. This material is based upon work supported by the National Science Foundation under Grant No. 0733024. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation. This work is licensed under an <a href="http://creativecommons.org/licenses/by-sa/3.0/"> Attribution-ShareAlike 3.0 Unported Creative Commons license</a>.</p>
+        </div>
+        
+        <footer>
+            <ul><li><a href="http://beyondpenguins.ehe.osu.edu/terms-of-use">Terms of Use</a></li>
+                <li><a href="http://beyondpenguins.ehe.osu.edu/funded-by-nsf">Funded by NSF</a></li>
+                <li><a href="http://beyondpenguins.ehe.osu.edu/about">About</a></li>
+                <li class="last"><a href="http://beyondpenguins.ehe.osu.edu/contact">Contact</a></li>
+            </ul>
+        </footer>
+
+
+        <script>
+            fluid.uiOptions.fatPanel(".flc-uiOptions", {
+                prefix: "../lib/infusion/components/uiOptions/html/"
+            });
+
+            fluid.videoPlayer(".mammals-video", {
+                model: {
+                    video: {
+                        sources: [
+                            {
+                                src: "videos/Mammals/Mammals.mp4",
+                                type: "video/mp4"
+                            },
+                            {
+                                src: "videos/Mammals/Mammals.webm",
+                                type: "video/webm"
+                            },
+                            {
+                                src: "http://www.youtube.com/v/0jw74pfWfxA",
+                                type: "youtube"
+                            }
+                        ]
+                    },
+                    captions: {
+                        sources: {
+                            english: {
+                                src: "videos/Mammals/Mammals.en.json",
+                                type: "JSONcc"
+                            }, 
+                            francaise: {
+                                src: "videos/Mammals/Mammals.fr.json",
+                                type: "JSONcc"
+                            }
+                        }
+                    }
+
+                }
+            });
+
+            fluid.videoPlayer(".polar-mammals-video", {
+                model: {
+                    video: {
+                        sources: [
+                            {
+                                src: "videos/PolarMammals/PolarMammals.mp4",
+                                type: "video/mp4"
+                            },
+                            {
+                                src: "videos/PolarMammals/PolarMammals.webm",
+                                type: "video/webm"
+                            },
+                            {
+                                src: "http://www.youtube.com/v/h_oHNP50FGM",
+                                type: "youtube"
+                            }
+                        ]
+                    },
+                    captions: {
+                        sources: {
+                            english: {
+                                src: "videos/PolarMammals/PolarMammals.en.json",
+                                type: "JSONcc"
+                            }, 
+                            francaise: {
+                                src: "videos/PolarMammals/PolarMammals.fr.json",
+                                type: "JSONcc"
+                            }
+                        }
+                    }
+
+                }
+            });
+
+            fluid.videoPlayer(".polar-adapt-video", {
+                model: {
+                    video: {
+                        sources: [
+                            {
+                                src: "videos/PolarMammalsAdaptations/PolarMammalsAdaptations.mp4",
+                                type: "video/mp4"
+                            },
+                            {
+                                src: "videos/PolarMammalsAdaptations/PolarMammalsAdaptations.webm",
+                                type: "video/webm"
+                            },
+                            {
+                                src: "http://www.youtube.com/v/3_3p2ylZDAE",
+                                type: "youtube"
+                            }
+                        ]
+                    },
+                    captions: {
+                        sources: {
+                            english: {
+                                src: "videos/PolarMammalsAdaptations/PolarMammalsAdaptations.en.json",
+                                type: "JSONcc"
+                            }, 
+                            francaise: {
+                                src: "videos/PolarMammalsAdaptations/PolarMammalsAdaptations.fr.json",
+                                type: "JSONcc"
+                            }
+                        }
+                    }
+
+                }
+            });
+
+        </script>
+	</body>
+</html>
