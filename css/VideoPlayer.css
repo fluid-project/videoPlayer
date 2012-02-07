@@ -23,6 +23,18 @@
 /*
  * Controller area
  */
+.fl-videoPlayer-bottom {
+    position: absolute;
+    bottom: 0;
+    width:100%;
+}
+.fl-videoPlayer-controller {
+    padding-bottom: 0.5em;
+    display: none;
+}
+.fl-videoPlayer:hover .fl-videoPlayer-controller {
+    display: block;
+}
 .fl-videoPlayer-bottomButtons {
     margin-top: 0.3em;
 }
@@ -36,25 +48,10 @@
     display: inline-block;
     margin-right: 0.5em;
 }
-
-/*  ========== is this tooltip style used?? ============== */
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 3px 5px;
 }
-.fl-videoPlayer-theme .fl-videoPlayer-tooltip {
-    border      : 1px solid #CCCCCC;
-}
-
-.fl-videoPlayer-controller {
-    width:100%;
-    padding-bottom: 0.5em;
-    position: absolute;
-    bottom: 0;
-}
-.fl-videoPlayer-theme .fl-videoPlayer-controller {
-}
-
 .fl-videoPlayer-button {
     width: 3em;
     height: 3em;
@@ -188,8 +185,6 @@ ul.fl-videoPlayer-captions-languageList li {
  */
  
 .fl-videoPlayer-captionArea {
-    bottom:3.5em;
-    position: absolute;
     text-align:center;
 }
 
