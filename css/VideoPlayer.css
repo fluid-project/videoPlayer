@@ -23,24 +23,18 @@
 /*
  * Controller area
  */
-.fl-videoPlayer-centerControls {
-    position: absolute;
-    top: 45%;
-    left: 45%;
+.fl-videoPlayer-bottomButtons {
+    margin-top: 0.3em;
 }
-.fl-videoPlayer-bottomRightControls {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding-right: 0.5em;
-    padding-bottom: 0.3em;
+.fl-videoPlayer-leftButtons * {
+    display: inline-block;
+    float: left;
+    margin-left: 0.5em;
 }
-.fl-videoPlayer-bottomLeftControls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    padding-left: 0.5em;
-    padding-bottom: 0.3em;
+.fl-videoPlayer-rightButtons * {
+    float: right;
+    display: inline-block;
+    margin-right: 0.5em;
 }
 
 /*  ========== is this tooltip style used?? ============== */
@@ -61,10 +55,6 @@
 .fl-videoPlayer-theme .fl-videoPlayer-controller {
 }
 
-.fl-videoPlayer-controller * {
-    display: inline-block;
-    margin: auto;
-}
 .fl-videoPlayer-button {
     width: 3em;
     height: 3em;
@@ -108,6 +98,7 @@
  */
 .fl-videoPlayer-theme .fl-videoPlayer-mute {
     background: #ffffff url('../images/volume-black.png') no-repeat center center;
+    margin-left: 0;
 }
 .fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
 .fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
@@ -169,6 +160,8 @@ ul.fl-videoPlayer-captions-languageList li {
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 0.3em;
 }
 .fl-videoPlayer-theme .fl-videoPlayer-time {
     background-color: white;
@@ -178,13 +171,6 @@ ul.fl-videoPlayer-captions-languageList li {
  * Scrub bar controls
  */
 .fl-videoPlayer-scrubberContainer {
-    width: 100%;
-    bottom: 2em;
-    position: absolute;
-}
-.fl-videoPlayer-scrubberContainer * {
-    margin: auto;
-    display: inline-block;
 }
 .fl-videoPlayer-scrubberContainer .ui-slider-handle {
     width: 0.1em;
