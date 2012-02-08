@@ -165,7 +165,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         renderSources(that);
         bindMediaModel(that);
         bindMediaDOMEvents(that);
-        
         that.events.onMediaReady.fire(that);
     };
 
