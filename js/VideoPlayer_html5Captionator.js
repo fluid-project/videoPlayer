@@ -110,30 +110,35 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.changeCaptions = function () {
             fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, that.container[0].tracks, that.model.captions.sources);
         };
+        
+        // Function which would trigger onReady event and return false if captionator should not be created
+        that.createCaptionator = function (captions) {
+            if (!fluid.hasFeature("fluid.browser.html5") ||     // Stop before we do anything. Captionator works only in HTML5 browser
+                (!captions || !captions.sources || captions.sources.length === 0)) { // Do not do anything if there are no sources to add
+                    that.events.onReady.fire(that);
+                    return false;
+            }
+            return true;
+        };
     };
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var sources = that.options.captions.sources;
-        var currentTrack = that.options.captions.currentTrack;
+        var captions = that.options.captions;
         
-        // Stop before we do anything. Captionator works only in HTML5 browser
-        if (!fluid.hasFeature("fluid.browser.html5")) {
-            that.events.onReady.fire(that);
+        // Before we go any further check if it makes sense to create captionator and bind events
+        if(!that.createCaptionator(captions)) {
             return false;
         }
         
-        // Do not do anything if there are no sources to add
-        if (!that.options.captions || !sources || sources.length === 0) {
-            that.events.onReady.fire(that);
-            return false;
-        }
+        var sources = captions.sources;
+        var currentTrack = captions.currentTrack;
         
         // If currentTrack is not specified, then default it to the first track
         if (!currentTrack) {
             for (var key in sources) {
                 if (sources.hasOwnProperty(key)) {
-                    fluid.merge(undefined, that.options.captions, {
+                    fluid.merge(undefined, captions, {
                         currentTrack: key
                     });
                     break;
@@ -152,7 +157,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             trackTag.attr("label", element.label);
             
             // TODO: We want to have a multi caption support in future
-            if (key === that.options.captions.currentTrack) {
+            if (key === captions.currentTrack) {
                 trackTag.attr("default", true);
             }
 
