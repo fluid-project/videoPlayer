@@ -139,6 +139,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
 
+        that.events.onFocus.addListener(function () {
+            that.container.show();
+            that.locate("play").focus();
+        });
+
+        // hide controllers when focus leaves controls
+        fluid.each(that.options.selectors, function (item, key) {
+            fluid.deadMansBlur(item, {
+                exclusions: that.options.selectors,
+                handler: function () {
+                    that.container.hide();
+                }
+            });
+        });
+
         that.events.onControllersReady.fire(that);
     };
     
@@ -331,9 +346,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "role": "slider"
         });
 
-        fluid.tabindex(that.container, 0);
+        fluid.tabbable(that.container);
         fluid.tabindex(that.locate("mute"), -1);
         fluid.tabindex(volumeControl, -1);
+        fluid.tabindex(volumeControl.find(".ui-slider-handle"), -1);
 
         fluid.activatable(that.container, function (evt) {
             that.muteButton.events.onPress.fire(evt);

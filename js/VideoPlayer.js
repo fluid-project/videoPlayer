@@ -122,7 +122,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onVolumeChange: "{videoPlayer}.events.onVolumeChange",
                         onStartTimeChange: "{videoPlayer}.events.onStartTimeChange",
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
-                        afterTimeChange: "{videoPlayer}.events.afterTimeChange"
+                        afterTimeChange: "{videoPlayer}.events.afterTimeChange",
+                        onFocus: "{videoPlayer}.events.onFocus"
                     }
                 }
             },
@@ -169,6 +170,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartTimeChange: null,
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
+            onFocus: null,
             onReady: null,
             
             // The following events are private
@@ -270,8 +272,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var video = that.locate("video");
         video.fluid("tabbable");
         video.fluid("activatable", [that.play, opts]);
-        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
-        video.focus();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -284,6 +284,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             //that shouldn't be usefull but the video is too big if it's not used
             that.container.css("width", video[0].videoWidth);
             bindKeyboardControl(that);
+        });
+        that.locate("video").focus(function () {
+            that.events.onFocus.fire();
         });
     };
 
