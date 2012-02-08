@@ -37,6 +37,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent", "autoInit"], 
+        preInitFunction: "fluid.videoPlayer.controllers.preInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
@@ -111,14 +113,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
-        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onControllersReady: null,
             onControllersHide: null,
             onVolumeChange: null,
             onStartTimeChange: null,
             onTimeChange: null,
-            afterTimeChange: null
+            afterTimeChange: null,
+            onShow: null,
+            onShowAndRefocus: null,
+            onHide: null
+        },
+        listeners: {
+            onShow: "{controllers}.show",
+            onShowAndRefocus: "{controllers}.showAndRefocus",
+            onHide: "{controllers}.hide"
         },
 
         selectors: {
@@ -138,27 +147,44 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.videoPlayer.controllers.setControlsTabOrder = function (that) {
-        that.playButton.setTabindex(1);
-        that.volumeControl.setTabindex(2);
-        that.scrubber.setTabindex(3);
-        that.captionControls.setTabindex(4);
-        that.fullScreenButton.setTabindex(5);
+        fluid.tabindex(that.container, 1);
+        that.playButton.setTabindex(2);
+        that.volumeControl.setTabindex(3);
+        that.scrubber.setTabindex(4);
+        that.captionControls.setTabindex(5);
+        that.fullScreenButton.setTabindex(6);
 
         // hide controllers when focus leaves controls or hits ESC
         fluid.each(that.options.selectors, function (item, key) {
             fluid.deadMansBlur(item, {
                 exclusions: that.options.selectors,
-                handler: function () {
-                    that.hideControls();
-                }
+                handler: that.hideAndNotify
             });
             $(item).keydown(function (event) {
                 if (event.keyCode === $.ui.keyCode.ESCAPE) {
-                    that.hideControls();
+                    that.hideAndNotify();
                 }
             })
         });
         
+    };
+
+    fluid.videoPlayer.controllers.preInit = function (that) {
+        that.hide = function () {
+            that.container.hide();
+        };
+        that.hideAndNotify = function () {
+            that.hide();
+            that.events.onControllersHide.fire();
+        };
+        that.show = function () {
+            that.container.show();
+        };
+        that.showAndRefocus = function () {
+            that.show();
+            that.container.focus();
+            return false;
+        };
     };
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
@@ -170,15 +196,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         fluid.videoPlayer.controllers.setControlsTabOrder(that);
-        that.hideControls = function () {
-            that.container.hide();
-            that.events.onControllersHide.fire();
-        };
-        that.presentControls = function () {
-            that.container.show();
-            that.locate("play").focus();
-        };
 
+        that.hide();
         that.events.onControllersReady.fire(that);
     };
     

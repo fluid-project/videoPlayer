@@ -1,14 +1,16 @@
 /*
+ * Temporary colours:
+ *   hover: yellow
+ *   focus: orange
+ *   active: green
+ */
+
+/*
  * Videoplayer container
  */
 
 .fl-videoPlayer {
     position: relative;
-}
-.fl-videoPlayer:focus,
-.fl-videoPlayer :focus {
-    /* TODO: This is a temporary style, to be replaced when we have the final designs */
-    border: 1px solid red;
 }
 
 /*
@@ -57,6 +59,12 @@
     -webkit-border-radius: 5px;
     border-radius: 5px;
 }
+.fl-videoPlayer-theme .fl-videoPlayer-button:hover {
+    background-color: yellow;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-button:focus {
+    background-color: orange;
+}
 
 /*
  * Play button
@@ -66,10 +74,6 @@
 }
 .fl-videoPlayer-theme .fl-videoPlayer-playing {
     background-image: url('../images/pause-black.png');
-}
-.fl-videoPlayer-theme .fl-videoPlayer-play:hover,
-.fl-videoPlayer-theme .fl-videoPlayer-playing:hover {
-    background-color: yellow;
 }
 
 /*
@@ -81,10 +85,6 @@
 .fl-videoPlayer-theme .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-on-black.png');
 }
-.fl-videoPlayer-theme .fl-videoPlayer-fullscreen:hover,
-.fl-videoPlayer-theme .fl-videoPlayer-fullscreen:focus {
-    background-color: yellow;
-}
 
 /*
  * Volume controls
@@ -93,16 +93,22 @@
     background: #ffffff url('../images/volume-black.png') no-repeat center center;
     margin-left: 0;
 }
-.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
-.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute {
     background-color: yellow;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-color: orange;
 }
 .fl-videoPlayer-theme .fl-videoPlayer-muted {
     background-image: url('../images/volume-muted-black.png');
 }
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer .fl-videoPlayer-muted,
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer .fl-videoPlayer-muted {
+    background-color: green;
+}
 .fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-muted,
 .fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
-    background-color: orange;
+    background-color: wheat;
 }
 .fl-videoPlayer-volumeControl {
     display: none;
@@ -120,14 +126,8 @@
 .fl-videoPlayer-theme .fl-videoPlayer-captions-button {
     background: #ffffff url('../images/captions-black.png') no-repeat center center;
 }
-.fl-videoPlayer-theme .fl-videoPlayer-captions-button:hover {
-    background-color: yellow;
-}
 .fl-videoPlayer-theme .fl-videoPlayer-captions-button.fl-videoPlayer-caption-active {
-    background-color: orange;
-}
-.fl-videoPlayer-theme .fl-videoPlayer-captions-button.fl-videoPlayer-caption-active:hover {
-    background-color: wheat;
+    background-color: green;
 }
 
 ul.fl-videoPlayer-captions-languageList {
@@ -168,6 +168,14 @@ ul.fl-videoPlayer-captions-languageList li {
 .fl-videoPlayer-scrubberContainer .ui-slider-handle {
     width: 0.1em;
     margin-left: 0;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-scrubberContainer .ui-slider-handle:hover {
+    background: yellow;
+    border-color: yellow;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-scrubberContainer .ui-slider-handle:focus {
+    background: orange;
+    border-color: orange;
 }
 
 .fl-videoPlayer-menu-captions {

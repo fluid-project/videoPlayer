@@ -124,7 +124,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onStartTimeChange: "{videoPlayer}.events.onStartTimeChange",
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
                         afterTimeChange: "{videoPlayer}.events.afterTimeChange",
-                        onFocus: "{videoPlayer}.events.onFocus"
+                        onFocus: "{videoPlayer}.events.onFocus",
+                        onShowAndRefocus: "{videoPlayer}.events.onTab",
+                        onShow: "{videoPlayer}.events.onMouseover",
+                        onHide: "{videoPlayer}.events.onMouseout"
                     }
                 }
             },
@@ -173,6 +176,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
             onFocus: null,
+            onTab: null, // tab key will trigger appearance of controllers if present
+            onMouseover: null,
+            onMouseout: null,
             onReady: null,
             
             // The following events are private
@@ -289,8 +295,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         video.keydown(function (event) {
             if (event.keyCode === $.ui.keyCode.TAB) {
-                that.controllers.presentControls();
-                return false;
+                that.events.onTab.fire();
             }
         });
         that.events.onControllersHide.addListener(function () {
@@ -457,11 +462,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.events.onReadyToLoadCaptions.fire();
                 }
 
-                // TODO: FInd the right place to bind these functions
+                // TODO: Find the right place to bind these functions
                 // This could be done in CSS, but the programmating show/hide for tab access interferes
-                that.container.mouseover(function () {that.controllers.container.show()});
-                that.container.mouseout(function () {that.controllers.container.hide()});
-                that.controllers.container.hide();
+                that.container.mouseover(that.events.onMouseover.fire);
+                that.container.mouseout(that.events.onMouseout.fire);
             }
 
             that.events.onReady.fire(that);
