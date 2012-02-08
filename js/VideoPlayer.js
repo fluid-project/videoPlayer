@@ -456,10 +456,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (fluid.hasFeature("fluid.browser.html5")) {
                     that.events.onReadyToLoadCaptions.fire();
                 }
+
+                // TODO: FInd the right place to bind these functions
+                // This could be done in CSS, but the programmating show/hide for tab access interferes
+                that.container.mouseover(function () {that.controllers.container.show()});
+                that.container.mouseout(function () {that.controllers.container.hide()});
+                that.controllers.container.hide();
             }
 
             that.events.onReady.fire(that);
         });
+
         
         return that;
     };

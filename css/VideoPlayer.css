@@ -30,10 +30,6 @@
 }
 .fl-videoPlayer-controller {
     padding-bottom: 0.5em;
-    display: none;
-}
-.fl-videoPlayer:hover .fl-videoPlayer-controller {
-    display: block;
 }
 .fl-videoPlayer-bottomButtons {
     margin-top: 0.3em;
