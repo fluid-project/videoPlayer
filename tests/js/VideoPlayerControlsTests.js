@@ -31,6 +31,13 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             jqUnit.assertTrue("The onPress event should fire", true);
         };
 
+        fluid.tests.getTooltipCheckString = function (jEl, expectedText) {
+            jEl.mouseover();
+            var tooltip = $("#" + jEl.attr("aria-describedby"));
+            jqUnit.assertEquals("Tooltip should contain " + expectedText + " initially", expectedText, tooltip.text());
+            return tooltip;
+        };
+
         var baseVideoPlayerOpts = {
             model: {
                 video: {
@@ -77,11 +84,9 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", "false", buttonEl.attr("aria-pressed"));
             jqUnit.assertFalse(name + " button should not have the 'pressed' style", buttonEl.hasClass(stylePressed));
 
-            buttonEl.mouseover();
+            var tooltip = fluid.tests.getTooltipCheckString(buttonEl, tooltipReleased);
             var tooltipID = buttonEl.attr("aria-describedby");
-            var tooltip = $("#" + tooltipID);
             jqUnit.assertNotEquals(name + " button should have aria-describedby referencing the 'tooltip'", -1, tooltipID.indexOf("tooltip"));
-            jqUnit.assertEquals("Tooltip should contain " + tooltipReleased + " initially", tooltipReleased, tooltip.text());
             jqUnit.assertFalse("After mouseover, " + name + " button should still not have the 'pressed' style", buttonEl.hasClass(stylePressed));
 
             // TODO: When captions controls are refactored (FLUID-4589), this 'if' might go away
@@ -109,7 +114,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 listeners: {
                     onPress: fluid.tests.pressEventHandler,
                     onReady: function (that) {
-                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
+                        var toggleButton = that.locate("button");
 
                         verifyBasicButtonFuntions(toggleButton, "toggle", true,
                             fluid.tests.toggleButtonDefaults.strings.press,
@@ -134,7 +139,7 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onReady: function (that) {
-                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
+                        var toggleButton = that.locate("button");
                         that.requestRelease();
                         jqUnit.assertEquals("Releasing when already released, button should still have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
                         jqUnit.assertFalse("Toggle button should not get the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
@@ -163,11 +168,9 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                         return false;
                     },
                     onReady: function (that) {
-                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
+                        var toggleButton = that.locate("button");
                         jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
-                        toggleButton.mouseover();
-                        var tooltip = $("#" + toggleButton.attr("aria-describedby"));
-                        jqUnit.assertEquals("Tooltip should contain '" + fluid.tests.toggleButtonDefaults.strings.press + "' initially", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
+                        var tooltip = fluid.tests.getTooltipCheckString(toggleButton, fluid.tests.toggleButtonDefaults.strings.press);
 
                         toggleButton.click();
                         jqUnit.assertEquals("After click, toggle button should still have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
@@ -190,10 +193,8 @@ fluid.staticEnvironment.vidPlayerTests2 = fluid.typeTag("fluid.videoPlayerTests2
                 strings: testStrings,
                 listeners: {
                     onReady: function (that) {
-                        var toggleButton = $(baseToggleButtonOpts.selectors.button);
-                        toggleButton.mouseover();
-                        var tooltip = $("#" + toggleButton.attr("aria-describedby"));
-                        jqUnit.assertEquals("Tooltip should contain '" + testStrings.press + "' initially", testStrings.press, tooltip.text());
+                        var toggleButton = that.locate("button");
+                        var tooltip = fluid.tests.getTooltipCheckString(toggleButton, testStrings.press);
 
                         toggleButton.click();
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
