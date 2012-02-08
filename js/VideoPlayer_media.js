@@ -29,7 +29,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         $.each(that.model.video.sources, function (idx, source) {
             var renderer = that.options.mediaRenderers[source.type];
             if ($.isFunction(renderer)) {
-                renderer.apply(that, source);
+                renderer.apply(null, [that, source]);
             } else {
                 fluid.invokeGlobalFunction(renderer, [that, source]); 
             }                                      
