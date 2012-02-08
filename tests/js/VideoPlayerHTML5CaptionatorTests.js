@@ -28,46 +28,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         var videoPlayerCaptionatorTests = new jqUnit.TestCase("Video Player HTML5 Captionator Test Suite");
         
-        // Normal settings
-        var testOptions1 = {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "TestVideo.mp4",
-                            type: "video/mp4"
-                        }
-                    ]
-                },
-                captions: {
-                    sources: {
-                        english: {
-                            src: "TestCaptions.en.vtt",
-                            type: "text/vtt",
-                            srclang: "en",
-                            label: "English Subtitles",
-                            kind: "subtitles"
-                        },
-                        french: {
-                            src: "TestCaptions.fr.vtt",
-                            type: "text/vtt",
-                            srclang: "fr",
-                            label: "French Subtitles",
-                            kind: "subtitles"
-                        }
-                    },
-                    currentTrack: "english"
-                }
-            },
-            templates: {
-                videoPlayer: {
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }
-        };
-        
-        // Settings without captions
-        var testOptions2 = {
+        var testOptionsNoCaptions = {
             model: {
                 video: {
                     sources: [
@@ -85,17 +46,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
         
-        // Settings with captions but without currentTrack
-        var testOptions3 = {
+        var testOptionsNoCurrentTrack = {};
+        fluid.merge(null, testOptionsNoCurrentTrack, testOptionsNoCaptions);
+        fluid.merge(null, testOptionsNoCurrentTrack, {
             model: {
-                video: {
-                    sources: [
-                        {
-                            src: "TestVideo.mp4",
-                            type: "video/mp4"
-                        }
-                    ]
-                },
                 captions: {
                     sources: {
                         english: {
@@ -114,15 +68,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     }
                 }
-            },
-            templates: {
-                videoPlayer: {
-                    href: "../../html/videoPlayer_template.html"
+            }
+        });
+        
+        var testOptionsFull = {};
+        fluid.merge(null, testOptionsFull, testOptionsNoCurrentTrack);
+        fluid.merge(null, testOptionsFull, {
+            model: {
+                captions: {
+                    currentTrack: "english"
                 }
             }
-        };
-        
-        
+        });
+                        
+        // videoPlayer creation
         var initVideoPlayer = function (container, options, callback) {
             options = options || {};
             
@@ -135,10 +94,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
             
             return fluid.videoPlayer(container, options);
-        };
+        }
 
-
-        function setupEnvironment(withHtml5) {
+        // Function to set or unset HTML5 test environment
+        var setupEnvironment = function (withHtml5) {
             if (withHtml5) {
                 fluid.staticEnvironment.browserHtml5 = fluid.typeTag("fluid.browser.html5");
             } else {
@@ -146,54 +105,63 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
         
-        
-        videoPlayerCaptionatorTests.asyncTest("NO HTML5: html5Captionator was not initialized", function () {
-            var testIndex = 0;
-            
+        // A template function which checks captionator initalization depending on different provided options and config
+        var testInit = function (config) {
             expect(2);
             
-            setupEnvironment(false);
+            setupEnvironment(config.isHTML5);
             
-            initVideoPlayer(container[testIndex], testOptions1, function (videoPlayer) {
-                
+            config.testComponentFunc = config.hasComponent ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
+            var componentStr = "html5Captionator has been instantiated";
+            var domStr = "Captionator DIV is present in the DOM";
+            
+            if (!config.hasComponent) {
+                config.componentStr = componentStr.replace("has been", "has NOT been");
+            }
+            
+            if (!config.hasDOMElement) {
+                config.domStr = domStr.replace("is present", "is NOT present");
+            }
+            
+            initVideoPlayer(container[config.testIndex], config.options, function (videoPlayer) {
                 videoPlayer.events.onViewReady.fire();
-                jqUnit.assertUndefined("html5Captionator has NOT been instantiated", videoPlayer.html5Captionator);
-                jqUnit.assertEquals("Captionator DIV is NOT present in the DOM", 0, $(captionatorSelector).length);
+                
+                config.testComponentFunc(config.componentStr, videoPlayer.html5Captionator);
+                jqUnit.assertEquals(domStr, (config.hasDOMElement)?1:0, $(captionatorSelector).length);
                 start();
+            });
+        }
+        
+        
+        videoPlayerCaptionatorTests.asyncTest("NO HTML5: html5Captionator was not initialized", function () {
+            testInit({
+                testIndex: 0,
+                options: testOptionsFull,
+                isHTML5: false,
+                hasComponent: false,
+                hasDOMElement: false
             });
         });
         
         
         videoPlayerCaptionatorTests.asyncTest("HTML5: html5Captionator was initialized but without tracks", function () {
-            var testIndex = 1;
-            
-            expect(2);
-            
-            setupEnvironment(true);
-            
-            initVideoPlayer(container[testIndex], testOptions2, function (videoPlayer) {
-                
-                videoPlayer.events.onViewReady.fire();
-                jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
-                jqUnit.assertEquals("Captionator DIV is NOT present in the DOM", 0, $(captionatorSelector).length);
-                start();
+            testInit({
+                testIndex: 1,
+                options: testOptionsNoCaptions,
+                isHTML5: true,
+                hasComponent: true,
+                hasDOMElement: false
             });
         });
 
         
         videoPlayerCaptionatorTests.asyncTest("HTML5: html5Captionator was initialized", function () {
-            var testIndex = 2;
-            
-            expect(2);
-
-            setupEnvironment(true);
-            
-            initVideoPlayer(container[testIndex], testOptions1, function (videoPlayer) {
-                
-                videoPlayer.events.onViewReady.fire();
-                jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
-                jqUnit.assertEquals("Captionator DIV is present in the DOM", 1, $(captionatorSelector).length);
-                start();
+            testInit({
+                testIndex: 2,
+                options: testOptionsFull,
+                isHTML5: true,
+                hasComponent: true,
+                hasDOMElement: true
             });
         });
 
@@ -205,7 +173,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             setupEnvironment(true);
             
-            initVideoPlayer(container[testIndex], testOptions1, function (videoPlayer) {
+            initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
                 
                 videoPlayer.events.onViewReady.fire();
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
@@ -237,9 +205,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             setupEnvironment(true);
             
-            initVideoPlayer(container[testIndex], testOptions3, function (videoPlayer) {
+            initVideoPlayer(container[testIndex], testOptionsNoCurrentTrack, function (videoPlayer) {
                 
-                jqUnit.assertUndefined("Current track is empty in the model", testOptions3.model.captions.currentTrack);
+                jqUnit.assertUndefined("Current track is empty in the model", testOptionsNoCurrentTrack.model.captions.currentTrack);
                 
                 videoPlayer.events.onViewReady.fire();
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
