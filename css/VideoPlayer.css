@@ -24,15 +24,10 @@
  * Controller area
  */
  
-/*  ========== is this tooltip style used?? ============== */
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 3px 5px;
 }
-.fl-videoPlayer-theme .fl-videoPlayer-tooltip {
-    border      : 1px solid #CCCCCC;
-}
-
 .fl-videoPlayer-controller {
     width:100%;
     text-align: center;
@@ -217,134 +212,115 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     background-color: black !important;
 }
 .fl-theme-uio-bw .fl-videoPlayer-controller,
-.fl-theme-uio-by .fl-videoPlayer-controller {
+.fl-theme-uio-by .fl-videoPlayer-controller,
+.fl-theme-uio-bw .fl-videoPlayer-button,
+.fl-theme-uio-by .fl-videoPlayer-button {
     border: 1px solid black;
 }
-.fl-theme-uio-wb .fl-videoPlayer-controller {
+.fl-theme-uio-wb .fl-videoPlayer-controller,
+.fl-theme-uio-yb .fl-videoPlayer-controller,
+.fl-theme-uio-wb .fl-videoPlayer-button,
+.fl-theme-uio-yb .fl-videoPlayer-button {
+    background-color: black;
+}
+.fl-theme-uio-wb .fl-videoPlayer-controller,
+.fl-theme-uio-wb .fl-videoPlayer-button {
     border: 1px solid white;
 }
-.fl-theme-uio-yb .fl-videoPlayer-controller {
+.fl-theme-uio-yb .fl-videoPlayer-controller,
+.fl-theme-uio-yb .fl-videoPlayer-button {
     border: 1px solid yellow;
 }
+
 .fl-theme-uio-bw .fl-videoPlayer-play,
 .fl-theme-uio-by .fl-videoPlayer-play {
     background-image: url('../images/play-black.png');
-    border: 1px solid black;
 }
 .fl-theme-uio-yb .fl-videoPlayer-play {
     background-image: url('../images/play-yellow.png');
-    border: 1px solid yellow;
-    background-color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-play {
     background-image: url('../images/play-white.png');
-    border: 1px solid white;
-    background-color: black;
 }
 .fl-theme-uio-bw .fl-videoPlayer-playing,
 .fl-theme-uio-by .fl-videoPlayer-playing {
     background-image: url('../images/pause-black.png');
-    border: 1px solid black;
 }
 .fl-theme-uio-yb .fl-videoPlayer-playing {
     background-image: url('../images/pause-yellow.png');
-    border: 1px solid yellow;
-    background-color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-playing {
     background-image: url('../images/pause-white.png');
-    border: 1px solid white;
-    background-color: black;
 }
 .fl-theme-uio-bw .fl-videoPlayer-fullscreen,
 .fl-theme-uio-by .fl-videoPlayer-fullscreen {
     background-image: url('../images/fullscreen-black.png');
-    border: 1px solid black;
 }
 .fl-theme-uio-yb .fl-videoPlayer-fullscreen {
     background-image: url('../images/fullscreen-yellow.png');
-    border: 1px solid yellow;
-    background-color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-fullscreen {
     background-image: url('../images/fullscreen-white.png');
-    border: 1px solid white;
-    background-color: black;
 }
 .fl-theme-uio-bw .fl-videoPlayer-fullscreen-on,
 .fl-theme-uio-by .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-on-black.png');
-    border: 1px solid black;
 }
 .fl-theme-uio-yb .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-on-yellow.png');
-    border: 1px solid yellow;
-    background-color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-on-white.png');
-    border: 1px solid white;
-    background-color: black;
 }
 .fl-theme-uio-bw .fl-videoPlayer-mute,
 .fl-theme-uio-by .fl-videoPlayer-mute {
     background-image: url('../images/volume-black.png');
-    border: 1px solid black;
 }
 .fl-theme-uio-yb .fl-videoPlayer-mute {
     background-image: url('../images/volume-yellow.png');
-    border: 1px solid yellow;
-    background-color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-mute {
     background-image: url('../images/volume-white.png');
-    border: 1px solid white;
-    background-color: black;
 }
 .fl-theme-uio-bw .fl-videoPlayer-muted,
 .fl-theme-uio-by .fl-videoPlayer-muted {
     background-image: url('../images/volume-muted-black.png');
-    border: 1px solid black;
 }
 .fl-theme-uio-yb .fl-videoPlayer-muted {
     background-image: url('../images/volume-muted-yellow.png');
-    border: 1px solid yellow;
-    background-color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-muted {
     background-image: url('../images/volume-muted-white.png');
-    border: 1px solid white;
-    background-color: black;
 }
 .fl-theme-uio-bw .fl-videoPlayer-captions-button,
 .fl-theme-uio-by .fl-videoPlayer-captions-button {
     background-image: url('../images/captions-black.png');
-    border: 1px solid black;
 }
 .fl-theme-uio-yb .fl-videoPlayer-captions-button {
     background-image: url('../images/captions-yellow.png');
-    border: 1px solid yellow;
-    background-color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-captions-button {
     background-image: url('../images/captions-white.png');
-    border: 1px solid white;
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-caption-captionText,
+.fl-theme-uio-yb .fl-videoPlayer-caption-captionText {
     background-color: black;
+}
+.fl-theme-uio-bw .fl-videoPlayer-caption-captionText,
+.fl-theme-uio-by .fl-videoPlayer-caption-captionText {
+    color: black;
 }
 .fl-theme-uio-wb .fl-videoPlayer-caption-captionText {
     color: white;
-    background-color: black;
 }
 .fl-theme-uio-bw .fl-videoPlayer-caption-captionText {
-    color: black;
     background-color: white;
 }
 .fl-theme-uio-by .fl-videoPlayer-caption-captionText {
-    color: black;
     background-color: yellow;
 }
 .fl-theme-uio-yb .fl-videoPlayer-caption-captionText {
     color: yellow;
-    background-color: black;
 }
 
