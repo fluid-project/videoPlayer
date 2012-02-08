@@ -112,22 +112,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             setupEnvironment(config.isHTML5);
             
             config.testComponentFunc = config.hasComponent ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
-            var componentStr = "html5Captionator has been instantiated";
-            var domStr = "Captionator DIV is present in the DOM";
-            
-            if (!config.hasComponent) {
-                config.componentStr = componentStr.replace("has been", "has NOT been");
-            }
-            
-            if (!config.hasDOMElement) {
-                config.domStr = domStr.replace("is present", "is NOT present");
-            }
+            config.componentStr = config.hasComponent ? "html5Captionator has been instantiated"
+                                                        : "html5Captionator has NOT been instantiated";
+            config.domStr = config.hasDOMElement ? "Captionator DIV is present in the DOM"
+                                                        : "Captionator DIV is NOT present in the DOM";
             
             initVideoPlayer(container[config.testIndex], config.options, function (videoPlayer) {
                 videoPlayer.events.onViewReady.fire();
                 
                 config.testComponentFunc(config.componentStr, videoPlayer.html5Captionator);
-                jqUnit.assertEquals(domStr, (config.hasDOMElement)?1:0, $(captionatorSelector).length);
+                jqUnit.assertEquals(config.domStr, (config.hasDOMElement)?1:0, $(captionatorSelector).length);
                 start();
             });
         }
