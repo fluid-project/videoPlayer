@@ -467,7 +467,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-<<<<<<< HEAD
     fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
@@ -477,19 +476,5 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-=======
-
-//fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
-//        options: {
-//            listeners: {
-//                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-//                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
-//                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
-//                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
-//            }
-//        }
-//    });
-
->>>>>>> 5ebe80e... #FLUID-4554: Cleaned up the code by removing old files. Cindy came up with a great idea of how to fix captionator's big sizes when it is initialized. All code is done, next step is tests.
 
 })(jQuery);
