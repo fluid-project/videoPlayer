@@ -126,22 +126,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             },
-            captionner: {
-                type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.dom.caption",
-                createOnEvent: "onCreateCaptionnerReady",
+            html5Captionator: {
+                type: "fluid.videoPlayer.html5Captionator",
+                container: "{videoPlayer}.dom.video",
+                createOnEvent: "onCreateCaptionatorReady",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            captionLoader: {
-                type: "fluid.videoPlayer.captionLoader",
-                container: "{videoPlayer}.container",
-                createOnEvent: "onTemplateReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
+                    applier: "{videoPlayer}.applier",
+                    captions: "{videoPlayer}.model.captions"
                 }
             },
             browserCompatibility: {
@@ -152,8 +144,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.videoPlayer.preInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            onReadyToLoadCaptions: null,
-            onCaptionsLoaded: null,
+//            onReadyToLoadCaptions: null,
+//            onCaptionsLoaded: null,
             onVolumeChange: null,
             onTimeChange: null,
             onTemplateReady: null,
@@ -170,7 +162,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionnerReady: null
+            onCreateCaptionatorReady: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -199,10 +191,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             captions: {
                 sources: null,
-                currentTrack: undefined,
-                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                maxNumber: 3,
-                track: undefined
+                currentTrack: undefined
             }
         },
         templates: {
@@ -339,6 +328,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     height: video[0].videoHeight
                 });
             }
+            
+            if (fluid.hasFeature("fluid.browser.html5")) {
+                that.events.onCreateCaptionatorReady.fire();
+            }
         };
 
         that.incrVolume = function () {
@@ -418,9 +411,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
                 }
-                if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onCreateCaptionnerReady.fire();
-                }
             }
 
             that.events.onReady.fire(that);
@@ -483,5 +473,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-
 })(jQuery);
