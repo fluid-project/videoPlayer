@@ -114,6 +114,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onControllersReady: null,
+            onControllersHide: null,
             onVolumeChange: null,
             onStartTimeChange: null,
             onTimeChange: null,
@@ -136,6 +137,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    fluid.videoPlayer.controllers.setControlsTabOrder = function (that) {
+        that.playButton.setTabindex(1);
+        that.volumeControl.setTabindex(2);
+        that.scrubber.setTabindex(3);
+        that.captionControls.setTabindex(4);
+        that.fullScreenButton.setTabindex(5);
+
+        // hide controllers when focus leaves controls or hits ESC
+        fluid.each(that.options.selectors, function (item, key) {
+            fluid.deadMansBlur(item, {
+                exclusions: that.options.selectors,
+                handler: function () {
+                    that.hideControls();
+                }
+            });
+            $(item).keydown(function (event) {
+                if (event.keyCode === $.ui.keyCode.ESCAPE) {
+                    that.hideControls();
+                }
+            })
+        });
+        
+    };
+
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
 
@@ -144,15 +169,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("play").focus();
         });
 
-        // hide controllers when focus leaves controls
-        fluid.each(that.options.selectors, function (item, key) {
-            fluid.deadMansBlur(item, {
-                exclusions: that.options.selectors,
-                handler: function () {
-                    that.container.hide();
-                }
-            });
-        });
+        fluid.videoPlayer.controllers.setControlsTabOrder(that);
+        that.hideControls = function () {
+            that.container.hide();
+            that.events.onControllersHide.fire();
+        };
+        that.presentControls = function () {
+            that.container.show();
+            that.locate("play").focus();
+        };
 
         that.events.onControllersReady.fire(that);
     };
@@ -289,6 +314,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "aria-valuenow": that.model.states.totalTime,
                 "aria-valuetext": fluid.videoPlayer.formatTime(that.model.states.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.states.totalTime)
             });
+        };
+        that.setTabindex = function (index) {
+            fluid.tabindex(that.locate("scrubber").find(".ui-slider-handle"), index);
         };
     };
 
@@ -443,6 +471,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "aria-valuetext": Math.round(volume) + "%"
             });
         };
+        that.setTabindex = function (index) {
+            fluid.tabindex(that.container, index);
+        };
     };
 
     fluid.videoPlayer.controllers.volumeControls.finalInit = function (that) {
@@ -561,6 +592,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.captionControls.finalInit = function (that) {
+        that.setTabindex = function (index) {
+            that.captionButton.setTabindex(index);
+        };
+
         fluid.videoPlayer.controllers.captionControls.setUpCaptionControls(that);
         fluid.videoPlayer.controllers.captionControls.bindCaptionDOMEvents(that);
         fluid.videoPlayer.controllers.captionControls.bindCaptionModel(that);
@@ -644,6 +679,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.enabled = function (state) {
             that.locate("button").prop("disabled", !state);
+        };
+        that.setTabindex = function (index) {
+            fluid.tabindex(that.locate("button"), index);
         };
     };
 

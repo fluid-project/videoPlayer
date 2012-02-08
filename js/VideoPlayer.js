@@ -119,6 +119,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{videoPlayer}.applier",
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
+                        onControllersHide: "{videoPlayer}.events.onControllersHide",
                         onVolumeChange: "{videoPlayer}.events.onVolumeChange",
                         onStartTimeChange: "{videoPlayer}.events.onStartTimeChange",
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
@@ -165,6 +166,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
+            onControllersHide: null,
             onCaptionnerReady: null,
             afterTimeChange: null,
             onStartTimeChange: null,
@@ -285,8 +287,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container.css("width", video[0].videoWidth);
             bindKeyboardControl(that);
         });
-        that.locate("video").focus(function () {
-            that.events.onFocus.fire();
+        video.keydown(function (event) {
+            if (event.keyCode === $.ui.keyCode.TAB) {
+                that.controllers.presentControls();
+                return false;
+            }
+        });
+        that.events.onControllersHide.addListener(function () {
+            that.locate("video").focus();
         });
     };
 
