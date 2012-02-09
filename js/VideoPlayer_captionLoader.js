@@ -39,7 +39,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         invokers: {
             convertToMilli: {
                 funcName: "fluid.videoPlayer.captionLoader.convertToMilli",
-                args: ["@0"]
+                args: ["{arguments}.0"]
             }  
         },
         intervalList: null
@@ -47,21 +47,36 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     /**
      * Convert the time in the format of hh:mm:ss.mmm to milliseconds.
-     * The time is normally extracted from the subtitle files in WebVTT or json format.
+     * The time is normally extracted from the subtitle files in WebVTT compatible format.
+     * WebVTT standard for timestamp: http://dev.w3.org/html5/webvtt/#webvtt-cue-timings
      * 
-     * @param time: in the format hh:mm:ss.mmm
+     * @param time: in the format hh:mm:ss.mmm ("hh:" is optional)
      * @return a number in millisecond
      * TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
      */
     fluid.videoPlayer.captionLoader.convertToMilli = function (time) {
-        if (!time || !time.match(/^\d{2}:\d{2}:\d{2}\.\d{1,3}$/)) {
+        if (!time || !time.match(/^(\d{2}:)?\d{2}:\d{2}\.\d{1,3}$/)) {
             return null;
         }
         
         var splitTime = time.split(":");
-        var splitSec = splitTime[2].split(".");
-        var hours = parseFloat(splitTime[0]);
-        var mins = parseFloat(splitTime[1]) + (hours * 60);
+        
+        // Handle the optional "hh:" in the input
+        if (splitTime.length === 2) {
+            // "hh:" part is NOT given
+            var hourStr = "0";
+            var minStr = splitTime[0];
+            var secWithMilliSecStr = splitTime[1];
+        } else {
+            // "hh:" part is given
+            var hourStr = splitTime[0];
+            var minStr = splitTime[1];
+            var secWithMilliSecStr = splitTime[2];
+        }
+        
+        var splitSec = secWithMilliSecStr.split(".");
+        var hours = parseFloat(hourStr);
+        var mins = parseFloat(minStr) + (hours * 60);
         var secs = parseFloat(splitSec[0]) + (mins * 60);
         return Math.round(secs * 1000 + parseInt(splitSec[1], 10));
     };

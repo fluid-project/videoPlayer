@@ -44,11 +44,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         videoPlayerIntervalEventsConductorTests.test("findCurrentInterval", function () {
             testFindCurrentInterval(0.1, null, null);
-            testFindCurrentInterval(1.1, null, "0");
-            testFindCurrentInterval(1.5, "0", "0");
-            testFindCurrentInterval(2.1, "0", "1");
-            testFindCurrentInterval(3.5, "1", null);
-            testFindCurrentInterval(4, null, "2");
+            testFindCurrentInterval(1.1, null, 0);
+            testFindCurrentInterval(1.5, 0, 0);
+            testFindCurrentInterval(2.1, 0, 1);
+            testFindCurrentInterval(3.5, 1, null);
+            testFindCurrentInterval(4, null, 2);
         });
         
         videoPlayerIntervalEventsConductorTests.test("Test onTimeChange event", function () {

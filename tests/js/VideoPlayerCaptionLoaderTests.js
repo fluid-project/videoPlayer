@@ -64,6 +64,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             testConvertToMilli("00:01:00.000", 60000);
             testConvertToMilli("01:00:00.000", 3600000);
             testConvertToMilli("01:01:01.001", 3661001);
+
+            // "hh" is optional and not provided
+            testConvertToMilli("00:00.1", 1);
+            testConvertToMilli("00:00.02", 2);
+            testConvertToMilli("00:00.003", 3);
+            testConvertToMilli("00:01.000", 1000);
+            testConvertToMilli("01:00.000", 60000);
         });
         
         videoPlayerCaptionLoaderTests.asyncTest("loadCaption", function () {

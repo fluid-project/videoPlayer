@@ -83,15 +83,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
             return previousInterval;
         }
         
-        // Find out the interval that the current time fits in
-        for (var intervalId in intervalList) {
-            if (fluid.videoPlayer.intervalEventsConductor.inInterval(currentTimeInMillis, intervalList[intervalId])) {
-                return intervalId;
-            }
-        }
-        
-        // The current time does not fit in any interval
-        return null;
+        // Find out the interval that the current time fits in. If none was found, return null
+        return fluid.find(intervalList, function (interval, intervalId) {
+            return fluid.videoPlayer.intervalEventsConductor.inInterval(currentTimeInMillis, interval) ? intervalId : undefined;
+        }, null);
     };
 
     /**
