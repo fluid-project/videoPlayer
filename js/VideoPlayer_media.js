@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, window, fluid*/
+/*global jQuery, window, swfobject, fluid*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -19,15 +19,53 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 (function ($) {
 
-    /********************************************************
-     *      VideoPlayer Media                               *
-     *          Deals with the content of the videoTag      *
-     *      And link the events the changeApplier and model *
-     ********************************************************/
+    /*********************************************************************************
+     * Video Player Media                                                            *
+     *                                                                               *
+     * Composes markup for video sources and responds to the video events            *
+     *********************************************************************************/
 
+    fluid.defaults("fluid.videoPlayer.media", {
+        gradeNames: ["fluid.viewComponent", "autoInit"],
+        components: {
+            mediaEventBinder: {
+                type: "fluid.videoPlayer.media.eventBinder",
+                createOnEvent: "onMediaReady"
+            }
+        },
+        finalInitFunction: "fluid.videoPlayer.media.finalInit",
+        preInitFunction: "fluid.videoPlayer.media.preInit",
+        events: {
+            onMediaReady: null
+        },
+        sourceRenderers: {
+            "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
+            "video/webm": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
+            "video/ogg": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
+            "video/ogv": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
+            "youtube": "fluid.videoPlayer.media.createSourceMarkup.youTubePlayer"
+        }
+    });
+
+    fluid.videoPlayer.media.createSourceMarkup = {
+        html5SourceTag: function (videoPlayer, mediaSource) {
+            var sourceTag = $("<source />");
+            sourceTag.attr(mediaSource);
+            videoPlayer.container.append(sourceTag);
+            return sourceTag;
+        },
+        youTubePlayer: function (videoPlayer, mediaSource) {
+            var placeholder = $("<div/>"),
+                id = fluid.allocateSimpleId(placeholder);
+            videoPlayer.container.append(placeholder);
+            swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
+            return placeholder;
+        }
+    };
+        
     var renderSources = function (that) {
         $.each(that.model.video.sources, function (idx, source) {
-            var renderer = that.options.mediaRenderers[source.type];
+            var renderer = that.options.sourceRenderers[source.type];
             if ($.isFunction(renderer)) {
                 renderer.apply(null, [that, source]);
             } else {
@@ -47,16 +85,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     var bindMediaDOMEvents = function (that) {
         var video = that.container;
-        video.bind("timeupdate", {obj: video[0]}, function (ev) {
-            //weirdly on event a timeupdate event is sent after the ended event 
-            //so the condition is to avoid that
-            if (ev.data.obj.currentTime !== ev.data.obj.duration) {
-                that.applier.fireChangeRequest({
-                    path: "states.currentTime", 
-                    value: ev.data.obj.currentTime
-                });
-            }
-        });
 
         video.bind("durationchange", {obj: video[0]}, function (ev) {
             // FF doesn't implement startTime from the HTML 5 spec.
@@ -116,29 +144,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
     };
 
-    fluid.defaults("fluid.videoPlayer.media", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
-        components: {
-            mediaEventBinder: {
-                type: "fluid.videoPlayer.media.eventBinder",
-                createOnEvent: "onMediaReady"
-            }
-        },
-        finalInitFunction: "fluid.videoPlayer.media.finalInit",
-        preInitFunction: "fluid.videoPlayer.media.preInit",
-        events: {
-            onMediaReady: null
-        },
-        mediaRenderers: {
-            "video/mp4": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "video/webm": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "video/ogg": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "video/ogv": "fluid.videoPlayer.mediaRenderers.html5SourceTag",
-            "youtube": "fluid.videoPlayer.mediaRenderers.youTubePlayer"
-        }
-    });
-
     fluid.videoPlayer.media.preInit = function (that) {
+        that.updateCurrentTime = function (currentTime) {
+            that.applier.fireChangeRequest({
+                path: "states.currentTime", 
+                value: currentTime
+            });
+        };
+        
         that.setTime = function (time) {
             that.container[0].currentTime = time;
         };
