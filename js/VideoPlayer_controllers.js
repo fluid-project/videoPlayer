@@ -206,7 +206,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         // TODO: This in inherited. Do we need to add aria to sliders ourselves?
-        scrubber.find(".ui-slider-handle").attr({
+        that.locate("handle").attr({
             "aria-label": that.options.strings.scrubber,
             "aria-valuemin": 0,
             "aria-valuemax": 0,
@@ -229,7 +229,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             totalTime: ".flc-videoPlayer-total",
             currentTime: ".flc-videoPlayer-current",
-            scrubber: ".flc-videoPlayer-scrubber"
+            scrubber: ".flc-videoPlayer-scrubber",
+            handle: ".ui-slider-handle"
         },
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
@@ -252,7 +253,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var startTime = that.model.states.startTime || 0;
             var scrubber = that.locate("scrubber");
             scrubber.slider("option", "min", startTime + that.model.states.currentTime);
-            scrubber.find(".ui-slider-handle").attr({
+            that.locate("handle").attr({
                 "aria-valuemin": startTime + that.model.states.currentTime
             });
         };
@@ -261,7 +262,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             updateTime(that, "totalTime");
             var scrubber = that.locate("scrubber");
             scrubber.slider("option", "max", that.model.states.totalTime);
-            scrubber.find(".ui-slider-handle").attr({
+            that.locate("handle").attr({
                 "aria-valuemax": that.model.states.totalTime
             });
         };
@@ -270,7 +271,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             updateTime(that, "currentTime");
             var scrubber = that.locate("scrubber");
             scrubber.slider("value", that.model.states.currentTime);
-            scrubber.find(".ui-slider-handle").attr({
+            that.locate("handle").attr({
                 "aria-valuenow": that.model.states.totalTime,
                 "aria-valuetext": fluid.videoPlayer.formatTime(that.model.states.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.states.totalTime)
             });
@@ -322,7 +323,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             value: that.model.states.volume
         });
         // TODO: This in inherited. Do we need to add aria to sliders ourselves?
-        volumeControl.find(".ui-slider-handle").attr({
+        that.locate("handle").attr({
             "aria-label": that.options.strings.volume,
             "aria-valuemin": that.model.states.minVolume,
             "aria-valuemax": that.model.states.maxVolume,
@@ -374,7 +375,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         selectors: {
             mute: ".flc-videoPlayer-mute",
-            volumeControl: ".flc-videoPlayer-volumeControl"
+            volumeControl: ".flc-videoPlayer-volumeControl",
+            handle: ".ui-slider-handle"
         },
         styles: {
             mute: "fl-videoPlayer-mute",
@@ -422,7 +424,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var volume = that.model.states.volume;
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value", volume);
-            volumeControl.find(".ui-slider-handle").attr({
+            that.locate("handle").attr({
                 "aria-valuenow": volume,
                 "aria-valuetext": Math.round(volume) + "%"
             });
