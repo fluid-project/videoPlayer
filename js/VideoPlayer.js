@@ -192,13 +192,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
-            controllers: ".flc-videoPlayer-controller"
+            controllers: ".flc-videoPlayer-controller",
+            overlay: ".flc-videoPlayer-initialOverlay"
+        },
+        styles: {
+            overlay: ".fl-videoPlayer-initialOverlay"
         },
         strings: {
             captionsOff: "Captions OFF",
             turnCaptionsOff: "Turn Captions OFF"
         },
-        selectorsToIgnore: ["caption"],
+        selectorsToIgnore: ["caption", "overlay"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -308,6 +312,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("states.canPlay", function () {
             that.events.onViewReady.fire();
         });
+
+        that.applier.modelChanged.addListener("states.play", function () {
+            that.locate("overlay").remove();
+            that.applier.modelChanged.removeListener("removeOverlay");
+        }, "removeOverlay");
+
     };
 
     fluid.videoPlayer.produceTree = function (that) {
