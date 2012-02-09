@@ -3,7 +3,47 @@
  *   hover: yellow
  *   focus: orange
  *   active: green
+ *   slider handle: blue
  */
+
+/*
+ * Slider styles
+ */
+.fl-videoPlayer .fl-slider {
+    position: relative;
+    text-align: left;
+}
+.fl-videoPlayer .fl-slider-horz {
+    height: 0.8em;
+}
+.fl-videoPlayer-theme .fl-videoPlayer .fl-slider {
+    border: 1px solid #dddddd;
+    background-color: #EEEEEE;
+    color: #333333;
+}
+.fl-videoPlayer .fl-slider a {
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    width: 0.2em;
+    height: 0.8em;
+    margin-left: 0;
+    cursor: default;
+}
+.fl-videoPlayer-theme .fl-videoPlayer .fl-slider a {
+    background-color: blue;
+}
+.fl-videoPlayer .fl-slider .ui-slider-range {
+    border: 0;
+    z-index: 1;
+    margin-left: 0;
+}
+.fl-videoPlayer .fl-slider-horz .ui-slider-range {
+    height: 100%;
+}
+.fl-videoPlayer-theme .fl-videoPlayer .fl-slider .ui-slider-range {
+    background-color: orange;
+}
 
 /*
  * Videoplayer container
@@ -217,7 +257,6 @@ ul.fl-videoPlayer-captions-languageList li {
 .fl-videoPlayer-scrubber {
     width: 100%;
 }
-
 
 /***********************************************************
  * Styling overrides for the controls when using UIO themes
