@@ -36,6 +36,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             onReady: null,
             onCaptionsLoaded: null
         },
+        invokers: {
+            convertToMilli: {
+                funcName: "fluid.videoPlayer.captionLoader.convertToMilli",
+                args: ["@0"]
+            }  
+        },
         intervalList: null
     });
     
@@ -75,8 +81,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.options.intervalList = [];
             fluid.each(captions, function (value, key) {
                 that.options.intervalList[key] = {
-                    begin: fluid.videoPlayer.captionLoader.convertToMilli(value.inTime),
-                    end: fluid.videoPlayer.captionLoader.convertToMilli(value.outTime)
+                    begin: that.convertToMilli(value.inTime),
+                    end: that.convertToMilli(value.outTime)
                 };
             });
             
