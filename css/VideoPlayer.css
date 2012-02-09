@@ -44,11 +44,13 @@ img.fl-videoPlayer-initialOverlay {
     display: inline-block;
     float: left;
     margin-left: 0.5em;
+    margin-bottom: 0.2em;
 }
 .fl-videoPlayer-rightButtons * {
     float: right;
     display: inline-block;
     margin-right: 0.5em;
+    margin-bottom: 0.2em;
 }
 .fl-videoPlayer-tooltip {
     position    : absolute;
@@ -98,7 +100,6 @@ img.fl-videoPlayer-initialOverlay {
  */
 .fl-videoPlayer-theme .fl-videoPlayer-mute {
     background: #ffffff url('../images/volume-black.png') no-repeat center center;
-    margin-left: 0;
 }
 .fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
 .fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-muted,

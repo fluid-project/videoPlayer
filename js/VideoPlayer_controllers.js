@@ -166,7 +166,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             })
         });
-        
     };
 
     fluid.videoPlayer.controllers.preInit = function (that) {

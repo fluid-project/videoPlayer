@@ -305,6 +305,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onControllersHide.addListener(function () {
             that.locate("video").focus();
         });
+
+        that.container.mouseover(that.events.onMouseover.fire);
+        that.container.mouseout(that.events.onMouseout.fire);
     };
 
     var bindVideoPlayerModel = function (that) {
@@ -471,11 +474,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (fluid.hasFeature("fluid.browser.html5")) {
                     that.events.onReadyToLoadCaptions.fire();
                 }
-
-                // TODO: Find the right place to bind these functions
-                // This could be done in CSS, but the programmating show/hide for tab access interferes
-                that.container.mouseover(that.events.onMouseover.fire);
-                that.container.mouseout(that.events.onMouseout.fire);
             }
 
             that.events.onReady.fire(that);
