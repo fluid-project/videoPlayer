@@ -118,8 +118,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                                         : "Captionator DIV is NOT present in the DOM";
             
             initVideoPlayer(container[config.testIndex], config.options, function (videoPlayer) {
-                videoPlayer.events.onViewReady.fire();
-                
                 config.testComponentFunc(config.componentStr, videoPlayer.html5Captionator);
                 jqUnit.assertEquals(config.domStr, (config.hasDOMElement)?1:0, $(captionatorSelector).length);
                 start();
@@ -169,7 +167,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
                 
-                videoPlayer.events.onViewReady.fire();
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
                 
                 var tracks = videoPlayer.html5Captionator.container[0].tracks;
@@ -203,7 +200,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
                 jqUnit.assertUndefined("Current track is empty in the model", testOptionsNoCurrentTrack.model.captions.currentTrack);
                 
-                videoPlayer.events.onViewReady.fire();
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
                 
                 var tracks = videoPlayer.html5Captionator.container[0].tracks;

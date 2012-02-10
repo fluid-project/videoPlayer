@@ -129,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
                 container: "{videoPlayer}.dom.video",
-                createOnEvent: "onCreateCaptionatorReady",
+                createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -162,7 +162,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionatorReady: null
+            onHTML5BrowserDetected: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.refresh"
@@ -328,10 +328,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     height: video[0].videoHeight
                 });
             }
-            
-            if (fluid.hasFeature("fluid.browser.html5")) {
-                that.events.onCreateCaptionatorReady.fire();
-            }
         };
 
         that.incrVolume = function () {
@@ -410,6 +406,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
+                }
+                if (fluid.hasFeature("fluid.browser.html5")) {
+                    that.events.onHTML5BrowserDetected.fire();
+                    that.fullscreen();
                 }
             }
 
