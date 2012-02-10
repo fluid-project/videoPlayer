@@ -186,3 +186,9 @@ footer a {
     text-transform: uppercase;
     text-decoration: none;
 }
+
+
+/* Customize video player related styles */
+.fl-videoPlayer-controller-time {
+    color: #FFFFFF;
+}

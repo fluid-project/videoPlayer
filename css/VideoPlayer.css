@@ -66,7 +66,7 @@
  */
  
 .fl-videoPlayer-captionArea {
-    bottom:0;
+    bottom: 9.2em;  /* ToDo: this is a hack to make the captions displayed at the bottom of the video container */
     left: 20%;
 	right: 20%;
     position: absolute;
