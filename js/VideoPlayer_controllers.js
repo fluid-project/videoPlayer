@@ -654,4 +654,109 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.events.onMenuReady.fire();
     };
 
+    /*****************************************************************************
+        Language Menu subcomponent
+        Used for Captions, Transcripts, Audio Descriptions
+     *****************************************************************************/
+    fluid.defaults("fluid.videoPlayer.controllers.languageMenu", {
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        renderOnInit: true,
+        rendererOptions: {
+//            debugMode: true
+        },
+        preInitFunction: "fluid.videoPlayer.controllers.languageMenu.preInit",
+        postInitFunction: "fluid.videoPlayer.controllers.languageMenu.postInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
+        produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
+        model: {
+            selected: -1, // 0-based index
+            active: -1 // 0-based index
+        },
+        events: {
+            onReady: null
+        },
+        selectors: {
+            menuItem: ".flc-videoPlayer-menuItem"
+        },
+        repeatingSelectors: ["menuItem"],
+        strings: {
+            languageIsOff: "Language OFF",
+            turnLanguageOff: "Turn Language OFF"
+        },
+        styles: {
+// TODO: Do we really need a 'selected' item in the model?? What does it do?
+//       We do need to update the selected *style* programmatically (based on keyboard access)
+            selected: "fl-videoPlayer-menuItem-selected",
+            active: "fl-videoPlayer-menuItem-active"
+        },
+        hideOnInit: true
+    });
+    fluid.videoPlayer.controllers.languageMenu.produceTree = function (that) {
+        var tree = {
+            expander: {
+                type: "fluid.renderer.repeat",
+                repeatID: "menuItem",
+                controlledBy: "languageList",
+                pathAs: "lang",
+                tree: {
+                    value: "${{lang}.menuItem}"
+                }
+            }
+        };
+        return tree;
+    };
+    fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
+        that.options.model.active = that.options.model.languageList.length;
+        that.options.model.languageList.push({
+            menuItem: that.options.strings.languageIsOff
+        });
+    };
+    fluid.videoPlayer.controllers.languageMenu.postInit = function (that) {
+        that.show = function () {
+            that.container.show();
+        };
+        that.hide = function () {
+            that.container.hide();
+        };
+        that.select = function (index) {
+            that.container.show();
+            that.applier.requestChange("selected", index);
+        };
+        that.activate = function (index) {
+            that.applier.requestChange("active", index);
+            that.locate("menuItem").removeClass(that.options.styles.selected);
+            that.container.hide()
+        }
+    };
+    var moveStyleOnMenu = function (that, oldIndex, newIndex, style) {
+        $(that.locate("menuItem")[oldIndex]).removeClass(style);
+        $(that.locate("menuItem")[newIndex]).addClass(style);
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y = function (that) {
+        that.container.fluid("selectable", {
+            direction: fluid.a11y.orientation.VERTICAL,
+            selectableSelector: that.options.selectors.menuItem,
+            onSelect: function (el) {},
+            onUnselect: function (el) {}
+        });
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
+        that.container.hide();
+
+        that.applier.modelChanged.addListener("selected", function (model, oldModel, changeRequest) {
+            moveStyleOnMenu(that, oldModel.selected, model.selected, that.options.styles.selected);
+        });
+
+        that.applier.modelChanged.addListener("active", function (model, oldModel, changeRequest) {
+            moveStyleOnMenu(that, oldModel.active, model.active, that.options.styles.active);
+        });
+
+        that.locate("menuItem").click(function (evt) {
+            that.activate(that.locate("menuItem").index(evt.currentTarget));
+        });
+
+        that.events.onReady.fire(that);
+    };
 })(jQuery);
