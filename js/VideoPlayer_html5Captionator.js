@@ -18,32 +18,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 
 (function ($) {
-
-    /*******************************************************************************
-     * Browser type detection: html5 or non-html5.                                 *
-     *                                                                             *
-     * Add type tags of html5 into static environment for the html5 browsers.      *
-     *******************************************************************************/
-    fluid.registerNamespace("fluid.browser");
-
-    fluid.browser.html5 = function () {
-        // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
-        // Needs re-work at the integration of mediaElement.
-        var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
-        return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
-    };
-
-    var features = {
-        browserHtml5: fluid.browser.html5()
-    };
-    
-    fluid.merge(null, fluid.staticEnvironment, features);
-    
-    fluid.hasFeature = function (tagName) {
-        return fluid.find(fluid.staticEnvironment, function (value) {
-            return value && value.typeName === tagName ? true : undefined;
-        });
-    };
     
     /********************************************************************
      * HTML5 Captionator                                                *
