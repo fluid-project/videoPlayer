@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid*/
+/*global jQuery, window, fluid*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -23,9 +23,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /*******************************************************************************
      * Browser type detection: html5 or non-html5.                                 *
      *                                                                             *
-     * Add type tags of html5 into static environment for the html5 browsers.      * 
+     * Add type tags of html5 into static environment for the html5 browsers.      *
      *******************************************************************************/
-    
     fluid.registerNamespace("fluid.browser");
 
     fluid.browser.html5 = function () {
@@ -102,6 +101,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.media",
                 container: "{videoPlayer}.dom.video",
                 createOnEvent: "onCreateMediaReady",
+                priority: "first",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -120,9 +120,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
                         onVolumeChange: "{videoPlayer}.events.onVolumeChange",
-                        onStartTimeChange: "{videoPlayer}.events.onStartTimeChange",
-                        onTimeChange: "{videoPlayer}.events.onTimeChange",
-                        afterTimeChange: "{videoPlayer}.events.afterTimeChange"
+                        onStartScrub: "{videoPlayer}.events.onStartScrub",
+                        onScrub: "{videoPlayer}.events.onScrub",
+                        afterScrub: "{videoPlayer}.events.afterScrub"
                     }
                 }
             },
@@ -143,13 +143,33 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     events: {
-                        onReady: "{videoPlayer}.events.onCreateCaptionnerReady"
+                        onReady: "{videoPlayer}.events.onCreateCaptionnerReady",
+                        onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
                     }
                 }
             },
             browserCompatibility: {
                 type: "demo.html5BackwardsCompatability",
                 createOnEvent: "onOldBrowserDetected"
+            },
+            intervalEventsConductor: {
+                type: "fluid.videoPlayer.intervalEventsConductor",
+                createOnEvent: "onCaptionsLoaded",
+                options: {
+                    components: {
+                        html5MediaTimer: {
+                            type: "fluid.videoPlayer.html5MediaTimer",
+                            options: {
+                                mediaElement: "{media}.container"
+                            }
+                        }
+                    },
+                    intervalList: "{captionLoader}.options.intervalList",
+                    events: {
+                        onTimeChange: "{videoPlayer}.events.onTimeChange",
+                        onIntervalChange: "{videoPlayer}.events.onIntervalChange"
+                    }
+                }
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -159,17 +179,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReadyToLoadCaptions: null,
             onCaptionsLoaded: null,
             onVolumeChange: null,
-            onTimeChange: null,
+            onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
             onCaptionnerReady: null,
-            afterTimeChange: null,
-            onStartTimeChange: null,
+            afterScrub: null,
+            onStartScrub: null,
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
             onReady: null,
+            
+            // public, time events
+            onTimeChange: null,
+            onIntervalChange: null,
             
             // The following events are private
             onCreateControllersReady: null,
@@ -213,7 +237,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 show: false,
                 sources: null,
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                maxNumber: 3,
                 track: undefined
             }
         },
@@ -330,6 +353,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.options.model.captions.choices.push("none");
         that.options.model.captions.names.push(that.options.strings.captionsOff);
 
+        // TODO: this is a workaround for FLUID-4592: a default caption *must* be loaded
+        //       for the intervalEventsConductor to be created
+        that.options.model.captions.selection = that.options.model.captions.choices[0];
+
         that.fullscreen = function () {
             var video = that.locate("video");
             if (that.model.states.fullscreen === true) {
@@ -379,29 +406,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.incrTime = function () {
-			that.events.onStartTimeChange.fire();
+            that.events.onStartScrub.fire();
             if (that.model.states.currentTime < that.model.states.totalTime) {
                 var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
-                that.events.onTimeChange.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
+                that.events.onScrub.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
             }
-            that.events.afterTimeChange.fire();
+            that.events.afterScrub.fire();
         };
 
         that.decrTime = function () {
-			that.events.onStartTimeChange.fire();
+            that.events.onStartScrub.fire();
+            
             if (that.model.states.currentTime > 0) {
                 var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
-                that.events.onTimeChange.fire(newVol >= 0 ? newVol : 0);
+                that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
             }
-            that.events.afterTimeChange.fire();
+            that.events.afterScrub.fire();
         };
     };
     
     fluid.videoPlayer.finalInit = function (that) {
-
         that.container.attr("role", "application");
 
-        that.applier = fluid.makeChangeApplier(that.model);
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
 
@@ -468,42 +494,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return ret + min + ":" + sec;
     };
 
-    fluid.videoPlayer.mediaRenderers = {
-        html5SourceTag: function (videoPlayer, mediaSource) {
-            var sourceTag = $("<source />");
-            sourceTag.attr(mediaSource);
-            videoPlayer.container.append(sourceTag);
-            return sourceTag;
-        },
-        youTubePlayer: function (videoPlayer, mediaSource) {
-            var placeholder = $("<div/>"),
-                id = fluid.allocateSimpleId(placeholder);
-            videoPlayer.container.append(placeholder);
-            swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
-            return placeholder;
-        }
-    };
-    
     /*********************************************************************************
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
-        
-    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
+    
+    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded":  "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterTimeChange":   "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartTimeChange": "{captionner}.hideCaptions"
+                "{videoPlayer}.events.onScrub": "{media}.setTime",
+                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
+                "{videoPlayer}.events.onViewReady": "{media}.refresh",
+                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
             }
         }
     });
 
-    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
         options: {
             listeners: {
-                "{videoPlayer}.events.onTimeChange":   "{media}.setTime",
-                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
-                "{videoPlayer}.events.onViewReady":    "{media}.refresh"
+                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
+                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
+                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
             }
         }
     });

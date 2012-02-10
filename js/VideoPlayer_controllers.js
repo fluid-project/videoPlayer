@@ -45,9 +45,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
                     events: {
-                        onScrub: "{controllers}.events.onTimeChange",
-                        afterScrub: "{controllers}.events.afterTimeChange",
-                        onStartScrub: "{controllers}.events.onStartTimeChange"
+                        onScrub: "{controllers}.events.onScrub",
+                        afterScrub: "{controllers}.events.afterScrub",
+                        onStartScrub: "{controllers}.events.onStartScrub"
                     }
                 }
             },
@@ -117,7 +117,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onVolumeChange: null,
             onStartTimeChange: null,
             onTimeChange: null,
-            afterTimeChange: null
+            afterTimeChange: null,
+            onMarkupReady: null
         },
 
         selectors: {
@@ -173,10 +174,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // TODO: This function is inherited. Consider making this public
     var bindScrubberModel = function (that) {
-        // TODO: These listeners could be added declaratively
-        that.applier.modelChanged.addListener("states.currentTime", that.updateCurrentTime);
-        that.applier.modelChanged.addListener("states.totalTime", that.updateTotalTime);
-
         // Setup the scrubber when we know the duration of the video.
         that.applier.modelChanged.addListener("states.startTime", that.updateMin);
         that.applier.modelChanged.addListener("states.startTime", that.updateMax);
@@ -241,14 +238,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
         // TODO: these methods should be public functions, since people might like to alter them
         //       (inherited code)
-        that.updateCurrentTime = function () {
-            that.locate("currentTime").text(that.model.states.currentTime);
-        };
-
-        that.updateTotalTime = function () {
-            that.locate("totalTime").text(that.model.states.totalTime);
-        };
-
         that.updateMin = function () {
             var startTime = that.model.states.startTime || 0;
             var scrubber = that.locate("scrubber");
@@ -507,10 +496,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    // TODO: FLUID-4589 Restructure the caption model to reduce the code logic here
     fluid.videoPlayer.controllers.captionControls.setUpCaptionControls = function (that) {
         that.captionsOffOption = $(that.locate("languageLabel")[that.model.captions.choices.indexOf("none")]);
         that.locate("languageList").hide();
-        that.captionsOffOption.addClass(that.options.styles.selected);
+        that.captionsOffOption.text(that.model.captions.selection === "none" ? that.options.strings.captionsOff : that.options.strings.turnCaptionsOff);
+        $(that.locate("languageLabel")[that.model.captions.choices.indexOf(that.model.captions.selection)]).addClass(that.options.styles.selected);
     };
 
     fluid.videoPlayer.controllers.captionControls.bindCaptionDOMEvents = function (that) {
@@ -522,7 +513,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    // TODO: FLUID-4589 Restructre the caption model to reduce the code logic here
+    // TODO: FLUID-4589 Restructure the caption model to reduce the code logic here
     fluid.videoPlayer.controllers.captionControls.bindCaptionModel = function (that) {
         that.applier.modelChanged.addListener("captions.selection", function (model, oldModel, changeRequest) {
             var oldSel = oldModel.captions.selection;
