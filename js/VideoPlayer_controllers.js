@@ -673,7 +673,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
         model: {
         },
         events: {
-            onReady: null
+            onReady: null,
+            trackChanged: null
+        },
+        listeners: {
+            trackChanged: {
+                listener: "fluid.videoPlayer.controllers.languageMenu.updateTracks",
+                args: ["{languageMenu}", "{arguments}.0"]
+            }
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem"
@@ -697,7 +704,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 controlledBy: "list",
                 pathAs: "lang",
                 tree: {
-                    value: "${{lang}.menuItem}"
+                    value: "${{lang}.label}"
                 }
             }
         };
@@ -705,8 +712,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
         that.options.model.list.push({
-            // when the captions model is more fleshed out, this will be more involved than just a string
-            menuItem: that.options.strings.languageIsOff
+            language: "none",
+            label: that.options.strings.languageIsOff
         });
         that.options.model.currentTrack = that.options.model.currentTrack || that.options.model.list.length-1;
     };
@@ -721,11 +728,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.applier.requestChange("currentTrack", index);
         };
     };
-    var updateActiveStyling = function (that, newIndex) {
-        that.locate("menuItem").removeClass(that.options.styles.active);
-        $(that.locate("menuItem")[newIndex]).addClass(that.options.styles.active);
-    };
-
     fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y = function (that) {
         that.container.fluid("tabbable");
         that.container.fluid("selectable", {
@@ -743,9 +745,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             noWrap: true
         });
         that.locate("menuItem").fluid("activatable", function (evt) {
-            that.locate("menuItem").removeClass(that.options.styles.active);
-            $(evt.currentTarget).addClass(that.options.styles.active);
-            // el = evt.currentTarget
+            that.activate(that.locate("menuItem").index(evt.currentTarget));
         });
         that.locate("menuItem").last().keydown(function (evt) {
             if (evt.which === $.ui.keyCode.DOWN) {
@@ -761,9 +761,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.hide();
 
         that.applier.modelChanged.addListener("currentTrack", function (model, oldModel, changeRequest) {
-            that.locate("menuItem").removeClass(that.options.styles.selected);
-            updateActiveStyling(that, model.currentTrack);
-            that.hide();
+            that.events.trackChanged.fire(model.currentTrack);
         });
 
         that.locate("menuItem").click(function (evt) {
@@ -771,9 +769,22 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
 
         fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
-        updateActiveStyling(that, that.model.currentTrack);
+        $(that.locate("menuItem")[that.model.currentTrack]).addClass(that.options.styles.active);
 
         that.events.onReady.fire(that);
     };
 
+    fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that, currentTrack) {
+        var list = that.locate("menuItem");
+        var lastEntry = list.length - 1;
+        list.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
+        $(list[currentTrack]).addClass(that.options.styles.active);
+
+        if (currentTrack === lastEntry) {
+            $(list[lastEntry]).text(that.options.strings.languageIsOff);
+        } else {
+            $(list[lastEntry]).text(that.options.strings.turnLanguageOff);
+        }
+        that.hide();
+    };
 })(jQuery);

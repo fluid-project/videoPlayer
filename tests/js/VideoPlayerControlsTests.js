@@ -25,16 +25,31 @@ fluid.registerNamespace("fluid.tests");
 
         var baseMenuOpts = {
             model: {
-                list: [
-                    {menuItem: "Klingon"},
-                    {menuItem: "Esperanto"},
-                    {menuItem: "LOLspeak"},
-                    {menuItem: "Elvish"}
-                ]
+                list: [{
+                    language: "klingon",
+                    label: "Klingoñ",
+                    type: "JSONcc",
+                    src: "klingon.json"
+                },{
+                    language: "esperanto",
+                    label: "Espéranto",
+                    type: "JSONcc",
+                    src: "esperanto.json"
+                },{
+                    language: "lolspeak",
+                    label: "LOLspeak",
+                    type: "JSONcc",
+                    src: "lolspeak.json"
+                },{
+                    language: "elvish",
+                    label: "Elvîsh",
+                    type: "JSONcc",
+                    src: "elvish.json"
+                }]
             },
             strings: {
-                languageIsOff: "No on is talking",
-                turnLanguageOff: "Please stop all the talking"
+                languageIsOff: "No one is talking",
+                turnLanguageOff: "Please stop all the talking!"
             }
             
         }
@@ -47,7 +62,7 @@ fluid.registerNamespace("fluid.tests");
 
         videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
             var numLangs = baseMenuOpts.model.list.length;
-            expect (22);
+            expect (24);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
                     onReady: function (that) {
@@ -56,6 +71,7 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
                         jqUnit.assertEquals("Initially, 'no language' should be the active value", numLangs, that.model.currentTrack);
                         jqUnit.assertTrue("Initially, 'no language' should have the 'active' style", $(langList[numLangs]).hasClass(that.options.styles.active));
+                        jqUnit.assertEquals("Initially, 'no language' should have the correct text", that.options.strings.languageIsOff, $(langList[numLangs]).text());
 
                         jqUnit.notVisible("The menu should be hidden initially", that.container);
                         that.show();
@@ -78,6 +94,7 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertTrue("Activating an item adds the 'active' style to the item", $(langList[0]).hasClass(that.options.styles.active));
                         jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem+"."+that.options.styles.active).length);
                         jqUnit.assertFalse("Activating an item removes 'selected' style from all items", langList.hasClass(that.options.styles.selected));
+                        jqUnit.assertEquals("Activating an item changes the 'none' option text", that.options.strings.turnLanguageOff, $(langList[numLangs]).text());
                         jqUnit.notVisible("Activating an item hides the menu", that.container);
 
                         that.show();
@@ -108,6 +125,8 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("When initialized with a choice, that choice should be the active value", 2, that.model.currentTrack);
                         jqUnit.assertTrue("The active item should have the 'active' style", $(langList[2]).hasClass(that.options.styles.active));
 
+that.show();
+that.container.focus();
                         start();
                     }
                 }
