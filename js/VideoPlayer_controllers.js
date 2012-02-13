@@ -719,7 +719,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
         that.activate = function (index) {
             that.applier.requestChange("currentTrack", index);
-        }
+        };
     };
     var updateActiveStyling = function (that, newIndex) {
         that.locate("menuItem").removeClass(that.options.styles.active);
@@ -747,7 +747,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
             $(evt.currentTarget).addClass(that.options.styles.active);
             // el = evt.currentTarget
         });
-
+        that.locate("menuItem").last().keydown(function (evt) {
+            if (evt.which === $.ui.keyCode.DOWN) {
+                $(this).removeClass(that.options.styles.selected);
+                that.hide();
+                return false;
+            }
+            return true;
+        });
     };
 
     fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
@@ -756,7 +763,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.applier.modelChanged.addListener("currentTrack", function (model, oldModel, changeRequest) {
             that.locate("menuItem").removeClass(that.options.styles.selected);
             updateActiveStyling(that, model.currentTrack);
-            that.hide()
+            that.hide();
         });
 
         that.locate("menuItem").click(function (evt) {
@@ -768,4 +775,5 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         that.events.onReady.fire(that);
     };
+
 })(jQuery);

@@ -45,10 +45,9 @@ fluid.registerNamespace("fluid.tests");
             return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
         };
 
-        videoPlayerControlsTests.asyncTest("Menu: Default configuration", function () {
+        videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
             var numLangs = baseMenuOpts.model.list.length;
-            fluid.setLogging(false);
-            // expect (?);
+            expect (22);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
                     onReady: function (that) {
@@ -95,10 +94,9 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        videoPlayerControlsTests.asyncTest("Menu: Active language on init", function () {
+        videoPlayerControlsTests.asyncTest("Language Menu: Active language on init", function () {
             var numLangs = baseMenuOpts.model.list.length;
-            fluid.setLogging(false);
-            // expect (?);
+            expect (3);
             var testMenu = fluid.tests.initMenu({
                 model: {
                     currentTrack: 2
@@ -110,13 +108,10 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("When initialized with a choice, that choice should be the active value", 2, that.model.currentTrack);
                         jqUnit.assertTrue("The active item should have the 'active' style", $(langList[2]).hasClass(that.options.styles.active));
 
-that.show();
-that.container.focus();
                         start();
                     }
                 }
             });
         });
-
     });
 })(jQuery);
