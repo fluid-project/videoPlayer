@@ -2,9 +2,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Video Player Test Suite</title>
+        <title>Video Player Controls Test Suite</title>
 
         <link rel="stylesheet" type="text/css" media="screen" href="../lib/qunit/css/qunit.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="../../css/VideoPlayer.css" />
 
         <script type="text/javascript" src="../../lib/infusion/MyInfusion.js"></script>
         <script type="text/javascript" src="../../lib/jquery-ui/js/jquery.ui.button.js"></script>
@@ -14,15 +15,14 @@
         <script type="text/javascript" src="../../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_media.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_intervalEventsConductor.js"></script>
-        <script type="text/javascript" src="../../js/HTML5-backcompat.js"></script>
-        
+
         <!--  jqUnit test framework js files -->
         <script type="text/javascript" src="../lib/qunit/js/qunit.js"></script>
         <script type="text/javascript" src="../lib/jqUnit/js/jqUnit.js"></script>
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.simulate.js"></script>        
 
         <!--  These are tests that have been written using this page as data and test supports -->
-        <script type="text/javascript" src="../js/VideoPlayerTests.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayerControlsTests.js"></script>
 
     </head>
     <body id="body">
@@ -34,11 +34,30 @@
       <ol id="qunit-tests"></ol>
       <div id="main">
 
-        <div class="videoPlayer fl-videoPlayer">
-            
+        <div id="basic-toggle-button-test">
+            <button type="button" class="test-toggle-button"></button>
+        </div>
+
+        <div id="basic-volume-controls-test">
+            <button type="button" class="flc-videoPlayer-mute"></button>
+            <div class="flc-videoPlayer-volumeControl"></div>
+        </div>
+
+         <div id="basic-caption-controls-test">
+            <button type="button" class="flc-videoPlayer-captions-button"></button>
+            <ul class="flc-videoPlayer-captions-languageList">
+                <li class="flc-videoPlayer-captions-language">
+                    <label for="radioid" class="flc-videoPlayer-captions-languageLabel">label</label> 
+                    <input type="radio" id="radioid" class="flc-videoPlayer-captions-languageButton" />
+                </li>
+            </ul>
+        </div>
+
+        <div id="videoPlayer" class="fl-videoPlayer">
         </div>
 
       </div> <!-- /main -->
+
 
     </body>
 </html>
