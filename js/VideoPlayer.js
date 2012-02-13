@@ -353,10 +353,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.options.model.captions.choices.push("none");
         that.options.model.captions.names.push(that.options.strings.captionsOff);
 
-        // TODO: this is a workaround for FLUID-4592: a default caption *must* be loaded
-        //       for the intervalEventsConductor to be created
-        that.options.model.captions.selection = that.options.model.captions.choices[0];
-
         that.fullscreen = function () {
             var video = that.locate("video");
             if (that.model.states.fullscreen === true) {
