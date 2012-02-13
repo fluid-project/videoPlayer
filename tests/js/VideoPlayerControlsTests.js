@@ -21,11 +21,12 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
+//fluid.debug.listenForFocusEvents();
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
         var baseMenuOpts = {
             model: {
-                languageList: [
+                list: [
                     {menuItem: "Klingon"},
                     {menuItem: "Esperanto"},
                     {menuItem: "LOLspeak"},
@@ -46,7 +47,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.asyncTest("Menu: Default configuration", function () {
-            var numLangs = baseMenuOpts.model.languageList.length;
+            var numLangs = baseMenuOpts.model.list.length;
             fluid.setLogging(false);
             // expect (?);
             var testMenu = fluid.tests.initMenu({
@@ -54,8 +55,9 @@ fluid.registerNamespace("fluid.tests");
                     onReady: function (that) {
                         var langList = that.locate("menuItem");
                         jqUnit.assertEquals("Menu should have correct number of items (num languages +1)", numLangs + 1, langList.length);
-                        jqUnit.assertEquals("Initially, model should have default selection value", -1, that.model.selected);
+                        jqUnit.assertFalse("Initially, nothing should have 'selected' style", -1, langList.hasClass(that.options.styles.selected));
                         jqUnit.assertEquals("Initially, 'no language' should be the active value", numLangs, that.model.active);
+
                         jqUnit.notVisible("The menu should be hidden initially", that.container);
                         that.show();
                         jqUnit.isVisible("show() shows the menu", that.container);
@@ -82,12 +84,18 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.notVisible("Activating an item hides the menu", that.container);
 
                         that.show();
-                        // double-check notes on interaction between keyboard selection and hover, and add tests
                         $(that.locate("menuItem")[1]).click();
                         jqUnit.assertEquals("Clicking an item in the list activates the item", 1, that.model.active);
                         jqUnit.assertTrue("Clicking an item adds the 'active' style to the item", $(langList[1]).hasClass(that.options.styles.active));
                         jqUnit.assertFalse("Clicking an item removes 'selected' style from all items", langList.hasClass(that.options.styles.selected));
                         jqUnit.notVisible("Clicking an item hides the menu", that.container);
+
+                        // double-check notes on interaction between keyboard selection and hover, and add tests
+
+that.show();
+console.log("about to focus container");
+that.container.focus();
+console.log("container focused");
                         start();
                     }
                 }

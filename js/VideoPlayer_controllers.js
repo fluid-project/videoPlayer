@@ -656,7 +656,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     /*****************************************************************************
         Language Menu subcomponent
-        Used for Captions, Transcripts, Audio Descriptions
+        Used for Captions, Transcripts, Audio Descriptions.
+        Starts with a list of languages and adds the "none, please" options.
+        Eventually, we'll add the "Make new" and "Request new" buttons.
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.languageMenu", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
@@ -669,7 +671,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
         model: {
-            selected: -1, // 0-based index
+//            selected: -1, // 0-based index
             active: -1 // 0-based index
         },
         events: {
@@ -696,7 +698,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             expander: {
                 type: "fluid.renderer.repeat",
                 repeatID: "menuItem",
-                controlledBy: "languageList",
+                controlledBy: "list",
                 pathAs: "lang",
                 tree: {
                     value: "${{lang}.menuItem}"
@@ -706,8 +708,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return tree;
     };
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
-        that.options.model.active = that.options.model.languageList.length;
-        that.options.model.languageList.push({
+        that.options.model.active = that.options.model.list.length;
+        that.options.model.list.push({
             menuItem: that.options.strings.languageIsOff
         });
     };
@@ -720,7 +722,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
         that.select = function (index) {
             that.container.show();
-            that.applier.requestChange("selected", index);
+//            that.applier.requestChange("selected", index);
         };
         that.activate = function (index) {
             that.applier.requestChange("active", index);
@@ -728,34 +730,60 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.container.hide()
         }
     };
+/*
     var moveStyleOnMenu = function (that, oldIndex, newIndex, style) {
         $(that.locate("menuItem")[oldIndex]).removeClass(style);
         $(that.locate("menuItem")[newIndex]).addClass(style);
     };
+*/
+    var updateActiveStyling = function (that, newIndex) {
+        $(that.locate("menuItem")).removeClass(that.options.styles.active);
+        $(that.locate("menuItem")[newIndex]).addClass(that.options.styles.active);
+    };
 
     fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y = function (that) {
+        that.container.fluid("tabbable");
         that.container.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
             selectableSelector: that.options.selectors.menuItem,
-            onSelect: function (el) {},
-            onUnselect: function (el) {}
+            onSelect: function (el) {
+//                that.select(that.locate("menuItem").index(el));
+                $(el).addClass(that.options.styles.selected);
+            },
+            onUnselect: function (el) {
+                $(el).removeClass(that.options.styles.selected);
+            },
+            rememberSelectionState: false,
+            autoSelectFirstItem: false,
+            noWrap: true
         });
+        that.locate("menuItem").fluid("activatable", function (evt) {
+            that.locate("menuItem").removeClass(that.options.styles.active);
+            $(evt.currentTarget).addClass(that.options.styles.active);
+            // el = evt.currentTarget
+        });
+
     };
 
     fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
         that.container.hide();
 
+/*
         that.applier.modelChanged.addListener("selected", function (model, oldModel, changeRequest) {
             moveStyleOnMenu(that, oldModel.selected, model.selected, that.options.styles.selected);
         });
+*/
 
         that.applier.modelChanged.addListener("active", function (model, oldModel, changeRequest) {
-            moveStyleOnMenu(that, oldModel.active, model.active, that.options.styles.active);
+            updateActiveStyling(that, model.active)
+//            moveStyleOnMenu(that, oldModel.active, model.active, that.options.styles.active);
         });
 
         that.locate("menuItem").click(function (evt) {
             that.activate(that.locate("menuItem").index(evt.currentTarget));
         });
+
+        fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
 
         that.events.onReady.fire(that);
     };
