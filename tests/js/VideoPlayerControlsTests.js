@@ -55,7 +55,7 @@ fluid.registerNamespace("fluid.tests");
                     onReady: function (that) {
                         var langList = that.locate("menuItem");
                         jqUnit.assertEquals("Menu should have correct number of items (num languages +1)", numLangs + 1, langList.length);
-                        jqUnit.assertFalse("Initially, nothing should have 'selected' style", -1, langList.hasClass(that.options.styles.selected));
+                        jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
                         jqUnit.assertEquals("Initially, 'no language' should be the active value", numLangs, that.model.active);
 
                         jqUnit.notVisible("The menu should be hidden initially", that.container);
@@ -64,16 +64,14 @@ fluid.registerNamespace("fluid.tests");
                         that.hide();
                         jqUnit.notVisible("hide() hides the menu", that.container);
 
-                        that.select(numLangs);
+                        that.container.fluid("selectable.select", langList[numLangs]);
                         jqUnit.isVisible("Selecting final item shows menu", that.container);
                         jqUnit.assertTrue("Selecting final item adds 'selected' style to final item", $(langList[numLangs]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Selecting final item updates the selection value", numLangs, that.model.selected);
                         jqUnit.assertEquals("Selecting final item does not update active value", numLangs, that.model.active);
 
-                        that.select(numLangs - 1);
+                        that.container.fluid("selectable.select", langList[numLangs - 1]);
                         jqUnit.assertTrue("Changing selection adds 'selected' style to new item", $(langList[numLangs - 1]).hasClass(that.options.styles.selected));
                         jqUnit.assertEquals("Only one item is selected at a time", 1, $(that.options.selectors.menuItem+"."+that.options.styles.selected).length);
-                        jqUnit.assertEquals("Changing selection updates the selection value", numLangs - 1, that.model.selected);
                         jqUnit.assertEquals("Selecting final item does not update active value", numLangs, that.model.active);
 
                         that.activate(0);
@@ -91,11 +89,6 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.notVisible("Clicking an item hides the menu", that.container);
 
                         // double-check notes on interaction between keyboard selection and hover, and add tests
-
-that.show();
-console.log("about to focus container");
-that.container.focus();
-console.log("container focused");
                         start();
                     }
                 }

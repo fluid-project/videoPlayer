@@ -671,7 +671,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
         model: {
-//            selected: -1, // 0-based index
             active: -1 // 0-based index
         },
         events: {
@@ -686,8 +685,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             turnLanguageOff: "Turn Language OFF"
         },
         styles: {
-// TODO: Do we really need a 'selected' item in the model?? What does it do?
-//       We do need to update the selected *style* programmatically (based on keyboard access)
             selected: "fl-videoPlayer-menuItem-selected",
             active: "fl-videoPlayer-menuItem-active"
         },
@@ -708,10 +705,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return tree;
     };
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
-        that.options.model.active = that.options.model.list.length;
         that.options.model.list.push({
             menuItem: that.options.strings.languageIsOff
         });
+        that.options.model.active = /*that.options.model.active ||*/ that.options.model.list.length-1;
     };
     fluid.videoPlayer.controllers.languageMenu.postInit = function (that) {
         that.show = function () {
@@ -720,22 +717,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.hide = function () {
             that.container.hide();
         };
-        that.select = function (index) {
-            that.container.show();
-//            that.applier.requestChange("selected", index);
-        };
         that.activate = function (index) {
             that.applier.requestChange("active", index);
-            that.locate("menuItem").removeClass(that.options.styles.selected);
-            that.container.hide()
         }
     };
-/*
-    var moveStyleOnMenu = function (that, oldIndex, newIndex, style) {
-        $(that.locate("menuItem")[oldIndex]).removeClass(style);
-        $(that.locate("menuItem")[newIndex]).addClass(style);
-    };
-*/
     var updateActiveStyling = function (that, newIndex) {
         $(that.locate("menuItem")).removeClass(that.options.styles.active);
         $(that.locate("menuItem")[newIndex]).addClass(that.options.styles.active);
@@ -747,7 +732,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             direction: fluid.a11y.orientation.VERTICAL,
             selectableSelector: that.options.selectors.menuItem,
             onSelect: function (el) {
-//                that.select(that.locate("menuItem").index(el));
+                that.show();
                 $(el).addClass(that.options.styles.selected);
             },
             onUnselect: function (el) {
@@ -766,17 +751,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
-        that.container.hide();
-
-/*
-        that.applier.modelChanged.addListener("selected", function (model, oldModel, changeRequest) {
-            moveStyleOnMenu(that, oldModel.selected, model.selected, that.options.styles.selected);
-        });
-*/
+        that.hide();
 
         that.applier.modelChanged.addListener("active", function (model, oldModel, changeRequest) {
-            updateActiveStyling(that, model.active)
-//            moveStyleOnMenu(that, oldModel.active, model.active, that.options.styles.active);
+            that.locate("menuItem").removeClass(that.options.styles.selected);
+            updateActiveStyling(that, model.active);
+            that.hide()
         });
 
         that.locate("menuItem").click(function (evt) {
