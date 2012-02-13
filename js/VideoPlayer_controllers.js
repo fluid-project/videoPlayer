@@ -671,7 +671,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
         model: {
-            active: -1 // 0-based index
         },
         events: {
             onReady: null
@@ -706,9 +705,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
         that.options.model.list.push({
+            // when the captions model is more fleshed out, this will be more involved than just a string
             menuItem: that.options.strings.languageIsOff
         });
-        that.options.model.active = /*that.options.model.active ||*/ that.options.model.list.length-1;
+        that.options.model.currentTrack = that.options.model.currentTrack || that.options.model.list.length-1;
     };
     fluid.videoPlayer.controllers.languageMenu.postInit = function (that) {
         that.show = function () {
@@ -718,11 +718,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.container.hide();
         };
         that.activate = function (index) {
-            that.applier.requestChange("active", index);
+            that.applier.requestChange("currentTrack", index);
         }
     };
     var updateActiveStyling = function (that, newIndex) {
-        $(that.locate("menuItem")).removeClass(that.options.styles.active);
+        that.locate("menuItem").removeClass(that.options.styles.active);
         $(that.locate("menuItem")[newIndex]).addClass(that.options.styles.active);
     };
 
@@ -753,9 +753,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
         that.hide();
 
-        that.applier.modelChanged.addListener("active", function (model, oldModel, changeRequest) {
+        that.applier.modelChanged.addListener("currentTrack", function (model, oldModel, changeRequest) {
             that.locate("menuItem").removeClass(that.options.styles.selected);
-            updateActiveStyling(that, model.active);
+            updateActiveStyling(that, model.currentTrack);
             that.hide()
         });
 
@@ -764,6 +764,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
 
         fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
+        updateActiveStyling(that, that.model.currentTrack);
 
         that.events.onReady.fire(that);
     };
