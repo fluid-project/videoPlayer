@@ -292,6 +292,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
+        that.locate("overlay").click(that.play);
         video.bind("loadedmetadata", function () {
             //that shouldn't be usefull but the video is too big if it's not used
             that.container.css("width", video[0].videoWidth);
@@ -317,9 +318,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.applier.modelChanged.addListener("states.play", function () {
-            that.locate("overlay").remove();
-            that.applier.modelChanged.removeListener("removeOverlay");
-        }, "removeOverlay");
+            that.locate("overlay").hide();
+            that.applier.modelChanged.removeListener("hideOverlay");
+        }, "hideOverlay");
 
     };
 
