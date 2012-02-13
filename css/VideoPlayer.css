@@ -63,23 +63,6 @@
 
 
 /*
- * Caption area
- */
- 
-.fl-videoPlayer-captionArea {
-    bottom:0;
-    left: 20%;
-	right: 20%;
-    position: absolute;
-    text-align:center;
-}
-
-.fl-videoPlayer-caption-captionText {
-    color: white;
-    background-color: black;
-    opacity: 0.7;
-}
-/*
 * mods to the coal theme
 */
 

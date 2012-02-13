@@ -59,7 +59,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             // TODO: We want to have a multi caption support!!!
             tracks[index].mode = captionator.TextTrack[key === currentTrack ? "SHOWING" : "OFF"];
             
-            index = index + 1;
+            ++index;
         });
     };
 
@@ -84,23 +84,22 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var captions = that.options.captions;
+        var captions = that.options.captions || {};
         
         // Before we go any further check if it makes sense to create captionator and bind events
         if(fluid.get(captions, "sources.length") === 0) {
             return false;
         }
         
-        var sources = captions.sources;
+        var sources = captions.sources || {};
+        var currentTrack = captions.currentTrack;
         
         // If currentTrack is not specified, then default it to the first track
-        if (!fluid.get(captions, "currentTrack")) {
-            for (var key in sources) {
-                if (sources.hasOwnProperty(key)) {
-                    captions.currentTrack = key;
-                    break;
-                }
-            }
+        if (!currentTrack || !sources[currentTrack]) {
+            var foundKey = fluid.find(sources, function(value, key) {
+                return key;
+            });
+            captions.currentTrack = foundKey;
         }
         
         // Start adding tracks to the video tag
