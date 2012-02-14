@@ -14,6 +14,7 @@
         <script type="text/javascript" src="../../js/VideoPlayer_captionLoader.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_media.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_intervalEventsConductor.js"></script>
 
         <!--  jqUnit test framework js files -->
         <script type="text/javascript" src="../lib/qunit/js/qunit.js"></script>
@@ -33,14 +34,33 @@
       <ol id="qunit-tests"></ol>
       <div id="main">
 
-        <div id="videoPlayer" class="fl-videoPlayer">
+        <div id="basic-toggle-button-test">
+            <button type="button" class="test-toggle-button"></button>
         </div>
 
-      </div> <!-- /main -->
+        <div id="basic-volume-controls-test">
+            <button type="button" class="flc-videoPlayer-mute"></button>
+            <div class="flc-videoPlayer-volumeControl"></div>
+        </div>
+
+         <div id="basic-caption-controls-test">
+            <button type="button" class="flc-videoPlayer-captions-button"></button>
+            <ul class="flc-videoPlayer-captions-languageList">
+                <li class="flc-videoPlayer-captions-language">
+                    <label for="radioid" class="flc-videoPlayer-captions-languageLabel">label</label> 
+                    <input type="radio" id="radioid" class="flc-videoPlayer-captions-languageButton" />
+                </li>
+            </ul>
+        </div>
 
         <ul id="basic-menu-test" class="fl-videoPlayer-menu">
             <li class="flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
         </ul>
+
+        <div id="videoPlayer" class="fl-videoPlayer">
+        </div>
+
+      </div> <!-- /main -->
 
     </body>
 </html>
