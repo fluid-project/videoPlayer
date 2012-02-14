@@ -74,7 +74,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     strings: {
                         languageIsOff: "Captions OFF",
-                        turnLanguageOff: "Turn Captions OFF"
+                        turnLanguageOff: "Turn Captions OFF",
+                        press: "Captions",
+                        release: "Captions"
                     }
                 }
             },
@@ -332,6 +334,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tabindex(that.container, 0);
         fluid.tabindex(that.locate("mute"), -1);
         fluid.tabindex(volumeControl, -1);
+        fluid.tabindex(that.locate("handle"), -1);
 
         fluid.activatable(that.container, function (evt) {
             that.muteButton.events.onPress.fire(evt);
@@ -830,6 +833,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             showHideMenu: null
         },
         components: {
+            button: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+                container: "{languageControls}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-captions-button"
+                    },
+                    styles: {
+//                        pressed: "fl-videoPlayer-languageOn"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: "{languageControls}.options.strings"
+                }
+            },
             menu: {
                 type: "fluid.videoPlayer.controllers.languageMenu",
                 container: "{languageControls}.dom.menu",
@@ -853,6 +870,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
         that.locate("button").click(that.events.showHideMenu.fire);
+
+        that.locate("button").fluid("activatable", [fluid.identity, {
+            additionalBindings: [{
+                key: $.ui.keyCode.UP,
+                activateHandler: function () {
+                    that.events.showHideMenu.fire();
+                    that.menu.container.fluid("selectable.select", $(".flc-videoPlayer-menuItem:last"));
+                    return false;
+                }
+            }]
+        }]);
 
         that.events.onReady.fire(that);
     };
