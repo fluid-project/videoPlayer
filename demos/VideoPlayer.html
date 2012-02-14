@@ -87,26 +87,20 @@
                         ]
                     },
                     captions: {
-                        sources: {
-                            english: {
-                                src: "ReorganizeFuture.en.json",
-                                type: "JSONcc"
-                            }, 
-                            francaise: {
-                                src: "ReorganizeFuture.fr.json",
-                                type: "JSONcc"
-                            }
-                        },
-                        currentTrack: "english",
+                        list: [{
+                            label: "English",
+                            src: "ReorganizeFuture.en.json",
+                            type: "JSONcc"
+                        }, {
+                            label: "French",
+                            src: "ReorganizeFuture.fr.json",
+                            type: "JSONcc"
+                        }],
 
-                        // The following options (choices, names, selection) shouldn't be necessary.
-                        // This is a temporary workaround for FLUID-4585
-                        choices: [],
-                        names: [],
-                        // TODO: setting 'selection' to something other than 'none' is a workaround
+                        // TODO: setting 'currentTrack' to something other than 'none' is a workaround
                         //       for FLUID-4592: a default caption *must* be loaded for the
                         //       intervalEventsConductor to be created
-                        selection: "english",
+                        currentTrack: 0,
 
                         show: false,
                         conversionServiceUrl: "/videoPlayer/conversion_service/index.php",

@@ -25,7 +25,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * Note: when the caption is loaded by Ajax the event onCaptionsLoaded is fired
      */
     var bindCaptionLoaderModel = function (that) {
-        that.applier.modelChanged.addListener("captions.selection", that.loadCaptions, "captionLoader");
+        that.applier.modelChanged.addListener("captions.currentTrack", that.loadCaptions, "captionLoader");
     };
 
     fluid.defaults("fluid.videoPlayer.captionLoader", {
@@ -108,7 +108,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         //Creates an ajax query and uses or not a convertor for the captions
         that.loadCaptions = function () {
-            var caps = that.model.captions.sources[that.model.captions.selection];
+            var caps = that.model.captions.list[that.model.captions.currentTrack];
+console.log("loadCaptions gets caps.label of "+caps.label);
             if (caps) {
                 var opts = {
                     type: "GET",
@@ -136,7 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         bindCaptionLoaderModel(that);
 
         //if we provided default captions when we created the component we load it
-        if (that.model.captions.sources && (that.model.captions.selection !== "none")) {
+        if (that.model.captions.list && (that.model.captions.currentTrack < that.model.captions.list.length - 1)) {
             that.loadCaptions();
         } else {
             that.applier.fireChangeRequest({

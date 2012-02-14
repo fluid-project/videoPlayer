@@ -102,6 +102,12 @@
     display: block;
 }
 
+/*
+ * Language menus
+ */
+.fl-videoPlayer-languageMenu * {
+    display: block;
+}
 
 /*
  * Caption controls

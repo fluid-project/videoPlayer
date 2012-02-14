@@ -272,23 +272,20 @@ fluid.registerNamespace("fluid.tests");
         var baseCaptionOpts = {
             model: {
                 captions: {
-                    sources: {
-                        esperanto: {
-                            src: "Test.esp.json",
-                            type: "JSONcc"
-                        }, 
-                        klingon: {
-                            src: "Test.kling.json",
-                            type: "JSONcc"
-                        },
-                        lolspeak: {
-                            src: "Test.lol.json",
-                            type: "JSONcc"
-                        }
-                    },
-                    choices: ["esperanto", "klingon", "lolspeak", "none"],
-                    names: ["esperanto", "klingon", "lolspeak", "Captions OFF"],
-                    selection: "none"
+                    list: [{
+                        label: "Esperanto",
+                        src: "Test.esp.json",
+                        type: "JSONcc"
+                    },  {
+                        label: "Klingon",
+                        src: "Test.kling.json",
+                        type: "JSONcc"
+                    }, {
+                        label: "LOLspeak",
+                        src: "Test.lol.json",
+                        type: "JSONcc"
+                }]
+// does this need "currentTrack"?
                 }
             }
         };
@@ -299,6 +296,7 @@ fluid.registerNamespace("fluid.tests");
             return fluid.videoPlayer.controllers.captionControls("#basic-caption-controls-test", opts);
         };
 
+/*
         videoPlayerControlsTests.asyncTest("Caption controls", function () {
             expect(31);
             var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
@@ -391,6 +389,7 @@ fluid.registerNamespace("fluid.tests");
             });
             var testPlayer = fluid.tests.initVideoPlayer(captionOpts);
         });
+*/
 
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
             expect(16);
@@ -415,27 +414,29 @@ fluid.registerNamespace("fluid.tests");
 
         var baseMenuOpts = {
             model: {
-                list: [{
-                    language: "klingon",
-                    label: "Klingoñ",
-                    type: "JSONcc",
-                    src: "klingon.json"
-                }, {
-                    language: "esperanto",
-                    label: "Espéranto",
-                    type: "JSONcc",
-                    src: "esperanto.json"
-                }, {
-                    language: "lolspeak",
-                    label: "LOLspeak",
-                    type: "JSONcc",
-                    src: "lolspeak.json"
-                }, {
-                    language: "elvish",
-                    label: "Elvîsh",
-                    type: "JSONcc",
-                    src: "elvish.json"
-                }]
+                captions: {
+                    list: [{
+                        language: "klingon",
+                        label: "Klingoñ",
+                        type: "JSONcc",
+                        src: "klingon.json"
+                    }, {
+                        language: "esperanto",
+                        label: "Espéranto",
+                        type: "JSONcc",
+                        src: "esperanto.json"
+                    }, {
+                        language: "lolspeak",
+                        label: "LOLspeak",
+                        type: "JSONcc",
+                        src: "lolspeak.json"
+                    }, {
+                        language: "elvish",
+                        label: "Elvîsh",
+                        type: "JSONcc",
+                        src: "elvish.json"
+                    }]
+                }
             }
         };
 
@@ -448,7 +449,7 @@ fluid.registerNamespace("fluid.tests");
         var verifyActivation = function (actionString, that, activatedIndex) {
             // expect(5)
             var langList = that.locate("menuItem");
-            jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.currentTrack);
+            jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.captions.currentTrack);
             jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(langList[activatedIndex]).hasClass(that.options.styles.active));
             jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
             jqUnit.assertFalse(actionString + " removes 'selected' style from all items", langList.hasClass(that.options.styles.selected));
@@ -460,11 +461,11 @@ fluid.registerNamespace("fluid.tests");
             var langList = that.locate("menuItem");
             jqUnit.isVisible(actionString + " shows menu", that.container);
             jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
-            jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.currentTrack);
+            jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.captions.currentTrack);
         };
 
         videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
-            var numLangs = baseMenuOpts.model.list.length;
+            var numLangs = baseMenuOpts.model.captions.list.length;
             expect(31);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
@@ -472,7 +473,7 @@ fluid.registerNamespace("fluid.tests");
                         var langList = that.locate("menuItem");
                         jqUnit.assertEquals("Menu should have correct number of items (num languages+1)", numLangs + 1, langList.length);
                         jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Initially, 'no language' should be the active value", numLangs, that.model.currentTrack);
+                        jqUnit.assertEquals("Initially, 'no language' should be the active value", numLangs, that.model.captions.currentTrack);
                         jqUnit.assertTrue("Initially, 'none' option should have the 'active' style", $(langList[numLangs]).hasClass(that.options.styles.active));
                         jqUnit.assertEquals("Initially, 'none' option should have the correct text", that.options.strings.languageIsOff, $(langList[numLangs]).text());
 
@@ -508,7 +509,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Language Menu: Custom 'none' option strings", function () {
-            var numLangs = baseMenuOpts.model.list.length;
+            var numLangs = baseMenuOpts.model.captions.list.length;
             expect(2);
             var testStrings = {
                 languageIsOff: "No one is talking",
@@ -530,16 +531,18 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Language Menu: Active language on init", function () {
-            var numLangs = baseMenuOpts.model.list.length;
+            var numLangs = baseMenuOpts.model.captions.list.length;
             expect(2);
             var testMenu = fluid.tests.initMenu({
                 model: {
-                    currentTrack: 2
+                    captions: {
+                        currentTrack: 2
+                    }
                 },
                 listeners: {
                     onReady: function (that) {
                         var langList = that.locate("menuItem");
-                        jqUnit.assertEquals("When initialized with a choice, that choice should be the active value", 2, that.model.currentTrack);
+                        jqUnit.assertEquals("When initialized with a choice, that choice should be the active value", 2, that.model.captions.currentTrack);
                         jqUnit.assertTrue("The active item should have the 'active' style", $(langList[2]).hasClass(that.options.styles.active));
 
                         start();
@@ -547,5 +550,37 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
+
+        fluid.tests.initLanguageControls = function (testOpts) {
+            var opts = fluid.copy(baseMenuOpts);  // does this need its own options?
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.languageControls("#basic-languageControls-test", opts);
+        };
+
+        videoPlayerControlsTests.asyncTest("Language Controls: Default functionality", function () {
+//            expect(?);
+            var testMenu = fluid.tests.initLanguageControls({
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("There should be one button", 1, that.locate("button").length);
+                        jqUnit.assertEquals("There should be one menu", 1, that.locate("menu").length);
+
+                        jqUnit.notVisible("Initially, the menu should not be visible", that.locate("menu"));
+                        that.locate("button").click();
+                        jqUnit.isVisible("After clicking the button, the menu should be visible", that.locate("menu"));
+                        that.locate("button").click();
+                        jqUnit.notVisible("After clicking the button again, the menu should be hidden again", that.locate("menu"));
+                        
+                        that.locate("button").click();
+                        jqUnit.isVisible("After clicking the button, the menu should be visible", that.locate("menu"));
+                        that.menu.activate(0);
+                        jqUnit.notVisible("After activating a menu item, the menu should be hidden again", that.locate("menu"));
+
+                        start();
+                    }
+                }
+            });
+        });
+
     });
 })(jQuery);
