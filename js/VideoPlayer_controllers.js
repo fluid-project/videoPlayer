@@ -555,6 +555,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             showHide: null,
+            unFocusMenu: null,
             trackChanged: null
         },
         listeners: {
@@ -639,6 +640,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.locate("menuItem").last().keydown(function (evt) {
             if (evt.which === $.ui.keyCode.DOWN) {
                 $(this).removeClass(that.options.styles.selected);
+                that.events.unFocusMenu.fire();
                 that.hide();
                 return false;
             }
@@ -693,7 +695,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
-            showHideMenu: null
+            showHideMenu: null,
+            focusButton: null
         },
         components: {
             button: {
@@ -714,7 +717,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{languageControls}.model",
                     applier: "{languageControls}.applier",
                     events: {
-                        showHide: "{languageControls}.events.showHideMenu"
+                        showHide: "{languageControls}.events.showHideMenu",
+                        unFocusMenu: "{languageControls}.events.focusButton"
                     },
                     strings: "{languageControls}.options.strings"
                 }
@@ -741,6 +745,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         }]);
+
+        that.events.focusButton.addListener(function () {
+            that.locate("button").focus();
+        });
 
         that.events.onReady.fire(that);
     };
