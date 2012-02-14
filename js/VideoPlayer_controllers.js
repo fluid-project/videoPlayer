@@ -748,7 +748,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container.hide();
         };
         that.activate = function (index) {
-console.log("activate requesting change to currentTrack");
             that.applier.requestChange("captions.currentTrack", index);
         };
     };

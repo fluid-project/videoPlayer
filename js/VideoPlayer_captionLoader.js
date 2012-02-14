@@ -102,14 +102,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 };
             });
             
+            that.applier.requestChange("states.displayCaptions", true);
             that.events.onCaptionsLoaded.fire(captions);
             return that;
         };  
         
         //Creates an ajax query and uses or not a convertor for the captions
         that.loadCaptions = function () {
+            if (that.model.captions.currentTrack == that.model.captions.list.length - 1) {
+                that.applier.requestChange("states.displayCaptions", false);
+                return;
+            }
             var caps = that.model.captions.list[that.model.captions.currentTrack];
-console.log("loadCaptions gets caps.label of "+caps.label);
             if (caps) {
                 var opts = {
                     type: "GET",
