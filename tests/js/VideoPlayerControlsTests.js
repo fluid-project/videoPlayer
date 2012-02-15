@@ -269,128 +269,6 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        var baseCaptionOpts = {
-            model: {
-                captions: {
-                    list: [{
-                        label: "Esperanto",
-                        src: "Test.esp.json",
-                        type: "JSONcc"
-                    },  {
-                        label: "Klingon",
-                        src: "Test.kling.json",
-                        type: "JSONcc"
-                    }, {
-                        label: "LOLspeak",
-                        src: "Test.lol.json",
-                        type: "JSONcc"
-                }]
-// does this need "currentTrack"?
-                }
-            }
-        };
-
-        fluid.tests.initCaptionControls = function (testOpts) {
-            var opts = fluid.copy(baseCaptionOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.captionControls("#basic-caption-controls-test", opts);
-        };
-
-/*
-        videoPlayerControlsTests.asyncTest("Caption controls", function () {
-            expect(31);
-            var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
-            var testCaptionControls = fluid.tests.initCaptionControls({
-                listeners: {
-                    onReady: function (that) {
-                        var captionsButton = that.locate("button");
-                        var languageRadioButtons = that.locate("languageButton");
-                        var languageLabels = that.locate("languageLabel");
-                        var languageList = that.locate("languageList");
-
-                        verifyBasicButtonFunctions(captionsButton, "Captions", false, "Captions", "Captions", that.captionButton.options.styles.pressed);
-
-                        jqUnit.assertEquals("'none' option should say '" + that.options.strings.captionsOff + "' initially", that.options.strings.captionsOff, languageLabels[numLangs - 1].textContent);
-                        jqUnit.assertTrue("'none' option should have the 'selected' style", $(languageLabels[numLangs - 1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        jqUnit.assertEquals("There should be " + numLangs + " languages", numLangs, languageRadioButtons.length);
-                        jqUnit.notVisible("The list of languages should not be visible initially", languageList);
-
-                        captionsButton.click();
-                        jqUnit.isVisible("When caption button clicked, the list of languages should show", languageList);
-                        jqUnit.assertEquals("While no caption selected, Captions button should still have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
-                        captionsButton.click();
-                        jqUnit.notVisible("When caption button clicked again, the list of languages should hide", languageList);
-                        jqUnit.assertEquals("While no caption selected, Captions button should still have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
-
-                        captionsButton.click();
-                        jqUnit.assertEquals("Initially, 'none' should be selected", "none", that.model.captions.selection);
-                        languageRadioButtons[1].click();
-                        jqUnit.assertEquals("After clicking a radio button, another language should be selected", "klingon", that.model.captions.selection);
-                        jqUnit.assertTrue("After selecting a language, captions button should have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
-                        jqUnit.assertEquals("After selecting a language, Captions button should have aria-pressed of 'true'", "true", captionsButton.attr("aria-pressed"));
-                        jqUnit.assertEquals("After selecting a language, 'none' option should say '" + that.options.strings.turnCaptionsOff + "'", that.options.strings.turnCaptionsOff, languageLabels[numLangs - 1].textContent);
-                        jqUnit.assertTrue("Selected option should have the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        languageRadioButtons[1].click();
-                        jqUnit.assertTrue("Selected the same option should not change the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        languageRadioButtons[numLangs-1].click();
-                        jqUnit.assertEquals("After clicking last radio button (i.e. captions off), 'none' should be selected", "none", that.model.captions.selection);
-                        jqUnit.assertFalse("After turning captions off, captions button should not have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
-                        jqUnit.assertEquals("After turning captions off, Captions button should have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
-                        jqUnit.assertEquals("After turning captions off, 'none' option should say '" + that.options.strings.captionsOff + "'", that.options.strings.captionsOff, languageLabels[numLangs - 1].textContent);
-                        jqUnit.assertTrue("After turning captions off, 'none' option should have the 'selected' style", $(languageLabels[numLangs - 1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerControlsTests.asyncTest("Caption controls integration (some tests fail: will be addressed with FLUID-4589)", function () {
-// TODO: this is a workaround for FLUID-4592
-//            expect(8);
-            expect(6);
-            var captionOpts = fluid.copy(baseCaptionOpts);
-            var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
-            $.extend(true, captionOpts, {
-                listeners: {
-                    onReady: function (that) {
-                        var captionButton = that.controllers.captionControls.locate("button");
-                        var languageRadioButtons = that.controllers.captionControls.locate("languageButton");
-                        var languageList = that.controllers.captionControls.locate("languageList");
-                        var captionArea = that.controllers.captionControls.locate("captionArea");
-
-// TODO: this is a workaround for FLUID-4592: a default caption *must* be loaded
-//       for the intervalEventsConductor to be created
-//                        jqUnit.assertEquals("Initially, captions should not be showing", "none", that.model.captions.selection);
-//                        jqUnit.notVisible("The caption area should be hidden initially", captionArea);
-                        jqUnit.notVisible("The list of languages should not be visible initially", languageList);
-
-                        captionButton.click();
-                        jqUnit.isVisible("When caption button clicked, the list of languages should show", languageList);
-
-                        $(languageRadioButtons[0]).click();
-                        jqUnit.assertEquals("After clicking a radio button, a caption should be selected", baseCaptionOpts.model.captions.choices[0], that.model.captions.selection);
-                        jqUnit.isVisible("The caption area should show", captionArea);
-
-                        $(languageRadioButtons[numLangs-1]).click();
-                        jqUnit.assertEquals("After clicking the 'none' radio button, no caption should be selected", baseCaptionOpts.model.captions.choices[numLangs-1], that.model.captions.selection);
-                        jqUnit.notVisible("The caption area should hide", captionArea);
-
-                        start();
-                    }
-                }
-            });
-            var testPlayer = fluid.tests.initVideoPlayer(captionOpts);
-        });
-*/
-
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
             expect(16);
             var testPlayer = fluid.tests.initVideoPlayer({
@@ -437,7 +315,8 @@ fluid.registerNamespace("fluid.tests");
                         src: "elvish.json"
                     }]
                 }
-            }
+            },
+            modelPath: "captions"
         };
 
         fluid.tests.initMenu = function (testOpts) {

@@ -67,6 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{controllers}.dom.captionControlsContainer",
                 options: {
                     model: "{controllers}.model",
+                    modelPath: "captions",
                     applier: "{controllers}.applier",
                     selectors: {
                         button: ".flc-videoPlayer-captions-button",
@@ -549,6 +550,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
         model: {
         },
+        modelPath: "",
         events: {
             onReady: null,
             showHide: null,
@@ -589,7 +591,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             expander: {
                 type: "fluid.renderer.repeat",
                 repeatID: "language",
-                controlledBy: "captions.list",
+                controlledBy: that.options.modelPath + ".list",
                 pathAs: "lang",
                 tree: {
                     value: "${{lang}.label}"
@@ -645,8 +647,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.languageMenu.bindEventListeners = function (that) {
-        that.applier.modelChanged.addListener("captions.currentTrack", function (model, oldModel, changeRequest) {
-            that.events.trackChanged.fire(model.captions.currentTrack);
+        that.applier.modelChanged.addListener(that.options.modelPath + ".currentTrack", function (model, oldModel, changeRequest) {
+            that.events.trackChanged.fire(model[that.options.modelPath].currentTrack);
         });
 
         var langList = that.locate("language");
@@ -672,9 +674,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
-        if (that.options.model.captions.list) {
-            if (that.options.model.captions.currentTrack === undefined) {
-                that.options.model.captions.currentTrack = -1;
+        if (that.options.modelPath && that.options.model[that.options.modelPath]) {
+            if (that.options.model[that.options.modelPath].currentTrack === undefined) {
+                that.options.model[that.options.modelPath].currentTrack = -1;
             }
         }
 
@@ -692,15 +694,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container.hide();
         };
         that.activate = function (index) {
-            that.applier.requestChange("captions.currentTrack", index);
+            that.applier.requestChange(that.options.modelPath + ".currentTrack", index);
         };
     };
 
     fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
         fluid.videoPlayer.controllers.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
-        fluid.videoPlayer.controllers.languageMenu.updateTracks(that, that.model.captions.currentTrack);
-
+        if (that.options.modelPath && that.model[that.options.modelPath]) {
+            fluid.videoPlayer.controllers.languageMenu.updateTracks(that, that.model[that.options.modelPath].currentTrack);
+        }
         that.hide();
         that.events.onReady.fire(that);
     };
@@ -723,6 +726,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             focusButton: null,
             moveSelectionToMenu: null
         },
+        modelPath: "",
         components: {
             button: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
@@ -740,6 +744,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{languageControls}.dom.menu",
                 options: {
                     model: "{languageControls}.model",
+                    modelPath: "{languageControls}.options.modelPath",
                     applier: "{languageControls}.applier",
                     events: {
                         showHide: "{languageControls}.events.showHideMenu",
