@@ -448,17 +448,21 @@ fluid.registerNamespace("fluid.tests");
 
         var verifyActivation = function (actionString, that, activatedIndex) {
             // expect(5)
-            var langList = that.locate("language");
+            var menuItems = that.locate("menuItem");
             jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.captions.currentTrack);
-            jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(langList[activatedIndex]).hasClass(that.options.styles.active));
-            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.language + "." + that.options.styles.active).length);
-            jqUnit.assertFalse(actionString + " removes 'selected' style from all items", langList.hasClass(that.options.styles.selected));
+            if (activatedIndex == -1) {
+                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", that.locate("none").hasClass(that.options.styles.active));
+            } else {
+                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
+            }
+            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
+            jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
             jqUnit.notVisible(actionString + " hides the menu", that.container);
         };
 
         var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
             // expect(3)
-            var langList = that.locate("language");
+            var langList = that.locate("menuItem");
             jqUnit.isVisible(actionString + " shows menu", that.container);
             jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
             jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.captions.currentTrack);
@@ -466,16 +470,17 @@ fluid.registerNamespace("fluid.tests");
 
         videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
             var numLangs = baseMenuOpts.model.captions.list.length;
-            expect(31);
+            expect(32);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
                     onReady: function (that) {
                         var langList = that.locate("language");
-                        jqUnit.assertEquals("Menu should have correct number of items (num languages+1)", numLangs + 1, langList.length);
+                        jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
+                        jqUnit.exists("Menu should have also have the 'none option'", that.locate("none"));
                         jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Initially, 'no language' should be the active value", numLangs, that.model.captions.currentTrack);
-                        jqUnit.assertTrue("Initially, 'none' option should have the 'active' style", $(langList[numLangs]).hasClass(that.options.styles.active));
-                        jqUnit.assertEquals("Initially, 'none' option should have the correct text", that.options.strings.languageIsOff, $(langList[numLangs]).text());
+                        jqUnit.assertEquals("Initially, nothing should be the 'currentTrack'", -1, that.model.captions.currentTrack);
+                        jqUnit.assertTrue("Initially, 'none' option should have the 'active' style", that.locate("none").hasClass(that.options.styles.active));
+                        jqUnit.assertEquals("Initially, 'none' option should have the correct text", that.options.strings.languageIsOff, that.locate("none").text());
 
                         jqUnit.notVisible("The menu should be hidden initially", that.container);
                         that.show();
@@ -483,19 +488,19 @@ fluid.registerNamespace("fluid.tests");
                         that.hide();
                         jqUnit.notVisible("hide() hides the menu", that.container);
 
-                        that.container.fluid("selectable.select", langList[numLangs]);
-                        verifySelection("Selecting the 'none' options", that, numLangs, numLangs);
+                        that.container.fluid("selectable.select", that.locate("none"));
+                        verifySelection("Selecting the 'none' options", that, numLangs, -1);
 
                         that.container.fluid("selectable.select", langList[numLangs - 1]);
-                        verifySelection("Selecting a language", that, numLangs - 1, numLangs);
+                        verifySelection("Selecting a language", that, numLangs - 1, -1);
 
                         that.activate(0);
                         verifyActivation("Activating a language", that, 0);
-                        jqUnit.assertEquals("Activating a language changes the 'none' option text", that.options.strings.turnLanguageOff, $(langList[numLangs]).text());
+                        jqUnit.assertEquals("Activating a language changes the 'none' option text", that.options.strings.turnLanguageOff, that.locate("none").text());
 
-                        that.activate(numLangs);
-                        verifyActivation("Activating the 'none' option", that, numLangs);
-                        jqUnit.assertEquals("Activating the 'none' option updates its text", that.options.strings.languageIsOff, $(langList[numLangs]).text());
+                        that.activate(-1);
+                        verifyActivation("Activating the 'none' option", that, -1);
+                        jqUnit.assertEquals("Activating the 'none' option updates its text", that.options.strings.languageIsOff, that.locate("none").text());
 
                         that.show();
                         $(that.locate("language")[1]).click();
@@ -520,9 +525,9 @@ fluid.registerNamespace("fluid.tests");
                 listeners: {
                     onReady: function (that) {
                         var langList = that.locate("language");
-                        jqUnit.assertEquals("Initially, 'none' option should have the correct custom text", testStrings.languageIsOff, $(langList[numLangs]).text());
+                        jqUnit.assertEquals("Initially, 'none' option should have the correct custom text", testStrings.languageIsOff, that.locate("none").text());
                         that.activate(0);
-                        jqUnit.assertEquals("Activating an item changes the 'none' option text to the custom text", testStrings.turnLanguageOff, $(langList[numLangs]).text());
+                        jqUnit.assertEquals("Activating an item changes the 'none' option text to the custom text", testStrings.turnLanguageOff, that.locate("none").text());
 
                         start();
                     }

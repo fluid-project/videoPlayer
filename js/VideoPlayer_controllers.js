@@ -552,18 +552,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             showHide: null,
+            selectLastItem: null,
             unFocusMenu: null,
             trackChanged: null
         },
         listeners: {
             showHide: "{languageMenu}.toggleView",
+            selectLastItem: {
+                listener: "fluid.videoPlayer.controllers.languageMenu.selectLastItem",
+                args: ["{languageMenu}"]
+            },
             trackChanged: {
                 listener: "fluid.videoPlayer.controllers.languageMenu.updateTracks",
                 args: ["{languageMenu}", "{arguments}.0"]
             }
         },
         selectors: {
-            language: ".flc-videoPlayer-language"
+            menuItem: ".flc-videoPlayer-menuItem",
+            language: ".flc-videoPlayer-language",
+            none: ".flc-videoPlayer-languageNone"
         },
         repeatingSelectors: ["language"],
         strings: {
@@ -587,16 +594,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 tree: {
                     value: "${{lang}.label}"
                 }
+            },
+            none: {
+                value: that.options.strings.languageIsOff
             }
         };
         return tree;
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.selectLastItem = function (that) {
+        that.container.fluid("selectable.select", that.locate("menuItem").last());
     };
 
     fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y = function (that) {
         that.container.fluid("tabbable");
         that.container.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
-            selectableSelector: that.options.selectors.language,
+            selectableSelector: that.options.selectors.menuItem,
             onSelect: function (el) {
                 that.show();
                 $(el).addClass(that.options.styles.selected);
@@ -608,12 +622,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             autoSelectFirstItem: false,
             noWrap: true
         });
-        that.locate("language").fluid("activatable", function (evt) {
-            that.activate(that.locate("language").index(evt.currentTarget));
+        var activateThroughKeyboard = function (that, index) {
+            that.activate(index);
             that.events.unFocusMenu.fire();
             return false;
+        };
+        that.locate("language").fluid("activatable", function (evt) {
+            return activateThroughKeyboard(that, that.locate("language").index(evt.currentTarget));
         });
-        that.locate("language").last().keydown(function (evt) {
+        var noneButton = that.locate("none");
+        noneButton.fluid("activatable", function (evt) {
+            return activateThroughKeyboard(that, -1);
+        });
+        noneButton.keydown(function (evt) {
             if (evt.which === $.ui.keyCode.DOWN) {
                 that.events.unFocusMenu.fire();
                 that.hide();
@@ -628,33 +649,32 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.trackChanged.fire(model.captions.currentTrack);
         });
 
-        that.locate("language").click(function (evt) {
-            that.activate(that.locate("language").index(evt.currentTarget));
+        var langList = that.locate("language");
+        langList.click(function (evt) {
+            that.activate(langList.index(evt.currentTarget));
+        });
+        that.locate("none").click(function (evt) {
+            that.activate(-1);
         });
     };
 
-    fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that, currentTrack) {
-        var list = that.locate("language");
-        var lastEntry = list.length - 1;
-        list.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
-        $(list[currentTrack]).addClass(that.options.styles.active);
+    fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that, activeTrack) {
+        var menuItems = that.locate("menuItem");
+        menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
 
-        if (currentTrack === lastEntry) {
-            $(list[lastEntry]).text(that.options.strings.languageIsOff);
+        if (activeTrack === -1) {
+            that.locate("none").text(that.options.strings.languageIsOff).addClass(that.options.styles.active);
         } else {
-            $(list[lastEntry]).text(that.options.strings.turnLanguageOff);
+            that.locate("none").text(that.options.strings.turnLanguageOff);
+            $(menuItems[activeTrack]).addClass(that.options.styles.active);
         }
         that.hide();
     };
 
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
         if (that.options.model.captions.list) {
-            that.options.model.captions.list.push({
-                language: "none",
-                label: that.options.strings.languageIsOff
-            });
             if (that.options.model.captions.currentTrack === undefined) {
-                that.options.model.captions.currentTrack = that.options.model.captions.list.length - 1;
+                that.options.model.captions.currentTrack = -1;
             }
         }
 
@@ -679,10 +699,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
         fluid.videoPlayer.controllers.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
+        fluid.videoPlayer.controllers.languageMenu.updateTracks(that, that.model.captions.currentTrack);
 
         that.hide();
-        $(that.locate("language")[that.model.captions.currentTrack]).addClass(that.options.styles.active);
-
         that.events.onReady.fire(that);
     };
 
@@ -701,7 +720,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             showHideMenu: null,
-            focusButton: null
+            focusButton: null,
+            moveSelectionToMenu: null
         },
         components: {
             button: {
@@ -723,6 +743,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{languageControls}.applier",
                     events: {
                         showHide: "{languageControls}.events.showHideMenu",
+                        selectLastItem: "{languageControls}.events.moveSelectionToMenu",
                         unFocusMenu: "{languageControls}.events.focusButton"
                     },
                     strings: "{languageControls}.options.strings"
@@ -737,7 +758,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 key: $.ui.keyCode.UP,
                 activateHandler: function () {
                     that.events.showHideMenu.fire();
-                    that.menu.container.fluid("selectable.select", $(".flc-videoPlayer-language:last"));
+                    that.events.moveSelectionToMenu.fire();
                     return false;
                 }
             }]
@@ -745,9 +766,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.languageControls.bindEventListeners = function (that) {
-        that.locate("button").click(that.events.showHideMenu.fire);
+        var button = that.locate("button");
+        button.click(that.events.showHideMenu.fire);
         that.events.focusButton.addListener(function () {
-            that.locate("button").focus();
+            button.focus();
         });
     };
 
