@@ -448,17 +448,17 @@ fluid.registerNamespace("fluid.tests");
 
         var verifyActivation = function (actionString, that, activatedIndex) {
             // expect(5)
-            var langList = that.locate("menuItem");
+            var langList = that.locate("language");
             jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.captions.currentTrack);
             jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(langList[activatedIndex]).hasClass(that.options.styles.active));
-            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
+            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.language + "." + that.options.styles.active).length);
             jqUnit.assertFalse(actionString + " removes 'selected' style from all items", langList.hasClass(that.options.styles.selected));
             jqUnit.notVisible(actionString + " hides the menu", that.container);
         };
 
         var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
             // expect(3)
-            var langList = that.locate("menuItem");
+            var langList = that.locate("language");
             jqUnit.isVisible(actionString + " shows menu", that.container);
             jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
             jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.captions.currentTrack);
@@ -470,7 +470,7 @@ fluid.registerNamespace("fluid.tests");
             var testMenu = fluid.tests.initMenu({
                 listeners: {
                     onReady: function (that) {
-                        var langList = that.locate("menuItem");
+                        var langList = that.locate("language");
                         jqUnit.assertEquals("Menu should have correct number of items (num languages+1)", numLangs + 1, langList.length);
                         jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
                         jqUnit.assertEquals("Initially, 'no language' should be the active value", numLangs, that.model.captions.currentTrack);
@@ -498,7 +498,7 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("Activating the 'none' option updates its text", that.options.strings.languageIsOff, $(langList[numLangs]).text());
 
                         that.show();
-                        $(that.locate("menuItem")[1]).click();
+                        $(that.locate("language")[1]).click();
                         verifyActivation("Clicking a language", that, 1);
 
                         // double-check notes on interaction between keyboard selection and hover, and add tests
@@ -519,7 +519,7 @@ fluid.registerNamespace("fluid.tests");
                 strings: testStrings,
                 listeners: {
                     onReady: function (that) {
-                        var langList = that.locate("menuItem");
+                        var langList = that.locate("language");
                         jqUnit.assertEquals("Initially, 'none' option should have the correct custom text", testStrings.languageIsOff, $(langList[numLangs]).text());
                         that.activate(0);
                         jqUnit.assertEquals("Activating an item changes the 'none' option text to the custom text", testStrings.turnLanguageOff, $(langList[numLangs]).text());
@@ -541,7 +541,7 @@ fluid.registerNamespace("fluid.tests");
                 },
                 listeners: {
                     onReady: function (that) {
-                        var langList = that.locate("menuItem");
+                        var langList = that.locate("language");
                         jqUnit.assertEquals("When initialized with a choice, that choice should be the active value", 2, that.model.captions.currentTrack);
                         jqUnit.assertTrue("The active item should have the 'active' style", $(langList[2]).hasClass(that.options.styles.active));
 
