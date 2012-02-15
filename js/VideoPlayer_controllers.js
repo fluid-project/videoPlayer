@@ -146,14 +146,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.videoPlayer.controllers.setControlsTabOrder = function (that) {
-        fluid.tabindex(that.container, 1);
-        that.playButton.setTabindex(2);
-        that.volumeControl.setTabindex(3);
-        that.scrubber.setTabindex(4);
-        that.captionControls.setTabindex(5);
-        that.fullScreenButton.setTabindex(6);
-
+    fluid.videoPlayer.controllers.setUpHiding = function (that) {
         // hide controllers when focus leaves controls or hits ESC
         fluid.each(that.options.selectors, function (item, key) {
             fluid.deadMansBlur(item, {
@@ -194,7 +187,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("play").focus();
         });
 
-        fluid.videoPlayer.controllers.setControlsTabOrder(that);
+        fluid.videoPlayer.controllers.setUpHiding(that);
 
         that.hide();
         that.events.onControllersReady.fire(that);
