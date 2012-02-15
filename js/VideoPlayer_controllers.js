@@ -636,6 +636,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         that.locate("menuItem").fluid("activatable", function (evt) {
             that.activate(that.locate("menuItem").index(evt.currentTarget));
+            that.events.unFocusMenu.fire();
+            return false;
         });
         that.locate("menuItem").last().keydown(function (evt) {
             if (evt.which === $.ui.keyCode.DOWN) {
@@ -676,7 +678,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         } else {
             $(list[lastEntry]).text(that.options.strings.turnLanguageOff);
         }
-        that.hide();
+        that.events.showHide.fire();
     };
 
 
@@ -749,7 +751,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.focusButton.addListener(function () {
             that.locate("button").focus();
         });
-
         that.events.onReady.fire(that);
     };
 })(jQuery);
