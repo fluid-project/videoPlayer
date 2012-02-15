@@ -555,7 +555,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null,
             showHide: null,
             selectLastItem: null,
-            unFocusMenu: null,
+            returnFocus: null,
             trackChanged: null
         },
         listeners: {
@@ -588,6 +588,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.languageMenu.produceTree = function (that) {
         var tree = {
+            // create a menu item for each language in the model
             expander: {
                 type: "fluid.renderer.repeat",
                 repeatID: "language",
@@ -597,6 +598,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     value: "${{lang}.label}"
                 }
             },
+
+            // add the 'turn off' option
             none: {
                 value: that.options.strings.languageIsOff
             }
@@ -624,9 +627,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             autoSelectFirstItem: false,
             noWrap: true
         });
+
+        // When a menu item is activated using the keyboard, in addition to hiding the menu,
+        // focus must be return to the button
         var activateThroughKeyboard = function (that, index) {
             that.activate(index);
-            that.events.unFocusMenu.fire();
+            that.events.returnFocus.fire();
             return false;
         };
         that.locate("language").fluid("activatable", function (evt) {
@@ -636,9 +642,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         noneButton.fluid("activatable", function (evt) {
             return activateThroughKeyboard(that, -1);
         });
+
+        // when the DOWN arrow is used on the bottom item of the menu, the menu should hide
+        // and focus should return to the button
         noneButton.keydown(function (evt) {
             if (evt.which === $.ui.keyCode.DOWN) {
-                that.events.unFocusMenu.fire();
+                that.events.returnFocus.fire();
                 that.hide();
                 return false;
             }
@@ -749,7 +758,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     events: {
                         showHide: "{languageControls}.events.showHideMenu",
                         selectLastItem: "{languageControls}.events.moveSelectionToMenu",
-                        unFocusMenu: "{languageControls}.events.focusButton"
+                        returnFocus: "{languageControls}.events.focusButton"
                     },
                     strings: "{languageControls}.options.strings"
                 }
@@ -760,6 +769,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y = function (that) {
         that.locate("button").fluid("activatable", [fluid.identity, {
             additionalBindings: [{
+                // in addition to space and enter, we want the UP arrow key to show the menu
+                // but we also want it to automatically select the first item above the button,
+                // i.e. the bottom item in the menu
                 key: $.ui.keyCode.UP,
                 activateHandler: function () {
                     that.events.showHideMenu.fire();
