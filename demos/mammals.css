@@ -120,8 +120,8 @@ section, aside {
 .fl-videoPlayer {
     max-width: 100%;
     margin: auto;
-    padding: 3em;
-    background-color: #000000;
+    padding: .2em;
+    background-color: #808080;
 }
 
 .pic {
@@ -189,10 +189,9 @@ footer a {
 
 
 /* Customize video player related styles */
-.fl-videoPlayer-controller-time {
-    color: #FFFFFF;
-}
 
 .fl-videoPlayer-captionArea {
-    bottom: 9.2em;
-}    
+    background-color: #000000;
+    color: #FFFFFF;
+    bottom: 3em;
+}
