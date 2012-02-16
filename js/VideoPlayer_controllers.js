@@ -558,6 +558,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             activated: null,
             activatedByKeyboard: null,
             collapsedByKeyboard: null,
+            captionOnOff: null,
             trackChanged: null
         },
         listeners: {
@@ -653,7 +654,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.languageMenu.bindEventListeners = function (that) {
         that.applier.modelChanged.addListener(that.options.modelPath + ".currentTrack", function (model, oldModel, changeRequest) {
+            var newTrack = model[that.options.modelPath].currentTrack;
+            var oldTrack = oldModel[that.options.modelPath].currentTrack;
+            if (newTrack == oldTrack) {
+                return;
+            }
             that.events.trackChanged.fire(that, model[that.options.modelPath].currentTrack);
+            if ((newTrack == -1) || (oldTrack == -1)) {
+                that.events.captionOnOff.fire();
+            }
         });
 
         var langList = that.locate("language");
@@ -809,7 +818,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             "{menu}.events.collapsedByKeyboard": "{button}.focus",
             "{menu}.events.activatedByKeyboard": "{button}.focus",
-            "{menu}.events.trackChanged": "{button}.updatePressedState"
+            "{menu}.events.captionOnOff": "{button}.requestStateChange"
         }
     });
 
