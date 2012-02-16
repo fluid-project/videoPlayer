@@ -451,8 +451,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.toggleButton.finalInit",
         events: {
             onPress: "preventable", // listeners can prevent button from becoming pressed
-            afterPressed: null,
-            afterReleased: null,
             onReady: null
         },
         listeners: {
@@ -493,11 +491,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.updatePressedState = function () {
             var button = that.locate("button");
             var pressed = !!fluid.get(that.model, that.options.modelPath);
-            if (pressed) {
-                that.events.afterPressed.fire();
-            } else {
-                that.events.afterReleased.fire();
-            }
             button.toggleClass(that.options.styles.pressed, pressed);
             button.attr("aria-pressed", pressed.toString());
         };
@@ -562,8 +555,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         modelPath: "",
         events: {
             onReady: null,
-            collapsedByKeyboard: null,
+            activated: null,
             activatedByKeyboard: null,
+            collapsedByKeyboard: null,
             trackChanged: null
         },
         listeners: {
@@ -773,6 +767,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y = function (that) {
+        fluid.tabindex(that.locate("menu"), -1);
         that.locate("button").fluid("activatable", [fluid.identity, {
             additionalBindings: [{
                 // in addition to space and enter, we want the UP arrow key to show the menu
@@ -785,6 +780,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         }]);
+        fluid.deadMansBlur(that.container, {
+            exclusions: [that.menu.options.selectors.menuItem], 
+            handler: function () {
+                that.menu.hide();
+            }
+        });
     };
 
     fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
@@ -799,12 +800,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         listeners: {
-            "{button}.events.afterPressed": "{menu}.show",
-            "{button}.events.afterReleased": "{menu}.hide",
+            "{button}.events.onPress": "{menu}.toggleView",
             "{button}.events.activatedByKeyboard": "{menu}.showAndSelect",
 
             "{menu}.events.collapsedByKeyboard": "{button}.focus",
-            "{menu}.events.activatedByKeyboard": "{button}.focus"
+            "{menu}.events.activatedByKeyboard": "{button}.focus",
+            "{menu}.events.trackChanged": "{button}.updatePressedState"
         }
     });
 

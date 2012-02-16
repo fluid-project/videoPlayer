@@ -27,14 +27,6 @@ fluid.registerNamespace("fluid.tests");
             expect(1);
             jqUnit.assertTrue("The onPress event should fire", true);
         };
-        fluid.tests.afterPressedEventHandler = function () {
-            expect(1);
-            jqUnit.assertTrue("The afterPressed event should fire", true);
-        };
-        fluid.tests.afterReleasedEventHandler = function () {
-            expect(1);
-            jqUnit.assertTrue("The afterReleased event should fire", true);
-        };
 
         fluid.tests.getTooltipCheckString = function (jEl, expectedText) {
             expect(1);
@@ -118,8 +110,6 @@ fluid.registerNamespace("fluid.tests");
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onPress: fluid.tests.onPressEventHandler,
-                    afterPressed: fluid.tests.afterPressedEventHandler,
-                    afterReleased: fluid.tests.afterReleasedEventHandler,
                     onReady: function (that) {
                         var toggleButton = that.locate("button");
 
