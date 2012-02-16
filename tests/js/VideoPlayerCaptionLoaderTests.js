@@ -31,7 +31,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                 type: "JSONcc"
                             } 
                         },
-                        currentTrack: "english",
+                        choices: ["english"],
+                        selection: "english",
                         conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                         maxNumber: 3,
                         track: undefined
