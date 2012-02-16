@@ -23,11 +23,21 @@ fluid.registerNamespace("fluid.tests");
 
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
 
-        fluid.tests.pressEventHandler = function () {
+        fluid.tests.onPressEventHandler = function () {
+            expect(1);
             jqUnit.assertTrue("The onPress event should fire", true);
+        };
+        fluid.tests.afterPressedEventHandler = function () {
+            expect(1);
+            jqUnit.assertTrue("The afterPressed event should fire", true);
+        };
+        fluid.tests.afterReleasedEventHandler = function () {
+            expect(1);
+            jqUnit.assertTrue("The afterReleased event should fire", true);
         };
 
         fluid.tests.getTooltipCheckString = function (jEl, expectedText) {
+            expect(1);
             jEl.mouseover();
             var tooltip = $("#" + jEl.attr("aria-describedby"));
             jqUnit.assertEquals("Tooltip should contain " + expectedText + " initially", expectedText, tooltip.text());
@@ -74,7 +84,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         function verifyBasicButtonFunctions(buttonEl, name, clickToggles, tooltipReleased, tooltipPressed, stylePressed) {
-            // 7 assertions
+            expect(6);
             jqUnit.assertEquals("There should be exactly one " + name + " button", 1, buttonEl.length);
             jqUnit.assertEquals(name + " button should have role of 'button'", "button", buttonEl.attr("role"));
             jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", "false", buttonEl.attr("aria-pressed"));
@@ -88,7 +98,7 @@ fluid.registerNamespace("fluid.tests");
             // TODO: When captions controls are refactored (FLUID-4589), this 'if' might go away
             //       (since toggle button might always toggle)
             if (clickToggles) {
-                // 6 assertions
+                expect(6);
                 buttonEl.click();
                 jqUnit.assertEquals("After click, " + name + " button should have aria-pressed of 'true'", "true", buttonEl.attr("aria-pressed"));
                 jqUnit.assertTrue("While pressed, " + name + " button should have the 'pressed' style", buttonEl.hasClass(stylePressed));
@@ -104,11 +114,12 @@ fluid.registerNamespace("fluid.tests");
         }
 
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
-            expect(18);
-
+            expect(3);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
-                    onPress: fluid.tests.pressEventHandler,
+                    onPress: fluid.tests.onPressEventHandler,
+                    afterPressed: fluid.tests.afterPressedEventHandler,
+                    afterReleased: fluid.tests.afterReleasedEventHandler,
                     onReady: function (that) {
                         var toggleButton = that.locate("button");
 
@@ -156,7 +167,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Toggle button, prevent the toggle", function () {
-            expect(4);
+            expect(3);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onPress: function () {
@@ -180,7 +191,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Toggle button, overriding strings", function () {
-            expect(2);
+            expect(1);
             var testStrings = {
                 press: "press me",
                 release: "release me"
@@ -201,151 +212,6 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
-
-        videoPlayerControlsTests.asyncTest("Play button", function () {
-            expect(13);
-            var testPlayer = fluid.tests.initVideoPlayer({
-                listeners: {
-                    onControllersReady: function (that) {
-                        var playButton = that.locate("play");
-                        verifyBasicButtonFunctions(playButton, "Play", true, "Play", "Pause", "fl-videoPlayer-playing");
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        var baseVolumeOpts = {};
-
-        fluid.tests.initVolumeControls = function (testOpts) {
-            var opts = fluid.copy(baseVolumeOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.volumeControls("#basic-volume-controls-test", opts);
-        };
-
-        videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            expect(17);
-            var testVolumeControls = fluid.tests.initVolumeControls({
-                listeners: {
-                    onReady: function (that) {
-                        var muteButton = that.locate("mute");
-                        var volumeSlider = that.locate("volumeControl");
-
-                        verifyBasicButtonFunctions(muteButton, "Mute", true, "Mute", "Un-mute", "fl-videoPlayer-muted");
-
-                        jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
-                        var sliderHandle = that.locate("handle");
-                        jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
-                        jqUnit.assertEquals("The slider button should have valuenow of '50'", "50", sliderHandle.attr("aria-valuenow"));
-                        jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
-            expect(4);
-            var testPlayer = fluid.tests.initVideoPlayer({
-                listeners: {
-                    onControllersReady: function (that) {
-                        var video = $("video")[0];
-                        var muteButton = that.volumeControl.locate("mute");
-
-                        jqUnit.assertFalse("Initially, video should not be muted", video.muted);
-                        muteButton.click();
-                        jqUnit.assertTrue("After clicking mute button, video should be muted", video.muted);
-                        muteButton.click();
-                        jqUnit.assertFalse("After clicking mute button again, video should again not be muted", video.muted);
-
-                        var sliderHandle = that.volumeControl.locate("handle");
-                        jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
-            expect(16);
-            var testPlayer = fluid.tests.initVideoPlayer({
-                listeners: {
-                    onControllersReady: function (that) {
-                        var fullScreenButton = that.locate("fullscreen");
-
-                        verifyBasicButtonFunctions(fullScreenButton, "Fullscreen", true, "Full screen", "Exit full screen mode", "fl-videoPlayer-fullscreen-on");
-
-                        jqUnit.assertFalse("Initally, video should not be in full screen mode", that.model.fullscreen);
-                        fullScreenButton.click();
-                        jqUnit.assertTrue("After click, video should be in full screen mode", that.model.states.fullscreen);
-                        fullScreenButton.click();
-                        jqUnit.assertFalse("After clicking again, video should not be in full screen mode", that.model.fullscreen);
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        var baseMenuOpts = {
-            model: {
-                captions: {
-                    list: [{
-                        language: "klingon",
-                        label: "Klingoñ",
-                        type: "JSONcc",
-                        src: "klingon.json"
-                    }, {
-                        language: "esperanto",
-                        label: "Espéranto",
-                        type: "JSONcc",
-                        src: "esperanto.json"
-                    }, {
-                        language: "lolspeak",
-                        label: "LOLspeak",
-                        type: "JSONcc",
-                        src: "lolspeak.json"
-                    }, {
-                        language: "elvish",
-                        label: "Elvîsh",
-                        type: "JSONcc",
-                        src: "elvish.json"
-                    }]
-                }
-            },
-            modelPath: "captions"
-        };
-
-        fluid.tests.initMenu = function (testOpts) {
-            var opts = fluid.copy(baseMenuOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
-        };
-
-        var verifyActivation = function (actionString, that, activatedIndex) {
-            // expect(5)
-            var menuItems = that.locate("menuItem");
-            jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.captions.currentTrack);
-            if (activatedIndex == -1) {
-                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", that.locate("none").hasClass(that.options.styles.active));
-            } else {
-                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
-            }
-            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
-            jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
-            jqUnit.notVisible(actionString + " hides the menu", that.container);
-        };
-
-        var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
-            // expect(3)
-            var langList = that.locate("menuItem");
-            jqUnit.isVisible(actionString + " shows menu", that.container);
-            jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
-            jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.captions.currentTrack);
-        };
 
         videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
             var numLangs = baseMenuOpts.model.captions.list.length;
@@ -465,6 +331,151 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
+
+        videoPlayerControlsTests.asyncTest("Play button", function () {
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        var playButton = that.locate("play");
+                        verifyBasicButtonFunctions(playButton, "Play", true, "Play", "Pause", "fl-videoPlayer-playing");
+
+                        start();
+                    }
+                }
+            });
+        });
+
+        var baseVolumeOpts = {};
+
+        fluid.tests.initVolumeControls = function (testOpts) {
+            var opts = fluid.copy(baseVolumeOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.volumeControls("#basic-volume-controls-test", opts);
+        };
+
+        videoPlayerControlsTests.asyncTest("Volume controls", function () {
+            expect(4);
+            var testVolumeControls = fluid.tests.initVolumeControls({
+                listeners: {
+                    onReady: function (that) {
+                        var muteButton = that.locate("mute");
+                        var volumeSlider = that.locate("volumeControl");
+
+                        verifyBasicButtonFunctions(muteButton, "Mute", true, "Mute", "Un-mute", "fl-videoPlayer-muted");
+
+                        jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
+                        var sliderHandle = that.locate("handle");
+                        jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
+                        jqUnit.assertEquals("The slider button should have valuenow of '50'", "50", sliderHandle.attr("aria-valuenow"));
+                        jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
+
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
+            expect(4);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        var video = $("video")[0];
+                        var muteButton = that.volumeControl.locate("mute");
+
+                        jqUnit.assertFalse("Initially, video should not be muted", video.muted);
+                        muteButton.click();
+                        jqUnit.assertTrue("After clicking mute button, video should be muted", video.muted);
+                        muteButton.click();
+                        jqUnit.assertFalse("After clicking mute button again, video should again not be muted", video.muted);
+
+                        var sliderHandle = that.volumeControl.locate("handle");
+                        jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
+
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
+            expect(3);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        var fullScreenButton = that.locate("fullscreen");
+
+                        verifyBasicButtonFunctions(fullScreenButton, "Fullscreen", true, "Full screen", "Exit full screen mode", "fl-videoPlayer-fullscreen-on");
+
+                        jqUnit.assertFalse("Initally, video should not be in full screen mode", that.model.fullscreen);
+                        fullScreenButton.click();
+                        jqUnit.assertTrue("After click, video should be in full screen mode", that.model.states.fullscreen);
+                        fullScreenButton.click();
+                        jqUnit.assertFalse("After clicking again, video should not be in full screen mode", that.model.fullscreen);
+
+                        start();
+                    }
+                }
+            });
+        });
+
+        var baseMenuOpts = {
+            model: {
+                captions: {
+                    list: [{
+                        language: "klingon",
+                        label: "Klingoñ",
+                        type: "JSONcc",
+                        src: "klingon.json"
+                    }, {
+                        language: "esperanto",
+                        label: "Espéranto",
+                        type: "JSONcc",
+                        src: "esperanto.json"
+                    }, {
+                        language: "lolspeak",
+                        label: "LOLspeak",
+                        type: "JSONcc",
+                        src: "lolspeak.json"
+                    }, {
+                        language: "elvish",
+                        label: "Elvîsh",
+                        type: "JSONcc",
+                        src: "elvish.json"
+                    }]
+                }
+            },
+            modelPath: "captions"
+        };
+
+        fluid.tests.initMenu = function (testOpts) {
+            var opts = fluid.copy(baseMenuOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
+        };
+
+        var verifyActivation = function (actionString, that, activatedIndex) {
+            // expect(5)
+            var menuItems = that.locate("menuItem");
+            jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.captions.currentTrack);
+            if (activatedIndex == -1) {
+                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", that.locate("none").hasClass(that.options.styles.active));
+            } else {
+                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
+            }
+            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
+            jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
+            jqUnit.notVisible(actionString + " hides the menu", that.container);
+        };
+
+        var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
+            // expect(3)
+            var langList = that.locate("menuItem");
+            jqUnit.isVisible(actionString + " shows menu", that.container);
+            jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
+            jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.captions.currentTrack);
+        };
+
 
     });
 })(jQuery);

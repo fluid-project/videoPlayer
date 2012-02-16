@@ -451,6 +451,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.toggleButton.finalInit",
         events: {
             onPress: "preventable", // listeners can prevent button from becoming pressed
+            afterPressed: null,
+            afterReleased: null,
             onReady: null
         },
         listeners: {
@@ -491,11 +493,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.updatePressedState = function () {
             var button = that.locate("button");
             var pressed = !!fluid.get(that.model, that.options.modelPath);
+            if (pressed) {
+                that.events.afterPressed.fire();
+            } else {
+                that.events.afterReleased.fire();
+            }
             button.toggleClass(that.options.styles.pressed, pressed);
             button.attr("aria-pressed", pressed.toString());
         };
         that.enabled = function (state) {
             that.locate("button").prop("disabled", !state);
+        };
+        that.focus = function () {
+            that.locate("button").focus();
         };
     };
 
@@ -516,8 +526,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents = function (that) {
-        var button = that.locate("button");
-        button.click(function (evt) {
+        that.locate("button").click(function (evt) {
             that.events.onPress.fire(evt);
             if (evt) {
                 evt.stopPropagation();
@@ -553,20 +562,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         modelPath: "",
         events: {
             onReady: null,
-            showHide: null,
-            selectLastItem: null,
-            returnFocus: null,
+            collapsedByKeyboard: null,
+            activatedByKeyboard: null,
             trackChanged: null
         },
         listeners: {
-            showHide: "{languageMenu}.toggleView",
-            selectLastItem: {
-                listener: "fluid.videoPlayer.controllers.languageMenu.selectLastItem",
-                args: ["{languageMenu}"]
-            },
             trackChanged: {
-                listener: "fluid.videoPlayer.controllers.languageMenu.updateTracks",
-                args: ["{languageMenu}", "{arguments}.0"]
+                listener: "fluid.videoPlayer.controllers.languageMenu.updateTracks"
             }
         },
         selectors: {
@@ -630,25 +632,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         // When a menu item is activated using the keyboard, in addition to hiding the menu,
         // focus must be return to the button
-        var activateThroughKeyboard = function (that, index) {
+        var activateByKeyboard = function (that, index) {
             that.activate(index);
-            that.events.returnFocus.fire();
+            that.events.activatedByKeyboard.fire();
             return false;
         };
         that.locate("language").fluid("activatable", function (evt) {
-            return activateThroughKeyboard(that, that.locate("language").index(evt.currentTarget));
+            return activateByKeyboard(that, that.locate("language").index(evt.currentTarget));
         });
         var noneButton = that.locate("none");
         noneButton.fluid("activatable", function (evt) {
-            return activateThroughKeyboard(that, -1);
+            return activateByKeyboard(that, -1);
         });
 
         // when the DOWN arrow is used on the bottom item of the menu, the menu should hide
         // and focus should return to the button
         noneButton.keydown(function (evt) {
             if (evt.which === $.ui.keyCode.DOWN) {
-                that.events.returnFocus.fire();
                 that.hide();
+                that.events.collapsedByKeyboard.fire();
                 return false;
             }
             return true;
@@ -657,7 +659,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.languageMenu.bindEventListeners = function (that) {
         that.applier.modelChanged.addListener(that.options.modelPath + ".currentTrack", function (model, oldModel, changeRequest) {
-            that.events.trackChanged.fire(model[that.options.modelPath].currentTrack);
+            that.events.trackChanged.fire(that, model[that.options.modelPath].currentTrack);
         });
 
         var langList = that.locate("language");
@@ -692,15 +694,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.toggleView = function () {
             that.container.toggle();
         };
+        that.hide = function () {
+            that.locate("language").removeClass(that.options.styles.selected);
+            that.container.hide();
+        };
     };
 
     fluid.videoPlayer.controllers.languageMenu.postInit = function (that) {
         that.show = function () {
             that.container.show();
         };
-        that.hide = function () {
-            that.locate("language").removeClass(that.options.styles.selected);
-            that.container.hide();
+        that.showAndSelect = function () {
+            that.show();
+            that.container.fluid("selectable.select", that.locate("menuItem").last());
         };
         that.activate = function (index) {
             that.applier.requestChange(that.options.modelPath + ".currentTrack", index);
@@ -731,9 +737,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
-            showHideMenu: null,
-            focusButton: null,
-            moveSelectionToMenu: null
+            activatedByKeyboard: null
         },
         modelPath: "",
         components: {
@@ -745,7 +749,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: "{languageControls}.options.selectors.button"
                     },
                     // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-                    strings: "{languageControls}.options.strings"
+                    strings: "{languageControls}.options.strings",
+                    events: {
+                        activatedByKeyboard: "{languageControls}.events.activatedByKeyboard"
+                    }
                 }
             },
             menu: {
@@ -755,13 +762,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{languageControls}.model",
                     modelPath: "{languageControls}.options.modelPath",
                     applier: "{languageControls}.applier",
-                    events: {
-                        showHide: "{languageControls}.events.showHideMenu",
-                        selectLastItem: "{languageControls}.events.moveSelectionToMenu",
-                        returnFocus: "{languageControls}.events.focusButton"
-                    },
                     strings: "{languageControls}.options.strings"
                 }
+            },
+            eventBinder: {
+                type: "fluid.videoPlayer.controllers.languageControls.eventBinder",
+                createOnEvent: "onReady"
             }
         }
     });
@@ -774,28 +780,32 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // i.e. the bottom item in the menu
                 key: $.ui.keyCode.UP,
                 activateHandler: function () {
-                    that.events.showHideMenu.fire();
-                    that.events.moveSelectionToMenu.fire();
+                    that.events.activatedByKeyboard.fire();
                     return false;
                 }
             }]
         }]);
     };
 
-    fluid.videoPlayer.controllers.languageControls.bindEventListeners = function (that) {
-        var button = that.locate("button");
-        button.click(that.events.showHideMenu.fire);
-        that.events.focusButton.addListener(function () {
-            button.focus();
-        });
-    };
-
     fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
-
         fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y(that);
-
-        fluid.videoPlayer.controllers.languageControls.bindEventListeners(that);
-
         that.events.onReady.fire(that);
     };
+
+    /**************************************************************************************
+     * LanguageControls Event Binder: Binds events between components "button" and "menu" *
+     **************************************************************************************/
+
+    fluid.defaults("fluid.videoPlayer.controllers.languageControls.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        listeners: {
+            "{button}.events.afterPressed": "{menu}.show",
+            "{button}.events.afterReleased": "{menu}.hide",
+            "{button}.events.activatedByKeyboard": "{menu}.showAndSelect",
+
+            "{menu}.events.collapsedByKeyboard": "{button}.focus",
+            "{menu}.events.activatedByKeyboard": "{button}.focus"
+        }
+    });
+
 })(jQuery);
