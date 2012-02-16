@@ -35,7 +35,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }];
         // End of the test data
         
-        videoPlayerIntervalEventsConductorIntegrationTests.asyncTest("Integration test: intervalEventsConductor with html5MediaTimer", function () {
+        videoPlayerIntervalEventsConductorIntegrationTests.asyncTest("Integration test: intervalEventsConductor with html5MediaTimer (This test is expected to fail when running in non-html5 browsers)", function () {
             var videoContainer = $(".flc-video");
             var timeToSet = 1;
             var previousInterval = null;
