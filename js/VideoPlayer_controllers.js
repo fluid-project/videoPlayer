@@ -786,6 +786,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.menu.hide();
             }
         });
+
+        // TODO: This is a workaround for around FLUID-4606 (there's a button tag inside the anchor;
+        //       it's for styling only, and we don't want it in the tab order)
+        $("button", that.locate("button")).fluid("tabindex", -1);
     };
 
     fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {

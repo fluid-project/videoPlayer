@@ -20,7 +20,10 @@
     </div>
 
     <div class="flc-videoPlayer-captionControls-container">
-        <a class="flc-videoPlayer-captions-button fl-videoPlayer-button fl-videoPlayer-captions-button" href="#"></a>
+        <a class="flc-videoPlayer-captions-button" href="#">
+            <!-- Placing a button inside the anchor is a workaround for FLUID-4606 -->
+            <button class="fl-videoPlayer-button fl-videoPlayer-captions-button"></button>
+        </a>
         <ul class="flc-videoPlayer-captions-languageMenu fl-videoPlayer-languageMenu">
             <li class="flc-videoPlayer-language flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
             <li class="flc-videoPlayer-languageNone flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>

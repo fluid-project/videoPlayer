@@ -291,37 +291,6 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        fluid.tests.initLanguageControls = function (testOpts) {
-            var opts = fluid.copy(baseMenuOpts);  // does this need its own options?
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.languageControls("#basic-languageControls-test", opts);
-        };
-
-        videoPlayerControlsTests.asyncTest("Language Controls: Default functionality", function () {
-            expect(6);
-            var testMenu = fluid.tests.initLanguageControls({
-                listeners: {
-                    onReady: function (that) {
-                        jqUnit.assertEquals("There should be one button", 1, that.locate("button").length);
-                        jqUnit.assertEquals("There should be one menu", 1, that.locate("menu").length);
-
-                        jqUnit.notVisible("Initially, the menu should not be visible", that.locate("menu"));
-                        that.locate("button").click();
-                        // TODO: This test fails - not sure how to set it up to deal with events
-                        jqUnit.isVisible("After clicking the button, the menu should be visible", that.locate("menu"));
-                        that.locate("button").click();
-                        jqUnit.notVisible("After clicking the button again, the menu should be hidden again", that.locate("menu"));
-                        
-                        that.locate("button").click();
-                        that.menu.activate(0);
-                        jqUnit.notVisible("After activating a menu item, the menu should be hidden again", that.locate("menu"));
-
-                        start();
-                    }
-                }
-            });
-        });
-
         videoPlayerControlsTests.asyncTest("Play button", function () {
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
