@@ -18,24 +18,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
-    var findCaptionForTime = function (that, timeInMillis) {     
-        // TODO: This algorithm looks better but there might be even better.
-        for (var x = that.model.captions.currentIndice; x < that.model.captions.track.length; x++) {
-            //we use memoization in order to compute the convertion to milliseconds only once by caption
-            if (typeof (that.model.captions.track[x].inMilliTime) !== 'number') {
-                that.model.captions.track[x].inMilliTime = fluid.videoPlayer.captionner.convertToMilli(that.model.captions.track[x].inTime);
-            }
-            if (typeof (that.model.captions.track[x].outMilliTime) !== 'number') {
-                that.model.captions.track[x].outMilliTime = fluid.videoPlayer.captionner.convertToMilli(that.model.captions.track[x].outTime);
-            }
-            var match = that.model.captions.track[x];
-            if (match.inMilliTime <= timeInMillis && match.outMilliTime >= timeInMillis) {
-                that.model.captions.currentIndice = x + 1;
-                return match;
-            }
-        }
-        return null;
-    };
 
     //creates the container for a caption and adds it to the DOM
     var makeCaption = function (that, caption) {
@@ -72,9 +54,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var bindCaptionnerModel = function (that) {
-        that.applier.modelChanged.addListener("captions.currentCaptions", that.refreshView);
         that.applier.modelChanged.addListener("states.displayCaptions", that.toggleCaptionView);
-        that.applier.modelChanged.addListener("states.currentTime", that.displayCaptionForTime);
     };
     
     var createCaptionnerMarkup = function (that) {
@@ -110,7 +90,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         model: {
             captions: {
                 currentCaptions: [],
-                currentIndice: 0
+                currentIndex: 0
             }
         }
     });
@@ -123,25 +103,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 path: "captions.currentCaptions", 
                 value: []
             });
-            
             that.applier.fireChangeRequest({
-                path: "captions.currentIndice", 
+                path: "captions.currentIndex", 
                 value: 0
             });
+            
             that.showCaptions();
-            return that;
         };
 
-        that.displayCaptionForTime = function (time) {
+        that.displayCaptionForInterval = function (trackId, previousTrackId) {
             if (that.model.captions.track) {
-                // Display a new caption.
-                var timeInMillis = Math.round(that.model.states.currentTime * 1000);
-                var nextCaption = findCaptionForTime(that, timeInMillis);
-                if (nextCaption !== null && $.inArray(nextCaption, that.model.captions.currentCaptions) === -1) {
-                    displayCaption(that, nextCaption);
+                // Remove the previous caption
+                if (previousTrackId) {
+                    removeCaption(that, that.model.captions.track[previousTrackId]);
+                }
+                
+                // Display the current caption
+                if (trackId) {
+                    that.applier.fireChangeRequest({
+                        path: "captions.currentIndex", 
+                        value: trackId + 1
+                    });
+                    
+                    var nextCaption = that.model.captions.track[trackId];
+                    if (nextCaption !== null && $.inArray(nextCaption, that.model.captions.currentCaptions) === -1) {
+                        displayCaption(that, nextCaption);
+                    }
                 }
             }
-            return that;
+            
         };
         
         that.toggleCaptionView = function () {
@@ -152,21 +142,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
 
-        that.refreshView = function () {
-            // Clear out any caption that has hit its end time.
-            var timeInMillis = Math.round(that.model.states.currentTime * 1000);
-            fluid.each(that.model.captions.currentCaptions, function (elt) {
-                if (timeInMillis >= elt.outMilliTime) {
-                    removeCaption(that, elt);
-                }
-            });
-
-            //if there's too many captions remove the oldest one
-            if (that.model.captions.currentCaptions && that.model.captions.currentCaptions.length > that.model.captions.maxNumber) {
-                removeCaption(that, that.model.currentCaptions[0]);
-            }
-        };
-        
         that.hideCaptions = function () {
             that.container.hide();
         };
@@ -182,16 +157,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.events.onCaptionnerReady.fire(that);
     };
-    // TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
-    // time is in the format hh:mm:ss:mmm
-    fluid.videoPlayer.captionner.convertToMilli = function (time) {
-        var splitTime = time.split(":");
-        var hours = parseFloat(splitTime[0]);
-        var mins = parseFloat(splitTime[1]) + (hours * 60);
-        var secs = parseFloat(splitTime[2]) + (mins * 60);
-        return Math.round(secs * 1000);
-    };
-    
+
     /*******************************************************************************************
      * Captionner Event Binder: Binds events between components "videoPlayer" and "captionner" *
      *******************************************************************************************/

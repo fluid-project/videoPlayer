@@ -34,11 +34,55 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.videoPlayer.captionLoader.preInit",
         events: {
             onReady: null,
-            onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
-        }
+            onCaptionsLoaded: null
+        },
+        invokers: {
+            convertToMilli: {
+                funcName: "fluid.videoPlayer.captionLoader.convertToMilli",
+                args: ["{arguments}.0"]
+            }  
+        },
+        intervalList: null
     });
     
+    /**
+     * Convert the time in the format of hh:mm:ss.mmm to milliseconds.
+     * The time is normally extracted from the subtitle files in WebVTT compatible format.
+     * WebVTT standard for timestamp: http://dev.w3.org/html5/webvtt/#webvtt-cue-timings
+     * 
+     * @param time: in the format hh:mm:ss.mmm ("hh:" is optional)
+     * @return a number in millisecond
+     * TODO: This should be removed once capscribe desktop gives us the time in millis in the captions
+     */
+    fluid.videoPlayer.captionLoader.convertToMilli = function (time) {
+        if (!time || !time.match(/^(\d{2}:)?\d{2}:\d{2}\.\d{1,3}$/)) {
+            return null;
+        }
+        
+        var splitTime = time.split(":");
+        
+        // Handle the optional "hh:" in the input
+        if (splitTime.length === 2) {
+            // "hh:" part is NOT given
+            var hourStr = "0";
+            var minStr = splitTime[0];
+            var secWithMilliSecStr = splitTime[1];
+        } else {
+            // "hh:" part is given
+            var hourStr = splitTime[0];
+            var minStr = splitTime[1];
+            var secWithMilliSecStr = splitTime[2];
+        }
+        
+        var splitSec = secWithMilliSecStr.split(".");
+        var hours = parseFloat(hourStr);
+        var mins = parseFloat(minStr) + (hours * 60);
+        var secs = parseFloat(splitSec[0]) + (mins * 60);
+        return Math.round(secs * 1000 + parseInt(splitSec[1], 10));
+    };
+
     fluid.videoPlayer.captionLoader.preInit = function (that) {
+
         that.setCaptions = function (captions) {
             // Render the caption area if necessary
             captions = (typeof (captions) === "string") ? JSON.parse(captions) : captions;
@@ -47,10 +91,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 captions = captions.captionCollection;
             }
             
-            that.applier.fireChangeRequest({
-                path: "captions.track",
-                value: captions
+            that.applier.requestChange("captions.track", captions);
+            
+            // Construct intervalList that's used by intervalEventsConductor to fire intervalChange event
+            that.options.intervalList = [];
+            fluid.each(captions, function (value, key) {
+                that.options.intervalList[key] = {
+                    begin: that.convertToMilli(value.inTime),
+                    end: that.convertToMilli(value.outTime)
+                };
             });
+            
             that.events.onCaptionsLoaded.fire(captions);
             return that;
         };  
@@ -83,6 +134,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.videoPlayer.captionLoader.finalInit = function (that) {
         bindCaptionLoaderModel(that);
+
         //if we provided default captions when we created the component we load it
         if (that.model.captions.sources && (that.model.captions.selection !== "none")) {
             that.loadCaptions();
@@ -97,5 +149,3 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
 })(jQuery);
-
-
