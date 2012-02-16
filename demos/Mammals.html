@@ -17,7 +17,6 @@
         <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-yb/yb.css" />
         <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/FatPanelUIOptions.css" />
 
-        <link type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
         <link type="text/css" href="mammals.css" rel="stylesheet" />
 
@@ -35,15 +34,10 @@
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
+        <script type="text/javascript" src="mammals.js"></script>
 
-        </head>
-    <body class="fl-videoPlayer-theme">
-        <script>
-            fluid.pageEnhancer({
-                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
-            });
-        </script>
-
+    </head>
+    <body class="fl-videoPlayer-theme">        
         <div class="flc-uiOptions fl-uiOptions-fatPanel">
             <div class="flc-slidingPanel-panel flc-uiOptions-iframe"></div>
             <div class="fl-panelBar">
@@ -181,117 +175,5 @@
             </ul>
         </footer>
 
-
-        <script>
-            fluid.uiOptions.fatPanel(".flc-uiOptions", {
-                prefix: "../lib/infusion/components/uiOptions/html/"
-            });
-
-            fluid.videoPlayer(".mammals-video", {
-                model: {
-                    video: {
-                        sources: [
-                            {
-                                src: "videos/Mammals/Mammals.mp4",
-                                type: "video/mp4"
-                            },
-                            {
-                                src: "videos/Mammals/Mammals.webm",
-                                type: "video/webm"
-                            },
-                            {
-                                src: "http://www.youtube.com/v/0jw74pfWfxA",
-                                type: "youtube"
-                            }
-                        ]
-                    },
-                    captions: {
-                        sources: {
-                            english: {
-                                src: "videos/Mammals/Mammals.en.json",
-                                type: "JSONcc"
-                            }, 
-                            francaise: {
-                                src: "videos/Mammals/Mammals.fr.json",
-                                type: "JSONcc"
-                            }
-                        },
-                        selection: "english"
-                    }
-
-                }
-            });
-
-            fluid.videoPlayer(".polar-mammals-video", {
-                model: {
-                    video: {
-                        sources: [
-                            {
-                                src: "videos/PolarMammals/PolarMammals.mp4",
-                                type: "video/mp4"
-                            },
-                            {
-                                src: "videos/PolarMammals/PolarMammals.webm",
-                                type: "video/webm"
-                            },
-                            {
-                                src: "http://www.youtube.com/v/h_oHNP50FGM",
-                                type: "youtube"
-                            }
-                        ]
-                    },
-                    captions: {
-                        sources: {
-                            english: {
-                                src: "videos/PolarMammals/PolarMammals.en.json",
-                                type: "JSONcc"
-                            }, 
-                            francaise: {
-                                src: "videos/PolarMammals/PolarMammals.fr.json",
-                                type: "JSONcc"
-                            }
-                        },
-                        selection: "english"
-                    }
-
-                }
-            });
-
-            fluid.videoPlayer(".polar-adapt-video", {
-                model: {
-                    video: {
-                        sources: [
-                            {
-                                src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.mp4",
-                                type: "video/mp4"
-                            },
-                            {
-                                src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.webm",
-                                type: "video/webm"
-                            },
-                            {
-                                src: "http://www.youtube.com/v/3_3p2ylZDAE",
-                                type: "youtube"
-                            }
-                        ]
-                    },
-                    captions: {
-                        sources: {
-                            english: {
-                                src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.en.json",
-                                type: "JSONcc"
-                            }, 
-                            francaise: {
-                                src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.fr.json",
-                                type: "JSONcc"
-                            }
-                        },
-                        selection: "english"
-                    }
-
-                }
-            });
-
-        </script>
 	</body>
 </html>
