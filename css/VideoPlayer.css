@@ -5,6 +5,11 @@
 .fl-videoPlayer {
     position: relative;
 }
+.fl-videoPlayer:focus,
+.fl-videoPlayer :focus {
+    /* TODO: This is a temporary style, to be replaced when we have the final designs */
+    border: 1px solid red;
+}
 
 /*
 * Video area
@@ -19,45 +24,130 @@
  * Controller area
  */
  
+.fl-videoPlayer-tooltip {
+    position    : absolute;
+    padding     : 3px 5px;
+}
 .fl-videoPlayer-controller {
     width:100%;
-    margin: 10px;
     text-align: center;
+    padding-bottom: 0.5em;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-controller {
+    background-color: gray;
 }
 
 .fl-videoPlayer-controller * {
     display: inline-block;
     margin: auto;
 }
+.fl-videoPlayer-button {
+    width: 3em;
+    height: 3em;
+    border: 0;
+    cursor: pointer;
+}
 
-.fl-videoPlayer-controller-time {
-    /*margin: 0 5px;
-    */padding: 0.4em;
+/*
+ * Play button
+ */
+.fl-videoPlayer-theme .fl-videoPlayer-play {
+    background: #ffffff url('../images/play-black.png') no-repeat center center;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-playing {
+    background-image: url('../images/pause-black.png');
+}
+.fl-videoPlayer-theme .fl-videoPlayer-play:hover,
+.fl-videoPlayer-theme .fl-videoPlayer-playing:hover {
+    background-color: yellow;
+}
+
+/*
+ * Fullscreen button
+ */
+.fl-videoPlayer-theme .fl-videoPlayer-fullscreen {
+    background: #ffffff url('../images/fullscreen-black.png') no-repeat center center;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-fullscreen-on {
+    background-image: url('../images/fullscreen-on-black.png');
+}
+.fl-videoPlayer-theme .fl-videoPlayer-fullscreen:hover,
+.fl-videoPlayer-theme .fl-videoPlayer-fullscreen:focus {
+    background-color: yellow;
+}
+
+/*
+ * Volume controls
+ */
+.fl-videoPlayer-theme .fl-videoPlayer-mute {
+    background: #ffffff url('../images/volume-black.png') no-repeat center center;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-color: yellow;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-muted {
+    background-image: url('../images/volume-muted-black.png');
+}
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-muted,
+.fl-videoPlayer-theme .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-color: orange;
+}
+.fl-videoPlayer-volumeControl {
+    display: none;
+    z-index: 100;
+}
+.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-volumeControl,
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
+    display: block;
+}
+
+
+/*
+ * Caption controls
+ */
+.fl-videoPlayer-theme .fl-videoPlayer-captions-button {
+    background: #ffffff url('../images/captions-black.png') no-repeat center center;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-captions-button:hover {
+    background-color: yellow;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-captions-button.fl-videoPlayer-caption-active {
+    background-color: orange;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-captions-button.fl-videoPlayer-caption-active:hover {
+    background-color: wheat;
+}
+
+ul.fl-videoPlayer-captions-languageList,
+ul.fl-videoPlayer-captions-languageList li {
+    display: block;
+}
+ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
+    color: yellow;
+}
+.fl-videoPlayer-time {
+    padding: 0.4em;
     line-height: 1.4;
     font-size: 1.1em;
     height: 100%;
     text-align: center;
 }
 
-.fl-videoPlayer-controller-scrubberContainer {
+/*
+ * Scrub bar controls
+ */
+.fl-videoPlayer-scrubberContainer {
     width: 100%;
 }
-.fl-videoPlayer-controller-scrubberContainer * {
+.fl-videoPlayer-scrubberContainer * {
     margin: auto;
     display: inline-block;
 }
 
-.fl-videoPlayer-controller-volumeControl {
+.fl-videoPlayer-menu-captions {
     display: block;
     position: absolute;
-    bottom: -40px;
-    z-index: 100;
-}
-
-.fl-videoPlayer-controller-menu-captions {
-    display: block;
-    position: absolute;
-    bottom: -40px;
 }
 
 
@@ -66,14 +156,12 @@
  */
  
 .fl-videoPlayer-captionArea {
-    bottom: 9.2em;  /* ToDo: this is a hack to make the captions displayed at the bottom of the video container */
-    left: 20%;
-	right: 20%;
-    position: absolute;
+    bottom: 1.5em;
+    position: relative;
     text-align:center;
 }
 
-.fl-videoPlayer-caption-captionText {
+.fl-videoPlayer-theme .fl-videoPlayer-caption-captionText {
     color: white;
     background-color: black;
     opacity: 0.7;
@@ -82,7 +170,7 @@
 * mods to the coal theme
 */
 
-.fl-videoPlayer-controller-scrubber {
+.fl-videoPlayer-scrubber {
     width: 60%;
 }
 
@@ -115,3 +203,124 @@
 .fl-theme-uio-yb .ui-state-default.ui-state-hover .ui-icon {
     background-color: #ff0 !important;
 }
+
+/***********************************************************
+ * Styling overrides for the controls when using UIO themes
+ ***********************************************************/
+.fl-theme-uio-wb .fl-videoPlayer-controller,
+.fl-theme-uio-yb .fl-videoPlayer-controller {
+    background-color: black !important;
+}
+.fl-theme-uio-bw .fl-videoPlayer-controller,
+.fl-theme-uio-by .fl-videoPlayer-controller,
+.fl-theme-uio-bw .fl-videoPlayer-button,
+.fl-theme-uio-by .fl-videoPlayer-button {
+    border: 1px solid black;
+}
+.fl-theme-uio-wb .fl-videoPlayer-controller,
+.fl-theme-uio-yb .fl-videoPlayer-controller,
+.fl-theme-uio-wb .fl-videoPlayer-button,
+.fl-theme-uio-yb .fl-videoPlayer-button {
+    background-color: black;
+}
+.fl-theme-uio-wb .fl-videoPlayer-controller,
+.fl-theme-uio-wb .fl-videoPlayer-button {
+    border: 1px solid white;
+}
+.fl-theme-uio-yb .fl-videoPlayer-controller,
+.fl-theme-uio-yb .fl-videoPlayer-button {
+    border: 1px solid yellow;
+}
+
+.fl-theme-uio-bw .fl-videoPlayer-play,
+.fl-theme-uio-by .fl-videoPlayer-play {
+    background-image: url('../images/play-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-play {
+    background-image: url('../images/play-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-play {
+    background-image: url('../images/play-white.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-playing,
+.fl-theme-uio-by .fl-videoPlayer-playing {
+    background-image: url('../images/pause-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-playing {
+    background-image: url('../images/pause-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-playing {
+    background-image: url('../images/pause-white.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-fullscreen,
+.fl-theme-uio-by .fl-videoPlayer-fullscreen {
+    background-image: url('../images/fullscreen-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-fullscreen {
+    background-image: url('../images/fullscreen-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-fullscreen {
+    background-image: url('../images/fullscreen-white.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-fullscreen-on,
+.fl-theme-uio-by .fl-videoPlayer-fullscreen-on {
+    background-image: url('../images/fullscreen-on-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-fullscreen-on {
+    background-image: url('../images/fullscreen-on-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-fullscreen-on {
+    background-image: url('../images/fullscreen-on-white.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-mute,
+.fl-theme-uio-by .fl-videoPlayer-mute {
+    background-image: url('../images/volume-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-mute {
+    background-image: url('../images/volume-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-mute {
+    background-image: url('../images/volume-white.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-muted,
+.fl-theme-uio-by .fl-videoPlayer-muted {
+    background-image: url('../images/volume-muted-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-muted {
+    background-image: url('../images/volume-muted-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-muted {
+    background-image: url('../images/volume-muted-white.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-captions-button,
+.fl-theme-uio-by .fl-videoPlayer-captions-button {
+    background-image: url('../images/captions-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button {
+    background-image: url('../images/captions-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-captions-button {
+    background-image: url('../images/captions-white.png');
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-caption-captionText,
+.fl-theme-uio-yb .fl-videoPlayer-caption-captionText {
+    background-color: black;
+}
+.fl-theme-uio-bw .fl-videoPlayer-caption-captionText,
+.fl-theme-uio-by .fl-videoPlayer-caption-captionText {
+    color: black;
+}
+.fl-theme-uio-wb .fl-videoPlayer-caption-captionText {
+    color: white;
+}
+.fl-theme-uio-bw .fl-videoPlayer-caption-captionText {
+    background-color: white;
+}
+.fl-theme-uio-by .fl-videoPlayer-caption-captionText {
+    background-color: yellow;
+}
+.fl-theme-uio-yb .fl-videoPlayer-caption-captionText {
+    color: yellow;
+}
+

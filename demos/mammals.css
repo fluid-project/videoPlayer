@@ -192,3 +192,7 @@ footer a {
 .fl-videoPlayer-controller-time {
     color: #FFFFFF;
 }
+
+.fl-videoPlayer-captionArea {
+    bottom: 9.2em;
+}    

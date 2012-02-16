@@ -33,11 +33,18 @@
         <script type="text/javascript" src="../js/VideoPlayer_captionLoader.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
 
         </head>
     <body>
         <script>
             fluid.pageEnhancer({
+                // Specify the default theme class name
+                classnameMap: {
+                    theme: {
+                        "default": "fl-videoPlayer-theme"
+                    }
+                },
                 tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
             });
         </script>
@@ -52,7 +59,7 @@
 
         <h1>Infusion HTML 5 Video Player</h1>
 
-        <div class="videoPlayer fl-videoPlayer">
+        <div class="videoPlayer fl-videoPlayer fl-videoPlayer-theme">
         	
         </div>
 
@@ -89,7 +96,22 @@
                                 src: "videos/ReorganizeFuture/ReorganizeFuture.fr.json",
                                 type: "JSONcc"
                             }
-                        }
+                        },
+                        currentTrack: "english",
+
+                        // The following options (choices, names, selection) shouldn't be necessary.
+                        // This is a temporary workaround for FLUID-4585
+                        choices: [],
+                        names: [],
+                        // TODO: setting 'selection' to something other than 'none' is a workaround
+                        //       for FLUID-4592: a default caption *must* be loaded for the
+                        //       intervalEventsConductor to be created
+                        selection: "english",
+
+                        show: false,
+                        conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                        maxNumber: 3,
+                        track: undefined
                     }
 
                 }
