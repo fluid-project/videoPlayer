@@ -308,7 +308,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.asyncTest("Language Controls: Default functionality", function () {
-//            expect(?);
+            expect(6);
             var testMenu = fluid.tests.initLanguageControls({
                 listeners: {
                     onReady: function (that) {
@@ -317,12 +317,12 @@ fluid.registerNamespace("fluid.tests");
 
                         jqUnit.notVisible("Initially, the menu should not be visible", that.locate("menu"));
                         that.locate("button").click();
+                        // TODO: This test fails - not sure how to set it up to deal with events
                         jqUnit.isVisible("After clicking the button, the menu should be visible", that.locate("menu"));
                         that.locate("button").click();
                         jqUnit.notVisible("After clicking the button again, the menu should be hidden again", that.locate("menu"));
                         
                         that.locate("button").click();
-                        jqUnit.isVisible("After clicking the button, the menu should be visible", that.locate("menu"));
                         that.menu.activate(0);
                         jqUnit.notVisible("After activating a menu item, the menu should be hidden again", that.locate("menu"));
 

@@ -525,7 +525,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.updatePressedState();
     };
 
-    fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents = function (that) {
+    fluid.videoPlayer.controllers.toggleButton.bindEventListeners = function (that) {
         that.locate("button").click(function (evt) {
             that.events.onPress.fire(evt);
             if (evt) {
@@ -540,7 +540,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.toggleButton.finalInit = function (that) {
         fluid.videoPlayer.controllers.toggleButton.setUpToggleButton(that);
-        fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents(that);
+        fluid.videoPlayer.controllers.toggleButton.bindEventListeners(that);
         that.events.onReady.fire(that);
     };
 
