@@ -44,7 +44,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "video/ogg": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/ogv": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "youtube": "fluid.videoPlayer.media.createSourceMarkup.youTubePlayer"
-        }
+        },
+        sources: []
     });
 
     fluid.videoPlayer.media.createSourceMarkup = {
@@ -64,19 +65,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
         
     var renderSources = function (that) {
-        $.each(that.model.video.sources, function (idx, source) {
+        $.each(that.options.sources, function (idx, source) {
             var renderer = that.options.sourceRenderers[source.type];
             if ($.isFunction(renderer)) {
                 renderer.apply(null, [that, source]);
             } else {
-                fluid.invokeGlobalFunction(renderer, [that, source]); 
+                fluid.invokeGlobalFunction(renderer, [that, source]);
             }                                      
         });
     };
 
     var bindMediaModel = function (that) {
-        that.applier.modelChanged.addListener("states.play", that.play);
-        that.applier.modelChanged.addListener("states.muted", that.mute);
+        that.applier.modelChanged.addListener("play", that.play);
+        that.applier.modelChanged.addListener("muted", that.mute);
     };
 
     var getcanPlayData = function (data) {
@@ -91,22 +92,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // FF doesn't implement startTime from the HTML 5 spec.
             var startTime = ev.data.obj.startTime || 0;
             that.applier.fireChangeRequest({
-                path: "states.totalTime",
+                path: "totalTime",
                 value: ev.data.obj.duration
             });
             that.applier.fireChangeRequest({
-                path: "states.currentTime",
+                path: "currentTime",
                 value: ev.data.obj.currentTime
             });
             that.applier.fireChangeRequest({
-                path: "states.startTime",
+                path: "startTime",
                 value: startTime
             });
         });
 
         video.bind("volumechange", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
-                path: "states.volume",
+                path: "volume",
                 value: ev.data.obj.volume * 100
             });
         });
@@ -114,32 +115,32 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         //all browser don't support the canplay so we do all different states
         video.bind("canplay", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
-                path: "states.canPlay",
+                path: "canPlay",
                 value: getcanPlayData(ev.data.obj)
             });
         });
 
         video.bind("canplaythrough", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
-                path: "states.canPlay",
+                path: "canPlay",
                 value: getcanPlayData(ev.data.obj)
             });
         });
 
         video.bind("loadeddata", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
-                path: "states.canPlay",
+                path: "canPlay",
                 value: getcanPlayData(ev.data.obj)
             });
         });
 
         video.bind("ended", function () {
             that.applier.fireChangeRequest({
-                path: "states.play",
+                path: "play",
                 value: false
             });
             that.applier.fireChangeRequest({
-                path: "states.currentTime",
+                path: "currentTime",
                 value: 0
             });
         });
@@ -148,7 +149,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.media.preInit = function (that) {
         that.updateCurrentTime = function (currentTime) {
             that.applier.fireChangeRequest({
-                path: "states.currentTime", 
+                path: "currentTime", 
                 value: currentTime
             });
         };
@@ -162,7 +163,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.play = function () {
-            if (that.model.states.play === true) {
+            if (that.model.play === true) {
                 that.container[0].play();
             } else {
                 that.container[0].pause();
@@ -170,11 +171,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.mute = function () {
-            that.container[0].muted = that.model.states.muted;
+            that.container[0].muted = that.model.muted;
         };
 
         that.refresh = function () {
-            that.setVolume(that.model.states.volume / 100);
+            that.setVolume(that.model.volume / 100);
             that.play();
         };
     };

@@ -54,15 +54,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     // show captions depending on which one is on in the model
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
-        
-        
-        
-        //var index = 0; 
         fluid.each(captionSources, function (element, key) {
-            // TODO: We want to have a multi caption support!!!
-            tracks[index].mode = captionator.TextTrack[!($.inArray(key, currentCaptions)) ? "SHOWING" : "OFF"];
-            
-        //    ++index;
+            tracks[key].mode = captionator.TextTrack[!($.inArray(key, currentCaptions)) ? "SHOWING" : "OFF"];
         });
     };
 
@@ -101,20 +94,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.model.currentCaptions.push(0);
         }
         
-        //if (!currentTrack || !sources[currentTrack]) {
-        //    var foundKey = fluid.find(sources, function(value, key) {
-        //        return key;
-        //    });
-        //    captions.currentTrack = foundKey;
-        //}
-        
         // Start adding tracks to the video tag
         fluid.each(captions, function (element, key) {
             
             var trackTag = $("<track />");
             var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
 
-            // TODO: We want to have a multi caption support in future
             if (!($.inArray(key, currentCaptions))) {
                 attributes.default = "true";
             }

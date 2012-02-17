@@ -171,7 +171,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 jqUnit.assertEquals("English subtitles are showing", captionator.TextTrack.SHOWING, tracks[0].mode);
                 jqUnit.assertEquals("French subtitles are NOT showing", captionator.TextTrack.OFF, tracks[1].mode);
                 
-                fluid.videoPlayer.html5Captionator.showCurrentTrack("french",tracks,videoPlayer.html5Captionator.options.captions.sources);
+                fluid.videoPlayer.html5Captionator.showCurrentTrack([1],tracks,videoPlayer.html5Captionator.options.captions);
                 
                 jqUnit.assertEquals("English subtitles are NOT showing", captionator.TextTrack.OFF, tracks[0].mode);
                 jqUnit.assertEquals("French subtitles are showing", captionator.TextTrack.SHOWING, tracks[1].mode);
@@ -189,20 +189,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerCaptionatorTests.asyncTest("html5Captionator without currentTrack", function () {
             var testIndex = 4;
             
-            expect(5);
+            expect(6);
             
             setupEnvironment(true);
             
             initVideoPlayer(container[testIndex], testOptionsNoCurrentTrack, function (videoPlayer) {
                 
-                jqUnit.assertUndefined("Current track is empty in the model", testOptionsNoCurrentTrack.model.captions.currentTrack);
+                jqUnit.assertUndefined("currentTracks is empty in the model", testOptionsNoCurrentTrack.currentTracks);
                 
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
                 
                 var tracks = videoPlayer.html5Captionator.container[0].tracks;
                 
-                jqUnit.assertEquals("Current track is NOT empty in the html5Captionator model and defaulted to english", 
-                        "english", videoPlayer.html5Captionator.options.captions.currentTrack);
+                jqUnit.assertEquals("Current track is NOT empty in the html5Captionator model it has only one element in it", 
+                        1, videoPlayer.html5Captionator.model.currentCaptions.length);
+                        
+                jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
+                        0, videoPlayer.html5Captionator.model.currentCaptions[0]);
                 
                 jqUnit.assertEquals("English subtitles should default to be showing", captionator.TextTrack.SHOWING, tracks[0].mode);
                 jqUnit.assertEquals("French subtitles are NOT showing", captionator.TextTrack.OFF, tracks[1].mode);
