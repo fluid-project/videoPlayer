@@ -202,34 +202,23 @@ fluid.registerNamespace("fluid.tests");
         });
 
         var baseMenuOpts = {
-            languages: [{
-                language: "klingon",
-                label: "Klingoñ",
-                type: "JSONcc",
-                src: "klingon.json"
-            }, {
-                language: "esperanto",
-                label: "Espéranto",
-                type: "JSONcc",
-                src: "esperanto.json"
-            }, {
-                language: "lolspeak",
-                label: "LOLspeak",
-                type: "JSONcc",
-                src: "lolspeak.json"
-            }, {
-                language: "elvish",
-                label: "Elvîsh",
-                type: "JSONcc",
-                src: "elvish.json"
-            }],
             model: {
-                currentTracks: {
-                    captions: [0]
-                }
-            },
-            modelPath: "currentTracks.captions",
-            showHidePath: "displayCaptions"
+                languages: [{
+                    srclang: "klingon",
+                    label: "Klingoñ"
+                }, {
+                    srclang: "esperanto",
+                    label: "Espéranto"
+                }, {
+                    srclang: "lolspeak",
+                    label: "LOLspeak"
+                }, {
+                    srclang: "elvish",
+                    label: "Elvîsh"
+                }],
+                activeLanguage: 0,
+                showLanguage: false
+            }
         };
 
         fluid.tests.initMenu = function (testOpts) {
@@ -239,9 +228,9 @@ fluid.registerNamespace("fluid.tests");
         };
 
         var verifyActivation = function (actionString, that, activatedIndex) {
-            // expect(5)
+            expect(5);
             var menuItems = that.locate("menuItem");
-            jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, fluid.get(that.model, that.options.modelPath)[0]);
+            jqUnit.assertEquals(actionString + " updates the active language", activatedIndex, that.model.activeLanguage);
             jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
             jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
             jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
@@ -249,16 +238,17 @@ fluid.registerNamespace("fluid.tests");
         };
 
         var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
-            // expect(3)
+            expect(4);
             var langList = that.locate("menuItem");
             jqUnit.isVisible(actionString + " shows menu", that.container);
             jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
-            jqUnit.assertEquals(actionString + " does not update active value", activeIndex, fluid.get(that.model, that.options.modelPath)[0]);
+            jqUnit.assertEquals("Only one item is selected at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.selected).length);
+            jqUnit.assertTrue(actionString + " leaves 'active' style on the active language", $(langList[activeIndex]).hasClass(that.options.styles.active));
         };
 
         videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
-            var numLangs = baseMenuOpts.languages.length;
-            expect(32);
+            var numLangs = baseMenuOpts.model.languages.length;
+            expect(9);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
                     onReady: function (that) {
@@ -266,11 +256,10 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
                         jqUnit.exists("Menu should have also have the 'show/hide' option", that.locate("showHide"));
                         jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Initially, the current captions should be the first one", 0, fluid.get(that.model, that.options.modelPath)[0]);
-                        jqUnit.assertTrue("Initially, first caption should have the 'active' style", langList[0].hasClass(that.options.styles.active));
+                        jqUnit.assertTrue("Initially, the 'active language' have the 'active' style", $(langList[that.model.activeLanguage]).hasClass(that.options.styles.active));
                         jqUnit.assertEquals("Initially, 'show/hide' option should have the correct text", that.options.strings.showLanguage, that.locate("showHide").text());
 
-                        jqUnit.notVisible("The menu should be hidden initially", that.container);
+                        jqUnit.notVisible("The menu should be hidden by default", that.container);
                         that.show();
                         jqUnit.isVisible("show() shows the menu", that.container);
                         that.hide();
@@ -282,13 +271,12 @@ fluid.registerNamespace("fluid.tests");
                         that.container.fluid("selectable.select", langList[numLangs - 1]);
                         verifySelection("Selecting a language", that, numLangs - 1, 0);
 
-                        that.activate(0);
-                        verifyActivation("Activating a language", that, 0);
-                        jqUnit.assertEquals("Activating a language changes the 'show/hide' option text", that.options.strings.hideLanguage, that.locate("showHide").text());
-
-                        that.activate(-1);
-                        verifyActivation("Activating the 'show/hide' option", that, 0);
-                        jqUnit.assertEquals("Activating the 'show/hide' option updates its text", that.options.strings.showLanguage, that.locate("showHide").text());
+                        that.applier.modelChanged.addListener("showLanguage", function () {
+                            jqUnit.assertEquals("Activating a new language changes the 'show/hide' option text", that.options.strings.hideLanguage, that.locate("showHide").text());
+                            that.applier.modelChanged.removeListener("showLanguageChecker");
+                        }, "showLanguageChecker");
+                        that.activate(1);
+                        verifyActivation("Activating a new language", that, 1);
 
                         that.show();
                         $(that.locate("language")[2]).click();
@@ -302,7 +290,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Language Menu: Custom 'show/hide' option strings", function () {
-            var numLangs = baseMenuOpts.languages.length;
+            var numLangs = baseMenuOpts.model.languages.length;
             expect(2);
             var testStrings = {
                 showLanguage: "No one is talking",
@@ -324,7 +312,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Language Menu: Active language on init", function () {
-            var numLangs = baseMenuOpts.languages.length;
+            var numLangs = baseMenuOpts.model.languages.length;
             expect(2);
             var testMenu = fluid.tests.initMenu({
                 model: {
