@@ -66,16 +66,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.controllers.languageControls",
                 container: "{controllers}.dom.captionControlsContainer",
                 options: {
+                    languages: "{controllers}.options.captions",
                     model: "{controllers}.model",
-                    modelPath: "captions",
+                    modelPath: "currentTracks.captions",
+                    showHidePath: "displayCaptions",
                     applier: "{controllers}.applier",
                     selectors: {
                         button: ".flc-videoPlayer-captions-button",
                         menu: ".flc-videoPlayer-captions-languageMenu"
                     },
                     strings: {
-                        languageIsOff: "Captions OFF",
-                        turnLanguageOff: "Turn Captions OFF",
+                        showLanguage: "Show Captions",
+                        hideLanguage: "Hide Captions",
                         press: "Captions",
                         release: "Captions"
                     }
@@ -550,9 +552,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.controllers.languageMenu.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
-        model: {
-        },
+        languages: {},
+        model: {},
         modelPath: "",
+        showHidePath: "",
         events: {
             onReady: null,
             activated: null,
@@ -569,12 +572,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
             language: ".flc-videoPlayer-language",
-            none: ".flc-videoPlayer-languageNone"
+            showHide: ".flc-videoPlayer-languageNone"
         },
         repeatingSelectors: ["language"],
         strings: {
-            languageIsOff: "Language OFF",
-            turnLanguageOff: "Turn Language OFF"
+            showLanguage: "Show Language",
+            hideLanguage: "Hide Language"
         },
         styles: {
             selected: "fl-videoPlayer-menuItem-selected",
@@ -598,7 +601,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             // add the 'turn off' option
             none: {
-                value: that.options.strings.languageIsOff
+                value: that.options.strings.showLanguage
             }
         };
         return tree;
@@ -635,7 +638,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.locate("language").fluid("activatable", function (evt) {
             return activateByKeyboard(that, that.locate("language").index(evt.currentTarget));
         });
-        var noneButton = that.locate("none");
+        var noneButton = that.locate("showHide");
         noneButton.fluid("activatable", function (evt) {
             return activateByKeyboard(that, -1);
         });
@@ -669,8 +672,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         langList.click(function (evt) {
             that.activate(langList.index(evt.currentTarget));
         });
-        that.locate("none").click(function (evt) {
+        that.locate("showHide").click(function (evt) {
             that.activate(-1);
+
         });
     };
 
@@ -679,9 +683,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
 
         if (activeTrack === -1) {
-            that.locate("none").text(that.options.strings.languageIsOff).addClass(that.options.styles.active);
+            that.locate("showHide").text(that.options.strings.showLanguage).addClass(that.options.styles.active);
         } else {
-            that.locate("none").text(that.options.strings.turnLanguageOff);
+            that.locate("showHide").text(that.options.strings.hideLanguage);
             $(menuItems[activeTrack]).addClass(that.options.styles.active);
         }
         that.hide();
@@ -762,8 +766,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.controllers.languageMenu",
                 container: "{languageControls}.dom.menu",
                 options: {
+                    languages: "{languageControls}.languages",
                     model: "{languageControls}.model",
                     modelPath: "{languageControls}.options.modelPath",
+                    showHidePath: "{languageControls}.options.showHidePath",
                     applier: "{languageControls}.applier",
                     strings: "{languageControls}.options.strings"
                 }
