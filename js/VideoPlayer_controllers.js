@@ -686,7 +686,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that, activeTrack) {
-//        that.applier.requestChange("showLanguage", true);
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
         $(menuItems[that.model.activeLanguages[0]]).addClass(that.options.styles.active);
@@ -854,7 +853,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: ["{arguments}.1"]
             },
             "{menu}.events.hiddenByKeyboard": "{button}.focus",
-//            "{menu}.events.activatedByKeyboard": "{button}.focus",
             "{menu}.events.languageOnOff": "{button}.requestStateChange",
             "{menu}.events.languageOnOff": "{languageControls}.updateShowHide",
         },

@@ -363,6 +363,15 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.notVisible("Show the menu, click a language, menu should hide", that.menu.container);
                             jqUnit.assertEquals("'current langauge' should be udated", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
                             jqUnit.assertTrue("'show language' model flag should be true", fluid.get(that.model, that.options.showHidePath));
+
+                            button[0].click();
+                            that.menu.locate("showHide")[0].click();
+                            jqUnit.assertFalse("Show the menu, click the show/hide option, 'show language' model flag should be false", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'current langauge' should be not be changed", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
+                            button[0].click();
+                            that.menu.locate("showHide")[0].click();
+                            jqUnit.assertTrue("Click the show/hide option, 'show language' model flag should be true again", fluid.get(that.model, that.options.showHidePath));
+
                             start();
                         }
                     }
