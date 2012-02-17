@@ -682,7 +682,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
 
-        that.locate("none").text(that.options.strings.turnLanguageOff);
         $(menuItems[activeTrack]).addClass(that.options.styles.active);
         that.hide();
     };
@@ -713,6 +712,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.activate = function (index) {
             that.applier.requestChange(that.options.modelPath + ".currentTrack", index);
+            that.applier.requestChange(that.options.showHidePath, true);
         };
     };
 

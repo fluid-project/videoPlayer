@@ -203,9 +203,70 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
+        var baseMenuOpts = {
+            model: {
+                captions: {
+                    list: [{
+                        language: "klingon",
+                        label: "Klingoñ",
+                        type: "JSONcc",
+                        src: "klingon.json"
+                    }, {
+                        language: "esperanto",
+                        label: "Espéranto",
+                        type: "JSONcc",
+                        src: "esperanto.json"
+                    }, {
+                        language: "lolspeak",
+                        label: "LOLspeak",
+                        type: "JSONcc",
+                        src: "lolspeak.json"
+                    }, {
+                        language: "elvish",
+                        label: "Elvîsh",
+                        type: "JSONcc",
+                        src: "elvish.json"
+                    }]
+                },
+                states: {
+                    displayCaptions: false
+                }
+            },
+            modelPath: "captions",
+            showHidePath: "states.displayCaptions"
+        };
+
+        fluid.tests.initMenu = function (testOpts) {
+            var opts = fluid.copy(baseMenuOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
+        };
+
+        var verifyActivation = function (actionString, that, activatedIndex) {
+            // expect(5)
+            var menuItems = that.locate("menuItem");
+            jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.captions.currentTrack);
+            if (activatedIndex == -1) {
+                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", that.locate("none").hasClass(that.options.styles.active));
+            } else {
+                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
+            }
+            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
+            jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
+            jqUnit.notVisible(actionString + " hides the menu", that.container);
+        };
+
+        var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
+            // expect(3)
+            var langList = that.locate("menuItem");
+            jqUnit.isVisible(actionString + " shows menu", that.container);
+            jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
+            jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.captions.currentTrack);
+        };
+
         videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
             var numLangs = baseMenuOpts.model.captions.list.length;
-            expect(32);
+            expect(26);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
                     onReady: function (that) {
@@ -213,8 +274,8 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
                         jqUnit.exists("Menu should have also have the 'none option'", that.locate("none"));
                         jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Initially, nothing should be the 'currentTrack'", -1, that.model.captions.currentTrack);
-                        jqUnit.assertTrue("Initially, 'none' option should have the 'active' style", that.locate("none").hasClass(that.options.styles.active));
+                        jqUnit.assertEquals("Initially, 'currentTrack' should be the first one", 0, that.model.captions.currentTrack);
+                        jqUnit.assertFalse("Initially, captions should be hidden", that.model.states.displayCaptions);
                         jqUnit.assertEquals("Initially, 'none' option should have the correct text", that.options.strings.languageIsOff, that.locate("none").text());
 
                         jqUnit.notVisible("The menu should be hidden initially", that.container);
@@ -224,22 +285,18 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.notVisible("hide() hides the menu", that.container);
 
                         that.container.fluid("selectable.select", that.locate("none"));
-                        verifySelection("Selecting the 'none' options", that, numLangs, -1);
+                        verifySelection("Selecting the 'none' options", that, numLangs, 0);
 
                         that.container.fluid("selectable.select", langList[numLangs - 1]);
-                        verifySelection("Selecting a language", that, numLangs - 1, -1);
+                        verifySelection("Selecting a language", that, numLangs - 1, 0);
 
-                        that.activate(0);
-                        verifyActivation("Activating a language", that, 0);
+                        that.activate(1);
+                        verifyActivation("Activating a language", that, 1);
                         jqUnit.assertEquals("Activating a language changes the 'none' option text", that.options.strings.turnLanguageOff, that.locate("none").text());
 
-                        that.activate(-1);
-                        verifyActivation("Activating the 'none' option", that, -1);
-                        jqUnit.assertEquals("Activating the 'none' option updates its text", that.options.strings.languageIsOff, that.locate("none").text());
-
                         that.show();
-                        $(that.locate("language")[1]).click();
-                        verifyActivation("Clicking a language", that, 1);
+                        $(that.locate("language")[2]).click();
+                        verifyActivation("Clicking a language", that, 2);
 
                         // double-check notes on interaction between keyboard selection and hover, and add tests
                         start();
@@ -261,7 +318,7 @@ fluid.registerNamespace("fluid.tests");
                     onReady: function (that) {
                         var langList = that.locate("language");
                         jqUnit.assertEquals("Initially, 'none' option should have the correct custom text", testStrings.languageIsOff, that.locate("none").text());
-                        that.activate(0);
+                        that.activate(1);
                         jqUnit.assertEquals("Activating an item changes the 'none' option text to the custom text", testStrings.turnLanguageOff, that.locate("none").text());
 
                         start();
@@ -377,63 +434,6 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
-
-        var baseMenuOpts = {
-            model: {
-                captions: {
-                    list: [{
-                        language: "klingon",
-                        label: "Klingoñ",
-                        type: "JSONcc",
-                        src: "klingon.json"
-                    }, {
-                        language: "esperanto",
-                        label: "Espéranto",
-                        type: "JSONcc",
-                        src: "esperanto.json"
-                    }, {
-                        language: "lolspeak",
-                        label: "LOLspeak",
-                        type: "JSONcc",
-                        src: "lolspeak.json"
-                    }, {
-                        language: "elvish",
-                        label: "Elvîsh",
-                        type: "JSONcc",
-                        src: "elvish.json"
-                    }]
-                }
-            },
-            modelPath: "captions"
-        };
-
-        fluid.tests.initMenu = function (testOpts) {
-            var opts = fluid.copy(baseMenuOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
-        };
-
-        var verifyActivation = function (actionString, that, activatedIndex) {
-            // expect(5)
-            var menuItems = that.locate("menuItem");
-            jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, that.model.captions.currentTrack);
-            if (activatedIndex == -1) {
-                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", that.locate("none").hasClass(that.options.styles.active));
-            } else {
-                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
-            }
-            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
-            jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
-            jqUnit.notVisible(actionString + " hides the menu", that.container);
-        };
-
-        var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
-            // expect(3)
-            var langList = that.locate("menuItem");
-            jqUnit.isVisible(actionString + " shows menu", that.container);
-            jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
-            jqUnit.assertEquals(actionString + " does not update active value", activeIndex, that.model.captions.currentTrack);
-        };
 
 
     });
