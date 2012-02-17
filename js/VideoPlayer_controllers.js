@@ -63,11 +63,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             captionControls: {
-                type: "fluid.videoPlayer.controllers.captionControls",
+                type: "fluid.videoPlayer.controllers.languageControls",
                 container: "{controllers}.dom.captionControlsContainer",
                 options: {
                     model: "{controllers}.model",
-                    applier: "{controllers}.applier"
+                    modelPath: "captions",
+                    showHidePath: "states.displayCaptions",
+                    applier: "{controllers}.applier",
+                    selectors: {
+                        button: ".flc-videoPlayer-captions-button",
+                        menu: ".flc-videoPlayer-captions-languageMenu"
+                    },
+                    strings: {
+                        languageIsOff: "Show Captions",
+                        turnLanguageOff: "Hide Captions",
+                        press: "Captions",
+                        release: "Captions"
+                    }
                 }
             },
             playButton: {
@@ -324,6 +336,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tabindex(that.container, 0);
         fluid.tabindex(that.locate("mute"), -1);
         fluid.tabindex(volumeControl, -1);
+        fluid.tabindex(that.locate("handle"), -1);
 
         fluid.activatable(that.container, function (evt) {
             that.muteButton.events.onPress.fire(evt);
@@ -429,143 +442,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
     /*****************************************************************************
-        Caption controls
-        Toggle button plus language selection pull-down
-     *****************************************************************************/
-    // TODO: show/hide of captions not yet working; turning off just switches to English
-    fluid.defaults("fluid.videoPlayer.controllers.captionControls", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
-        renderOnInit: true,
-        rendererOptions: {
-            autoBind: true
-        },
-        finalInitFunction: "fluid.videoPlayer.controllers.captionControls.finalInit",
-        produceTree: "fluid.videoPlayer.controllers.captionControls.produceTree",
-        events: {
-            onReady: null
-        },
-        model: {
-            // TODO: the 'captions' is to mimic the videoPlayer model layout
-            // Ideally, the captionControls should operate without requiring that knowledge.
-            captions: {
-                selection: "none",
-                choices: [],
-                names: [],
-                show: false,
-                sources: null,
-                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                maxNumber: 3,
-                track: undefined
-            }
-        },
-        selectors: {
-            button: ".flc-videoPlayer-captions-button",
-            languageList: ".flc-videoPlayer-captions-languageList",
-            languageRow: ".flc-videoPlayer-captions-language",
-            languageButton: ".flc-videoPlayer-captions-languageButton",
-            languageLabel: ".flc-videoPlayer-captions-languageLabel"
-        },
-        repeatingSelectors: ["languageRow"],
-        selectorsToIgnore: ["languageList"],
-        styles: {
-            selected: "fl-videoPlayer-caption-selected"
-        },
-        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-        strings: {
-            captionsOff: "Captions OFF",
-            turnCaptionsOff: "Turn Captions OFF"
-        },
-        components: {
-            captionButton: {
-                type: "fluid.videoPlayer.controllers.toggleButton",
-                container: "{captionControls}.container",
-                options: {
-                    selectors: {
-                        button: ".flc-videoPlayer-captions-button"
-                    },
-                    styles: {
-                        pressed: "fl-videoPlayer-caption-active"
-                    },
-                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-                    strings: {
-                        press: "Captions",
-                        release: "Captions"
-                    }
-                }
-            }
-        }
-    });
-
-    // TODO: FLUID-4589 Restructure the caption model to reduce the code logic here
-    fluid.videoPlayer.controllers.captionControls.setUpCaptionControls = function (that) {
-        that.captionsOffOption = $(that.locate("languageLabel")[that.model.captions.choices.indexOf("none")]);
-        that.locate("languageList").hide();
-        that.captionsOffOption.text(that.model.captions.selection === "none" ? that.options.strings.captionsOff : that.options.strings.turnCaptionsOff);
-        $(that.locate("languageLabel")[that.model.captions.choices.indexOf(that.model.captions.selection)]).addClass(that.options.styles.selected);
-    };
-
-    fluid.videoPlayer.controllers.captionControls.bindCaptionDOMEvents = function (that) {
-        that.captionButton.events.onPress.addListener(function (evt) {
-            that.locate("languageList").toggle();
-            // prevent the default onPress handler from toggling the button state:
-            //   it should only toggle if the user turns captions on or off
-            return false;
-        });
-    };
-
-    // TODO: FLUID-4589 Restructure the caption model to reduce the code logic here
-    fluid.videoPlayer.controllers.captionControls.bindCaptionModel = function (that) {
-        that.applier.modelChanged.addListener("captions.selection", function (model, oldModel, changeRequest) {
-            var oldSel = oldModel.captions.selection;
-            var newSel = model.captions.selection;
-            if (oldSel === newSel) {
-                return true;
-            }
-
-            // TODO: can we do this in CSS?
-            var labels = that.locate("languageLabel");
-            $(labels[model.captions.choices.indexOf(oldSel)]).removeClass(that.options.styles.selected);
-            $(labels[model.captions.choices.indexOf(newSel)]).addClass(that.options.styles.selected);
-
-            // TODO: Can we move the responsibility to requestStateChange elsewhere?
-            if ((oldSel === "none") || (newSel === "none")) {
-                that.captionButton.requestStateChange();
-                that.captionsOffOption.text(newSel === "none" ? that.options.strings.captionsOff : that.options.strings.turnCaptionsOff);
-            }
-
-            return true;
-        }, "captionControls");
-    };
-
-    fluid.videoPlayer.controllers.captionControls.finalInit = function (that) {
-        fluid.videoPlayer.controllers.captionControls.setUpCaptionControls(that);
-        fluid.videoPlayer.controllers.captionControls.bindCaptionDOMEvents(that);
-        fluid.videoPlayer.controllers.captionControls.bindCaptionModel(that);
-        that.events.onReady.fire(that);
-    };
-
-    fluid.videoPlayer.controllers.captionControls.produceTree = function (that) {
-        return {
-            button: {
-                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
-                value: "${captions.show}"
-            },
-            expander: {
-                type: "fluid.renderer.selection.inputs",
-                rowID: "languageRow",
-                labelID: "languageLabel",
-                inputID: "languageButton",
-                selectID: "captionLanguages",
-                tree: {
-                    selection: "${captions.selection}",
-                    optionlist: "${captions.choices}",
-                    optionnames: "${captions.names}"
-                }
-            }
-        };
-    };
-
-    /*****************************************************************************
         Toggle button subcomponent
         Used for Play, Mute, Fullscreen, Captions
      *****************************************************************************/
@@ -622,6 +498,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.enabled = function (state) {
             that.locate("button").prop("disabled", !state);
         };
+        that.focus = function () {
+            that.locate("button").focus();
+        };
     };
 
     fluid.videoPlayer.controllers.toggleButton.setUpToggleButton = function (that) {
@@ -640,9 +519,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.updatePressedState();
     };
 
-    fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents = function (that) {
-        var button = that.locate("button");
-        button.click(function (evt) {
+    fluid.videoPlayer.controllers.toggleButton.bindEventListeners = function (that) {
+        that.locate("button").click(function (evt) {
             that.events.onPress.fire(evt);
             if (evt) {
                 evt.stopPropagation();
@@ -656,8 +534,294 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.toggleButton.finalInit = function (that) {
         fluid.videoPlayer.controllers.toggleButton.setUpToggleButton(that);
-        fluid.videoPlayer.controllers.toggleButton.bindToggleButtonEvents(that);
+        fluid.videoPlayer.controllers.toggleButton.bindEventListeners(that);
         that.events.onReady.fire(that);
     };
- 
+
+    /*****************************************************************************
+        Language Menu subcomponent
+        Used for Captions, Transcripts, Audio Descriptions.
+        Starts with a list of languages and adds the "none, please" options.
+        Eventually, we'll add the "Make new" and "Request new" buttons.
+     *****************************************************************************/
+    fluid.defaults("fluid.videoPlayer.controllers.languageMenu", {
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        renderOnInit: true,
+        preInitFunction: "fluid.videoPlayer.controllers.languageMenu.preInit",
+        postInitFunction: "fluid.videoPlayer.controllers.languageMenu.postInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
+        produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
+        model: {
+        },
+        modelPath: "",
+        showHidePath: "",
+        events: {
+            onReady: null,
+            activated: null,
+            activatedByKeyboard: null,
+            collapsedByKeyboard: null,
+            captionOnOff: null,
+            trackChanged: null
+        },
+        listeners: {
+            trackChanged: {
+                listener: "fluid.videoPlayer.controllers.languageMenu.updateTracks"
+            }
+        },
+        selectors: {
+            menuItem: ".flc-videoPlayer-menuItem",
+            language: ".flc-videoPlayer-language",
+            none: ".flc-videoPlayer-languageNone"
+        },
+        repeatingSelectors: ["language"],
+        strings: {
+            languageIsOff: "Language OFF",
+            turnLanguageOff: "Turn Language OFF"
+        },
+        styles: {
+            selected: "fl-videoPlayer-menuItem-selected",
+            active: "fl-videoPlayer-menuItem-active"
+        },
+        hideOnInit: true
+    });
+
+    fluid.videoPlayer.controllers.languageMenu.produceTree = function (that) {
+        var tree = {
+            // create a menu item for each language in the model
+            expander: {
+                type: "fluid.renderer.repeat",
+                repeatID: "language",
+                controlledBy: that.options.modelPath + ".list",
+                pathAs: "lang",
+                tree: {
+                    value: "${{lang}.label}"
+                }
+            },
+
+            // add the 'turn off' option
+            none: {
+                value: that.options.strings.languageIsOff
+            }
+        };
+        return tree;
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.selectLastItem = function (that) {
+        that.container.fluid("selectable.select", that.locate("menuItem").last());
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y = function (that) {
+        that.container.fluid("tabbable");
+        that.container.fluid("selectable", {
+            direction: fluid.a11y.orientation.VERTICAL,
+            selectableSelector: that.options.selectors.menuItem,
+            onSelect: function (el) {
+                that.show();
+                $(el).addClass(that.options.styles.selected);
+            },
+            onUnselect: function (el) {
+                $(el).removeClass(that.options.styles.selected);
+            },
+            rememberSelectionState: false,
+            autoSelectFirstItem: false,
+            noWrap: true
+        });
+
+        // When a menu item is activated using the keyboard, in addition to hiding the menu,
+        // focus must be return to the button
+        that.locate("language").fluid("activatable", function (evt) {
+            that.activate(that.locate("language").index(evt.currentTarget));
+            that.events.activatedByKeyboard.fire();
+            return false;
+        });
+        var noneButton = that.locate("none");
+        noneButton.fluid("activatable", function (evt) {
+            that.hide();
+            that.applier.requestChange(that.options.showHidePath, !fluid.get(that.model, that.options.showHidePath));
+            that.events.activatedByKeyboard.fire();
+            return false;
+        });
+
+        // when the DOWN arrow is used on the bottom item of the menu, the menu should hide
+        // and focus should return to the button
+        noneButton.keydown(function (evt) {
+            if (evt.which === $.ui.keyCode.DOWN) {
+                that.hide();
+                that.events.collapsedByKeyboard.fire();
+                return false;
+            }
+            return true;
+        });
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.bindEventListeners = function (that) {
+        that.applier.modelChanged.addListener(that.options.modelPath + ".currentTrack", function (model, oldModel, changeRequest) {
+            var newTrack = model[that.options.modelPath].currentTrack;
+            var oldTrack = oldModel[that.options.modelPath].currentTrack;
+            if (newTrack == oldTrack) {
+                return;
+            }
+            that.events.trackChanged.fire(that, model[that.options.modelPath].currentTrack);
+        });
+        that.applier.modelChanged.addListener(that.options.showHidePath, function (model, oldModel, changeRequest) {
+            that.locate("none").text(fluid.get(that.model, that.options.showHidePath) ? that.options.strings.turnLanguageOff : that.options.strings.languageIsOff);
+            that.events.captionOnOff.fire();
+        });
+
+        var langList = that.locate("language");
+        langList.click(function (evt) {
+            that.activate(langList.index(evt.currentTarget));
+        });
+        that.locate("none").click(function (evt) {
+            that.applier.requestChange(that.options.showHidePath, !fluid.get(that.model, that.options.showHidePath));
+            that.hide();
+        });
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that, activeTrack) {
+        var menuItems = that.locate("menuItem");
+        menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
+
+        $(menuItems[activeTrack]).addClass(that.options.styles.active);
+        that.hide();
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
+        if (that.options.modelPath && that.options.model[that.options.modelPath]) {
+            if (that.options.model[that.options.modelPath].currentTrack === undefined) {
+                that.options.model[that.options.modelPath].currentTrack = 0;
+            }
+        }
+
+        that.toggleView = function () {
+            that.container.toggle();
+        };
+        that.hide = function () {
+            that.locate("language").removeClass(that.options.styles.selected);
+            that.container.hide();
+        };
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.postInit = function (that) {
+        that.show = function () {
+            that.container.show();
+        };
+        that.showAndSelect = function () {
+            that.show();
+            that.container.fluid("selectable.select", that.locate("menuItem").last());
+        };
+        that.activate = function (index) {
+            that.applier.requestChange(that.options.modelPath + ".currentTrack", index);
+            that.applier.requestChange(that.options.showHidePath, true);
+        };
+    };
+
+    fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
+        fluid.videoPlayer.controllers.languageMenu.bindEventListeners(that);
+        fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
+        if (that.options.modelPath && that.model[that.options.modelPath]) {
+            fluid.videoPlayer.controllers.languageMenu.updateTracks(that, that.model[that.options.modelPath].currentTrack);
+        }
+        that.hide();
+        that.events.onReady.fire(that);
+    };
+
+
+    /*****************************************************************************
+        Language Controls subcomponent: a button and its associated languageMenu
+        Used for Captions, Transcripts, Audio Descriptions.
+     *****************************************************************************/
+    fluid.defaults("fluid.videoPlayer.controllers.languageControls", {
+        gradeNames: ["fluid.viewComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.controllers.languageControls.finalInit",
+        selectors: {
+            button: ".flc-videoPlayer-languageButton",
+            menu: ".flc-videoPlayer-languageMenu"
+        },
+        events: {
+            onReady: null,
+            activatedByKeyboard: null
+        },
+        modelPath: "",
+        showHidePath: "",
+        components: {
+            button: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+                container: "{languageControls}.container",
+                options: {
+                    selectors: {
+                        button: "{languageControls}.options.selectors.button"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: "{languageControls}.options.strings",
+                    events: {
+                        activatedByKeyboard: "{languageControls}.events.activatedByKeyboard"
+                    }
+                }
+            },
+            menu: {
+                type: "fluid.videoPlayer.controllers.languageMenu",
+                container: "{languageControls}.dom.menu",
+                options: {
+                    model: "{languageControls}.model",
+                    modelPath: "{languageControls}.options.modelPath",
+                    showHidePath: "{languageControls}.options.showHidePath",
+                    applier: "{languageControls}.applier",
+                    strings: "{languageControls}.options.strings"
+                }
+            },
+            eventBinder: {
+                type: "fluid.videoPlayer.controllers.languageControls.eventBinder",
+                createOnEvent: "onReady"
+            }
+        }
+    });
+
+    fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y = function (that) {
+        fluid.tabindex(that.locate("menu"), -1);
+        that.locate("button").fluid("activatable", [fluid.identity, {
+            additionalBindings: [{
+                // in addition to space and enter, we want the UP arrow key to show the menu
+                // but we also want it to automatically select the first item above the button,
+                // i.e. the bottom item in the menu
+                key: $.ui.keyCode.UP,
+                activateHandler: function () {
+                    that.events.activatedByKeyboard.fire();
+                    return false;
+                }
+            }]
+        }]);
+        fluid.deadMansBlur(that.container, {
+            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
+            handler: function () {
+                that.menu.hide();
+            }
+        });
+
+        // TODO: This is a workaround for around FLUID-4606 (there's a button tag inside the anchor;
+        //       it's for styling only, and we don't want it in the tab order)
+        $("button", that.locate("button")).fluid("tabindex", -1);
+    };
+
+    fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
+        fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y(that);
+        that.events.onReady.fire(that);
+    };
+
+    /**************************************************************************************
+     * LanguageControls Event Binder: Binds events between components "button" and "menu" *
+     **************************************************************************************/
+
+    fluid.defaults("fluid.videoPlayer.controllers.languageControls.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        listeners: {
+            "{button}.events.onPress": "{menu}.toggleView",
+            "{button}.events.activatedByKeyboard": "{menu}.showAndSelect",
+
+            "{menu}.events.collapsedByKeyboard": "{button}.focus",
+            "{menu}.events.activatedByKeyboard": "{button}.focus",
+            "{menu}.events.captionOnOff": "{button}.requestStateChange"
+        }
+    });
+
 })(jQuery);
