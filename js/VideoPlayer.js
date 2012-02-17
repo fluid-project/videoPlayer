@@ -119,10 +119,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{videoPlayer}.applier",
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
+                        onControllersHide: "{videoPlayer}.events.onControllersHide",
                         onVolumeChange: "{videoPlayer}.events.onVolumeChange",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
-                        afterScrub: "{videoPlayer}.events.afterScrub"
+                        afterScrub: "{videoPlayer}.events.afterScrub",
+                        onFocus: "{videoPlayer}.events.onFocus",
+                        onShowAndRefocus: "{videoPlayer}.events.onTab",
+                        onShow: "{videoPlayer}.events.onMouseover",
+                        onHide: "{videoPlayer}.events.onMouseout"
                     }
                 }
             },
@@ -184,11 +189,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
+            onControllersHide: null,
             onCaptionnerReady: null,
             afterScrub: null,
             onStartScrub: null,
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
+            onFocus: null,
+            onTab: null, // tab key will trigger appearance of controllers if present
+            onMouseover: null,
+            onMouseout: null,
             onReady: null,
             
             // public, time events
@@ -206,13 +216,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
-            controllers: ".flc-videoPlayer-controller"
+            controllers: ".flc-videoPlayer-controller",
+            overlay: ".flc-videoPlayer-initialOverlay"
+        },
+        styles: {
+            overlay: ".fl-videoPlayer-initialOverlay"
         },
         strings: {
             captionsOff: "Captions OFF",
             turnCaptionsOff: "Turn Captions OFF"
         },
-        selectorsToIgnore: ["caption"],
+        selectorsToIgnore: ["caption", "overlay"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -293,8 +307,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var video = that.locate("video");
         video.fluid("tabbable");
         video.fluid("activatable", [that.play, opts]);
-        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
-        video.focus();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -303,11 +315,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
+        that.locate("overlay").click(that.play);
         video.bind("loadedmetadata", function () {
             //that shouldn't be usefull but the video is too big if it's not used
             that.container.css("width", video[0].videoWidth);
             bindKeyboardControl(that);
         });
+        video.keydown(function (event) {
+            if (event.keyCode === $.ui.keyCode.TAB) {
+                that.events.onTab.fire();
+            }
+        });
+        that.events.onControllersHide.addListener(function () {
+            that.locate("video").focus();
+        });
+
+        that.container.mouseover(that.events.onMouseover.fire);
+        that.container.mouseout(that.events.onMouseout.fire);
     };
 
     var bindVideoPlayerModel = function (that) {
@@ -315,6 +339,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("states.canPlay", function () {
             that.events.onViewReady.fire();
         });
+
+        that.applier.modelChanged.addListener("states.play", function () {
+            that.locate("overlay").hide();
+            that.applier.modelChanged.removeListener("hideOverlay");
+        }, "hideOverlay");
+
     };
 
     fluid.videoPlayer.produceTree = function (that) {
@@ -471,6 +501,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             that.events.onReady.fire(that);
         });
+
         
         return that;
     };

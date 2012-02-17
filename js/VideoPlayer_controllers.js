@@ -37,6 +37,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent", "autoInit"], 
+        preInitFunction: "fluid.videoPlayer.controllers.preInit",
+        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
@@ -111,14 +113,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
-        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onControllersReady: null,
+            onControllersHide: null,
             onVolumeChange: null,
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
+            onShow: null,
+            onShowAndRefocus: null,
+            onHide: null,
             onMarkupReady: null
+        },
+        listeners: {
+            onShow: "{controllers}.show",
+            onShowAndRefocus: "{controllers}.showAndRefocus",
+            onHide: "{controllers}.hide"
         },
 
         selectors: {
@@ -137,9 +147,50 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    fluid.videoPlayer.controllers.setUpHiding = function (that) {
+        // hide controllers when focus leaves controls or hits ESC
+        fluid.each(that.options.selectors, function (item, key) {
+            fluid.deadMansBlur(item, {
+                exclusions: that.options.selectors,
+                handler: that.hideAndNotify
+            });
+            $(item).keydown(function (event) {
+                if (event.keyCode === $.ui.keyCode.ESCAPE) {
+                    that.hideAndNotify();
+                }
+            })
+        });
+    };
+
+    fluid.videoPlayer.controllers.preInit = function (that) {
+        that.hide = function () {
+            that.container.hide();
+        };
+        that.hideAndNotify = function () {
+            that.hide();
+            that.events.onControllersHide.fire();
+        };
+        that.show = function () {
+            that.container.show();
+        };
+        that.showAndRefocus = function () {
+            that.show();
+            that.container.focus();
+            return false;
+        };
+    };
+
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
 
+        that.events.onFocus.addListener(function () {
+            that.container.show();
+            that.locate("play").focus();
+        });
+
+        fluid.videoPlayer.controllers.setUpHiding(that);
+
+        that.hide();
         that.events.onControllersReady.fire(that);
     };
     
@@ -197,6 +248,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var scrubber = that.locate("scrubber");
         scrubber.slider({
             unittext: "seconds",
+            range: "min",
             disabled: true
         }).attr({
             "role": "slider"
@@ -265,6 +317,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "aria-valuetext": fluid.videoPlayer.formatTime(that.model.states.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.states.totalTime)
             });
         };
+        that.setTabindex = function (index) {
+            fluid.tabindex(that.locate("scrubber").find(".ui-slider-handle"), index);
+        };
     };
 
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
@@ -305,7 +360,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var volumeControl = that.locate("volumeControl");
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
-            orientation: "vertical",
+            orientation: "horizontal",
             range: "min",
             min: that.model.states.minVolume,
             max: that.model.states.maxVolume,
@@ -321,9 +376,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "role": "slider"
         });
 
-        fluid.tabindex(that.container, 0);
+        fluid.tabbable(that.container);
         fluid.tabindex(that.locate("mute"), -1);
         fluid.tabindex(volumeControl, -1);
+        fluid.tabindex(volumeControl.find(".ui-slider-handle"), -1);
 
         fluid.activatable(that.container, function (evt) {
             that.muteButton.events.onPress.fire(evt);
@@ -417,6 +473,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "aria-valuenow": volume,
                 "aria-valuetext": Math.round(volume) + "%"
             });
+        };
+        that.setTabindex = function (index) {
+            fluid.tabindex(that.container, index);
         };
     };
 
@@ -538,6 +597,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.captionControls.finalInit = function (that) {
+        that.setTabindex = function (index) {
+            that.captionButton.setTabindex(index);
+        };
+
         fluid.videoPlayer.controllers.captionControls.setUpCaptionControls(that);
         fluid.videoPlayer.controllers.captionControls.bindCaptionDOMEvents(that);
         fluid.videoPlayer.controllers.captionControls.bindCaptionModel(that);
@@ -621,6 +684,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.enabled = function (state) {
             that.locate("button").prop("disabled", !state);
+        };
+        that.setTabindex = function (index) {
+            fluid.tabindex(that.locate("button"), index);
         };
     };
 
