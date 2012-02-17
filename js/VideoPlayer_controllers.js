@@ -68,6 +68,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{controllers}.model",
                     modelPath: "captions",
+                    showHidePath: "states.displayCaptions",
                     applier: "{controllers}.applier",
                     selectors: {
                         button: ".flc-videoPlayer-captions-button",
@@ -629,14 +630,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // When a menu item is activated using the keyboard, in addition to hiding the menu,
         // focus must be return to the button
         that.locate("language").fluid("activatable", function (evt) {
-            that.activate(index);
+            that.activate(that.locate("language").index(evt.currentTarget));
             that.events.activatedByKeyboard.fire();
             return false;
         });
         var noneButton = that.locate("none");
         noneButton.fluid("activatable", function (evt) {
             that.hide();
-            that.applier.requestChange("states.displayCaptions", !that.model.states.displayCaptions);
+            that.applier.requestChange(that.options.showHidePath, !fluid.get(that.model, that.options.showHidePath));
             that.events.activatedByKeyboard.fire();
             return false;
         });
@@ -662,8 +663,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             that.events.trackChanged.fire(that, model[that.options.modelPath].currentTrack);
         });
-        that.applier.modelChanged.addListener("states.displayCaptions", function (model, oldModel, changeRequest) {
-            that.locate("none").text(model.states.displayCaptions ? that.options.strings.turnLanguageOff : that.options.strings.languageIsOff);
+        that.applier.modelChanged.addListener(that.options.showHidePath, function (model, oldModel, changeRequest) {
+            that.locate("none").text(fluid.get(that.model, that.options.showHidePath) ? that.options.strings.turnLanguageOff : that.options.strings.languageIsOff);
             that.events.captionOnOff.fire();
         });
 
@@ -672,7 +673,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.activate(langList.index(evt.currentTarget));
         });
         that.locate("none").click(function (evt) {
-            that.applier.requestChange("states.displayCaptions", !that.model.states.displayCaptions);
+            that.applier.requestChange(that.options.showHidePath, !fluid.get(that.model, that.options.showHidePath));
             that.hide();
         });
     };
@@ -742,6 +743,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             activatedByKeyboard: null
         },
         modelPath: "",
+        showHidePath: "",
         components: {
             button: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
@@ -763,6 +765,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{languageControls}.model",
                     modelPath: "{languageControls}.options.modelPath",
+                    showHidePath: "{languageControls}.options.showHidePath",
                     applier: "{languageControls}.applier",
                     strings: "{languageControls}.options.strings"
                 }
