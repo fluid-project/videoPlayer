@@ -745,7 +745,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null,
             activatedByKeyboard: null
         },
-        modelPath: "",
+        languages: [],
+        currentLanguagePath: "",
         showHidePath: "",
         components: {
             button: {

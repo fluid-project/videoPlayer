@@ -302,7 +302,7 @@ fluid.registerNamespace("fluid.tests");
                     onReady: function (that) {
                         var langList = that.locate("language");
                         jqUnit.assertEquals("Initially, 'show/hide' option should have the correct custom text", testStrings.showLanguage, that.locate("showHide").text());
-                        that.activate(0);
+                        that.activate(1);
                         jqUnit.assertEquals("Activating an item changes the 'show/hide' option text to the custom text", testStrings.hideLanguage, that.locate("showHide").text());
 
                         start();
@@ -311,20 +311,42 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        videoPlayerControlsTests.asyncTest("Language Menu: Active language on init", function () {
-            var numLangs = baseMenuOpts.model.languages.length;
-            expect(2);
-            var testMenu = fluid.tests.initMenu({
-                model: {
-                    currentTracks: {
-                        captions: [2]
-                    }
+        var baseLanguageControlsOpts = {
+            languages: [{
+                srclang: "klingon",
+                label: "Klingoñ"
+            }, {
+                srclang: "esperanto",
+                label: "Espéranto"
+            }, {
+                srclang: "lolspeak",
+                label: "LOLspeak"
+            }, {
+                srclang: "elvish",
+                label: "Elvîsh"
+            }],
+            model: {
+                currentTracks: {
+                    captions: [0]
                 },
+                displayCaptions: false
+            },
+            currentLanguagePath: "currentTracks.captions",
+            showHidePath: "displayCaptions"
+        };
+
+        fluid.tests.initLangControls = function (testOpts) {
+            var opts = fluid.copy(baseMenuOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
+        };
+        videoPlayerControlsTests.asyncTest("Language Controls: default functionality", function () {
+            var numLangs = baseLanguageControlsOpts.languages.length;
+            var testControls = fluid.tests.initLangControls({
                 listeners: {
                     onReady: function (that) {
                         var langList = that.locate("language");
-                        jqUnit.assertEquals("When initialized with a choice, that choice should be the active value", 2, fluid.get(that.model, that.options.modelPath)[0]);
-                        jqUnit.assertTrue("The active item should have the 'active' style", $(langList[2]).hasClass(that.options.styles.active));
+                        jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
 
                         start();
                     }
