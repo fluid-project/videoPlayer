@@ -89,6 +89,9 @@ img.fl-videoPlayer-initialOverlay {
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 0.1em 0.1em;
+    background-color: #EEEEEE;
+    border: 1px solid #DDDDDD;
+    color: #333333;
 }
 .fl-videoPlayer-button {
     width: 3em;
