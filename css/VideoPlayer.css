@@ -12,6 +12,14 @@
 }
 
 /*
+* Video and Controller area
+*/
+
+.fl-videoPlayer-video-controller-area {
+    float: left;
+}
+
+/*
 * Video area
 */
 
@@ -135,6 +143,30 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
 }
 
 /*
+ * transcript controls
+ */
+.fl-videoPlayer-theme .fl-videoPlayer-transcripts-button {
+    background: #ffffff url('../images/transcripts-black.png') no-repeat center center;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-transcripts-button:hover {
+    background-color: yellow;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-transcripts-button.fl-videoPlayer-transcript-active {
+    background-color: orange;
+}
+.fl-videoPlayer-theme .fl-videoPlayer-transcripts-button.fl-videoPlayer-transcript-active:hover {
+    background-color: wheat;
+}
+
+ul.fl-videoPlayer-transcripts-languageList,
+ul.fl-videoPlayer-transcripts-languageList li {
+    display: block;
+}
+ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
+    color: yellow;
+}
+
+/*
  * Scrub bar controls
  */
 .fl-videoPlayer-scrubberContainer {
@@ -150,6 +182,9 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     position: absolute;
 }
 
+.fl-videoPlayer-theme .fl-videoPlayer-transcripts-close-button {
+    background: #ffffff url('../images/close-black.png') no-repeat center center;
+}
 
 /*
  * Caption area
@@ -166,6 +201,33 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     background-color: black;
     opacity: 0.7;
 }
+
+/*
+ * Caption area
+ */
+ 
+.fl-videoPlayer-transcriptArea {
+    float: left;
+    border: 1px solid black;
+    width: 15em;
+}
+
+.fl-videoPlayer-transcripts-language-dropdown {
+    float: left;
+    margin: 1em;
+    width: 75%;
+}
+
+.fl-videoPlayer-transcripts-close-button {
+    float: right;
+    margin: 0.2em;
+}
+
+.fl-videoPlayer-transcript-text {
+    margin-top: 3em;
+    border: 1px solid black;
+}
+
 /*
 * mods to the coal theme
 */
@@ -301,6 +363,16 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
 }
 .fl-theme-uio-wb .fl-videoPlayer-captions-button {
     background-image: url('../images/captions-white.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button {
+    background-image: url('../images/transcripts-black.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button {
+    background-image: url('../images/transcripts-yellow.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button {
+    background-image: url('../images/transcripts-white.png');
 }
 
 .fl-theme-uio-wb .fl-videoPlayer-caption-captionText,

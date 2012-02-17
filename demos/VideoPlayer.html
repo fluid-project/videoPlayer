@@ -112,6 +112,28 @@
                         conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                         maxNumber: 3,
                         track: undefined
+                    },
+                    transcripts: {
+                        sources: {
+                            english: {
+                                src: "ReorganizeFuture.transcripts.en.json",
+                                type: "JSONcc"
+                            }, 
+                            francaise: {
+                                src: "ReorganizeFuture.transcripts.fr.json",
+                                type: "JSONcc"
+                            }
+                        },
+                        currentTrack: "english",
+
+                        // The following options (choices, names, selection) shouldn't be necessary.
+                        // This is a temporary workaround for FLUID-4585
+                        choices: [],
+                        names: [],
+                        selection: "english",
+
+                        show: false,
+                        track: undefined
                     }
 
                 }

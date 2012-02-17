@@ -65,6 +65,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             modifier: $.ui.keyCode.SHIFT,
             key: 67
         },
+        transcripts: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 84
+        },
         fullscreen: {
             modifier: $.ui.keyCode.SHIFT,
             key: 70
@@ -206,13 +210,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
-            controllers: ".flc-videoPlayer-controller"
+            controllers: ".flc-videoPlayer-controller",
+            transcripts: ".flc-videoPlayer-transcriptArea",
+            videoControllersContainer: ".flc-videoPlayer-video-controller-area"
         },
         strings: {
             captionsOff: "Captions OFF",
-            turnCaptionsOff: "Turn Captions OFF"
+            turnCaptionsOff: "Turn Captions OFF",
+            transcriptsOff: "Transcripts OFF",
+            turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["caption"],
+        selectorsToIgnore: ["caption", "videoControllersContainer", "transcripts"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -222,6 +230,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 currentTime: 0,
                 totalTime: 0,
                 displayCaptions: true,
+                displayTranscripts: true,
                 fullscreen: false,
                 volume: 60,
                 muted: false,
@@ -237,6 +246,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 show: false,
                 sources: null,
                 conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                track: undefined
+            },
+            transcripts: {
+                selection: "none",
+                choices: [],
+                names: [],
+                show: false,
+                sources: null,
                 track: undefined
             }
         },
@@ -273,6 +290,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     });
                 }
             }, {
+                modifier: that.options.keyBindings.transcripts.modifier,
+                key: that.options.keyBindings.transcripts.key,
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "states.displayTranscripts",
+                        value: !that.model.states.displayTranscripts
+                    });
+                }
+            }, {
                 modifier: that.options.keyBindings.volumePlus.modifier,
                 key: that.options.keyBindings.volumePlus.key,
                 activateHandler: that.incrVolume
@@ -304,8 +330,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.play();
         });
         video.bind("loadedmetadata", function () {
+            var videoControllersContainer = that.locate("videoControllersContainer");
             //that shouldn't be usefull but the video is too big if it's not used
-            that.container.css("width", video[0].videoWidth);
+            videoControllersContainer.css("width", video[0].videoWidth);
+            that.locate("transcripts").css("height", videoControllersContainer.height());
             bindKeyboardControl(that);
         });
     };
@@ -353,21 +381,37 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.options.model.captions.choices.push("none");
         that.options.model.captions.names.push(that.options.strings.captionsOff);
 
+        // build the 'choices' from the transcript list provided
+        fluid.each(that.options.model.transcripts.sources, function (value, key) {
+            that.options.model.transcripts.choices.push(key);
+            that.options.model.transcripts.names.push(key);
+        });
+        // add the 'turn transcripts off' option
+        that.options.model.transcripts.choices.push("none");
+        that.options.model.transcripts.names.push(that.options.strings.transcriptsOff);
+
         that.fullscreen = function () {
             var video = that.locate("video");
+            var videoControllersContainer = that.locate("videoControllersContainer");
             if (that.model.states.fullscreen === true) {
-                that.container.css({
+                video.css({
                     // TODO: This doesn't actually do full-screen, it simply tries to maximise
                     // to the current window size. (FLUID-4570)
                     width: window.innerWidth + "px",
                     height: window.innerHeight - 20 + "px"
                 });
+                
+                // Adjust the height of video + controllers area & transcripts area
+                videoControllersContainer.css({width: window.innerWidth + "px"});
             } else {
-                that.container.css({
+                video.css({
                     width: video[0].videoWidth,
                     height: video[0].videoHeight
                 });
+                
+                videoControllersContainer.css({width: video[0].videoWidth});
             }
+            that.locate("transcripts").css("height", videoControllersContainer.height());
         };
     };
 

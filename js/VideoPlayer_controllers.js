@@ -22,6 +22,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
      *      a volume controller, a button to put captions on/off
+     *      , a button to put transcripts on/off
      * 
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
@@ -65,6 +66,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionControls: {
                 type: "fluid.videoPlayer.controllers.captionControls",
                 container: "{controllers}.dom.captionControlsContainer",
+                options: {
+                    model: "{controllers}.model",
+                    applier: "{controllers}.applier"
+                }
+            },
+            transcriptControls: {
+                type: "fluid.videoPlayer.controllers.transcriptControls",
+                container: "{controllers}.dom.transcriptControlsContainer",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
@@ -126,6 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
             volumeContainer: ".flc-videoPlayer-volumeContainer",
             captionControlsContainer: ".flc-videoPlayer-captionControls-container",
+            transcriptControlsContainer: ".flc-videoPlayer-transcriptControls-container",
             fullscreen: ".flc-videoPlayer-fullscreen"
         },
 
@@ -133,7 +143,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullscreenOn: "fl-videoPlayer-state-fullscreenOn",
             fullscreenOff: "fl-videoPlayer-state-fullscreenOff",
             fullscreenIcon: "ui-icon-extlink",
-            captionIcon: "ui-icon-comment"
+            captionIcon: "ui-icon-comment",
+            transcriptIcon: "ui-icon-comment"
         }
     });
 
@@ -566,8 +577,151 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /*****************************************************************************
+        Transcript controls
+        Toggle button plus language selection pull-down
+     *****************************************************************************/
+    fluid.defaults("fluid.videoPlayer.controllers.transcriptControls", {
+        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        renderOnInit: true,
+        rendererOptions: {
+            autoBind: true
+        },
+        finalInitFunction: "fluid.videoPlayer.controllers.transcriptControls.finalInit",
+        produceTree: "fluid.videoPlayer.controllers.transcriptControls.produceTree",
+        events: {
+            onReady: null
+        },
+        model: {
+            // TODO: the 'transcripts' is to mimic the videoPlayer model layout
+            // Ideally, the transcriptControls should operate without requiring that knowledge.
+            transcripts: {
+                selection: "none",
+                choices: [],
+                names: [],
+                show: false,
+                sources: null,
+                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
+                maxNumber: 3,
+                track: undefined
+            }
+        },
+        selectors: {
+            button: ".flc-videoPlayer-transcripts-button",
+            languageList: ".flc-videoPlayer-transcripts-languageList",
+            languageRow: ".flc-videoPlayer-transcripts-language",
+            languageButton: ".flc-videoPlayer-transcripts-languageButton",
+            languageLabel: ".flc-videoPlayer-transcripts-languageLabel",
+            langaugeDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
+            closeButton: ".flc-videoPlayer-transcripts-close-button"
+        },
+        repeatingSelectors: ["languageRow"],
+        selectorsToIgnore: ["languageList"],
+        styles: {
+            selected: "fl-videoPlayer-transcript-selected"
+        },
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+        strings: {
+            transcriptsOff: "Transcripts OFF",
+            turnTranscriptsOff: "Turn Transcripts OFF"
+        },
+        components: {
+            transcriptButton: {
+                type: "fluid.videoPlayer.controllers.toggleButton",
+                container: "{transcriptControls}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-transcripts-button"
+                    },
+                    styles: {
+                        pressed: "fl-videoPlayer-transcript-active"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: {
+                        press: "Transcripts",
+                        release: "Transcripts"
+                    }
+                }
+            }
+        }
+    });
+    
+    // TODO: FLUID-4589 Restructure the transcript model to reduce the code logic here
+    fluid.videoPlayer.controllers.transcriptControls.setUpTranscriptControls = function (that) {
+        that.transcriptsOffOption = $(that.locate("languageLabel")[that.model.transcripts.choices.indexOf("none")]);
+        that.locate("languageList").hide();
+        that.transcriptsOffOption.text(that.model.transcripts.selection === "none" ? that.options.strings.transcriptsOff : that.options.strings.turnTranscriptsOff);
+        $(that.locate("languageLabel")[that.model.transcripts.choices.indexOf(that.model.transcripts.selection)]).addClass(that.options.styles.selected);
+    };
+    
+    fluid.videoPlayer.controllers.transcriptControls.bindTranscriptDOMEvents = function (that) {
+        that.transcriptButton.events.onPress.addListener(function (evt) {
+            that.locate("languageList").toggle();
+            // prevent the default onPress handler from toggling the button state:
+            //   it should only toggle if the user turns transcripts on or off
+            return false;
+        });
+    };
+    
+    // TODO: FLUID-4589 Restructure the transcript model to reduce the code logic here
+    fluid.videoPlayer.controllers.transcriptControls.bindTranscriptModel = function (that) {
+        that.applier.modelChanged.addListener("transcripts.selection", function (model, oldModel, changeRequest) {
+            var oldSel = oldModel.transcripts.selection;
+            var newSel = model.transcripts.selection;
+            if (oldSel === newSel) {
+                return true;
+            }
+    
+            // TODO: can we do this in CSS?
+            var labels = that.locate("languageLabel");
+            $(labels[model.transcripts.choices.indexOf(oldSel)]).removeClass(that.options.styles.selected);
+            $(labels[model.transcripts.choices.indexOf(newSel)]).addClass(that.options.styles.selected);
+    
+            // TODO: Can we move the responsibility to requestStateChange elsewhere?
+            if ((oldSel === "none") || (newSel === "none")) {
+                that.transcriptButton.requestStateChange();
+                that.transcriptsOffOption.text(newSel === "none" ? that.options.strings.transcriptsOff : that.options.strings.turnTranscriptsOff);
+            }
+    
+            return true;
+        }, "transcriptControls");
+    };
+    
+    fluid.videoPlayer.controllers.transcriptControls.finalInit = function (that) {
+        fluid.videoPlayer.controllers.transcriptControls.setUpTranscriptControls(that);
+        fluid.videoPlayer.controllers.transcriptControls.bindTranscriptDOMEvents(that);
+        fluid.videoPlayer.controllers.transcriptControls.bindTranscriptModel(that);
+        that.events.onReady.fire(that);
+    };
+    
+    fluid.videoPlayer.controllers.transcriptControls.produceTree = function (that) {
+        return {
+            button: {
+                // TODO: Note that until FLUID-4573 is fixed, this binding doesn't actually do anything
+                value: "${transcripts.show}"
+            },
+            expander: {
+                type: "fluid.renderer.selection.inputs",
+                rowID: "languageRow",
+                labelID: "languageLabel",
+                inputID: "languageButton",
+                selectID: "transcriptLanguages",
+                tree: {
+                    selection: "${transcripts.selection}",
+                    optionlist: "${transcripts.choices}",
+                    optionnames: "${transcripts.names}"
+                }
+            },
+            langaugeDropdown: {
+                selection: "${transcripts.selection}",
+                optionlist: "${transcripts.choices}",
+                optionnames: "${transcripts.names}"
+            }
+        };
+    };
+
+    /*****************************************************************************
         Toggle button subcomponent
-        Used for Play, Mute, Fullscreen, Captions
+        Used for Play, Mute, Fullscreen, Captions, Transcripts
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.toggleButton", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
