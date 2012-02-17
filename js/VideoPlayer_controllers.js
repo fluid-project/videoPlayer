@@ -736,6 +736,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.languageControls", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
+        preInitFunction: "fluid.videoPlayer.controllers.languageControls.preInit",
         finalInitFunction: "fluid.videoPlayer.controllers.languageControls.finalInit",
         selectors: {
             button: ".flc-videoPlayer-languageButton",
@@ -743,6 +744,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
+            onRenderingComplete: null,
             activatedByKeyboard: null
         },
         languages: [],
@@ -767,8 +769,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.controllers.languageMenu",
                 container: "{languageControls}.dom.menu",
                 options: {
-                    languages: "{languageControls}.languages",
-                    model: "{languageControls}.model",
+                    model: {
+                        languages: "{languageControls}.options.languages",
+                    },
                     modelPath: "{languageControls}.options.modelPath",
                     showHidePath: "{languageControls}.options.showHidePath",
                     applier: "{languageControls}.applier",
@@ -777,10 +780,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             eventBinder: {
                 type: "fluid.videoPlayer.controllers.languageControls.eventBinder",
-                createOnEvent: "onReady"
+                createOnEvent: "onRenderingComplete",
+                options: {
+                    events: {
+                        onReady:"{languageControls}.events.onReady"
+                    },
+                }
             }
         }
     });
+
+    fluid.videoPlayer.controllers.languageControls.preInit = function (that) {
+        that.options.components.menu.options.model.activeLanguage = fluid.get(that.model, that.options.currentLanguagePath);
+        that.options.components.menu.options.model.showLanguage = fluid.get(that.model, that.options.showHidePath);
+    };
 
     fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y = function (that) {
         fluid.tabindex(that.locate("menu"), -1);
@@ -810,7 +823,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
         fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y(that);
-        that.events.onReady.fire(that);
+        that.events.onRenderingComplete.fire(that);
     };
 
     /**************************************************************************************
@@ -819,6 +832,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.controllers.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
+        events: {
+            onReady: null
+        },
         listeners: {
             "{button}.events.onPress": "{menu}.toggleView",
             "{button}.events.activatedByKeyboard": "{menu}.showAndSelect",
@@ -826,7 +842,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "{menu}.events.hiddenByKeyboard": "{button}.focus",
 //            "{menu}.events.activatedByKeyboard": "{button}.focus",
             "{menu}.events.languageOnOff": "{button}.requestStateChange"
-        }
+        },
+        finalInitFunction: "fluid.videoPlayer.controllers.languageControls.eventBinder.finalInit"
     });
+    fluid.videoPlayer.controllers.languageControls.eventBinder.finalInit = function (that) {
+        that.events.onReady.fire();
+    };
 
 })(jQuery);

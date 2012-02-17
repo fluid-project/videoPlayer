@@ -336,19 +336,27 @@ fluid.registerNamespace("fluid.tests");
         };
 
         fluid.tests.initLangControls = function (testOpts) {
-            var opts = fluid.copy(baseMenuOpts);
+            var opts = fluid.copy(baseLanguageControlsOpts);
             $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
+            return fluid.videoPlayer.controllers.languageControls("#basic-languageControls-test", opts);
         };
         videoPlayerControlsTests.asyncTest("Language Controls: default functionality", function () {
             var numLangs = baseLanguageControlsOpts.languages.length;
             var testControls = fluid.tests.initLangControls({
                 listeners: {
-                    onReady: function (that) {
-                        var langList = that.locate("language");
-                        jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
-
-                        start();
+                    onReady: {
+                        args: "{languageControls}",
+                        listener: function (that) {
+                            var langList = that.menu.locate("language");
+                            jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
+                            jqUnit.notVisible("Menu should not be visible initially", that.menu.container);
+                
+                            that.locate("button")[0].click();
+                            jqUnit.isVisible("Clicking the button should show menu", that.menu.container);
+                            that.locate("button")[0].click();
+                            jqUnit.notVisible("Clicking the button again should hide menu again", that.menu.container);
+                            start();
+                        }
                     }
                 }
             });
