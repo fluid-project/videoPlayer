@@ -242,11 +242,7 @@ fluid.registerNamespace("fluid.tests");
             // expect(5)
             var menuItems = that.locate("menuItem");
             jqUnit.assertEquals(actionString + " updates the active value", activatedIndex, fluid.get(that.model, that.options.modelPath)[0]);
-            if (activatedIndex == -1) {
-                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", that.locate("showHide").hasClass(that.options.styles.active));
-            } else {
-                jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
-            }
+            jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
             jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
             jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
             jqUnit.notVisible(actionString + " hides the menu", that.container);
@@ -295,8 +291,8 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("Activating the 'show/hide' option updates its text", that.options.strings.showLanguage, that.locate("showHide").text());
 
                         that.show();
-                        $(that.locate("language")[1]).click();
-                        verifyActivation("Clicking a language", that, 1);
+                        $(that.locate("language")[2]).click();
+                        verifyActivation("Clicking a language", that, 2);
 
                         // double-check notes on interaction between keyboard selection and hover, and add tests
                         start();

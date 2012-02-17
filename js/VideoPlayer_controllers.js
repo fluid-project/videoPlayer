@@ -630,17 +630,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         // When a menu item is activated using the keyboard, in addition to hiding the menu,
         // focus must be return to the button
-        var activateByKeyboard = function (that, index) {
-            that.activate(index);
+        that.locate("language").fluid("activatable", function (evt) {
+            that.activate(that.locate("language").index(evt.currentTarget));
             that.events.activatedByKeyboard.fire();
             return false;
-        };
-        that.locate("language").fluid("activatable", function (evt) {
-            return activateByKeyboard(that, that.locate("language").index(evt.currentTarget));
         });
         var noneButton = that.locate("showHide");
         noneButton.fluid("activatable", function (evt) {
-            return activateByKeyboard(that, -1);
+            that.hide();
+            that.applier.requestChange(that.options.showHidePath, !fluid.get(that.model, that.options.showHidePath));
+            that.events.activatedByKeyboard.fire();
+            return false;
         });
 
         // when the DOWN arrow is used on the bottom item of the menu, the menu should hide
@@ -663,9 +663,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 return;
             }
             that.events.trackChanged.fire(that, model[that.options.modelPath].currentTrack);
-            if ((newTrack == -1) || (oldTrack == -1)) {
-                that.events.captionOnOff.fire();
-            }
+        });
+        that.applier.modelChanged.addListener(that.options.showHidePath, function (model, oldModel, changeRequest) {
+            that.locate("none").text(fluid.get(that.model, that.options.showHidePath) ? that.options.strings.turnLanguageOff : that.options.strings.languageIsOff);
+            that.events.captionOnOff.fire();
         });
 
         var langList = that.locate("language");
@@ -673,8 +674,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.activate(langList.index(evt.currentTarget));
         });
         that.locate("showHide").click(function (evt) {
-            that.activate(-1);
-
+            that.applier.requestChange(that.options.showHidePath, !fluid.get(that.model, that.options.showHidePath));
+            that.hide();
         });
     };
 
@@ -682,19 +683,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
 
-        if (activeTrack === -1) {
-            that.locate("showHide").text(that.options.strings.showLanguage).addClass(that.options.styles.active);
-        } else {
-            that.locate("showHide").text(that.options.strings.hideLanguage);
-            $(menuItems[activeTrack]).addClass(that.options.styles.active);
-        }
+        $(menuItems[activeTrack]).addClass(that.options.styles.active);
         that.hide();
     };
 
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
         if (that.options.modelPath && that.options.model[that.options.modelPath]) {
             if (that.options.model[that.options.modelPath].currentTrack === undefined) {
-                that.options.model[that.options.modelPath].currentTrack = -1;
+                that.options.model[that.options.modelPath].currentTrack = 0;
             }
         }
 
@@ -717,6 +713,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.activate = function (index) {
             that.applier.requestChange(that.options.modelPath + ".currentTrack", index);
+            that.applier.requestChange(that.options.showHidePath, true);
         };
     };
 
@@ -747,6 +744,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             activatedByKeyboard: null
         },
         modelPath: "",
+        showHidePath: "",
         components: {
             button: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
@@ -796,7 +794,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }]
         }]);
         fluid.deadMansBlur(that.container, {
-            exclusions: [that.menu.options.selectors.menuItem], 
+            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
             handler: function () {
                 that.menu.hide();
             }
