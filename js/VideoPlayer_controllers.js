@@ -74,8 +74,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         menu: ".flc-videoPlayer-captions-languageMenu"
                     },
                     strings: {
-                        languageIsOff: "Captions OFF",
-                        turnLanguageOff: "Turn Captions OFF",
+                        languageIsOff: "Show Captions",
+                        turnLanguageOff: "Hide Captions",
                         press: "Captions",
                         release: "Captions"
                     }
@@ -553,6 +553,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         model: {
         },
         modelPath: "",
+        showHidePath: "",
         events: {
             onReady: null,
             activated: null,
@@ -627,17 +628,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         // When a menu item is activated using the keyboard, in addition to hiding the menu,
         // focus must be return to the button
-        var activateByKeyboard = function (that, index) {
+        that.locate("language").fluid("activatable", function (evt) {
             that.activate(index);
             that.events.activatedByKeyboard.fire();
             return false;
-        };
-        that.locate("language").fluid("activatable", function (evt) {
-            return activateByKeyboard(that, that.locate("language").index(evt.currentTarget));
         });
         var noneButton = that.locate("none");
         noneButton.fluid("activatable", function (evt) {
-            return activateByKeyboard(that, -1);
+            that.hide();
+            that.applier.requestChange("states.displayCaptions", !that.model.states.displayCaptions);
+            that.events.activatedByKeyboard.fire();
+            return false;
         });
 
         // when the DOWN arrow is used on the bottom item of the menu, the menu should hide
@@ -660,9 +661,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 return;
             }
             that.events.trackChanged.fire(that, model[that.options.modelPath].currentTrack);
-            if ((newTrack == -1) || (oldTrack == -1)) {
-                that.events.captionOnOff.fire();
-            }
+        });
+        that.applier.modelChanged.addListener("states.displayCaptions", function (model, oldModel, changeRequest) {
+            that.locate("none").text(model.states.displayCaptions ? that.options.strings.turnLanguageOff : that.options.strings.languageIsOff);
+            that.events.captionOnOff.fire();
         });
 
         var langList = that.locate("language");
@@ -670,7 +672,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.activate(langList.index(evt.currentTarget));
         });
         that.locate("none").click(function (evt) {
-            that.activate(-1);
+            that.applier.requestChange("states.displayCaptions", !that.model.states.displayCaptions);
+            that.hide();
         });
     };
 
@@ -678,19 +681,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
 
-        if (activeTrack === -1) {
-            that.locate("none").text(that.options.strings.languageIsOff).addClass(that.options.styles.active);
-        } else {
-            that.locate("none").text(that.options.strings.turnLanguageOff);
-            $(menuItems[activeTrack]).addClass(that.options.styles.active);
-        }
+        that.locate("none").text(that.options.strings.turnLanguageOff);
+        $(menuItems[activeTrack]).addClass(that.options.styles.active);
         that.hide();
     };
 
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
         if (that.options.modelPath && that.options.model[that.options.modelPath]) {
             if (that.options.model[that.options.modelPath].currentTrack === undefined) {
-                that.options.model[that.options.modelPath].currentTrack = -1;
+                that.options.model[that.options.modelPath].currentTrack = 0;
             }
         }
 
