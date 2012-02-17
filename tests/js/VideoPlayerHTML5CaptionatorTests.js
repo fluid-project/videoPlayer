@@ -202,10 +202,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 var tracks = videoPlayer.html5Captionator.container[0].tracks;
                 
                 jqUnit.assertEquals("Current track is NOT empty in the html5Captionator model it has only one element in it", 
-                        1, videoPlayer.html5Captionator.model.currentCaptions.length);
+                        1, videoPlayer.html5Captionator.model.currentTracks.captions.length);
                         
                 jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
-                        0, videoPlayer.html5Captionator.model.currentCaptions[0]);
+                        0, videoPlayer.html5Captionator.model.currentTracks.captions[0]);
                 
                 jqUnit.assertEquals("English subtitles should default to be showing", captionator.TextTrack.SHOWING, tracks[0].mode);
                 jqUnit.assertEquals("French subtitles are NOT showing", captionator.TextTrack.OFF, tracks[1].mode);

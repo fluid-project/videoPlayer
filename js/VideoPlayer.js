@@ -132,10 +132,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{videoPlayer}.dom.video",
                 createOnEvent: "onHTML5BrowserDetected",
                 options: {
-                    model: {
-                        currentCaptions: "{videoPlayer}.model.currentTracks.captions",
-                        displayCaptions: "{videoPlayer}.model.displayCaptions"
-                    },
+                    model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.options.video.captions"
                 }

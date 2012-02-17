@@ -29,13 +29,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.html5Captionator.finalInit",
         preInitFunction:   "fluid.videoPlayer.html5Captionator.preInit",
-        model: {
-            currentCaptions: [],
-            displayCaptions: null
-        },
+        model: {},
         captions: [],
         events: {
             onReady: null
+        },
+        elPaths: {
+            currentCaptions: "currentTracks.captions",
+            displayCaptions: "displayCaptions"
         }
     });
     
@@ -65,8 +66,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // listener for hiding/showing all captions
         that.displayCaptions = function () {
             var tracks = that.container[0].tracks;
-            if (that.model.displayCaptions) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.currentCaptions, tracks, that.options.captions);
+            if (fluid.get(that.model, elPaths.displayCaptions)) {
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(fluid.get(that.model, that.options.elPaths.currentCaptions), tracks, that.options.captions);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
             }
@@ -74,24 +75,26 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         // listener for changed selected currentTrack
         that.changeCaptions = function () {
-            fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.currentCaptions, that.container[0].tracks, that.options.captions);
+            fluid.videoPlayer.html5Captionator.showCurrentTrack(fluid.get(that.model, that.options.elPaths.currentCaptions), that.container[0].tracks, that.options.captions);
         };
     };
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions || [];
+        var elPaths = that.options.elPaths;
         
         // Before we go any further check if it makes sense to create captionator and bind events
         if(captions.length === 0) {
             return false;
         }
         
-        var currentCaptions = that.model.currentCaptions || [];
+        var currentCaptions = fluid.get(that.model, elPaths.currentCaptions) || [];
         
         // If currentTrack is not specified, then default it to the first track
         if (currentCaptions.length === 0) {
-            that.model.currentCaptions.push(0);
+            //that.model.currentCaptions.push(0);
+            that.applier.requestChange(elPaths.currentCaptions, [0]);
         }
         
         // Start adding tracks to the video tag
@@ -100,7 +103,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var trackTag = $("<track />");
             var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
 
-            if (!($.inArray(key, currentCaptions))) {
+            if (!($.inArray(key, fluid.get(that.model, that.options.elPaths.currentCaptions)))) {
                 attributes.default = "true";
             }
             trackTag.attr(attributes);
