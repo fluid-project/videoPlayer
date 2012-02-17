@@ -792,7 +792,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }]
         }]);
         fluid.deadMansBlur(that.container, {
-            exclusions: [that.menu.options.selectors.menuItem], 
+            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
             handler: function () {
                 that.menu.hide();
             }
