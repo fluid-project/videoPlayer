@@ -70,56 +70,43 @@
             });
 
             var vp = fluid.videoPlayer(".videoPlayer", {
-                model: {
-                    video: {
-                        sources: [
-                            {
-                                src: "ReorganizeFuture.mp4",
-                                type: "video/mp4"
-                            },
-                            {
-                                src: "ReorganizeFuture.webm",
-                                type: "video/webm"
-                            },
-                            {
-                                src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
-                                type: "youtube"
-                            }
-                        ]
-                    },
-                    captions: {
-                        sources: {
-                            english: {
-                                src: "ReorganizeFuture.en.vtt",
-                                type: "text/vtt",
-                                srclang: "en",
-                                label: "English Subtitles",
-                                kind: "subtitles"
-                            },
-                            french: {
-                                src: "ReorganizeFuture.fr.vtt",
-                                type: "text/vtt",
-                                srclang: "fr",
-                                label: "French Subtitles",
-                                kind: "subtitles"
-                            }
+                video: {
+                    sources: [
+                        {
+                            src: "ReorganizeFuture.mp4",
+                            type: "video/mp4"
                         },
-                        currentTrack: "english",
-
-                        // The following options (choices, names, selection) shouldn't be necessary.
-                        // This is a temporary workaround for FLUID-4585
-                        choices: [],
-                        names: [],
-                        // TODO: setting 'selection' to something other than 'none' is a workaround
-                        //       for FLUID-4592: a default caption *must* be loaded for the
-                        //       intervalEventsConductor to be created
-                        selection: "english",
-
-                        show: false,
-                        conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                        maxNumber: 3,
-                        track: undefined
-                    }
+                        {
+                            src: "ReorganizeFuture.webm",
+                            type: "video/webm"
+                        },
+                        {
+                            src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
+                            type: "youtube"
+                        }
+                    ],
+                    captions: [
+                        {
+                            src: "ReorganizeFuture.en.vtt",
+                            type: "text/vtt",
+                            srclang: "en",
+                            label: "English Subtitles",
+                            kind: "subtitles"
+                        },
+                        {
+                            src: "ReorganizeFuture.fr.vtt",
+                            type: "text/vtt",
+                            srclang: "fr",
+                            label: "French Subtitles",
+                            kind: "subtitles"
+                        }
+                    ]
+                },
+                model: {
+                    currentTracks: {
+                        captions: [0]
+                    },
+                    displayCaptions: true
                 }
             });
         </script>

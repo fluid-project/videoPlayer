@@ -28,16 +28,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         var videoPlayerCaptionatorTests = new jqUnit.TestCase("Video Player HTML5 Captionator Test Suite");
         
-        var testOptionsNoCaptions = {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "TestVideo.mp4",
-                            type: "video/mp4"
-                        }
-                    ]
-                }
+        var testOptionsNoCaptions = {            
+            video: {
+                sources: [
+                    {
+                        src: "TestVideo.mp4",
+                        type: "video/mp4"
+                    }
+                ]
             },
             templates: {
                 videoPlayer: {
@@ -49,25 +47,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var testOptionsNoCurrentTrack = {};
         fluid.merge(null, testOptionsNoCurrentTrack, testOptionsNoCaptions);
         fluid.merge(null, testOptionsNoCurrentTrack, {
-            model: {
-                captions: {
-                    sources: {
-                        english: {
-                            src: "TestCaptions.en.vtt",
-                            type: "text/vtt",
-                            srclang: "en",
-                            label: "English Subtitles",
-                            kind: "subtitles"
-                        },
-                        french: {
-                            src: "TestCaptions.fr.vtt",
-                            type: "text/vtt",
-                            srclang: "fr",
-                            label: "French Subtitles",
-                            kind: "subtitles"
-                        }
+            video: {
+                captions: [
+                    {
+                        src: "ReorganizeFuture.en.vtt",
+                        type: "text/vtt",
+                        srclang: "en",
+                        label: "English Subtitles",
+                        kind: "subtitles"
+                    },
+                    {
+                        src: "ReorganizeFuture.fr.vtt",
+                        type: "text/vtt",
+                        srclang: "fr",
+                        label: "French Subtitles",
+                        kind: "subtitles"
                     }
-                }
+                ]
             }
         });
         
@@ -75,9 +71,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.merge(null, testOptionsFull, testOptionsNoCurrentTrack);
         fluid.merge(null, testOptionsFull, {
             model: {
-                captions: {
-                    currentTrack: "english"
-                }
+                currentTracks: {
+                    captions: [0]
+                },
+                displayCaptions: true
             }
         });
                         

@@ -27,13 +27,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.html5Captionator", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
-        container: null,
         finalInitFunction: "fluid.videoPlayer.html5Captionator.finalInit",
         preInitFunction:   "fluid.videoPlayer.html5Captionator.preInit",
-        captions: {
-            sources: null,
-            currentTrack: undefined
+        model: {
+            currentCaptions: [],
+            displayCaptions: null
         },
+        captions: [],
         events: {
             onReady: null
         }
@@ -41,8 +41,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     
     var bindCaptionatorModel = function (that) {
-        that.applier.modelChanged.addListener("captions.currentTrack", that.changeCaptions);
-        that.applier.modelChanged.addListener("states.displayCaptions", that.displayCaptions);
+        that.applier.modelChanged.addListener("model.currentCaptions", that.changeCaptions);
+        that.applier.modelChanged.addListener("model.displayCaptions", that.displayCaptions);
     };
     
     // Hide all tracks
@@ -53,13 +53,16 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
     
     // show captions depending on which one is on in the model
-    fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentTrack, tracks, sources) {
-        var index = 0; 
-        fluid.each(sources, function (element, key) {
+    fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
+        
+        
+        
+        //var index = 0; 
+        fluid.each(captionSources, function (element, key) {
             // TODO: We want to have a multi caption support!!!
-            tracks[index].mode = captionator.TextTrack[key === currentTrack ? "SHOWING" : "OFF"];
+            tracks[index].mode = captionator.TextTrack[!($.inArray(key, currentCaptions)) ? "SHOWING" : "OFF"];
             
-            ++index;
+        //    ++index;
         });
     };
 
@@ -69,8 +72,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // listener for hiding/showing all captions
         that.displayCaptions = function () {
             var tracks = that.container[0].tracks;
-            if (that.model.states.displayCaptions) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, tracks, that.model.captions.sources);
+            if (that.model.displayCaptions) {
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.currentCaptions, tracks, that.options.captions);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
             }
@@ -78,38 +81,41 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         // listener for changed selected currentTrack
         that.changeCaptions = function () {
-            fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.captions.currentTrack, that.container[0].tracks, that.model.captions.sources);
+            fluid.videoPlayer.html5Captionator.showCurrentTrack(that.model.currentCaptions, that.container[0].tracks, that.options.captions);
         };
     };
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var captions = that.options.captions || {};
+        var captions = that.options.captions || [];
         
         // Before we go any further check if it makes sense to create captionator and bind events
-        if(fluid.get(captions, "sources.length") === 0) {
+        if(captions.length === 0) {
             return false;
         }
         
-        var sources = captions.sources || {};
-        var currentTrack = captions.currentTrack;
+        var currentCaptions = that.model.currentCaptions || [];
         
         // If currentTrack is not specified, then default it to the first track
-        if (!currentTrack || !sources[currentTrack]) {
-            var foundKey = fluid.find(sources, function(value, key) {
-                return key;
-            });
-            captions.currentTrack = foundKey;
+        if (currentCaptions.length === 0) {
+            that.model.currentCaptions.push(0);
         }
         
+        //if (!currentTrack || !sources[currentTrack]) {
+        //    var foundKey = fluid.find(sources, function(value, key) {
+        //        return key;
+        //    });
+        //    captions.currentTrack = foundKey;
+        //}
+        
         // Start adding tracks to the video tag
-        fluid.each(sources, function (element, key) {
+        fluid.each(captions, function (element, key) {
             
             var trackTag = $("<track />");
             var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
 
             // TODO: We want to have a multi caption support in future
-            if (key === captions.currentTrack) {
+            if (!($.inArray(key, currentCaptions))) {
                 attributes.default = "true";
             }
             trackTag.attr(attributes);
