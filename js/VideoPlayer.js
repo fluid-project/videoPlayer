@@ -126,26 +126,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             },
-            captionner: {
-                type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.dom.caption",
-                createOnEvent: "onCreateCaptionnerReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            captionLoader: {
-                type: "fluid.videoPlayer.captionLoader",
-                container: "{videoPlayer}.container",
-                createOnEvent: "onReadyToLoadCaptions",
+            html5Captionator: {
+                type: "fluid.videoPlayer.html5Captionator",
+                container: "{videoPlayer}.dom.video",
+                createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    events: {
-                        onReady: "{videoPlayer}.events.onCreateCaptionnerReady",
-                        onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
-                    }
+                    captions: "{videoPlayer}.model.captions"
                 }
             },
             browserCompatibility: {
@@ -154,7 +142,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             intervalEventsConductor: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onCaptionsLoaded",
+                createOnEvent: "onCreateMediaReady",
                 options: {
                     components: {
                         html5MediaTimer: {
@@ -164,7 +152,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             }
                         }
                     },
-                    intervalList: "{captionLoader}.options.intervalList",
                     events: {
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
                         onIntervalChange: "{videoPlayer}.events.onIntervalChange"
@@ -176,15 +163,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            onReadyToLoadCaptions: null,
-            onCaptionsLoaded: null,
+//            onReadyToLoadCaptions: null,
+//            onCaptionsLoaded: null,
             onVolumeChange: null,
             onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
-            onCaptionnerReady: null,
+//            onCaptionnerReady: null,
             afterScrub: null,
             onStartScrub: null,
             onOldBrowserDetected: null,
@@ -198,7 +185,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionnerReady: null
+            onHTML5BrowserDetected: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.fullscreen"
@@ -236,8 +223,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 names: [],
                 show: false,
                 sources: null,
-                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                track: undefined
+                currentTrack: undefined
             }
         },
         templates: {
@@ -465,7 +451,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 //    (i.e. captionator and/or mediaelement.js), we will
                 //    not need to do this.
                 if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onReadyToLoadCaptions.fire();
+                    that.events.onHTML5BrowserDetected.fire();
+                    that.fullscreen();
                 }
             }
 
@@ -501,17 +488,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
-            }
-        }
-    });
-
-    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
-                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
             }
         }
     });
