@@ -21,9 +21,10 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
+        // TODO: The various "fluid.tests.initXXX" functions could probably be refactored to reduce duplication
+
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
-/*
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
 
         fluid.tests.onPressEventHandler = function () {
@@ -311,7 +312,6 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
-*/
 
         var baseLanguageControlsOpts = {
             languages: [{
@@ -342,6 +342,8 @@ fluid.registerNamespace("fluid.tests");
             $.extend(true, opts, testOpts);
             return fluid.videoPlayer.controllers.languageControls("#basic-languageControls-test", opts);
         };
+
+        // TODO: These tests could possibly be refactored to reduce duplication
         videoPlayerControlsTests.asyncTest("Language Controls: default functionality", function () {
             var numLangs = baseLanguageControlsOpts.languages.length;
             var testControls = fluid.tests.initLangControls({
@@ -377,6 +379,7 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.assertEquals("'show language' text should be updated", that.options.strings.showLanguage, showHideOption.text());
                             jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
                             jqUnit.assertEquals("'current langauge' should be not be changed", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
+
                             button[0].click();
                             showHideOption[0].click();
                             jqUnit.assertTrue("Click the show/hide option, 'show language' model flag should be true again", fluid.get(that.model, that.options.showHidePath));
@@ -390,7 +393,6 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-/*
         videoPlayerControlsTests.asyncTest("Play button", function () {
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
@@ -477,7 +479,6 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
-*/
 
 
     });

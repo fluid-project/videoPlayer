@@ -544,6 +544,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         Used for Captions, Transcripts, Audio Descriptions.
         Starts with a list of languages and adds the "none, please" options.
         Eventually, we'll add the "Make new" and "Request new" buttons.
+        Note that the language menu cannot share the model of the controls: it
+        needs the list of captions (or transcripts, etc) as its model for rendering.
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.languageMenu", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
@@ -584,6 +586,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         hideOnInit: true
     });
 
+    // TODO: Could this be specified declaratively, in a "protoTree" option?
     fluid.videoPlayer.controllers.languageMenu.produceTree = function (that) {
         var tree = {
             // create a menu item for each language in the model
@@ -596,7 +599,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     value: "${{lang}.label}"
                 }
             },
-
             // add the 'turn off' option
             showHide: {
                 value: that.options.strings.showLanguage
@@ -736,6 +738,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /*****************************************************************************
         Language Controls subcomponent: a button and its associated languageMenu
         Used for Captions, Transcripts, Audio Descriptions.
+        Note that the "pressed/released" state of the button reflects the show/hide
+        state of the captions, and so does not become "pressed" when activated;
+        activation only shows the menu
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.languageControls", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
@@ -838,6 +843,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onRenderingComplete.fire(that);
 
         that.applier.modelChanged.addListener(that.options.showHidePath, function (model, oldModel, changeRequest) {
+            // TODO: This assumes an API for the button subcomponent: Should this be accomplished though and event?
             that.button.updatePressedState();
         });
         that.events.onReady.fire(that);
