@@ -701,6 +701,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.toggleView = function () {
             that.container.toggle();
+            return false;
         };
         that.hide = function () {
             that.locate("language").removeClass(that.options.styles.selected);
@@ -752,6 +753,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         languages: [],
         currentLanguagePath: "",
         showHidePath: "",
+        strings: {
+            showLanguage: "Show Language",
+            hideLanguage: "Hide Language"
+        },
         components: {
             button: {
                 type: "fluid.videoPlayer.controllers.toggleButton",
@@ -764,7 +769,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     strings: "{languageControls}.options.strings",
                     events: {
                         activatedByKeyboard: "{languageControls}.events.activatedByKeyboard"
-                    }
+                    },
+                    model: "{languageControls}.model",
+                    modelPath: "{languageControls}.options.showHidePath",
+                    applier: "{languageControls}.applier"
                 }
             },
             menu: {
@@ -781,12 +789,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             eventBinder: {
                 type: "fluid.videoPlayer.controllers.languageControls.eventBinder",
-                createOnEvent: "onRenderingComplete",
-                options: {
-                    events: {
-                        onReady:"{languageControls}.events.onReady"
-                    },
-                }
+                createOnEvent: "onRenderingComplete"
             }
         }
     });
@@ -833,6 +836,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
         fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y(that);
         that.events.onRenderingComplete.fire(that);
+
+        that.applier.modelChanged.addListener(that.options.showHidePath, function (model, oldModel, changeRequest) {
+            that.button.updatePressedState();
+        });
+        that.events.onReady.fire(that);
+
     };
 
     /**************************************************************************************
@@ -853,8 +862,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: ["{arguments}.1"]
             },
             "{menu}.events.hiddenByKeyboard": "{button}.focus",
-            "{menu}.events.languageOnOff": "{button}.requestStateChange",
-            "{menu}.events.languageOnOff": "{languageControls}.updateShowHide",
+            "{menu}.events.languageOnOff": "{languageControls}.updateShowHide"
         },
         finalInitFunction: "fluid.videoPlayer.controllers.languageControls.eventBinder.finalInit"
     });

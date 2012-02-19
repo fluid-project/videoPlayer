@@ -21,6 +21,9 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
+        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
+
+/*
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
 
         fluid.tests.onPressEventHandler = function () {
@@ -59,8 +62,6 @@ fluid.registerNamespace("fluid.tests");
             $.extend(true, opts, testOpts);
             return fluid.videoPlayer("#videoPlayer", opts);
         };
-
-        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
         var baseToggleButtonOpts = {
             selectors: {
@@ -205,16 +206,16 @@ fluid.registerNamespace("fluid.tests");
             model: {
                 languages: [{
                     srclang: "klingon",
-                    label: "Klingoñ"
+                    label: "Klingo√±"
                 }, {
                     srclang: "esperanto",
-                    label: "Espéranto"
+                    label: "Esp√©ranto"
                 }, {
                     srclang: "lolspeak",
                     label: "LOLspeak"
                 }, {
                     srclang: "elvish",
-                    label: "Elvîsh"
+                    label: "Elv√Æsh"
                 }],
                 activeLanguages: [0],
                 showLanguage: false
@@ -310,6 +311,7 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
+*/
 
         var baseLanguageControlsOpts = {
             languages: [{
@@ -345,16 +347,19 @@ fluid.registerNamespace("fluid.tests");
             var testControls = fluid.tests.initLangControls({
                 listeners: {
                     onReady: {
-                        args: "{languageControls}",
                         listener: function (that) {
                             var langList = that.menu.locate("language");
+                            var showHideOption = that.menu.locate("showHide");
                             jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
                             jqUnit.notVisible("Menu should not be visible initially", that.menu.container);
                             jqUnit.assertFalse("'show language' model flag should be false", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be correct", that.options.strings.showLanguage, showHideOption.text());
+                            jqUnit.assertFalse("Buttons state should be released", that.button.model.pressed);
 
                             var button = that.locate("button");
                             button[0].click();
                             jqUnit.isVisible("Clicking the button should show menu", that.menu.container);
+                            jqUnit.assertFalse("Buttons state should still be released", that.button.model.pressed);
                             button[0].click();
                             jqUnit.notVisible("Clicking the button again should hide menu again", that.menu.container);
 
@@ -363,14 +368,20 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.notVisible("Show the menu, click a language, menu should hide", that.menu.container);
                             jqUnit.assertEquals("'current langauge' should be udated", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
                             jqUnit.assertTrue("'show language' model flag should be true", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
+                            jqUnit.assertTrue("Button state should be pressed", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
 
                             button[0].click();
-                            that.menu.locate("showHide")[0].click();
+                            showHideOption[0].click();
                             jqUnit.assertFalse("Show the menu, click the show/hide option, 'show language' model flag should be false", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.showLanguage, showHideOption.text());
+                            jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
                             jqUnit.assertEquals("'current langauge' should be not be changed", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
                             button[0].click();
-                            that.menu.locate("showHide")[0].click();
+                            showHideOption[0].click();
                             jqUnit.assertTrue("Click the show/hide option, 'show language' model flag should be true again", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
+                            jqUnit.assertTrue("Button state should be pressed", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
 
                             start();
                         }
@@ -379,6 +390,7 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
+/*
         videoPlayerControlsTests.asyncTest("Play button", function () {
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
@@ -465,6 +477,7 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
+*/
 
 
     });
