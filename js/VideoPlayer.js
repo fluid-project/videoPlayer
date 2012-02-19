@@ -208,6 +208,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onViewReady: "{videoPlayer}.fullscreen"
         },
         selectors: {
+            videoContainer: ".flc-videoPlayer-videoContainer",
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
@@ -220,7 +221,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["caption", "videoControllersContainer", "transcripts"],
+        selectorsToIgnore: ["videoContainer", "caption", "videoControllersContainer", "transcripts"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -391,20 +392,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.options.model.transcripts.names.push(that.options.strings.transcriptsOff);
 
         that.fullscreen = function () {
+            var videoContainer = that.locate("videoContainer");
             var video = that.locate("video");
             var videoControllersContainer = that.locate("videoControllersContainer");
             if (that.model.states.fullscreen === true) {
-                video.css({
+                var windowWidth = window.innerWidth + "px";
+                
+                videoContainer.css({
                     // TODO: This doesn't actually do full-screen, it simply tries to maximise
                     // to the current window size. (FLUID-4570)
-                    width: window.innerWidth + "px",
+                    width: windowWidth,
                     height: window.innerHeight - 20 + "px"
                 });
                 
                 // Adjust the height of video + controllers area & transcripts area
                 videoControllersContainer.css({width: window.innerWidth + "px"});
             } else {
-                video.css({
+                videoContainer.css({
                     width: video[0].videoWidth,
                     height: video[0].videoHeight
                 });
