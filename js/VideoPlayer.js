@@ -205,6 +205,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onViewReady: "{videoPlayer}.fullscreen"
         },
         selectors: {
+            videoContainer: ".flc-videoPlayer-videoContainer",
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller"
@@ -213,7 +214,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionsOff: "Captions OFF",
             turnCaptionsOff: "Turn Captions OFF"
         },
-        selectorsToIgnore: ["caption"],
+        selectorsToIgnore: ["videoContainer", "caption"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -355,19 +356,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.options.model.captions.names.push(that.options.strings.captionsOff);
 
         that.fullscreen = function () {
+            var videoContainer = that.locate("videoContainer");
             var video = that.locate("video");
             if (that.model.states.fullscreen === true) {
-                that.container.css({
+                var windowWidth = window.innerWidth + "px";
+                
+                videoContainer.css({
                     // TODO: This doesn't actually do full-screen, it simply tries to maximise
                     // to the current window size. (FLUID-4570)
-                    width: window.innerWidth + "px",
+                    width: windowWidth,
                     height: window.innerHeight - 20 + "px"
                 });
+                that.container.css("width", windowWidth);
             } else {
-                that.container.css({
+                videoContainer.css({
                     width: video[0].videoWidth,
                     height: video[0].videoHeight
                 });
+                that.container.css("width", video[0].videoWidth);
             }
         };
     };
