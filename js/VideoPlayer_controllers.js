@@ -29,9 +29,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     //add all the modelChanged listener to the applier
     // TODO: Privacy is inherited. Consider making this public
     var bindControllerModel = function (that) {
-        that.applier.modelChanged.addListener("states.canPlay", function () {
-            that.locate("play").attr("disabled", !that.model.states.canPlay);
-            that.locate("fullscreen").attr("disabled", !that.model.states.canPlay);
+        that.applier.modelChanged.addListener("canPlay", function () {
+            that.locate("play").attr("disabled", !that.model.canPlay);
+            that.locate("fullscreen").attr("disabled", !that.model.canPlay);
         });
     };
 
@@ -99,7 +99,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Pause"
                     },
                     model: "{controllers}.model",
-                    modelPath: "states.play",
+                    modelPath: "play",
                     applier: "{controllers}.applier"
                 }
             },
@@ -119,7 +119,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Exit full screen mode"
                     },
                     model: "{controllers}.model",
-                    modelPath: "states.fullscreen",
+                    modelPath: "fullscreen",
                     applier: "{controllers}.applier"
                 }
             }
@@ -165,7 +165,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     //change the text of the selected time
     var updateTime = function (that, element) {
         var time = that.locate(element);
-        time.text(fluid.videoPlayer.formatTime(that.model.states[element]));
+        time.text(fluid.videoPlayer.formatTime(that.model[element]));
     };
     
     // TODO: Privacy is inherited. Consider making this public
@@ -188,16 +188,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // TODO: This function is inherited. Consider making this public
     var bindScrubberModel = function (that) {
         // Setup the scrubber when we know the duration of the video.
-        that.applier.modelChanged.addListener("states.startTime", that.updateMin);
-        that.applier.modelChanged.addListener("states.startTime", that.updateMax);
-        that.applier.modelChanged.addListener("states.totalTime", that.updateMax);
+        that.applier.modelChanged.addListener("startTime", that.updateMin);
+        that.applier.modelChanged.addListener("startTime", that.updateMax);
+        that.applier.modelChanged.addListener("totalTime", that.updateMax);
 
         // Bind to the video's timeupdate event so we can programmatically update the slider.
-        that.applier.modelChanged.addListener("states.currentTime", that.updateCurrent);
+        that.applier.modelChanged.addListener("currentTime", that.updateCurrent);
 
-        that.applier.modelChanged.addListener("states.canPlay", function () {
+        that.applier.modelChanged.addListener("canPlay", function () {
             var scrubber = that.locate("scrubber");
-            if (that.model.states.canPlay === true) {
+            if (that.model.canPlay === true) {
                 scrubber.slider("enable");
             } else {
                 scrubber.slider("disable");
@@ -252,30 +252,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // TODO: these methods should be public functions, since people might like to alter them
         //       (inherited code)
         that.updateMin = function () {
-            var startTime = that.model.states.startTime || 0;
+            var startTime = that.model.startTime || 0;
             var scrubber = that.locate("scrubber");
-            scrubber.slider("option", "min", startTime + that.model.states.currentTime);
+            scrubber.slider("option", "min", startTime + that.model.currentTime);
             that.locate("handle").attr({
-                "aria-valuemin": startTime + that.model.states.currentTime
+                "aria-valuemin": startTime + that.model.currentTime
             });
         };
 
         that.updateMax = function () {
             updateTime(that, "totalTime");
             var scrubber = that.locate("scrubber");
-            scrubber.slider("option", "max", that.model.states.totalTime);
+            scrubber.slider("option", "max", that.model.totalTime);
             that.locate("handle").attr({
-                "aria-valuemax": that.model.states.totalTime
+                "aria-valuemax": that.model.totalTime
             });
         };
 
         that.updateCurrent = function () {
             updateTime(that, "currentTime");
             var scrubber = that.locate("scrubber");
-            scrubber.slider("value", that.model.states.currentTime);
+            scrubber.slider("value", that.model.currentTime);
             that.locate("handle").attr({
-                "aria-valuenow": that.model.states.totalTime,
-                "aria-valuetext": fluid.videoPlayer.formatTime(that.model.states.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.states.totalTime)
+                "aria-valuenow": that.model.totalTime,
+                "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
             });
         };
     };
@@ -307,9 +307,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // TODO: Privacy is inherited. Consider making this public
     var bindVolumeModel = function (that) {
-        that.applier.modelChanged.addListener("states.volume", that.updateVolume);
-        that.applier.modelChanged.addListener("states.canPlay", function () {
-            that.locate("mute").attr("disabled", !that.model.states.canPlay);
+        that.applier.modelChanged.addListener("volume", that.updateVolume);
+        that.applier.modelChanged.addListener("canPlay", function () {
+            that.locate("mute").attr("disabled", !that.model.canPlay);
         });
     };
 
@@ -320,17 +320,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         volumeControl.slider({
             orientation: "vertical",
             range: "min",
-            min: that.model.states.minVolume,
-            max: that.model.states.maxVolume,
-            value: that.model.states.volume
+            min: that.model.minVolume,
+            max: that.model.maxVolume,
+            value: that.model.volume
         });
         // TODO: This in inherited. Do we need to add aria to sliders ourselves?
         that.locate("handle").attr({
             "aria-label": that.options.strings.volume,
-            "aria-valuemin": that.model.states.minVolume,
-            "aria-valuemax": that.model.states.maxVolume,
-            "aria-valuenow": that.model.states.volume,
-            "aria-valuetext": that.model.states.volume + "%",
+            "aria-valuemin": that.model.minVolume,
+            "aria-valuemax": that.model.maxVolume,
+            "aria-valuenow": that.model.volume,
+            "aria-valuetext": that.model.volume + "%",
             "role": "slider"
         });
 
@@ -367,14 +367,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onChange: null
         },
         model: {
-            // TODO: the 'states' is to mimic the videoPlayer model layout
-            // Ideally, the volumeControls should operate without requiring that knowledge.
-            states: {
-                muted: false,
-                volume: 50,
-                minVolume: 0,
-                maxVolume: 100
-            }
+            muted: false,
+            volume: 50,
+            minVolume: 0,
+            maxVolume: 100
         },
         selectors: {
             mute: ".flc-videoPlayer-mute",
@@ -406,7 +402,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Un-mute"
                     },
                     model: "{volumeControls}.model",
-                    modelPath: "states.muted",
+                    modelPath: "muted",
                     applier: "{volumeControls}.applier"
                 }
             }
@@ -424,7 +420,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.updateVolume = function () {
-            var volume = that.model.states.volume;
+            var volume = that.model.volume;
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value", volume);
             that.locate("handle").attr({

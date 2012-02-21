@@ -160,9 +160,11 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     display: inline-block;
 }
 
-.fl-videoPlayer-menu-captions {
+.fl-videoPlayer-controller-volumeControl {
     display: block;
     position: absolute;
+    bottom: -40px;
+    z-index: 101;   /* To make our div showin on top since captionator has 100 so */
 }
 
 
@@ -181,6 +183,15 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     background-color: black;
     opacity: 0.7;
 }
+
+.fl-videoPlayer-controller-menu-captions {
+    display: block;
+    position: absolute;
+    bottom: -40px;
+    z-index: 101;   /* To make our div showin on top since captionator has 100 so */
+}
+
+
 /*
 * mods to the coal theme
 */
@@ -189,6 +200,13 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     width: 60%;
 }
 
+/*
+*Allow clicking through captionator.DIV.element
+*/
+
+.captionator-cue-canvas {
+    pointer-events:none;
+}
 
 /***********************************************************
  * Styling overrides for the controls when using UIO themes
@@ -338,4 +356,3 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
 .fl-theme-uio-yb .fl-videoPlayer-caption-captionText {
     color: yellow;
 }
-
