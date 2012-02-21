@@ -70,6 +70,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{controllers}.model",
                     modelPath: "currentTracks.captions",
                     showHidePath: "displayCaptions",
+                    currentLanguagePath: "currentTracks.captions",
                     applier: "{controllers}.applier",
                     selectors: {
                         button: ".flc-videoPlayer-captions-button",

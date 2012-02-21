@@ -118,7 +118,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.video.captions",
+                    captions: "{videoPlayer}.options.video.captions",
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
                         onVolumeChange: "{videoPlayer}.events.onVolumeChange",
