@@ -142,13 +142,40 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionLoader: {
                 type: "fluid.videoPlayer.captionLoader",
                 container: "{videoPlayer}.container",
-                createOnEvent: "onReadyToLoadCaptions",
+                createOnEvent: "onHtml5Detected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     events: {
                         onReady: "{videoPlayer}.events.onCreateCaptionnerReady",
                         onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
+                    }
+                }
+            },
+            transcript: {
+                type: "fluid.videoPlayer.transcript",
+                container: "{videoPlayer}.dom.transcript",
+                createOnEvent: "onHtml5Detected",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    components: {
+                        transriptInterval: {
+                            type: "fluid.videoPlayer.intervalEventsConductor",
+                            options: {
+                                components: {
+                                    html5MediaTimer: {
+                                        type: "fluid.videoPlayer.html5MediaTimer",
+                                        options: {
+                                            mediaElement: "{media}.container"
+                                        }
+                                    }
+                                },
+                                events: {
+                                    onIntervalChange: "{transcript}.events.onIntervalChange"
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -180,7 +207,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            onReadyToLoadCaptions: null,
+            onHtml5Detected: null,
             onCaptionsLoaded: null,
             onVolumeChange: null,
             onScrub: null,
@@ -212,7 +239,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
-            transcripts: ".flc-videoPlayer-transcriptArea",
+            transcript: ".flc-videoPlayer-transcriptArea",
             videoControllersContainer: ".flc-videoPlayer-video-controller-area"
         },
         strings: {
@@ -221,7 +248,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["videoContainer", "caption", "videoControllersContainer", "transcripts"],
+        selectorsToIgnore: ["videoContainer", "caption", "videoControllersContainer", "transcript"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -334,7 +361,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var videoControllersContainer = that.locate("videoControllersContainer");
             //that shouldn't be usefull but the video is too big if it's not used
             videoControllersContainer.css("width", video[0].videoWidth);
-            that.locate("transcripts").css("height", videoControllersContainer.height());
+            that.locate("transcript").css("height", videoControllersContainer.height());
             bindKeyboardControl(that);
         });
     };
@@ -405,7 +432,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     height: window.innerHeight - 20 + "px"
                 });
                 
-                // Adjust the height of video + controllers area & transcripts area
+                // Adjust the height of video + controllers area & transcript area
                 videoControllersContainer.css({width: window.innerWidth + "px"});
             } else {
                 videoContainer.css({
@@ -415,7 +442,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
                 videoControllersContainer.css({width: video[0].videoWidth});
             }
-            that.locate("transcripts").css("height", videoControllersContainer.height());
+            that.locate("transcript").css("height", videoControllersContainer.height());
         };
     };
 
@@ -513,7 +540,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 //    (i.e. captionator and/or mediaelement.js), we will
                 //    not need to do this.
                 if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onReadyToLoadCaptions.fire();
+                    that.events.onHtml5Detected.fire();
                 }
             }
 

@@ -600,22 +600,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 names: [],
                 show: false,
                 sources: null,
-                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                maxNumber: 3,
                 track: undefined
             }
         },
         selectors: {
             button: ".flc-videoPlayer-transcripts-button",
-            languageList: ".flc-videoPlayer-transcripts-languageList",
-            languageRow: ".flc-videoPlayer-transcripts-language",
-            languageButton: ".flc-videoPlayer-transcripts-languageButton",
-            languageLabel: ".flc-videoPlayer-transcripts-languageLabel",
-            langaugeDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
-            closeButton: ".flc-videoPlayer-transcripts-close-button"
+            tLanguageList: ".flc-videoPlayer-transcripts-languageList",
+            tLanguageRow: ".flc-videoPlayer-transcripts-language",
+            tLanguageLabel: ".flc-videoPlayer-transcripts-languageLabel",
+            tLanguageButton: ".flc-videoPlayer-transcripts-languageButton"
         },
-        repeatingSelectors: ["languageRow"],
-        selectorsToIgnore: ["languageList"],
+        repeatingSelectors: ["tLanguageRow"],
+        selectorsToIgnore: ["tLanguageList"],
         styles: {
             selected: "fl-videoPlayer-transcript-selected"
         },
@@ -647,15 +643,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     // TODO: FLUID-4589 Restructure the transcript model to reduce the code logic here
     fluid.videoPlayer.controllers.transcriptControls.setUpTranscriptControls = function (that) {
-        that.transcriptsOffOption = $(that.locate("languageLabel")[that.model.transcripts.choices.indexOf("none")]);
-        that.locate("languageList").hide();
+        that.transcriptsOffOption = $(that.locate("tLanguageLabel")[that.model.transcripts.choices.indexOf("none")]);
+        that.locate("tLanguageList").hide();
         that.transcriptsOffOption.text(that.model.transcripts.selection === "none" ? that.options.strings.transcriptsOff : that.options.strings.turnTranscriptsOff);
-        $(that.locate("languageLabel")[that.model.transcripts.choices.indexOf(that.model.transcripts.selection)]).addClass(that.options.styles.selected);
+        $(that.locate("tLanguageLabel")[that.model.transcripts.choices.indexOf(that.model.transcripts.selection)]).addClass(that.options.styles.selected);
     };
     
     fluid.videoPlayer.controllers.transcriptControls.bindTranscriptDOMEvents = function (that) {
         that.transcriptButton.events.onPress.addListener(function (evt) {
-            that.locate("languageList").toggle();
+            that.locate("tLanguageList").toggle();
             // prevent the default onPress handler from toggling the button state:
             //   it should only toggle if the user turns transcripts on or off
             return false;
@@ -672,7 +668,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
     
             // TODO: can we do this in CSS?
-            var labels = that.locate("languageLabel");
+            var labels = that.locate("tLanguageLabel");
             $(labels[model.transcripts.choices.indexOf(oldSel)]).removeClass(that.options.styles.selected);
             $(labels[model.transcripts.choices.indexOf(newSel)]).addClass(that.options.styles.selected);
     
@@ -701,20 +697,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             expander: {
                 type: "fluid.renderer.selection.inputs",
-                rowID: "languageRow",
-                labelID: "languageLabel",
-                inputID: "languageButton",
+                rowID: "tLanguageRow",
+                labelID: "tLanguageLabel",
+                inputID: "tLanguageButton",
                 selectID: "transcriptLanguages",
                 tree: {
                     selection: "${transcripts.selection}",
                     optionlist: "${transcripts.choices}",
                     optionnames: "${transcripts.names}"
                 }
-            },
-            langaugeDropdown: {
-                selection: "${transcripts.selection}",
-                optionlist: "${transcripts.choices}",
-                optionnames: "${transcripts.names}"
             }
         };
     };
