@@ -57,7 +57,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     // show captions depending on which one is on in the model
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
-            tracks[key].mode = captionator.TextTrack[!($.inArray(key, currentCaptions)) ? "SHOWING" : "OFF"];
+            tracks[key].mode = captionator.TextTrack[$.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING"];
         });
     };
 
@@ -105,7 +105,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var trackTag = $("<track />");
             var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
 
-            if (!($.inArray(key, fluid.get(that.model, elPaths.currentCaptions)))) {
+            if ($.inArray(key, fluid.get(that.model, elPaths.currentCaptions)) !== -1) {
                 attributes.default = "true";
             }
             trackTag.attr(attributes);
