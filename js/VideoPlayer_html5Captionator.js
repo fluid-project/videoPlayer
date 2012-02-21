@@ -114,7 +114,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
 
         // Create captionator code which will add a captionator div to the HTML
-        captionator.captionify(that.container[0]);
+        captionator.captionify(that.container[0], null, {
+            appendCueCanvasTo: that.container[0].parentNode
+        });
         
         bindCaptionatorModel(that);
         that.events.onReady.fire(that);
