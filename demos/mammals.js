@@ -27,105 +27,126 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         fluid.videoPlayer(".mammals-video", {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "videos/Mammals/Mammals.mp4",
-                            type: "video/mp4"
-                        }, 
-                        {
-                            src: "videos/Mammals/Mammals.webm",
-                            type: "video/webm"
-                        },
-                        {
-                            src: "http://www.youtube.com/v/0jw74pfWfxA",
-                            type: "youtube"
-                        }
-                    ]
-                },
-                captions: {
-                    sources: {
-                        english: {
-                            src: "videos/Mammals/Mammals.en.json",
-                            type: "JSONcc"
-                        }, 
-                        francaise: {
-                            src: "videos/Mammals/Mammals.fr.json",
-                            type: "JSONcc"
-                        }
+            video: {
+                sources: [
+                    {
+                        src: "videos/Mammals/Mammals.mp4",
+                        type: "video/mp4"
+                    }, 
+                    {
+                        src: "videos/Mammals/Mammals.webm",
+                        type: "video/webm"
                     },
-                    selection: "english"
-                }
+                    {
+                        src: "http://www.youtube.com/v/0jw74pfWfxA",
+                        type: "youtube"
+                    }
+                ],
+                captions: [
+                    {
+                        src: "videos/Mammals/Mammals.en.vtt",
+                        type: "text/vtt",
+                        srclang: "en",
+                        label: "English Subtitles",
+                        kind: "subtitles"
+                    }, 
+                    {
+                        src: "videos/Mammals/Mammals.fr.vtt",
+                        type: "text/vtt",
+                        srclang: "fr",
+                        label: "French Subtitles",
+                        kind: "subtitles"
+                    }
+                ]
+            },
+            model: {
+                currentTracks: {
+                    captions: [0]
+                },
+                displayCaptions: true
             }
         });
 
         // TODO: There is repetition here when creating the video players - can it be refactored?  
         fluid.videoPlayer(".polar-mammals-video", {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "videos/PolarMammals/PolarMammals.mp4",
-                            type: "video/mp4"
-                        }, 
-                        {
-                            src: "videos/PolarMammals/PolarMammals.webm",
-                            type: "video/webm"
-                        },
-                        {
-                            src: "http://www.youtube.com/v/h_oHNP50FGM",
-                            type: "youtube"
-                        }
-                    ]
-                },
-                captions: {
-                    sources: {
-                        english: {
-                            src: "videos/PolarMammals/PolarMammals.en.json",
-                            type: "JSONcc"
-                        }, 
-                        francaise: {
-                            src: "videos/PolarMammals/PolarMammals.fr.json",
-                            type: "JSONcc"
-                        }
+            video: {
+                sources: [
+                    {
+                        src: "videos/PolarMammals/PolarMammals.mp4",
+                        type: "video/mp4"
+                    }, 
+                    {
+                        src: "videos/PolarMammals/PolarMammals.webm",
+                        type: "video/webm"
                     },
-                    selection: "english"
-                }
+                    {
+                        src: "http://www.youtube.com/v/h_oHNP50FGM",
+                        type: "youtube"
+                    }
+                ],
+                captions: [
+                    {
+                        src: "videos/PolarMammals/PolarMammals.en.vtt",
+                        type: "text/vtt",
+                        srclang: "en",
+                        label: "English Subtitles",
+                        kind: "subtitles"
+                    }, 
+                    {
+                        src: "videos/PolarMammals/PolarMammals.fr.vtt",
+                        type: "text/vtt",
+                        srclang: "fr",
+                        label: "French Subtitles",
+                        kind: "subtitles"
+                    }
+                ]
+            },
+            model: {
+                currentTracks: {
+                    captions: [0]
+                },
+                displayCaptions: true
             }
         });
 
         fluid.videoPlayer(".polar-adapt-video", {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.mp4",
-                            type: "video/mp4"
-                        }, 
-                        {
-                            src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.webm",
-                            type: "video/webm"
-                        },
-                        {
-                            src: "http://www.youtube.com/v/3_3p2ylZDAE",
-                            type: "youtube"
-                        }
-                    ]
-                },
-                captions: {
-                    sources: {
-                        english: {
-                            src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.en.json",
-                            type: "JSONcc"
-                        }, 
-                        francaise: {
-                            src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.fr.json",
-                            type: "JSONcc"
-                        }
+            video: {
+                sources: [
+                    {
+                        src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.mp4",
+                        type: "video/mp4"
+                    }, 
+                    {
+                        src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.webm",
+                        type: "video/webm"
                     },
-                    selection: "english"
-                }
+                    {
+                        src: "http://www.youtube.com/v/3_3p2ylZDAE",
+                        type: "youtube"
+                    }
+                ],
+                captions: [
+                    {
+                        src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.en.vtt",
+                        type: "text/vtt",
+                        srclang: "en",
+                        label: "English Subtitles",
+                        kind: "subtitles"
+                    }, 
+                    {
+                        src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.fr.vtt",
+                        type: "text/vtt",
+                        srclang: "fr",
+                        label: "French Subtitles",
+                        kind: "subtitles"
+                    }
+                ]
+            },
+            model: {
+                currentTracks: {
+                    captions: [0]
+                },
+                displayCaptions: true
             }
         });
     });
