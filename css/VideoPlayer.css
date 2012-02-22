@@ -224,8 +224,8 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-transcript-text {
-    margin-top: 3em;
-    border: 1px solid black;
+    margin-top: 2em;
+    padding: 1em;
 }
 
 /*

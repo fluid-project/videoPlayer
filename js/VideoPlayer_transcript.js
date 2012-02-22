@@ -18,9 +18,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
 
     /*****************************************************************************
-        Transcript
-        This component renders transcript UI, loads and displays transcripts
+     *   Transcript                                                              *
+     *   This component renders transcript UI, loads and displays transcripts    *
      *****************************************************************************/
+    
     fluid.defaults("fluid.videoPlayer.transcript", {
         gradeNames: ["fluid.rendererComponent", "autoInit"],
         renderOnInit: true,
@@ -67,27 +68,31 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         selectors: {
             langaugeDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
-            closeButton: ".flc-videoPlayer-transcripts-close-button"
+            closeButton: ".flc-videoPlayer-transcripts-close-button",
+            transcriptText: ".flc-videoPlayer-transcript-text"
         },
-        selectorsToIgnore: ["closeButton"]
+        selectorsToIgnore: ["closeButton", "transcriptText"]
     });
 
-    // Functions to show/hide/toggle transcript area
+    /** Functions to show/hide the transcript area **/
     fluid.videoPlayer.transcript.showTranscriptArea = function (that) {
+        // Show the transcript area
         that.container.show();
         that.events.onTranscriptAreaShow.fire();
     };
     
+    // Hide the transcript area
     fluid.videoPlayer.transcript.hideTranscriptArea = function (that) {
         that.container.hide();
         that.events.onTranscriptAreaHide.fire();
     };
 
-    fluid.videoPlayer.transcript.toggleTranscriptArea = function (that) {
+    // Show/Hide the transcript area based on the flag "states.displayTranscripts"
+    fluid.videoPlayer.transcript.switchTranscriptArea = function (that) {
         that.model.states.displayTranscripts ? fluid.videoPlayer.transcript.showTranscriptArea(that) : fluid.videoPlayer.transcript.hideTranscriptArea(that);
     };
     
-    // Functions to load and parse the transcript file
+    /** Functions to load and parse the transcript file **/
     /**
      * Convert the time in the format of hh:mm:ss.mmm to milliseconds.
      * The time is normally extracted from the subtitle files in WebVTT compatible format.
@@ -146,13 +151,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };  
     
     fluid.videoPlayer.transcript.loadTranscript = function (that) {
-        // Exit if transcript is turned on or the transcript sources are not provided
+        // Exit if transcript is turned off or the transcript sources are not provided
         if (that.model.transcripts.selection === "none" || that.model.transcripts.choices.length === 0) {
-            that.applier.fireChangeRequest({
-                path: "states.displayTranscripts",
-                value: false
-            });
-            return;
+            return true;
         }
         
         // The main process to load in the transcript file
@@ -186,29 +187,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.transcript.displayTranscript = function (that, currentTrackId, previousTrackId) {
-        // Remove the previous transcript
-        if (previousTrackId) {
-            removeTranscript(that, that.model.transcripts.track[previousTrackId]);
-        }
-        
         // Display the current transcript
-        if (currentTrackId) {
-            var nexttranscript = that.model.transcripts.track[currentTrackId];
-            if (nextTranscript !== null && $.inArray(nextTranscript, that.model.transcripts.currentTranscripts) === -1) {
-                displayTranscript(that, nextTranscript);
+        if (currentTrackId !== null) {
+            var nextTranscript = that.model.transcripts.track[currentTrackId];
+            if (nextTranscript) {
+                that.locate("transcriptText").text(nextTranscript.transcript);
             }
         }
     };
     
     fluid.videoPlayer.transcript.bindTranscriptDOMEvents = function (that) {
         that.locate("closeButton").click(function () {
+            that.applier.fireChangeRequest({
+                path: "transcripts.selection",
+                value: "none"
+            });
+
             fluid.videoPlayer.transcript.hideTranscriptArea(that);
         });
     };
 
     fluid.videoPlayer.transcript.bindTranscriptModel = function (that) {
         that.applier.modelChanged.addListener("states.displayTranscripts", function () {
-            fluid.videoPlayer.transcript.toggleTranscriptArea(that);
+            fluid.videoPlayer.transcript.switchTranscriptArea(that);
         });
 
         that.applier.modelChanged.addListener("transcripts.selection", function () {
@@ -220,9 +221,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
-//            fluid.videoPlayer.transcript.displayTranscript(that, currentInterval, previousInterval);
+            fluid.videoPlayer.transcript.displayTranscript(that, currentInterval, previousInterval);
         });
-
     };
 
     fluid.videoPlayer.transcript.finalInit = function (that) {
@@ -230,6 +230,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.transcript.bindTranscriptModel(that);
         
         fluid.videoPlayer.transcript.loadTranscript(that);
+        fluid.videoPlayer.transcript.switchTranscriptArea(that);
 
         that.events.onReady.fire(that);
     };

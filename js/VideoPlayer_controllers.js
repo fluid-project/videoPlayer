@@ -677,6 +677,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.transcriptButton.requestStateChange();
                 that.transcriptsOffOption.text(newSel === "none" ? that.options.strings.transcriptsOff : that.options.strings.turnTranscriptsOff);
             }
+            
+            // Update "states.displayTranscripts" which determines the show/hide of the transcript area
+            that.applier.fireChangeRequest({
+                path: "states.displayTranscripts",
+                value: !(newSel === "none")
+            });
     
             return true;
         }, "transcriptControls");
