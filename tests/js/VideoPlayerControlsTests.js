@@ -21,13 +21,19 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
+        // TODO: The various "fluid.tests.initXXX" functions could probably be refactored to reduce duplication
+
+        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
+
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
 
-        fluid.tests.pressEventHandler = function () {
+        fluid.tests.onPressEventHandler = function () {
+            expect(1);
             jqUnit.assertTrue("The onPress event should fire", true);
         };
 
         fluid.tests.getTooltipCheckString = function (jEl, expectedText) {
+            expect(1);
             jEl.mouseover();
             var tooltip = $("#" + jEl.attr("aria-describedby"));
             jqUnit.assertEquals("Tooltip should contain " + expectedText + " initially", expectedText, tooltip.text());
@@ -35,15 +41,13 @@ fluid.registerNamespace("fluid.tests");
         };
 
         var baseVideoPlayerOpts = {
-            model: {
-                video: {
-                    sources: [
-                        {
-                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
-                            type: "video/mp4"
-                        }
-                    ]
-                }
+            video: {
+                sources: [
+                    {
+                        src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
+                        type: "video/mp4"
+                    }
+                ]
             },
             templates: {
                 videoPlayer: {
@@ -60,8 +64,6 @@ fluid.registerNamespace("fluid.tests");
             return fluid.videoPlayer("#videoPlayer", opts);
         };
 
-        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
-
         var baseToggleButtonOpts = {
             selectors: {
                 button: ".test-toggle-button"
@@ -74,7 +76,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         function verifyBasicButtonFunctions(buttonEl, name, clickToggles, tooltipReleased, tooltipPressed, stylePressed) {
-            // 7 assertions
+            expect(6);
             jqUnit.assertEquals("There should be exactly one " + name + " button", 1, buttonEl.length);
             jqUnit.assertEquals(name + " button should have role of 'button'", "button", buttonEl.attr("role"));
             jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", "false", buttonEl.attr("aria-pressed"));
@@ -88,7 +90,7 @@ fluid.registerNamespace("fluid.tests");
             // TODO: When captions controls are refactored (FLUID-4589), this 'if' might go away
             //       (since toggle button might always toggle)
             if (clickToggles) {
-                // 6 assertions
+                expect(6);
                 buttonEl.click();
                 jqUnit.assertEquals("After click, " + name + " button should have aria-pressed of 'true'", "true", buttonEl.attr("aria-pressed"));
                 jqUnit.assertTrue("While pressed, " + name + " button should have the 'pressed' style", buttonEl.hasClass(stylePressed));
@@ -104,11 +106,10 @@ fluid.registerNamespace("fluid.tests");
         }
 
         videoPlayerControlsTests.asyncTest("Toggle button, default functionality", function () {
-            expect(18);
-
+            expect(3);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
-                    onPress: fluid.tests.pressEventHandler,
+                    onPress: fluid.tests.onPressEventHandler,
                     onReady: function (that) {
                         var toggleButton = that.locate("button");
 
@@ -156,7 +157,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Toggle button, prevent the toggle", function () {
-            expect(4);
+            expect(3);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onPress: function () {
@@ -180,7 +181,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Toggle button, overriding strings", function () {
-            expect(2);
+            expect(1);
             var testStrings = {
                 press: "press me",
                 release: "release me"
@@ -202,8 +203,197 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
+        var baseMenuOpts = {
+            model: {
+                languages: [{
+                    srclang: "klingon",
+                    label: "Klingo√±"
+                }, {
+                    srclang: "esperanto",
+                    label: "Esp√©ranto"
+                }, {
+                    srclang: "lolspeak",
+                    label: "LOLspeak"
+                }, {
+                    srclang: "elvish",
+                    label: "Elv√Æsh"
+                }],
+                activeLanguages: [0],
+                showLanguage: false
+            }
+        };
+
+        fluid.tests.initMenu = function (testOpts) {
+            var opts = fluid.copy(baseMenuOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
+        };
+
+        var verifyActivation = function (actionString, that, activatedIndex) {
+            expect(5);
+            var menuItems = that.locate("menuItem");
+            jqUnit.assertEquals(actionString + " updates the active language", activatedIndex, that.model.activeLanguages[0]);
+            jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
+            jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
+            jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
+            jqUnit.notVisible(actionString + " hides the menu", that.container);
+        };
+
+        var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
+            expect(4);
+            var langList = that.locate("menuItem");
+            jqUnit.isVisible(actionString + " shows menu", that.container);
+            jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
+            jqUnit.assertEquals("Only one item is selected at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.selected).length);
+            jqUnit.assertTrue(actionString + " leaves 'active' style on the active language", $(langList[activeIndex]).hasClass(that.options.styles.active));
+        };
+
+        videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
+            var numLangs = baseMenuOpts.model.languages.length;
+            expect(9);
+            var testMenu = fluid.tests.initMenu({
+                listeners: {
+                    onReady: function (that) {
+                        var langList = that.locate("language");
+                        jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
+                        jqUnit.exists("Menu should have also have the 'show/hide' option", that.locate("showHide"));
+                        jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
+                        jqUnit.assertTrue("Initially, the 'active language' have the 'active' style", $(langList[that.model.activeLanguages[0]]).hasClass(that.options.styles.active));
+                        jqUnit.assertEquals("Initially, 'show/hide' option should have the correct text", that.options.strings.showLanguage, that.locate("showHide").text());
+
+                        jqUnit.notVisible("The menu should be hidden by default", that.container);
+                        that.show();
+                        jqUnit.isVisible("show() shows the menu", that.container);
+                        that.hide();
+                        jqUnit.notVisible("hide() hides the menu", that.container);
+
+                        that.container.fluid("selectable.select", that.locate("showHide"));
+                        verifySelection("Selecting the 'show/hide' option", that, numLangs, 0);
+
+                        that.container.fluid("selectable.select", langList[numLangs - 1]);
+                        verifySelection("Selecting a language", that, numLangs - 1, 0);
+
+                        that.applier.modelChanged.addListener("showLanguage", function () {
+                            jqUnit.assertEquals("Activating a new language changes the 'show/hide' option text", that.options.strings.hideLanguage, that.locate("showHide").text());
+                            that.applier.modelChanged.removeListener("showLanguageChecker");
+                        }, "showLanguageChecker");
+                        that.activate(1);
+                        verifyActivation("Activating a new language", that, 1);
+
+                        that.show();
+                        $(that.locate("language")[2]).click();
+                        verifyActivation("Clicking a language", that, 2);
+
+                        // double-check notes on interaction between keyboard selection and hover, and add tests
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerControlsTests.asyncTest("Language Menu: Custom 'show/hide' option strings", function () {
+            var numLangs = baseMenuOpts.model.languages.length;
+            expect(2);
+            var testStrings = {
+                showLanguage: "No one is talking",
+                hideLanguage: "Please stop all the talking!"
+            };
+            var testMenu = fluid.tests.initMenu({
+                strings: testStrings,
+                listeners: {
+                    onReady: function (that) {
+                        var langList = that.locate("language");
+                        jqUnit.assertEquals("Initially, 'show/hide' option should have the correct custom text", testStrings.showLanguage, that.locate("showHide").text());
+                        that.activate(1);
+                        jqUnit.assertEquals("Activating an item changes the 'show/hide' option text to the custom text", testStrings.hideLanguage, that.locate("showHide").text());
+
+                        start();
+                    }
+                }
+            });
+        });
+
+        var baseLanguageControlsOpts = {
+            languages: [{
+                srclang: "klingon",
+                label: "Klingoñ"
+            }, {
+                srclang: "esperanto",
+                label: "Espéranto"
+            }, {
+                srclang: "lolspeak",
+                label: "LOLspeak"
+            }, {
+                srclang: "elvish",
+                label: "Elvîsh"
+            }],
+            model: {
+                currentTracks: {
+                    captions: [0]
+                },
+                displayCaptions: false
+            },
+            currentLanguagePath: "currentTracks.captions",
+            showHidePath: "displayCaptions"
+        };
+
+        fluid.tests.initLangControls = function (testOpts) {
+            var opts = fluid.copy(baseLanguageControlsOpts);
+            $.extend(true, opts, testOpts);
+            return fluid.videoPlayer.controllers.languageControls("#basic-languageControls-test", opts);
+        };
+
+        // TODO: These tests could possibly be refactored to reduce duplication
+        videoPlayerControlsTests.asyncTest("Language Controls: default functionality", function () {
+            var numLangs = baseLanguageControlsOpts.languages.length;
+            var testControls = fluid.tests.initLangControls({
+                listeners: {
+                    onReady: {
+                        listener: function (that) {
+                            var langList = that.menu.locate("language");
+                            var showHideOption = that.menu.locate("showHide");
+                            jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
+                            jqUnit.notVisible("Menu should not be visible initially", that.menu.container);
+                            jqUnit.assertFalse("'show language' model flag should be false", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be correct", that.options.strings.showLanguage, showHideOption.text());
+                            jqUnit.assertFalse("Buttons state should be released", that.button.model.pressed);
+
+                            var button = that.locate("button");
+                            button[0].click();
+                            jqUnit.isVisible("Clicking the button should show menu", that.menu.container);
+                            jqUnit.assertFalse("Buttons state should still be released", that.button.model.pressed);
+                            button[0].click();
+                            jqUnit.notVisible("Clicking the button again should hide menu again", that.menu.container);
+
+                            button[0].click();
+                            langList[1].click();
+                            jqUnit.notVisible("Show the menu, click a language, menu should hide", that.menu.container);
+                            jqUnit.assertEquals("'current langauge' should be udated", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
+                            jqUnit.assertTrue("'show language' model flag should be true", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
+                            jqUnit.assertTrue("Button state should be pressed", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+
+                            button[0].click();
+                            showHideOption[0].click();
+                            jqUnit.assertFalse("Show the menu, click the show/hide option, 'show language' model flag should be false", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.showLanguage, showHideOption.text());
+                            jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+                            jqUnit.assertEquals("'current langauge' should be not be changed", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
+
+                            button[0].click();
+                            showHideOption[0].click();
+                            jqUnit.assertTrue("Click the show/hide option, 'show language' model flag should be true again", fluid.get(that.model, that.options.showHidePath));
+                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
+                            jqUnit.assertTrue("Button state should be pressed", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+
+                            start();
+                        }
+                    }
+                }
+            });
+        });
+
         videoPlayerControlsTests.asyncTest("Play button", function () {
-            expect(13);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -225,7 +415,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            expect(17);
+            expect(4);
             var testVolumeControls = fluid.tests.initVolumeControls({
                 listeners: {
                     onReady: function (that) {
@@ -269,131 +459,8 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        var baseCaptionOpts = {
-            model: {
-                captions: {
-                    sources: {
-                        esperanto: {
-                            src: "Test.esp.json",
-                            type: "JSONcc"
-                        }, 
-                        klingon: {
-                            src: "Test.kling.json",
-                            type: "JSONcc"
-                        },
-                        lolspeak: {
-                            src: "Test.lol.json",
-                            type: "JSONcc"
-                        }
-                    },
-                    choices: ["esperanto", "klingon", "lolspeak", "none"],
-                    names: ["esperanto", "klingon", "lolspeak", "Captions OFF"],
-                    selection: "none"
-                }
-            }
-        };
-
-        fluid.tests.initCaptionControls = function (testOpts) {
-            var opts = fluid.copy(baseCaptionOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.captionControls("#basic-caption-controls-test", opts);
-        };
-
-        videoPlayerControlsTests.asyncTest("Caption controls", function () {
-            expect(31);
-            var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
-            var testCaptionControls = fluid.tests.initCaptionControls({
-                listeners: {
-                    onReady: function (that) {
-                        var captionsButton = that.locate("button");
-                        var languageRadioButtons = that.locate("languageButton");
-                        var languageLabels = that.locate("languageLabel");
-                        var languageList = that.locate("languageList");
-
-                        verifyBasicButtonFunctions(captionsButton, "Captions", false, "Captions", "Captions", that.captionButton.options.styles.pressed);
-
-                        jqUnit.assertEquals("'none' option should say '" + that.options.strings.captionsOff + "' initially", that.options.strings.captionsOff, languageLabels[numLangs - 1].textContent);
-                        jqUnit.assertTrue("'none' option should have the 'selected' style", $(languageLabels[numLangs - 1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        jqUnit.assertEquals("There should be " + numLangs + " languages", numLangs, languageRadioButtons.length);
-                        jqUnit.notVisible("The list of languages should not be visible initially", languageList);
-
-                        captionsButton.click();
-                        jqUnit.isVisible("When caption button clicked, the list of languages should show", languageList);
-                        jqUnit.assertEquals("While no caption selected, Captions button should still have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
-                        captionsButton.click();
-                        jqUnit.notVisible("When caption button clicked again, the list of languages should hide", languageList);
-                        jqUnit.assertEquals("While no caption selected, Captions button should still have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
-
-                        captionsButton.click();
-                        jqUnit.assertEquals("Initially, 'none' should be selected", "none", that.model.captions.selection);
-                        languageRadioButtons[1].click();
-                        jqUnit.assertEquals("After clicking a radio button, another language should be selected", "klingon", that.model.captions.selection);
-                        jqUnit.assertTrue("After selecting a language, captions button should have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
-                        jqUnit.assertEquals("After selecting a language, Captions button should have aria-pressed of 'true'", "true", captionsButton.attr("aria-pressed"));
-                        jqUnit.assertEquals("After selecting a language, 'none' option should say '" + that.options.strings.turnCaptionsOff + "'", that.options.strings.turnCaptionsOff, languageLabels[numLangs - 1].textContent);
-                        jqUnit.assertTrue("Selected option should have the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        languageRadioButtons[1].click();
-                        jqUnit.assertTrue("Selected the same option should not change the 'selected' style", $(languageLabels[1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        languageRadioButtons[numLangs-1].click();
-                        jqUnit.assertEquals("After clicking last radio button (i.e. captions off), 'none' should be selected", "none", that.model.captions.selection);
-                        jqUnit.assertFalse("After turning captions off, captions button should not have active style", captionsButton.hasClass(that.captionButton.options.styles.pressed));
-                        jqUnit.assertEquals("After turning captions off, Captions button should have aria-pressed of 'false'", "false", captionsButton.attr("aria-pressed"));
-                        jqUnit.assertEquals("After turning captions off, 'none' option should say '" + that.options.strings.captionsOff + "'", that.options.strings.captionsOff, languageLabels[numLangs - 1].textContent);
-                        jqUnit.assertTrue("After turning captions off, 'none' option should have the 'selected' style", $(languageLabels[numLangs - 1]).hasClass(that.options.styles.selected));
-                        jqUnit.assertEquals("Only one label should have selected style", 1, $("." + that.options.styles.selected).length);
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerControlsTests.asyncTest("Caption controls integration (some tests fail: will be addressed with FLUID-4589)", function () {
-// TODO: this is a workaround for FLUID-4592
-//            expect(8);
-            expect(6);
-            var captionOpts = fluid.copy(baseCaptionOpts);
-            var numLangs = Object.keys(baseCaptionOpts.model.captions.sources).length + 1;
-            $.extend(true, captionOpts, {
-                listeners: {
-                    onReady: function (that) {
-                        var captionButton = that.controllers.captionControls.locate("button");
-                        var languageRadioButtons = that.controllers.captionControls.locate("languageButton");
-                        var languageList = that.controllers.captionControls.locate("languageList");
-                        var captionArea = that.controllers.captionControls.locate("captionArea");
-
-// TODO: this is a workaround for FLUID-4592: a default caption *must* be loaded
-//       for the intervalEventsConductor to be created
-//                        jqUnit.assertEquals("Initially, captions should not be showing", "none", that.model.captions.selection);
-//                        jqUnit.notVisible("The caption area should be hidden initially", captionArea);
-                        jqUnit.notVisible("The list of languages should not be visible initially", languageList);
-
-                        captionButton.click();
-                        jqUnit.isVisible("When caption button clicked, the list of languages should show", languageList);
-
-                        $(languageRadioButtons[0]).click();
-                        jqUnit.assertEquals("After clicking a radio button, a caption should be selected", baseCaptionOpts.model.captions.choices[0], that.model.captions.selection);
-                        jqUnit.isVisible("The caption area should show", captionArea);
-
-                        $(languageRadioButtons[numLangs-1]).click();
-                        jqUnit.assertEquals("After clicking the 'none' radio button, no caption should be selected", baseCaptionOpts.model.captions.choices[numLangs-1], that.model.captions.selection);
-                        jqUnit.notVisible("The caption area should hide", captionArea);
-
-                        start();
-                    }
-                }
-            });
-            var testPlayer = fluid.tests.initVideoPlayer(captionOpts);
-        });
-
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
-            expect(16);
+            expect(3);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -412,6 +479,7 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
+
 
     });
 })(jQuery);

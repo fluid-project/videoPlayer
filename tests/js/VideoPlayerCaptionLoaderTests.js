@@ -25,14 +25,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var options = {
                 model: {
                     captions: {
-                        sources: {
-                            english: {
-                                src: "TestCaption.en.json",
-                                type: "JSONcc"
-                            } 
-                        },
-                        choices: ["english"],
-                        selection: "english",
+                        list: [{
+                            label: "English",
+                            src: "TestCaption.en.json",
+                            type: "JSONcc"
+                        }],
+                        currentTrack: 0,
                         conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
                         maxNumber: 3,
                         track: undefined
