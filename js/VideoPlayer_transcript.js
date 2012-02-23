@@ -155,6 +155,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         if (currentTrackId !== null) {
             var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, currentTrackId);
             $("#" + currentTranscriptElementId).addClass(that.options.styles.highlight);
+            
+            // auto scroll the div to the highlighted transcript element once the highlight move under the middle of the transcript div
+            var transcriptDivMiddlePos = that.locate("transcriptText").offset().top + that.locate("transcriptText").height() / 2;
+            var elementTop = $("#" + currentTranscriptElementId).offset().top;
+            
+            if (elementTop > transcriptDivMiddlePos) {
+                var scrollTo = $("#" + currentTranscriptElementId).offset().top - that.locate("transcriptText").height() / 2;
+                that.locate("transcriptText").scrollTop(scrollTo);
+            }
         }
     };
 
