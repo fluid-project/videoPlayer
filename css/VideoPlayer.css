@@ -206,6 +206,7 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
 
 .captionator-cue-canvas {
     pointer-events:none;
+    color: #FFFFFF;
 }
 
 /***********************************************************
