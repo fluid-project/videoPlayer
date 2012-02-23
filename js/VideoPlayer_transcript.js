@@ -52,16 +52,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         transcripts: [],
         transcriptElementIdPrefix: "flc-videoPlayer-transcript-element",  // ToDo: Is this the right place to save this info?
-//        model: {
-//            transcripts: {
-//                selection: "none",
-//                choices: [],
-//                names: [],
-//                show: false,
-//                sources: null,
-//                track: undefined
-//            }
-//        },
         invokers: {
             convertToMilli: {
                 funcName: "fluid.videoPlayer.transcript.convertToMilli",
@@ -75,7 +65,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         selectorsToIgnore: ["closeButton", "transcriptText"],
         strings: {
-            transcriptsOff: "Turn Transcripts Off"
+            transcriptsOff: "Hide Transcripts"
         },
         styles: {
             highlight: ".fl-videoPlayer-transcript-element-highlight"
