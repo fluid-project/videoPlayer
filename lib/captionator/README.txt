@@ -3,7 +3,7 @@ Attribution:
  * Captionator code is a completely free opensource software. More details on the license could be obtained on https://github.com/cgiffard/Captionator/tree/captionplanet
 
 Source:
- * Original code is available on GIT https://github.com/cgiffard/Captionator.git
+ * Original code is available on GIT https://github.com/cgiffard/Captionator
  
 Instructions:
  * All necessary documentation about the Captionator could be found on the official Captionator website http://captionatorjs.com/

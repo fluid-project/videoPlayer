@@ -274,6 +274,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 
 .captionator-cue-canvas {
     pointer-events:none;
+    color: #FFFFFF;
 }
 
 /***********************************************************
