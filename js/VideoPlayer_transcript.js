@@ -146,14 +146,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.transcript.highlightTranscriptElement = function (that, currentTrackId, previousTrackId) {
-        // Display the current transcript
-        if (currentTrackId !== null) {
-            var nextTranscript = that.model.track[currentTrackId];
-            if (nextTranscript) {
-                that.locate("transcriptText").text(nextTranscript.transcript);
-            }
+        // Remove the highlight from the previous transcript
+        if (previousTrackId !== null) {
+            var previousTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, previousTrackId);
+            $("#" + previousTranscriptElementId).removeClass(that.options.styles.highlight);
         }
-      };
+        // Highlight the current transcript
+        if (currentTrackId !== null) {
+            var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, currentTrackId);
+            $("#" + currentTranscriptElementId).removeClass(that.options.styles.highlight);
+        }
+    };
 
     fluid.videoPlayer.transcript.parseTranscriptFile = function (that, transcripts, currentIndex) {
         transcripts = (typeof (transcripts) === "string") ? JSON.parse(transcripts) : transcripts;
