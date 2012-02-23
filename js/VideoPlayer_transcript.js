@@ -68,7 +68,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptsOff: "Hide Transcripts"
         },
         styles: {
-            highlight: ".fl-videoPlayer-transcript-element-highlight"
+            highlight: "fl-videoPlayer-transcript-element-highlight"
         }
     });
 
@@ -154,7 +154,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Highlight the current transcript
         if (currentTrackId !== null) {
             var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, currentTrackId);
-            $("#" + currentTranscriptElementId).removeClass(that.options.styles.highlight);
+            $("#" + currentTranscriptElementId).addClass(that.options.styles.highlight);
         }
     };
 
