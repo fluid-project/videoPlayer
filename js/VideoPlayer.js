@@ -111,7 +111,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{videoPlayer}.applier",
                     events: {
                         onMediaReady: "{videoPlayer}.events.onMediaReady"
-                    }
+                    },
+                    sources: "{videoPlayer}.options.video.sources"
                 }
             },
             controllers: {
@@ -121,6 +122,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
+                    captions: "{videoPlayer}.options.video.captions",
+                    transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
                         onVolumeChange: "{videoPlayer}.events.onVolumeChange",
@@ -130,35 +133,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             },
-            captionner: {
-                type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.dom.caption",
-                createOnEvent: "onCreateCaptionnerReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            captionLoader: {
-                type: "fluid.videoPlayer.captionLoader",
-                container: "{videoPlayer}.container",
-                createOnEvent: "onHtml5Detected",
+            html5Captionator: {
+                type: "fluid.videoPlayer.html5Captionator",
+                container: "{videoPlayer}.dom.video",
+                createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    events: {
-                        onReady: "{videoPlayer}.events.onCreateCaptionnerReady",
-                        onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
-                    }
+                    captions: "{videoPlayer}.options.video.captions"
                 }
             },
             transcript: {
                 type: "fluid.videoPlayer.transcript",
                 container: "{videoPlayer}.dom.transcript",
-                createOnEvent: "onHtml5Detected",
+                createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
+                    transcripts: "{videoPlayer}.options.video.transcripts",
                     components: {
                         transriptInterval: {
                             type: "fluid.videoPlayer.intervalEventsConductor",
@@ -185,7 +177,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             intervalEventsConductor: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onCaptionsLoaded",
+                createOnEvent: "onCreateMediaReady",
                 options: {
                     components: {
                         html5MediaTimer: {
@@ -195,7 +187,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             }
                         }
                     },
-                    intervalList: "{captionLoader}.options.intervalList",
                     events: {
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
                         onIntervalChange: "{videoPlayer}.events.onIntervalChange"
@@ -207,15 +198,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            onHtml5Detected: null,
-            onCaptionsLoaded: null,
             onVolumeChange: null,
             onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
-            onCaptionnerReady: null,
             afterScrub: null,
             onStartScrub: null,
             onOldBrowserDetected: null,
@@ -229,7 +217,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionnerReady: null
+            onHTML5BrowserDetected: null
         },
         listeners: {
             onViewReady: "{videoPlayer}.fullscreen"
@@ -252,38 +240,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
+        video: {
+            sources: [],
+            captions: [],
+            transcripts: []
+        },
         model: {
-            states: {
-                play: false,
-                currentTime: 0,
-                totalTime: 0,
-                displayCaptions: true,
-                displayTranscripts: true,
-                fullscreen: false,
-                volume: 60,
-                muted: false,
-                canPlay: false
+            currentTracks: {
+                captions: [],
+                transcripts: []
             },
-            video: {
-                sources: null
-            },
-            captions: {
-                selection: "none",
-                choices: [],
-                names: [],
-                show: false,
-                sources: null,
-                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                track: undefined
-            },
-            transcripts: {
-                selection: "none",
-                choices: [],
-                names: [],
-                show: false,
-                sources: null,
-                track: undefined
-            }
+            currentTime: 0,
+            totalTime: 0,
+            displayCaptions: true,
+            displayTranscripts: true,
+            fullscreen: false,
+            volume: 60,
+            muted: false,
+            canPlay: false
         },
         templates: {
             videoPlayer: {
@@ -304,8 +278,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 key: that.options.keyBindings.fullscreen.key,
                 activateHandler: function () {
                     that.applier.fireChangeRequest({
-                        path: "states.fullscreen",
-                        value: !that.model.states.fullscreen
+                        path: "fullscreen",
+                        value: !that.model.fullscreen
                     });
                 }
             }, {
@@ -313,8 +287,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 key: that.options.keyBindings.captions.key,
                 activateHandler: function () {
                     that.applier.fireChangeRequest({
-                        path: "states.displayCaptions",
-                        value: !that.model.states.displayCaptions
+                        path: "displayCaptions",
+                        value: !that.model.displayCaptions
                     });
                 }
             }, {
@@ -322,7 +296,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 key: that.options.keyBindings.transcripts.key,
                 activateHandler: function () {
                     that.applier.fireChangeRequest({
-                        path: "states.displayTranscripts",
+                        path: "displayTranscripts",
                         value: !that.model.states.displayTranscripts
                     });
                 }
@@ -367,8 +341,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var bindVideoPlayerModel = function (that) {
-        that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
-        that.applier.modelChanged.addListener("states.canPlay", function () {
+        that.applier.modelChanged.addListener("fullscreen", that.fullscreen);
+        that.applier.modelChanged.addListener("canPlay", function () {
             that.events.onViewReady.fire();
         });
     };
@@ -386,7 +360,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }]
             };
-        } else if (that.canRenderMedia(that.model.video.sources)) {
+        } else if (that.canRenderMedia(that.options.video.sources)) {
             // Keep the selector to render "fluid.videoPlayer.media"
             that.options.selectorsToIgnore.push("video");
         }
@@ -400,29 +374,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
-        // build the 'choices' from the caption list provided
-        fluid.each(that.options.model.captions.sources, function (value, key) {
-            that.options.model.captions.choices.push(key);
-            that.options.model.captions.names.push(key);
-        });
-        // add the 'turn captions off' option
-        that.options.model.captions.choices.push("none");
-        that.options.model.captions.names.push(that.options.strings.captionsOff);
-
-        // build the 'choices' from the transcript list provided
-        fluid.each(that.options.model.transcripts.sources, function (value, key) {
-            that.options.model.transcripts.choices.push(key);
-            that.options.model.transcripts.names.push(key);
-        });
-        // add the 'turn transcripts off' option
-        that.options.model.transcripts.choices.push("none");
-        that.options.model.transcripts.names.push(that.options.strings.transcriptsOff);
 
         that.fullscreen = function () {
             var videoContainer = that.locate("videoContainer");
             var video = that.locate("video");
             var videoControllersContainer = that.locate("videoControllersContainer");
-            if (that.model.states.fullscreen === true) {
+            
+            if (that.model.fullscreen === true) {
                 var windowWidth = window.innerWidth + "px";
                 
                 videoContainer.css({
@@ -457,30 +415,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         that.play = function (ev) {
             that.applier.fireChangeRequest({
-                "path": "states.play",
-                "value": !that.model.states.play
+                "path": "play",
+                "value": !that.model.play
             });
         };
 
         that.incrVolume = function () {
-            if (that.model.states.volume < 100) {
-                var newVol = (that.model.states.volume + 10) / 100.0;
+            if (that.model.volume < 100) {
+                var newVol = (that.model.volume + 10) / 100.0;
                 that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
             }
         };
 
         that.decrVolume = function () {
-            if (that.model.states.volume > 0) {
-                var newVol = (that.model.states.volume - 10) / 100.0;
+            if (that.model.volume > 0) {
+                var newVol = (that.model.volume - 10) / 100.0;
                 that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
             }
         };
 
         that.incrTime = function () {
             that.events.onStartScrub.fire();
-            if (that.model.states.currentTime < that.model.states.totalTime) {
-                var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
-                that.events.onScrub.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
+            if (that.model.currentTime < that.model.totalTime) {
+                var newVol = that.model.currentTime + that.model.totalTime * 0.05;
+                that.events.onScrub.fire(newVol <= that.model.totalTime ? newVol : that.model.totalTime);
             }
             that.events.afterScrub.fire();
         };
@@ -488,8 +446,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.decrTime = function () {
             that.events.onStartScrub.fire();
             
-            if (that.model.states.currentTime > 0) {
-                var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
+            if (that.model.currentTime > 0) {
+                var newVol = that.model.currentTime - that.model.totalTime * 0.05;
                 that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
             }
             that.events.afterScrub.fire();
@@ -500,7 +458,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.container.attr("role", "application");
 
         // Render each media source with its custom renderer, registered by type.
-        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
+        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller, captions or transcripts.
 
         fluid.fetchResources(that.options.templates, function (res) {
             var fetchFailed = false;
@@ -530,7 +488,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             if (!fetchFailed) {
                 that.events.onTemplateReady.fire();
 
-                if (that.canRenderMedia(that.model.video.sources)) {
+                if (that.canRenderMedia(that.options.video.sources)) {
                     that.events.onCreateMediaReady.fire();
                 }
                 if (that.canRenderControllers(that.options.controls)) {
@@ -540,7 +498,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 //    (i.e. captionator and/or mediaelement.js), we will
                 //    not need to do this.
                 if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onHtml5Detected.fire();
+                    that.events.onHTML5BrowserDetected.fire();
+                    that.fullscreen();
                 }
             }
 
@@ -576,17 +535,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
-            }
-        }
-    });
-
-    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
-                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
             }
         }
     });

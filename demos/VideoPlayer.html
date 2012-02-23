@@ -19,18 +19,19 @@
         
         <link type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
+        <link type="text/css" href="../lib/captionator/css/captions.css" rel="stylesheet" />
 
         <!-- Fluid and jQuery Dependencies -->
-        <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
+        <script type="text/javascript" src="../lib/infusion/MyInfusion-noMini.js"></script>
         <!-- Utils -->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
+        <script type="text/javascript" src="../lib/captionator/js/captionator.js"></script>
         <!--[if lt IE 9]>
-        	<script type="text/javascript" src="../js/HTML5-backcompat.js"></script>
-        <![endif]-->      
+            <script type="text/javascript" src="../js/HTML5-backcompat.js"></script>
+        <![endif]-->
         <!-- VideoPlayer dependencies -->
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayer_captionner.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayer_captionLoader.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_html5Captionator.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_transcript.js"></script>
@@ -40,12 +41,6 @@
     <body>
         <script>
             fluid.pageEnhancer({
-                // Specify the default theme class name
-                classnameMap: {
-                    theme: {
-                        "default": "fl-videoPlayer-theme"
-                    }
-                },
                 tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
             });
         </script>
@@ -60,7 +55,7 @@
 
         <h1>Infusion HTML 5 Video Player</h1>
 
-        <div class="videoPlayer fl-videoPlayer fl-videoPlayer-theme">
+        <div class="videoPlayer fl-videoPlayer">
         	
         </div>
 
@@ -70,72 +65,61 @@
             });
 
             var vp = fluid.videoPlayer(".videoPlayer", {
+                video: {
+                    sources: [
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.mp4",
+                            type: "video/mp4"
+                        },
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.webm",
+                            type: "video/webm"
+                        },
+                        {
+                            src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
+                            type: "youtube"
+                        }
+                    ],
+                    captions: [
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.en.vtt",
+                            type: "text/vtt",
+                            srclang: "en",
+                            label: "English Subtitles",
+                            kind: "subtitles"
+                        },
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.fr.vtt",
+                            type: "text/vtt",
+                            srclang: "fr",
+                            label: "French Subtitles",
+                            kind: "subtitles"
+                        }
+                    ],
+                    transcripts: [
+	                    {
+	                        src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
+	                        type: "JSONcc",
+	                        srclang: "en",
+	                        label: "English Transcripts",
+	                        kind: "transcripts"
+	                    },
+	                    {
+	                        src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
+	                        type: "JSONcc",
+	                        srclang: "fr",
+	                        label: "French Transcripts",
+	                        kind: "transcripts"
+	                    }
+	                ]
+                },
                 model: {
-                    video: {
-                        sources: [
-                            {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.mp4",
-                                type: "video/mp4"
-                            },
-                            {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.webm",
-                                type: "video/webm"
-                            },
-                            {
-                                src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
-                                type: "youtube"
-                            }
-                        ]
+                    currentTracks: {
+                        captions: [0],
+                        transcripts: [0]
                     },
-                    captions: {
-                        sources: {
-                            english: {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.en.json",
-                                type: "JSONcc"
-                            }, 
-                            francaise: {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.fr.json",
-                                type: "JSONcc"
-                            }
-                        },
-                        currentTrack: "english",
-
-                        // The following options (choices, names, selection) shouldn't be necessary.
-                        // This is a temporary workaround for FLUID-4585
-                        choices: [],
-                        names: [],
-                        // TODO: setting 'selection' to something other than 'none' is a workaround
-                        //       for FLUID-4592: a default caption *must* be loaded for the
-                        //       intervalEventsConductor to be created
-                        selection: "english",
-
-                        show: false,
-                        conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                        maxNumber: 3,
-                        track: undefined
-                    },
-                    transcripts: {
-                        sources: {
-                            english: {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
-                                type: "JSONcc"
-                            }, 
-                            francaise: {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
-                                type: "JSONcc"
-                            }
-                        },
-
-                        // The following options (choices, names, selection) shouldn't be necessary.
-                        // This is a temporary workaround for FLUID-4585
-                        choices: [],
-                        names: [],
-                        selection: "english",
-
-                        show: false,
-                        track: undefined
-                    }
-
+                    displayCaptions: true,
+                    displayTranscripts: true
                 }
             });
         </script>

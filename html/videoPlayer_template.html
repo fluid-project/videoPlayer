@@ -20,22 +20,24 @@
         </div>
     
         <div class="flc-videoPlayer-captionControls-container">
-            <button type="button" class="flc-videoPlayer-captions-button fl-videoPlayer-button fl-videoPlayer-captions-button"></button>
-            <ul class="flc-videoPlayer-captions-languageList fl-videoPlayer-captions-languageList">
-                <li class="flc-videoPlayer-captions-language">
-                    <label for="radioid" class="flc-videoPlayer-captions-languageLabel">label</label> 
-                    <input type="radio" id="radioid" class="flc-videoPlayer-captions-languageButton fl-hidden-accessible" />
-                </li>
+            <a class="flc-videoPlayer-captions-button" href="#">
+                <!-- Placing a button inside the anchor is a workaround for FLUID-4606 -->
+                <button class="fl-videoPlayer-button fl-videoPlayer-captions-button"></button>
+            </a>
+            <ul class="flc-videoPlayer-captions-languageMenu fl-videoPlayer-languageMenu">
+                <li class="flc-videoPlayer-language flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
+                <li class="flc-videoPlayer-languageNone flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
             </ul>
         </div>
     
         <div class="flc-videoPlayer-transcriptControls-container">
-            <button type="button" class="flc-videoPlayer-transcripts-button fl-videoPlayer-button fl-videoPlayer-transcripts-button"></button>
-            <ul class="flc-videoPlayer-transcripts-languageList fl-videoPlayer-transcripts-languageList">
-                <li class="flc-videoPlayer-transcripts-language">
-                    <label for="radioid" class="flc-videoPlayer-transcripts-languageLabel">label</label> 
-                    <input type="radio" id="radioid" class="flc-videoPlayer-transcripts-languageButton fl-hidden-accessible" />
-                </li>
+            <a class="flc-videoPlayer-transcripts-button" href="#">
+                <!-- Placing a button inside the anchor is a workaround for FLUID-4606 -->
+                <button class="fl-videoPlayer-button fl-videoPlayer-transcripts-button"></button>
+            </a>
+            <ul class="flc-videoPlayer-transcripts-languageMenu fl-videoPlayer-languageMenu">
+                <li class="flc-videoPlayer-language flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
+                <li class="flc-videoPlayer-languageNone flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
             </ul>
         </div>
     
