@@ -379,28 +379,33 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var videoContainer = that.locate("videoContainer");
             var video = that.locate("video");
             var videoControllersContainer = that.locate("videoControllersContainer");
+            var videoWidth, videoHeight;
             
             if (that.model.fullscreen === true) {
-                var windowWidth = window.innerWidth + "px";
-                
-                videoContainer.css({
-                    // TODO: This doesn't actually do full-screen, it simply tries to maximise
-                    // to the current window size. (FLUID-4570)
-                    width: windowWidth,
-                    height: window.innerHeight - 20 + "px"
-                });
-                
-                // Adjust the height of video + controllers area & transcript area
-                videoControllersContainer.css({width: window.innerWidth + "px"});
+                videoWidth = window.innerWidth + "px";
+                videoHeight = window.innerHeight - 20 + "px";
             } else {
-                videoContainer.css({
-                    width: video[0].videoWidth,
-                    height: video[0].videoHeight
-                });
-                
-                videoControllersContainer.css({width: video[0].videoWidth});
+                videoWidth = video[0].videoWidth;
+                videoHeight = video[0].videoHeight;
             }
+
+            // Set the width/height of each container
+            videoContainer.css({
+                width: videoWidth,
+                height: videoHeight
+            });
+            
+            videoControllersContainer.css({width: videoWidth});
+            
             that.locate("transcript").css("height", videoControllersContainer.height());
+
+            // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
+            // otherwise, the transcript area gets showed up underneath the controller bar.
+            // Need a better solution.
+            that.container.css({
+                width: videoWidth + that.locate("transcript").width() + 3,
+                height: videoControllersContainer.height()
+            });
         };
     };
 

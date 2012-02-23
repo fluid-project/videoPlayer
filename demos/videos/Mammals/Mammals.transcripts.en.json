@@ -1,119 +1,119 @@
 {
-    "captionCollection": [
+    "transcriptCollection": [
         {
             "inTime": "00:00:00.033", 
             "outTime": "00:00:02.064",
-            "caption": "http://beyondpenguins.nsdl.org"
+            "transcript": "http://beyondpenguins.nsdl.org"
         },
         {
             "inTime": "00:00:02.064",
             "outTime": "00:00:08.059",
-            "caption": "An interview with Dr. Ross MacPhee, curator and researcher at the American Museum of Natural History."
+            "transcript": "An interview with Dr. Ross MacPhee, curator and researcher at the American Museum of Natural History."
         },
         {
             "inTime": "00:00:08.059", 
             "outTime": "00:00:13.000",
-            "caption": "What is a mammal?"
+            "transcript": "What is a mammal?"
         },
         {
             "inTime": "00:00:13.000", 
             "outTime": "00:00:16.050",
-            "caption": "Mammals are a group of vertebrates"
+            "transcript": "Mammals are a group of vertebrates"
         },
         {
             "inTime": "00:00:16.050", 
             "outTime": "00:00:19.000",
-            "caption": "that is to say, animals with backbones"
+            "transcript": "that is to say, animals with backbones"
         },
         {
             "inTime": "00:00:19.000", 
             "outTime": "00:00:22.000",
-            "caption": "who are distinguished by having four legs or"
+            "transcript": "who are distinguished by having four legs or"
         },
         {
             "inTime": "00:00:22.000", 
             "outTime": "00:00:24.093",
-            "caption": "four appendages that are like legs"
+            "transcript": "four appendages that are like legs"
         },
         {
             "inTime": "00:00:24.093", 
             "outTime": "00:00:30.016",
-            "caption": "and whose young develop within a complicated series of birth membranes."
+            "transcript": "and whose young develop within a complicated series of birth membranes."
         },
         {
             "inTime": "00:00:30.016", 
             "outTime": "00:00:36.033",
-            "caption": "By contrast, fish are vertebrates, but true fish lack four appendages"
+            "transcript": "By contrast, fish are vertebrates, but true fish lack four appendages"
         },
         {
             "inTime": "00:00:36.033", 
             "outTime": "00:00:38.091",
-            "caption": "so they're not tetrapod as we call them"
+            "transcript": "so they're not tetrapod as we call them"
         },
         {
             "inTime": "00:00:38.091", 
             "outTime": "00:00:43.033",
-            "caption": "and animals like amphibians who do have four legs"
+            "transcript": "and animals like amphibians who do have four legs"
         },
         {
             "inTime": "00:00:43.033", 
             "outTime": "00:00:48.020",
-            "caption": "and do have backbones are not members of that particular group"
+            "transcript": "and do have backbones are not members of that particular group"
         },
         {
             "inTime": "00:00:48.020", 
             "outTime": "00:00:51.064",
-            "caption": "because they don't have these complicated birth membranes."
+            "transcript": "because they don't have these complicated birth membranes."
         },
         {
             "inTime": "00:00:51.064", 
             "outTime": "00:00:58.014",
-            "caption": "We are distinguished from all other vertebrates by that general set of features."
+            "transcript": "We are distinguished from all other vertebrates by that general set of features."
         },
         {
             "inTime": "00:00:58.014", 
             "outTime": "00:01:01.083",
-            "caption": "More specifically, we're the only group that has the combination"
+            "transcript": "More specifically, we're the only group that has the combination"
         },
         {
             "inTime": "00:01:01.083", 
             "outTime": "00:01:08.000",
-            "caption": "of hair, mother's milk and three tiny bones in the middle ear"
+            "transcript": "of hair, mother's milk and three tiny bones in the middle ear"
         },
         {
             "inTime": "00:01:08.000", 
             "outTime": "00:01:11.083",
-            "caption": "that are responsible for conducting sound from the outside"
+            "transcript": "that are responsible for conducting sound from the outside"
         },
         {
             "inTime": "00:01:11.083", 
             "outTime": "00:01:15.050",
-            "caption": "to where it can be interpreted in the brain."
+            "transcript": "to where it can be interpreted in the brain."
         },
         {
             "inTime": "00:01:15.050", 
             "outTime": "00:01:17.078",
-            "caption": "http://beyondpenguins.nsdl.org"
+            "transcript": "http://beyondpenguins.nsdl.org"
         },
         {
             "inTime": "00:01:17.078", 
             "outTime": "00:01:21.031",
-            "caption": "For more: Go online to the January 2009 issue on mammals."
+            "transcript": "For more: Go online to the January 2009 issue on mammals."
         },
         {
             "inTime": "00:01:21.031", 
             "outTime": "00:01:25.017",
-            "caption": "Special thanks to Dr. MacPhee and the American Museum of Natural History for the making of this recording."
+            "transcript": "Special thanks to Dr. MacPhee and the American Museum of Natural History for the making of this recording."
         },
         {
             "inTime": "00:01:25.017", 
             "outTime": "00:01:28.032",
-            "caption": "Recorded at AMNH, October 2008. Karen Taber, Producer"
+            "transcript": "Recorded at AMNH, October 2008. Karen Taber, Producer"
         },
         {
             "inTime": "00:01:28.032", 
             "outTime": "00:01:33.015",
-            "caption": "Podcast produced by Robert Payo National Science Digital Library"
+            "transcript": "Podcast produced by Robert Payo National Science Digital Library"
         }
     ]
 }

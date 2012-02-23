@@ -1,254 +1,254 @@
 {
-    "captionCollection": [
+    "transcriptCollection": [
         {
             "inTime": "00:00:00.023", 
             "outTime": "00:00:03.090",
-            "caption": "http://beyondpenguins.nsdl.org"
+            "transcript": "http://beyondpenguins.nsdl.org"
         },
         {
             "inTime": "00:00:03.090", 
             "outTime": "00:00:06.031",
-            "caption": "An interview with Dr. Ross MacPhee"
+            "transcript": "An interview with Dr. Ross MacPhee"
         },
         {
             "inTime": "00:00:06.031", 
             "outTime": "00:00:08.082",
-            "caption": "Curator and Researcher at the American Museum of Natural History"
+            "transcript": "Curator and Researcher at the American Museum of Natural History"
         },
         {
             "inTime": "00:00:08.082", 
             "outTime": "00:00:13.074",
-            "caption": "What adaptations do mammals have in order to survive at the poles?"
+            "transcript": "What adaptations do mammals have in order to survive at the poles?"
         },
         {
             "inTime": "00:00:13.074", 
             "outTime": "00:00:16.057",
-            "caption": "We can think of a couple of important ways in which adaptation has"
+            "transcript": "We can think of a couple of important ways in which adaptation has"
         },
         {
             "inTime": "00:00:16.057", 
             "outTime": "00:00:21.054",
-            "caption": "made it possible for mammals to live in polar regions."
+            "transcript": "made it possible for mammals to live in polar regions."
         },
         {
             "inTime": "00:00:21.054", 
             "outTime": "00:00:24.038",
-            "caption": "Insulation is the big deal, this is either"
+            "transcript": "Insulation is the big deal, this is either"
         },
         {
             "inTime": "00:00:24.038", 
             "outTime": "00:00:29.081",
-            "caption": "in the form of what kind of fur or hair that the body has"
+            "transcript": "in the form of what kind of fur or hair that the body has"
         },
         {
             "inTime": "00:00:29.081", 
             "outTime": "00:00:31.095",
-            "caption": "or the amount of blubber"
+            "transcript": "or the amount of blubber"
         },
         {
             "inTime": "00:00:31.095", 
             "outTime": "00:00:35.061",
-            "caption": "or a very efficient circulatory system, high basic metabolism"
+            "transcript": "or a very efficient circulatory system, high basic metabolism"
         },
         {
             "inTime": "00:00:35.061", 
             "outTime": "00:00:41.019",
-            "caption": "All of these features have in common the idea that you need to keep the animal warm"
+            "transcript": "All of these features have in common the idea that you need to keep the animal warm"
         },
         {
             "inTime": "00:00:41.019", 
             "outTime": "00:00:44.086",
-            "caption": "Marine mammals in fact have less of a problem than you might think in a way"
+            "transcript": "Marine mammals in fact have less of a problem than you might think in a way"
         },
         {
             "inTime": "00:00:44.086", 
             "outTime": "00:00:48.029",
-            "caption": "because as long as the water is water, it's not frozen"
+            "transcript": "because as long as the water is water, it's not frozen"
         },
         {
             "inTime": "00:00:48.029", 
             "outTime": "00:00:51.017",
-            "caption": "and it's going to be at 32 degrees or above."
+            "transcript": "and it's going to be at 32 degrees or above."
         },
         {
             "inTime": "00:00:51.017", 
             "outTime": "00:00:57.021",
-            "caption": "So they're able in fact to do quite well with a few inches of blubber"
+            "transcript": "So they're able in fact to do quite well with a few inches of blubber"
         },
         {
             "inTime": "00:00:57.021", 
             "outTime": "00:01:02.097",
-            "caption": "and the kind of fur patterning that is very high in its R value"
+            "transcript": "and the kind of fur patterning that is very high in its R value"
         },
         {
             "inTime": "00:01:02.097", 
             "outTime": "00:01:04.055",
-            "caption": "so you don't lose a lot of heat."
+            "transcript": "so you don't lose a lot of heat."
         },
         {
             "inTime": "00:01:04.055", 
             "outTime": "00:01:06.073",
-            "caption": "On land it's a different deal"
+            "transcript": "On land it's a different deal"
         },
         {
             "inTime": "00:01:06.073", 
             "outTime": "00:01:09.065",
-            "caption": "there you have extreme temperature excursions"
+            "transcript": "there you have extreme temperature excursions"
         },
         {
             "inTime": "00:01:09.065", 
             "outTime": "00:01:13.004",
-            "caption": "and that is worry if you are any kind of mammal"
+            "transcript": "and that is worry if you are any kind of mammal"
         },
         {
             "inTime": "00:01:13.004", 
             "outTime": "00:01:15.069",
-            "caption": "because you're not going to be adapted to the very coldest conditions"
+            "transcript": "because you're not going to be adapted to the very coldest conditions"
         },
         {
             "inTime": "00:01:15.069", 
             "outTime": "00:01:18.071",
-            "caption": "and there's other kinds of adaptations that will have to come in here."
+            "transcript": "and there's other kinds of adaptations that will have to come in here."
         },
         {
             "inTime": "00:01:18.071", 
             "outTime": "00:01:20.094",
-            "caption": "One of the significant ones is hibernation."
+            "transcript": "One of the significant ones is hibernation."
         },
         {
             "inTime": "00:01:20.094", 
             "outTime": "00:01:27.021",
-            "caption": "There's a number of arctic mammals both on the carnivore side and the non-carnivore side"
+            "transcript": "There's a number of arctic mammals both on the carnivore side and the non-carnivore side"
         },
         {
             "inTime": "00:01:27.021", 
             "outTime": "00:01:31.081",
-            "caption": "that go in for various kinds of either true deep sleep"
+            "transcript": "that go in for various kinds of either true deep sleep"
         },
         {
             "inTime": "00:01:31.081", 
             "outTime": "00:01:35.001",
-            "caption": "which is characteristic of hibernation or at least estivation"
+            "transcript": "which is characteristic of hibernation or at least estivation"
         },
         {
             "inTime": "00:01:35.001", 
             "outTime": "00:01:37.098",
-            "caption": "which is where they really reduce their activities."
+            "transcript": "which is where they really reduce their activities."
         },
         {
             "inTime": "00:01:37.098", 
             "outTime": "00:01:40.063",
-            "caption": "Let's take a look at bears, for example."
+            "transcript": "Let's take a look at bears, for example."
         },
         {
             "inTime": "00:01:40.063", 
             "outTime": "00:01:45.065",
-            "caption": "Female polar bears give birth while they're hibernating."
+            "transcript": "Female polar bears give birth while they're hibernating."
         },
         {
             "inTime": "00:01:45.065", 
             "outTime": "00:01:48.094",
-            "caption": "They dig out a hole in the snow, a cave in the snow and"
+            "transcript": "They dig out a hole in the snow, a cave in the snow and"
         },
         {
             "inTime": "00:01:48.094", 
             "outTime": "00:01:51.042",
-            "caption": "that's where they stay over the winter months and"
+            "transcript": "that's where they stay over the winter months and"
         },
         {
             "inTime": "00:01:51.042", 
             "outTime": "00:01:55.002",
-            "caption": "pups are actually born while the mother is still hibernating."
+            "transcript": "pups are actually born while the mother is still hibernating."
         },
         {
             "inTime": "00:01:55.002", 
             "outTime": "00:02:00.037",
-            "caption": "And this permits her to provide a very warm kind of enclosure"
+            "transcript": "And this permits her to provide a very warm kind of enclosure"
         },
         {
             "inTime": "00:02:00.037", 
             "outTime": "00:02:03.094",
-            "caption": "for the cubs as they are developing outside of her body"
+            "transcript": "for the cubs as they are developing outside of her body"
         },
         {
             "inTime": "00:02:03.094", 
             "outTime": "00:02:10.086",
-            "caption": "and also reduces the need for her to part from them during the very early stages of their development."
+            "transcript": "and also reduces the need for her to part from them during the very early stages of their development."
         },
         {
             "inTime": "00:02:10.086", 
             "outTime": "00:02:16.033",
-            "caption": "For small mammals, think of rodents, it's different again."
+            "transcript": "For small mammals, think of rodents, it's different again."
         },
         {
             "inTime": "00:02:16.033", 
             "outTime": "00:02:19.087",
-            "caption": "Most of them actually stay active the entire winter"
+            "transcript": "Most of them actually stay active the entire winter"
         },
         {
             "inTime": "00:02:19.087", 
             "outTime": "00:02:23.031",
-            "caption": "and if you go up into arctic regions just after the snow melts"
+            "transcript": "and if you go up into arctic regions just after the snow melts"
         },
         {
             "inTime": "00:02:23.031", 
             "outTime": "00:02:26.014",
-            "caption": "you can see their little runways everywhere where they've been"
+            "transcript": "you can see their little runways everywhere where they've been"
         },
         {
             "inTime": "00:02:26.014", 
             "outTime": "00:02:29.099",
-            "caption": "actually going under the snow and feeding on grass shoots or roots"
+            "transcript": "actually going under the snow and feeding on grass shoots or roots"
         },
         {
             "inTime": "00:02:29.099", 
             "outTime": "00:02:32.036",
-            "caption": "anything that's preserved there for them."
+            "transcript": "anything that's preserved there for them."
         },
         {
             "inTime": "00:02:32.036", 
             "outTime": "00:02:34.069",
-            "caption": "http://beyondpenguins.nsdl.org"
+            "transcript": "http://beyondpenguins.nsdl.org"
         },
         {
             "inTime": "00:02:34.069", 
             "outTime": "00:02:38.054",
-            "caption": "For more: Go online to the January 2009 issue on mammals."
+            "transcript": "For more: Go online to the January 2009 issue on mammals."
         },
         {
             "inTime": "00:02:38.054", 
             "outTime": "00:02:43.040",
-            "caption": "Special thanks to Dr. MacPhee and the American Museum of Natural History for the making of this recording."
+            "transcript": "Special thanks to Dr. MacPhee and the American Museum of Natural History for the making of this recording."
         },
         {
             "inTime": "00:02:43.040", 
             "outTime": "00:02:44.095",
-            "caption": "Recorded at AMNH, October 2008"
+            "transcript": "Recorded at AMNH, October 2008"
         },
         {
             "inTime": "00:02:44.095", 
             "outTime": "00:02:46.007",
-            "caption": "Karen Taber, Producer"
+            "transcript": "Karen Taber, Producer"
         },
         {
             "inTime": "00:02:46.007", 
             "outTime": "00:02:48.016",
-            "caption": "Podcast produced by Robert Payo"
+            "transcript": "Podcast produced by Robert Payo"
         },
         {
             "inTime": "00:02:48.016", 
             "outTime": "00:02:50.038",
-            "caption": "National Science Digital Library"
+            "transcript": "National Science Digital Library"
         },
         {
             "inTime": "00:02:50.038", 
             "outTime": "00:02:51.045",
-            "caption": "November 2008"
+            "transcript": "November 2008"
         },
         {
             "inTime": "00:02:51.045", 
             "outTime": "09:59:59.000",
-            "caption": "Funding for this podcast was made possible by the National Science Foundation."
+            "transcript": "Funding for this podcast was made possible by the National Science Foundation."
         }
     ]
 }
