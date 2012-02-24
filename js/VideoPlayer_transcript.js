@@ -35,6 +35,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transriptInterval: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
                 createOnEvent: "onReady"
+            },
+            transcriptEventBinder: {
+                type: "fluid.videoPlayer.eventBinder",
+                createOnEvent: "onReady",
+                options: {
+                    events: {
+                        onCurrentTranscriptChanged: "{transcript}.events.onCurrentTranscriptChanged"
+                    }
+                }
             }
         },
         events: {
@@ -43,6 +52,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptsLoaded: null,
             onLoadTranscriptError: null,
             onIntervalChange: null,
+            onCurrentTranscriptChanged: null,
             onReady: null
         },
         model: {
@@ -251,8 +261,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.transcript.switchTranscriptArea(that);
         });
 
-        that.applier.modelChanged.addListener("currentTracks.transcripts", function () {
+        that.applier.modelChanged.addListener("currentTracks.transcripts", function (model, oldModel) {
             fluid.videoPlayer.transcript.prepareTranscript(that);
+            
+            // Select the new transcript in the drop down list box
+            var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
+            that.locate("langaugeDropdown").find("option:selected").removeAttr("selected");
+            that.locate("langaugeDropdown").find("option[value='"+currentTranscriptIndex+"']").attr("selected", "selected");
+            
+            that.transcriptEventBinder.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
         
         that.events.onTranscriptsLoaded.addListener(function (intervalList) {

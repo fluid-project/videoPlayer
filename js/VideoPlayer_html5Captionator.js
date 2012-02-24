@@ -71,7 +71,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
   
         // listener for hiding/showing all captions
         that.displayCaptions = function () {
-            var tracks = that.container[0].tracks;
+            var tracks = that.locate("video")[0].tracks;
             var elPaths = that.options.elPaths;
             if (fluid.get(that.model, elPaths.displayCaptions)) {
                 fluid.videoPlayer.html5Captionator.showCurrentTrack(fluid.get(that.model, elPaths.currentCaptions), tracks, that.options.captions);
@@ -82,7 +82,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         // listener for changed selected currentTrack
         that.changeCaptions = function () {
-            fluid.videoPlayer.html5Captionator.showCurrentTrack(fluid.get(that.model, that.options.elPaths.currentCaptions), that.container[0].tracks, that.options.captions);
+            fluid.videoPlayer.html5Captionator.showCurrentTrack(fluid.get(that.model, that.options.elPaths.currentCaptions), that.locate("video")[0].tracks, that.options.captions);
         };
     };
 
@@ -111,7 +111,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
 
             if ($.inArray(key, fluid.get(that.model, elPaths.currentCaptions)) !== -1) {
-                attributes.default = "true";
+                attributes["default"] = "true";
             }
             trackTag.attr(attributes);
 

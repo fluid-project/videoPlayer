@@ -282,8 +282,8 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-transcript-text {
-    line-height: 1.5em;
     margin-top: 2em;
+    word-spacing: 0.1em;
     padding: 1em;
     overflow: scroll;
     height: 83%;
@@ -292,7 +292,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 .fl-videoPlayer-transcript-element-highlight {
     color: white;
     background-color: #0099CC;
-    padding: 0.3em;
+    padding: 0.2em;
 }
 
 /**********************
