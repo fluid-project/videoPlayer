@@ -166,7 +166,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
                 
-                var tracks = videoPlayer.html5Captionator.container[0].tracks;
+                var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks;
                 
                 jqUnit.assertEquals("English subtitles are showing", captionator.TextTrack.SHOWING, tracks[0].mode);
                 jqUnit.assertEquals("French subtitles are NOT showing", captionator.TextTrack.OFF, tracks[1].mode);
@@ -199,7 +199,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
                 
-                var tracks = videoPlayer.html5Captionator.container[0].tracks;
+                var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks;
                 
                 jqUnit.assertEquals("Current track is NOT empty in the html5Captionator model it has only one element in it", 
                         1, videoPlayer.html5Captionator.model.currentTracks.captions.length);
