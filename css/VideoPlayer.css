@@ -34,11 +34,10 @@
     position    : absolute;
     padding     : 3px 5px;
 }
+
 .fl-videoPlayer-controller {
     width:100%;
-    background-color: rgba(242, 242, 242, 0.75);
     position: absolute;
-    z-index: 1;
     bottom: 0;
 }
 
@@ -51,6 +50,12 @@
 
 .fl-videoPlayer-button:hover {
     background-color: rgba(153, 153, 153, 0.75);
+}
+
+.fl-videoPlayer-controller-buttons { 
+    background-color: rgba(242, 242, 242, 0.75);
+    width: 100%;
+    height: 2.05em;
 }
 
 .fl-videoPlayer-controller-buttons * {
@@ -106,7 +111,6 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-volumeControl {
     display: none;
-    z-index: 101;
     position: absolute;
     bottom: 23px;
     right: 15px;
@@ -197,7 +201,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-transcripts-close-button {
-    background: #ffffff url('../images/close-black.png') no-repeat center center;
+    background: #fff url('../images/close-black.png') no-repeat center center;
 }
 
 /*
@@ -206,6 +210,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 .fl-videoPlayer-scrubberContainer {
     width: 100%;
     text-align: center;
+    margin-bottom: -0.4em;
 }
 .fl-videoPlayer-scrubberContainer * {
     margin: auto;
@@ -214,6 +219,12 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 
 .fl-videoPlayer-scrubber {
     width: 100%;
+}
+
+.fl-videoPlayer-scrubber.ui-widget-content {
+    background: rgba(204, 204, 204, 0.6);
+    border-width: 0;
+    border-top: 1px solid #fff;
 }
 
 .fl-videoPlayer-scrubber .ui-slider-handle {

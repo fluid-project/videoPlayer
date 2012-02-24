@@ -21,7 +21,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.setLogging(false);    // disable it not to mess up with FireBug in FF
         
         // containers. A separate one per test
-        var container = [".videoPlayer0", ".videoPlayer1", ".videoPlayer2", ".videoPlayer3", ".videoPlayer4"];
+        var container = [".videoPlayer0", ".videoPlayer1", ".videoPlayer2", ".videoPlayer3", ".videoPlayer4", ".videoPlayer5"];
         
         // selector to find if the captionator div is present on the webpage
         var captionatorSelector = ".captionator-cue-canvas";
@@ -77,15 +77,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 displayCaptions: true
             }
         });
-                        
+        
+        var testTrackShowing = function (html5Captionator, index) {
+            var tracks = html5Captionator.locate("video")[0].tracks;
+                
+            jqUnit.assertEquals(html5Captionator.options.captions[index].label + " are showing", captionator.TextTrack.SHOWING, tracks[index].mode);
+        };
+        
+        var testTrackNotShowing = function (html5Captionator, index) {
+            var tracks = html5Captionator.locate("video")[0].tracks;
+                
+            jqUnit.assertEquals(html5Captionator.options.captions[index].label + " are not showing", captionator.TextTrack.OFF, tracks[index].mode);
+        };
+              
         // videoPlayer creation
         var initVideoPlayer = function (container, options, callback) {
             options = options || {};
             
             fluid.merge(null, options, {
                 listeners: {
-                    onReady: function (that) {
-                        callback(that);
+                    onReady: function (videoPlayer) {
+                        callback(videoPlayer);
                     }
                 }
             });
@@ -164,30 +176,53 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
                 
-                jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
-                
                 var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks;
+                var html5Captionator = videoPlayer.html5Captionator;
                 
-                jqUnit.assertEquals("English subtitles are showing", captionator.TextTrack.SHOWING, tracks[0].mode);
-                jqUnit.assertEquals("French subtitles are NOT showing", captionator.TextTrack.OFF, tracks[1].mode);
+                jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
                 
-                fluid.videoPlayer.html5Captionator.showCurrentTrack([1],tracks,videoPlayer.html5Captionator.options.captions);
+                testTrackShowing(html5Captionator, 0);
+                testTrackNotShowing(html5Captionator, 1);
                 
-                jqUnit.assertEquals("English subtitles are NOT showing", captionator.TextTrack.OFF, tracks[0].mode);
-                jqUnit.assertEquals("French subtitles are showing", captionator.TextTrack.SHOWING, tracks[1].mode);
+                fluid.videoPlayer.html5Captionator.showCurrentTrack([1], tracks, html5Captionator.options.captions);
+                
+                testTrackNotShowing(html5Captionator, 0);
+                testTrackShowing(html5Captionator, 1);
                 
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
                 
-                jqUnit.assertEquals("English subtitles are NOT showing", captionator.TextTrack.OFF, tracks[0].mode);
-                jqUnit.assertEquals("French subtitles are NOT showing", captionator.TextTrack.OFF, tracks[1].mode);
+                testTrackNotShowing(html5Captionator, 0);
+                testTrackNotShowing(html5Captionator, 1);
                 
                 start();
             });
         });
         
         
-        videoPlayerCaptionatorTests.asyncTest("html5Captionator without currentTrack", function () {
+        // TEST FLUID-4618. Writing a test to verify that functions in preInit work properly
+        videoPlayerCaptionatorTests.asyncTest("html5Captionator displayCaptions test", function () {
             var testIndex = 4;
+            
+            expect(1);
+            
+            setupEnvironment(true);
+            
+            initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
+                var html5Captionator = videoPlayer.html5Captionator;
+                
+                html5Captionator.displayCaptions();
+                
+                html5Captionator.changeCaptions();
+                
+                jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
+
+                start();
+            });
+        });
+        
+        
+        videoPlayerCaptionatorTests.asyncTest("html5Captionator without currentTrack", function () {
+            var testIndex = 5;
             
             expect(6);
             
@@ -195,20 +230,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             initVideoPlayer(container[testIndex], testOptionsNoCurrentTrack, function (videoPlayer) {
                 
+                var html5Captionator = videoPlayer.html5Captionator;
+                var currentTracks = html5Captionator.model.currentTracks;
+                
                 jqUnit.assertUndefined("currentTracks is empty in the model", testOptionsNoCurrentTrack.currentTracks);
                 
-                jqUnit.assertNotUndefined("html5Captionator has been instantiated", videoPlayer.html5Captionator);
-                
-                var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks;
+                jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
                 
                 jqUnit.assertEquals("Current track is NOT empty in the html5Captionator model it has only one element in it", 
-                        1, videoPlayer.html5Captionator.model.currentTracks.captions.length);
+                        1, currentTracks.captions.length);
                         
                 jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
-                        0, videoPlayer.html5Captionator.model.currentTracks.captions[0]);
+                        0, currentTracks.captions[0]);
                 
-                jqUnit.assertEquals("English subtitles should default to be showing", captionator.TextTrack.SHOWING, tracks[0].mode);
-                jqUnit.assertEquals("French subtitles are NOT showing", captionator.TextTrack.OFF, tracks[1].mode);
+                testTrackShowing(html5Captionator, 0);
+                testTrackNotShowing(html5Captionator, 1);
                 
                 start();
             });
