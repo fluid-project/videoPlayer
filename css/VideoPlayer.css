@@ -2,9 +2,6 @@
  * Videoplayer container
  */
 
-.fl-videoPlayer {
-    position: relative;
-}
 .fl-videoPlayer:focus,
 .fl-videoPlayer :focus {
     /* TODO: This is a temporary style, to be replaced when we have the final designs */
@@ -17,6 +14,7 @@
 
 .fl-videoPlayer-video-controller-area {
     float: left;
+    position: relative;
 }
 
 /*
@@ -38,15 +36,12 @@
 }
 .fl-videoPlayer-controller {
     width:100%;
-    text-align: center;
-    padding-bottom: 0.5em;
-    background-color: gray;
+    background-color: rgba(242, 242, 242, 0.75);
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
 }
 
-.fl-videoPlayer-controller * {
-    display: inline-block;
-    margin: auto;
-}
 .fl-videoPlayer-button {
     width: 3em;
     height: 3em;
@@ -54,11 +49,27 @@
     cursor: pointer;
 }
 
+.fl-videoPlayer-controller-buttons * {
+    display: inline;
+}
+
+.fl-videoPlayer-controller-buttons-main {
+    float: left;
+}
+
+.fl-videoPlayer-controller-buttons-secondary {
+    float: right;
+}
+
+a.fl-videoPlayer-button-wrapper {
+    text-decoration: none;
+}
+
 /*
  * Play button
  */
 .fl-videoPlayer-play {
-    background: #ffffff url('../images/play-black.png') no-repeat center center;
+    background: url('../images/play-black.png') no-repeat center center;
 }
 .fl-videoPlayer-playing {
     background-image: url('../images/pause-black.png');
@@ -72,7 +83,7 @@
  * Fullscreen button
  */
 .fl-videoPlayer-fullscreen {
-    background: #ffffff url('../images/fullscreen-black.png') no-repeat center center;
+    background: url('../images/fullscreen-black.png') no-repeat center center;
 }
 .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-on-black.png');
@@ -86,7 +97,7 @@
  * Volume controls
  */
 .fl-videoPlayer-mute {
-    background: #ffffff url('../images/volume-black.png') no-repeat center center;
+    background: url('../images/volume-black.png') no-repeat center center;
 }
 .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
@@ -130,7 +141,7 @@
  * Caption controls
  */
 .fl-videoPlayer-captions-button {
-    background: #ffffff url('../images/captions-black.png') no-repeat center center;
+    background: url('../images/captions-black.png') no-repeat center center;
 }
 .fl-videoPlayer-captions-button:hover {
     background-color: yellow;
@@ -161,7 +172,7 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
  * transcript controls
  */
 .fl-videoPlayer-transcripts-button {
-    background: #ffffff url('../images/transcripts-black.png') no-repeat center center;
+    background: url('../images/transcripts-black.png') no-repeat center center;
 }
 .fl-videoPlayer-transcripts-button:hover {
     background-color: yellow;
@@ -186,10 +197,15 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  */
 .fl-videoPlayer-scrubberContainer {
     width: 100%;
+    text-align: center;
 }
 .fl-videoPlayer-scrubberContainer * {
     margin: auto;
     display: inline-block;
+}
+
+.fl-videoPlayer-scrubber {
+    width: 95%;
 }
 
 .fl-videoPlayer-controller-volumeControl {
@@ -260,18 +276,13 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     padding: 0.3em;
 }
 
+/**********************
+ * Captionator Styles *
+ **********************/
+ 
 /*
-* mods to the coal theme
+ * Pass clicks through captionator.DIV.element to the underlying video
 */
-
-.fl-videoPlayer-scrubber {
-    width: 60%;
-}
-
-/*
-*Allow clicking through captionator.DIV.element
-*/
-
 .captionator-cue-canvas {
     pointer-events:none;
     color: #FFFFFF;
