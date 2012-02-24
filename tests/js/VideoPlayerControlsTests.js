@@ -44,11 +44,12 @@ fluid.registerNamespace("fluid.tests");
             video: {
                 sources: [
                     {
-                        src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
+                        src: "TestVideo.mp4",
                         type: "video/mp4"
                     }
                 ]
             },
+            model: {},
             templates: {
                 videoPlayer: {
                     // override the default template path
@@ -470,7 +471,7 @@ fluid.registerNamespace("fluid.tests");
 
                         jqUnit.assertFalse("Initally, video should not be in full screen mode", that.model.fullscreen);
                         fullScreenButton.click();
-                        jqUnit.assertTrue("After click, video should be in full screen mode", that.model.states.fullscreen);
+                        jqUnit.assertTrue("After click, video should be in full screen mode", that.model.fullscreen);
                         fullScreenButton.click();
                         jqUnit.assertFalse("After clicking again, video should not be in full screen mode", that.model.fullscreen);
 
@@ -479,7 +480,6 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
-
 
     });
 })(jQuery);

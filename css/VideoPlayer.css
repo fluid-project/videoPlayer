@@ -270,6 +270,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-transcript-text {
+    line-height: 1.5em;
     margin-top: 2em;
     padding: 1em;
     overflow: scroll;
@@ -453,23 +454,19 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     color: yellow;
 }
 
-.fl-theme-uio-wb .fl-videoPlayer-transcript-element-highlight,
-.fl-theme-uio-yb .fl-videoPlayer-transcript-element-highlight {
-    background-color: black;
-}
-.fl-theme-uio-bw .fl-videoPlayer-transcript-element-highlight,
-.fl-theme-uio-by .fl-videoPlayer-transcript-element-highlight {
-    color: black;
+.fl-theme-uio-bw .fl-videoPlayer-transcript-element-highlight {
+    background-color: black !important;
+    color: white !important;
 }
 .fl-theme-uio-wb .fl-videoPlayer-transcript-element-highlight {
-    color: white;
-}
-.fl-theme-uio-bw .fl-videoPlayer-transcript-element-highlight {
-    background-color: white;
-}
-.fl-theme-uio-by .fl-videoPlayer-transcript-element-highlight {
-    background-color: yellow;
+    background-color: white !important;
+    color: black !important;
 }
 .fl-theme-uio-yb .fl-videoPlayer-transcript-element-highlight {
-    color: yellow;
+    background-color: yellow !important;
+    color: black !important;
+}
+.fl-theme-uio-by .fl-videoPlayer-transcript-element-highlight {
+    background-color: black !important;
+    color: yellow !important;
 }

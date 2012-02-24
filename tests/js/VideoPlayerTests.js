@@ -26,7 +26,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 video: {
                     sources: [
                         {
-                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
+                            src: "TestVideo.mp4",
                             type: "video/mp4"
                         }
                     ]
@@ -91,7 +91,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         
         videoPlayerTests.asyncTest("HTML5: video player instantiation with customized controller", function () {
-            expect(5);
+            expect(6);
             
             setupEnvironment(true);
             
@@ -101,9 +101,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     onReady: function (videoPlayer) {
                         jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
                         jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
-                        jqUnit.assertNotUndefined("The sub-component captionner has been instantiated", videoPlayer.captionner);
-                        jqUnit.assertNotUndefined("The sub-component captionLoader has been instantiated", videoPlayer.captionLoader);
+                        jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
+                        jqUnit.assertNotUndefined("The sub-component transcript has been instantiated", videoPlayer.transcript);
                         jqUnit.assertUndefined("The sub-component browserCompatibility has NOT been instantiated", videoPlayer.browserCompatibility);
+                        jqUnit.assertNotUndefined("The sub-component intervalEventsConductor has been instantiated", videoPlayer.intervalEventsConductor);
                         
                         start();
                     }
@@ -112,7 +113,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("HTML5: video player instantiation with native controller", function () {
-            expect(5);
+            expect(6);
             
             setupEnvironment(true);
             
@@ -122,9 +123,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     onReady: function (videoPlayer) {
                         jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
                         jqUnit.assertUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
-                        jqUnit.assertNotUndefined("The sub-component captionner has been instantiated", videoPlayer.captionner);
-                        jqUnit.assertNotUndefined("The sub-component captionLoader has been instantiated", videoPlayer.captionLoader);
+                        jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
+                        jqUnit.assertNotUndefined("The sub-component transcript has been instantiated", videoPlayer.transcript);
                         jqUnit.assertUndefined("The sub-component browserCompatibility has NOT been instantiated", videoPlayer.browserCompatibility);
+                        jqUnit.assertNotUndefined("The sub-component intervalEventsConductor has been instantiated", videoPlayer.intervalEventsConductor);
                         
                         start();
                     }
