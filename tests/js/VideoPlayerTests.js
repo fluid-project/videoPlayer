@@ -23,16 +23,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var initVideoPlayer = function (testOptions) {
             var opts = {
-                model: {
-                    video: {
-                        sources: [
-                            {
-                                src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
-                                type: "video/mp4"
-                            }
-                        ]
-                    }
+                video: {
+                    sources: [
+                        {
+                            src: "http://royalgiz.fr/videoplayer/video/Richard.Stallman.mp4",
+                            type: "video/mp4"
+                        }
+                    ]
                 },
+                model: {},
                 templates: {
                     videoPlayer: {
                         // override the default template path
