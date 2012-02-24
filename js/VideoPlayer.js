@@ -168,6 +168,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                 }
                             }
                         }
+                    },
+                    events: {
+                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged"
                     }
                 }
             },
@@ -208,6 +211,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartScrub: null,
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
+            onCurrentTranscriptChanged: null,
             onReady: null,
             
             // public, time events
@@ -411,11 +415,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.postInit = function (that) {
         that.canRenderControllers = function (controlsType) {
-            return (fluid.hasFeature("fluid.browser.html5") && controlsType === "custom") ? true : false;
+            return fluid.hasFeature("fluid.browser.html5") && controlsType === "custom";
         };
         
         that.canRenderMedia = function (videoSource) {
-            return videoSource ? true : false;
+            return videoSource;
         };
         
         that.play = function (ev) {
@@ -530,16 +534,43 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /*********************************************************************************
+     * Event Binder:                                                                 *
+     * Shared by all video player component whenever an event binder component is    *
+     * needed                                                                        *
+     *********************************************************************************/
+        
+    fluid.defaults("fluid.videoPlayer.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+
+    /*********************************************************************************
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
     
-    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+    fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
                 "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
+            }
+        }
+    });
+
+    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript", "controllers"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onCurrentTranscriptChanged": "{controllers}.transcriptControls.menu.activate"
+            }
+        }
+    });
+
+    // Prevent the above demands block from being resolved in the absence of "controllers" component
+    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onCurrentTranscriptChanged": null
             }
         }
     });

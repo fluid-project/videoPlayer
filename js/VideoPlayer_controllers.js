@@ -624,7 +624,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             // add the 'turn off' option
             showHide: {
-                value: that.options.strings.showLanguage
+                value: that.model.showLanguage ? that.options.strings.hideLanguage : that.options.strings.showLanguage
             }
         };
         return tree;
@@ -696,7 +696,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("activeLanguages.0", function (model, oldModel, changeRequest) {
             var newTrack = model.activeLanguages;
             var oldTrack = oldModel.activeLanguages;
-            if (newTrack == oldTrack) {
+            if (newTrack[0] === oldTrack[0]) {
                 return;
             }
             that.applier.requestChange("showLanguage", true);
@@ -829,10 +829,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.updateLanguage = function (newIndex) {
             that.applier.requestChange(that.options.currentLanguagePath, newIndex);
         };
-        
+
         that.updateShowHide = function (show) {
             that.applier.requestChange(that.options.showHidePath, show);
-        }
+        };
     };
 
     fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y = function (that) {

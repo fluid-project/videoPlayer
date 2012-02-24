@@ -122,7 +122,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 listeners: {
                     onReady: function (videoPlayer) {
                         jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
-                        jqUnit.assertUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
+                        jqUnit.assertUndefined("The sub-component controllers has been NOT instantiated", videoPlayer.controllers);
                         jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
                         jqUnit.assertNotUndefined("The sub-component transcript has been instantiated", videoPlayer.transcript);
                         jqUnit.assertUndefined("The sub-component browserCompatibility has NOT been instantiated", videoPlayer.browserCompatibility);
