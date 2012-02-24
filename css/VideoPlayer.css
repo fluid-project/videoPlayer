@@ -229,7 +229,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  */
  
 .fl-videoPlayer-captionArea {
-    bottom: 1.5em;
+    bottom: 6em;
     position: relative;
     text-align:center;
 }

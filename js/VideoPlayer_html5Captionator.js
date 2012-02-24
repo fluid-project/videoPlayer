@@ -37,6 +37,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         elPaths: {
             currentCaptions: "currentTracks.captions",
             displayCaptions: "displayCaptions"
+        },
+        selectors: {
+            video: ".flc-videoPlayer-video",
+            caption: ".flc-videoPlayer-captionArea"
         }
     });
     
@@ -110,12 +114,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
             trackTag.attr(attributes);
 
-            that.container.append(trackTag);
+            that.locate("video").append(trackTag);
         });
 
         // Create captionator code which will add a captionator div to the HTML
-        captionator.captionify(that.container[0], null, {
-            appendCueCanvasTo: that.container[0].parentNode,
+        captionator.captionify(that.locate("video")[0], null, {
+            appendCueCanvasTo: that.locate("caption")[0],
             sizeCuesByTextBoundingBox: true
         });
         

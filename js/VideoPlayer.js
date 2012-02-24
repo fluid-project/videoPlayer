@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
-                container: "{videoPlayer}.dom.video",
+                container: "{videoPlayer}.dom.videoContainer",
                 createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
