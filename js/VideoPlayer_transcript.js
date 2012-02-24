@@ -46,7 +46,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null
         },
         model: {
-            selection: "none",
+            selection: undefined,
             choices: [],
             labels: []
         },
@@ -64,9 +64,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptText: ".flc-videoPlayer-transcript-text"
         },
         selectorsToIgnore: ["closeButton", "transcriptText"],
-        strings: {
-            transcriptsOff: "Hide Transcripts"
-        },
         styles: {
             highlight: "fl-videoPlayer-transcript-element-highlight"
         }
@@ -228,16 +225,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.transcript.prepareTranscript = function (that) {
         // Transcript display only supports one language at a time
-        if (that.model.currentTracks.transcripts[0] === "none") {
-            that.applier.requestChange("displayTranscripts", false);
+        // Exit if the current transcript is not chosen
+        if (that.model.currentTracks.transcripts.length == 0) {
             return true;
         }
         
         var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
+        var currentTranscript = that.options.transcripts[currentTranscriptIndex];
+        
+        if (that.options.transcripts.length === 0 || !currentTranscript) {
+            return true;
+        }
         
         // Load the transcript only if it's never been loaded before
-        if (that.options.transcripts[currentTranscriptIndex].transcriptText) {
-            fluid.videoPlayer.transcript.displayTranscript(that, that.options.transcripts[currentTranscriptIndex].transcriptText);
+        if (currentTranscript.transcriptText) {
+            fluid.videoPlayer.transcript.displayTranscript(that, currentTranscript.transcriptText);
         } else {
             fluid.videoPlayer.transcript.loadTranscript(that, currentTranscriptIndex);
         }
@@ -275,12 +277,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.options.model.choices.push(key.toString());
             that.options.model.labels.push(value.label);
         });
-        // add the 'turn transcripts off' option
-        that.options.model.choices.push("none");
-        that.options.model.labels.push(that.options.strings.transcriptsOff);
     };
     
     fluid.videoPlayer.transcript.produceTree = function (that) {
+        if (that.model.choices.length === 0 || that.model.labels.length === 0) {
+            return {};
+        }
+        
         return {
             langaugeDropdown: {
                 selection: "${currentTracks.transcripts.0}",
