@@ -38,6 +38,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             currentCaptions: "currentTracks.captions",
             displayCaptions: "displayCaptions"
         },
+        // TODO: Those selectors should come from the parent component!!
         selectors: {
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea"

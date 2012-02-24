@@ -194,5 +194,6 @@ footer a {
 .fl-videoPlayer-captionArea {
     background-color: #000000;
     color: #FFFFFF;
+    /* This just a quick hack to make captions appear above the scrub bar before we make a proper divs */
     bottom: 6.8em;
 }
