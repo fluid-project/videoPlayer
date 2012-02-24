@@ -236,6 +236,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var scrubber = that.locate("scrubber");
         scrubber.slider({
             unittext: "seconds",
+            range: "min",
             disabled: true
         }).attr({
             "role": "slider"

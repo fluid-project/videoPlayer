@@ -49,6 +49,10 @@
     cursor: pointer;
 }
 
+.fl-videoPlayer-button:hover {
+    background-color: rgba(153, 153, 153, 0.75);
+}
+
 .fl-videoPlayer-controller-buttons * {
     display: inline;
 }
@@ -74,10 +78,6 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-playing {
     background-image: url('../images/pause-black.png');
 }
-.fl-videoPlayer-play:hover,
-.fl-videoPlayer-playing:hover {
-    background-color: yellow;
-}
 
 /*
  * Fullscreen button
@@ -88,10 +88,6 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/fullscreen-on-black.png');
 }
-.fl-videoPlayer-fullscreen:hover,
-.fl-videoPlayer-fullscreen:focus {
-    background-color: yellow;
-}
 
 /*
  * Volume controls
@@ -99,24 +95,36 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-mute {
     background: url('../images/volume-black.png') no-repeat center center;
 }
-.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-mute,
-.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
-    background-color: yellow;
-}
+
 .fl-videoPlayer-muted {
     background-image: url('../images/volume-muted-black.png');
 }
-.fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-muted,
-.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
-    background-color: orange;
+
+.fl-videoPlayer-volumeContainer {
+    position: relative;
 }
+
 .fl-videoPlayer-volumeControl {
     display: none;
-    z-index: 100;
+    z-index: 101;
+    position: absolute;
+    bottom: 23px;
+    right: 15px;
+    width: 25%;
 }
+
+.fl-videoPlayer-volumeControl.ui-corner-all {
+    border-radius: 0px 0px 0px 0px;
+}
+
+.fl-videoPlayer-volumeControl .ui-slider-handle {
+    height: 10%;
+    left: -0.4em;
+}
+
 .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-volumeControl,
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
-    display: block;
+    display: inline;
 }
 
 /*
@@ -143,9 +151,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-captions-button {
     background: url('../images/captions-black.png') no-repeat center center;
 }
-.fl-videoPlayer-captions-button:hover {
-    background-color: yellow;
-}
+
 .fl-videoPlayer-captions-button.fl-videoPlayer-caption-active {
     background-color: orange;
 }
@@ -174,9 +180,7 @@ ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
 .fl-videoPlayer-transcripts-button {
     background: url('../images/transcripts-black.png') no-repeat center center;
 }
-.fl-videoPlayer-transcripts-button:hover {
-    background-color: yellow;
-}
+
 .fl-videoPlayer-transcripts-button.fl-videoPlayer-transcript-active {
     background-color: orange;
 }
@@ -192,6 +196,10 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     color: yellow;
 }
 
+.fl-videoPlayer-transcripts-close-button {
+    background: #ffffff url('../images/close-black.png') no-repeat center center;
+}
+
 /*
  * Scrub bar controls
  */
@@ -205,18 +213,15 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-scrubber {
-    width: 95%;
+    width: 100%;
 }
 
-.fl-videoPlayer-controller-volumeControl {
-    display: block;
-    position: absolute;
-    bottom: -40px;
-    z-index: 101;   /* To make our div showin on top since captionator has 100 so */
+.fl-videoPlayer-scrubber .ui-slider-handle {
+    display: none;
 }
 
-.fl-videoPlayer-transcripts-close-button {
-    background: #ffffff url('../images/close-black.png') no-repeat center center;
+.fl-videoPlayer-scrubber.ui-corner-all {
+    border-radius: 0px 0px 0px 0px;
 }
 
 /*
