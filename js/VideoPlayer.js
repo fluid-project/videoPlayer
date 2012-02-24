@@ -507,7 +507,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.fullscreen();
                 }
             }
-
+            
+            var controllers = that.locate("controllers");
+            var video = that.locate("videoControllersContainer");
+            video.bind({
+                "mouseenter": function (evt) {
+                    controllers.delay(10).slideDown();
+                    $(".flc-videoPlayer-captionArea").attr("position", "relative");
+                },
+                "mouseleave": function (evt) {
+                    controllers.delay(1000).slideUp();
+                    
+                    $(".flc-videoPlayer-captionArea").attr("position", "absolute");
+                }
+            });
+                        
             that.events.onReady.fire(that);
         });
         
