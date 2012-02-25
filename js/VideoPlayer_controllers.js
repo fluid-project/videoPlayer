@@ -546,9 +546,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.toggleButton.bindEventListeners = function (that) {
         that.locate("button").click(function (evt) {
             that.events.onPress.fire(evt);
-            if (evt) {
-                evt.stopPropagation();
-            }
+            return false;
         });
 
         that.applier.modelChanged.addListener(that.options.modelPath, function (model, oldModel, changeRequest) {
@@ -684,11 +682,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var langList = that.locate("language");
         langList.click(function (evt) {
             that.activate(langList.index(evt.currentTarget));
+            return false;
         });
 
         that.locate("showHide").click(function (evt) {
             that.applier.requestChange("showLanguage", !that.model.showLanguage);
             that.hide();
+            return false;
         });
 
         // TODO: We currently only support one active language. Indexing into the array will change
