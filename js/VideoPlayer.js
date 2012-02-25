@@ -325,8 +325,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var video = that.locate("video");
         video.fluid("tabbable");
         video.fluid("activatable", [that.play, opts]);
-        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
-        video.focus();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -335,6 +333,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
+
+        var controllers = that.locate("controllers");
+        that.locate("videoControllersContainer").mouseenter(function () {
+            controllers.slideDown();
+        });
+
+        that.container.mouseleave(function () {
+            controllers.delay(500).slideUp();
+        });
+
+        video.focus(function () {
+            controllers.slideDown();
+        });
+
         video.bind("loadedmetadata", function () {
             var videoControllersContainer = that.locate("videoControllersContainer");
             //that shouldn't be usefull but the video is too big if it's not used
@@ -512,6 +524,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
 
+            that.locate("controllers").hide();
             that.events.onReady.fire(that);
         });
         
