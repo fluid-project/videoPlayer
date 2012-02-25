@@ -203,13 +203,6 @@ ul.fl-videoPlayer-captions-languageList li {
 ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     color: yellow;
 }
-.fl-videoPlayer-time {
-    padding: 0.4em;
-    line-height: 1.4;
-    font-size: 1.1em;
-    height: 100%;
-    text-align: center;
-}
 
 /*
  * transcript controls
@@ -269,11 +262,34 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-scrubber .ui-slider-handle {
-    display: none;
+    width: 3em;
+    margin-left: -1.5em;
+    margin-top: -0.9em;
+    background: #000;
+    border-width: 0px 0px 0px 0px;
+    border-radius: 2px;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+}
+
+.fl-videoPlayer-scrubber .ui-slider-handle > span {
+    font-size: 50%;
+}
+
+.fl-videoPlayer-time {
+    height: 100%;
 }
 
 .fl-videoPlayer-scrubber.ui-corner-all {
     border-radius: 0px 0px 0px 0px;
+}
+
+.fl-videoPlayer-scrubber .ui-slider-range {
+     background: -moz-linear-gradient(0deg, #ffcc00, #f8e211);
+     background: -webkit-linear-gradient(0deg, #ffcc00, #f8e211);
+     background: -ms-linear-gradient(0deg, #ffcc00, #f8e211);
+     background: -o-linear-gradient(0deg, #ffcc00, #f8e211);
 }
 
 /*
