@@ -329,6 +329,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         video.fluid("activatable", [that.play, opts]);
     };
 
+    var showControllers = function (that) {
+        that.locate("controllers").slideDown();
+        that.locate("caption").addClass("fl-videoPlayer-captionArea-up"); // TODO: if we keep this strategy, put the class into a styles block
+    };
+
+    var hideControllers = function (that) {
+        that.locate("controllers").delay(500).slideUp();
+        setTimeout(function () { // TODO: Hack to move the captions down when the controllers disappear. They should slide down instead of jumping.
+            that.locate("caption").removeClass("fl-videoPlayer-captionArea-up");
+        }, 800);
+    };
+
     var bindVideoPlayerDOMEvents = function (that) {
         var video = that.locate("video");
         video.click(function (ev) {
@@ -336,17 +348,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.play();
         });
 
-        var controllers = that.locate("controllers");
         that.locate("videoControllersContainer").mouseenter(function () {
-            controllers.slideDown();
+            showControllers(that);
         });
 
         that.container.mouseleave(function () {
-            controllers.delay(500).slideUp();
+            hideControllers(that);
         });
 
         video.focus(function () {
-            controllers.slideDown();
+            showControllers(that);
         });
 
         video.bind("loadedmetadata", function () {
