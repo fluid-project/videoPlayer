@@ -41,7 +41,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "onReady",
                 options: {
                     events: {
-                        onCurrentTranscriptChanged: "{transcript}.events.onCurrentTranscriptChanged"
+                        onCurrentTranscriptChanged: "{transcript}.events.onCurrentTranscriptChanged",
+                        onHideTranscript: "{transcript}.events.onHideTranscript"
                     }
                 }
             }
@@ -53,6 +54,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onLoadTranscriptError: null,
             onIntervalChange: null,
             onCurrentTranscriptChanged: null,
+            onHideTranscript: null,
             onReady: null
         },
         model: {
@@ -253,6 +255,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.bindTranscriptDOMEvents = function (that) {
         that.locate("closeButton").click(function () {
             that.applier.requestChange("displayTranscripts", false);
+            that.events.onHideTranscript.fire(false);
         });
     };
 

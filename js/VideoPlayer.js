@@ -170,7 +170,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     },
                     events: {
-                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged"
+                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                        onHideTranscript: "{videoPlayer}.events.onHideTranscript"
                     }
                 }
             },
@@ -212,6 +213,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
             onCurrentTranscriptChanged: null,
+            onHideTranscript: null,
             onReady: null,
             
             // public, time events
@@ -558,10 +560,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript", "controllers"], {
+    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript", "fluid.videoPlayer.controllers"], {
         options: {
             listeners: {
-                "{videoPlayer}.events.onCurrentTranscriptChanged": "{controllers}.transcriptControls.menu.activate"
+                "{videoPlayer}.events.onCurrentTranscriptChanged": "{controllers}.transcriptControls.menu.activate",
+                "{videoPlayer}.events.onHideTranscript": "{controllers}.transcriptControls.menu.requestShowHide"
             }
         }
     });
@@ -570,7 +573,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript"], {
         options: {
             listeners: {
-                "{videoPlayer}.events.onCurrentTranscriptChanged": null
+                "{videoPlayer}.events.onCurrentTranscriptChanged": null,
+                "{videoPlayer}.events.onHideTranscript": null
             }
         }
     });

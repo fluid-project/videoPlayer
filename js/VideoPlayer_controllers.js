@@ -704,6 +704,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.applier.modelChanged.addListener("showLanguage", function (model, oldModel, changeRequest) {
+            // Prevent the mutual triggering between the "menu" and "transcript" components from being trapped into infinite loop
+            if (model.showLanguage === oldModel.showLanguage) {
+                return;
+            }
             that.locate("showHide").text(that.model.showLanguage ? that.options.strings.hideLanguage : that.options.strings.showLanguage);
             that.events.languageOnOff.fire(that.model.showLanguage);
         });
@@ -744,6 +748,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.activate = function (index) {
             that.applier.requestChange("activeLanguages.0", index);
+        };
+        that.requestShowHide = function (showHide) {
+            that.applier.requestChange("showLanguage", showHide);
         };
     };
 
