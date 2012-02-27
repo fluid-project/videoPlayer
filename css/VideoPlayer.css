@@ -37,8 +37,6 @@
 
 .fl-videoPlayer-controller {
     width:100%;
-/*     Disabling this styling to make controller and captionator div to be in the same container */
-/*     position: absolute; */
     bottom: 0;
 }
 
@@ -298,8 +296,6 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  */
  
 .fl-videoPlayer-captionArea {
-/*     Disabling this styling to make controller and captionator div to be in the same container */
-/*     position: relative; */
     text-align:center;
 }
 
@@ -353,9 +349,10 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     margin-top: 2em;
     word-spacing: 0.1em;
     padding: 1em;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
     cursor: pointer;
-    height: 83%;
+    height: 78%;
     width: 85%;
 }
 .fl-videoPlayer-transcript-element-highlight {
