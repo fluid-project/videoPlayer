@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
-                container: "{videoPlayer}.dom.videoContainer",
+                container: "{videoPlayer}.dom.videoControllersContainer",
                 createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
@@ -329,8 +329,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var video = that.locate("video");
         video.fluid("tabbable");
         video.fluid("activatable", [that.play, opts]);
-        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
-        video.focus();
+    };
+
+    var showControllers = function (that) {
+        that.locate("controllers").slideDown();
+    };
+
+    var hideControllers = function (that) {
+        that.locate("controllers").delay(500).slideUp();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -339,6 +345,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
+
+        that.locate("videoControllersContainer").mouseenter(function () {
+            showControllers(that);
+        });
+
+        that.container.mouseleave(function () {
+            hideControllers(that);
+        });
+
+        video.focus(function () {
+            showControllers(that);
+        });
+
         video.bind("loadedmetadata", function () {
             var videoControllersContainer = that.locate("videoControllersContainer");
             //that shouldn't be usefull but the video is too big if it's not used
@@ -516,6 +535,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
 
+            that.locate("controllers").hide();
             that.events.onReady.fire(that);
         });
         
