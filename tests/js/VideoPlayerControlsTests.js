@@ -25,7 +25,7 @@ fluid.registerNamespace("fluid.tests");
 
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
-        fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.videoPlayer.controllers.toggleButton");
+        fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.toggleButton");
 
         fluid.tests.onPressEventHandler = function () {
             expect(1);
@@ -73,7 +73,7 @@ fluid.registerNamespace("fluid.tests");
         fluid.tests.initToggleButton = function (testOpts) {
             var opts = fluid.copy(baseToggleButtonOpts);
             $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.toggleButton("#basic-toggle-button-test", opts);
+            return fluid.toggleButton("#basic-toggle-button-test", opts);
         };
 
         function verifyBasicButtonFunctions(buttonEl, name, clickToggles, tooltipReleased, tooltipPressed, stylePressed) {
