@@ -407,35 +407,47 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var video = that.locate("video");
             var videoControllersContainer = that.locate("videoControllersContainer");
             var videoWidth, videoHeight;
+            var videoEl = video[0];
             
             if (that.model.fullscreen === true) {
-                if (navigator.userAgent.search("Firefox") > 0) {
-                    video[0].mozRequestFullScreen();
-                } else {
-                    video[0].webkitEnterFullScreen();
+                if (videoEl.mozRequestFullScreen) {
+                    videoEl.mozRequestFullScreen();
+                } else if (videoEl.webkitEnterFullScreen) {
+                    videoEl.webkitEnterFullScreen();
                 }
+                // else {
+                //      TODO: Fallback to other versions of browsers
+                // }
             } else {
+                
+                ////
+                //      This MUST be fixed!
+                //      
+                //      Line 549 should not be on the first place but we still keep it to make transcripts render properly
+                //      This whole block of code must be moved somewhere else
+                ////
+                
                 videoWidth = video[0].videoWidth;
                 videoHeight = video[0].videoHeight;
+                
+                // Set the width/height of each container
+                videoContainer.css({
+                    width: videoWidth,
+                    height: videoHeight
+                });
+                
+                videoControllersContainer.css({width: videoWidth});
+            
+                that.locate("transcript").css("height", videoControllersContainer.height());
+    
+                // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
+                // otherwise, the transcript area gets showed up underneath the controller bar.
+                // Need a better solution.
+                that.container.css({
+                    width: videoWidth + that.locate("transcript").width() + 3,
+                    height: videoControllersContainer.height()
+                });
             }
-
-            // Set the width/height of each container
-            videoContainer.css({
-                width: videoWidth,
-                height: videoHeight
-            });
-            
-            videoControllersContainer.css({width: videoWidth});
-            
-            that.locate("transcript").css("height", videoControllersContainer.height());
-
-            // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
-            // otherwise, the transcript area gets showed up underneath the controller bar.
-            // Need a better solution.
-            that.container.css({
-                width: videoWidth + that.locate("transcript").width() + 3,
-                height: videoControllersContainer.height()
-            });
         };
     };
 
