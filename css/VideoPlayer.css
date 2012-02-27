@@ -42,24 +42,35 @@
 }
 
 .fl-videoPlayer-button {
-    width: 3em;
-    height: 3em;
+    width: 30px;
+    height: 30px;
     border: 0;
     cursor: pointer;
 }
 
-.fl-videoPlayer-button:hover {
-    background-color: rgba(153, 153, 153, 0.75);
+.fl-videoPlayer-controller-buttons .fl-videoPlayer-button,
+.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
+    background-size: cover;
+}
+
+.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
+    background-color: rgba(153, 153, 153, 0.45);
+    box-shadow: inset 0 0 0.25em rgba(0, 0, 0, 0.30);
 }
 
 .fl-videoPlayer-controller-buttons { 
     background-color: rgba(242, 242, 242, 0.75);
     width: 100%;
     height: 2.05em;
+    box-shadow: inset 0 0 0.5em rgba(0, 0, 0, 0.15);
 }
 
 .fl-videoPlayer-controller-buttons * {
     display: inline;
+}
+
+.fl-videoPlayer-controller-buttons > div {
+    height: 100%;
 }
 
 .fl-videoPlayer-controller-buttons-main {
@@ -78,31 +89,49 @@ a.fl-videoPlayer-button-wrapper {
  * Play button
  */
 .fl-videoPlayer-play {
-    background: url('../images/play-black.png') no-repeat center center;
+    background: url('../images/play.png') no-repeat center center;
 }
+
+.fl-videoPlayer-play:hover {
+    background: url('../images/play_hover.png') no-repeat center center;
+}
+
 .fl-videoPlayer-playing {
-    background-image: url('../images/pause-black.png');
+    background-image: url('../images/pause.png');
+}
+
+.fl-videoPlayer-playing:hover {
+    background-image: url('../images/pause_hover.png');
 }
 
 /*
  * Fullscreen button
  */
 .fl-videoPlayer-fullscreen {
-    background: url('../images/fullscreen-black.png') no-repeat center center;
+    background: url('../images/fullscreen.png') no-repeat center center;
 }
+
+.fl-videoPlayer-fullscreen:hover {
+    background: url('../images/fullscreen_hover.png') no-repeat center center;
+}
+
 .fl-videoPlayer-fullscreen-on {
-    background-image: url('../images/fullscreen-on-black.png');
+    background-image: url('../images/smallscreen.png');
+}
+
+.fl-videoPlayer-fullscreen-on:hover {
+    background-image: url('../images/smallscreen_hover.png');
 }
 
 /*
  * Volume controls
  */
 .fl-videoPlayer-mute {
-    background: url('../images/volume-black.png') no-repeat center center;
+    background: url('../images/volume.png') no-repeat center center;
 }
 
 .fl-videoPlayer-muted {
-    background-image: url('../images/volume-muted-black.png');
+    background-image: url('../images/volume_off.png');
 }
 
 .fl-videoPlayer-volumeContainer {
@@ -153,7 +182,11 @@ a.fl-videoPlayer-button-wrapper {
  * Caption controls
  */
 .fl-videoPlayer-captions-button {
-    background: url('../images/captions-black.png') no-repeat center center;
+    background: url('../images/captions.png') no-repeat center center;
+}
+
+.fl-videoPlayer-captions-button:hover {
+    background: url('../images/captions_hover.png') no-repeat center center;
 }
 
 .fl-videoPlayer-captions-button.fl-videoPlayer-caption-active {
@@ -170,19 +203,16 @@ ul.fl-videoPlayer-captions-languageList li {
 ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     color: yellow;
 }
-.fl-videoPlayer-time {
-    padding: 0.4em;
-    line-height: 1.4;
-    font-size: 1.1em;
-    height: 100%;
-    text-align: center;
-}
 
 /*
  * transcript controls
  */
 .fl-videoPlayer-transcripts-button {
-    background: url('../images/transcripts-black.png') no-repeat center center;
+    background: url('../images/transcript.png') no-repeat center center;
+}
+
+.fl-videoPlayer-transcripts-button:hover {
+    background: url('../images/transcript_hover.png') no-repeat center center;
 }
 
 .fl-videoPlayer-transcripts-button.fl-videoPlayer-transcript-active {
@@ -201,7 +231,11 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-transcripts-close-button {
-    background: #fff url('../images/close-black.png') no-repeat center center;
+    background: #fff url('../images/transcriptclose.png') no-repeat center center;
+}
+
+.fl-videoPlayer-transcripts-close-button:hover {
+    background: #fff url('../images/transcriptclose_hover.png') no-repeat center center;
 }
 
 /*
@@ -228,11 +262,34 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-scrubber .ui-slider-handle {
-    display: none;
+    width: 3em;
+    margin-left: -1.5em;
+    margin-top: -0.9em;
+    background: #000;
+    border-width: 0px 0px 0px 0px;
+    border-radius: 2px;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+}
+
+.fl-videoPlayer-scrubber .ui-slider-handle > span {
+    font-size: 50%;
+}
+
+.fl-videoPlayer-time {
+    height: 100%;
 }
 
 .fl-videoPlayer-scrubber.ui-corner-all {
     border-radius: 0px 0px 0px 0px;
+}
+
+.fl-videoPlayer-scrubber .ui-slider-range {
+     background: -moz-linear-gradient(0deg, #ffcc00, #f8e211);
+     background: -webkit-linear-gradient(0deg, #ffcc00, #f8e211);
+     background: -ms-linear-gradient(0deg, #ffcc00, #f8e211);
+     background: -o-linear-gradient(0deg, #ffcc00, #f8e211);
 }
 
 /*
@@ -240,10 +297,13 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  */
  
 .fl-videoPlayer-captionArea {
-/*     This just a quick hack to make captions appear above the scrub bar before we make a proper divs */
-    bottom: 6em;
     position: relative;
     text-align:center;
+}
+
+.fl-videoPlayer-captionArea-up {
+    /*  Place captions appear above the scrub bar */
+    bottom: 2.8em;
 }
 
 .fl-videoPlayer-caption-captionText {
@@ -258,6 +318,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     bottom: -40px;
     z-index: 101;   /* To make our div showin on top since captionator has 100 so */
 }
+
 
 /*
  * Transcript area
@@ -281,8 +342,8 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 }
 
 .fl-videoPlayer-transcript-text {
-    line-height: 1.5em;
     margin-top: 2em;
+    word-spacing: 0.1em;
     padding: 1em;
     overflow: scroll;
     height: 83%;
@@ -291,7 +352,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 .fl-videoPlayer-transcript-element-highlight {
     color: white;
     background-color: #0099CC;
-    padding: 0.3em;
+    padding: 0.2em;
 }
 
 /**********************
@@ -362,7 +423,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 .fl-theme-uio-yb .fl-videoPlayer-button {
     border: 1px solid yellow;
 }
-
+/*
 .fl-theme-uio-bw .fl-videoPlayer-play,
 .fl-theme-uio-by .fl-videoPlayer-play {
     background-image: url('../images/play-black.png');
@@ -443,7 +504,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-button {
     background-image: url('../images/transcripts-white.png');
 }
-
+*/
 .fl-theme-uio-wb .fl-videoPlayer-caption-captionText,
 .fl-theme-uio-yb .fl-videoPlayer-caption-captionText {
     background-color: black;

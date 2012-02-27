@@ -168,6 +168,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                 }
                             }
                         }
+                    },
+                    events: {
+                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                        onHideTranscript: "{videoPlayer}.events.onHideTranscript"
                     }
                 }
             },
@@ -208,6 +212,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartScrub: null,
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
+            onCurrentTranscriptChanged: null,
+            onHideTranscript: null,
             onReady: null,
             
             // public, time events
@@ -321,8 +327,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var video = that.locate("video");
         video.fluid("tabbable");
         video.fluid("activatable", [that.play, opts]);
-        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
-        video.focus();
+    };
+
+    var showControllers = function (that) {
+        that.locate("controllers").slideDown();
+        that.locate("caption").addClass("fl-videoPlayer-captionArea-up"); // TODO: if we keep this strategy, put the class into a styles block
+    };
+
+    var hideControllers = function (that) {
+        that.locate("controllers").delay(500).slideUp();
+        setTimeout(function () { // TODO: Hack to move the captions down when the controllers disappear. They should slide down instead of jumping.
+            that.locate("caption").removeClass("fl-videoPlayer-captionArea-up");
+        }, 800);
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -331,6 +347,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
+
+        that.locate("videoControllersContainer").mouseenter(function () {
+            showControllers(that);
+        });
+
+        that.container.mouseleave(function () {
+            hideControllers(that);
+        });
+
+        video.focus(function () {
+            showControllers(that);
+        });
+
         video.bind("loadedmetadata", function () {
             var videoControllersContainer = that.locate("videoControllersContainer");
             //that shouldn't be usefull but the video is too big if it's not used
@@ -411,11 +440,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.postInit = function (that) {
         that.canRenderControllers = function (controlsType) {
-            return (fluid.hasFeature("fluid.browser.html5") && controlsType === "custom") ? true : false;
+            return fluid.hasFeature("fluid.browser.html5") && controlsType === "custom";
         };
         
         that.canRenderMedia = function (videoSource) {
-            return videoSource ? true : false;
+            return videoSource;
         };
         
         that.play = function (ev) {
@@ -507,21 +536,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.fullscreen();
                 }
             }
-            
-            var controllers = that.locate("controllers");
-            var video = that.locate("videoControllersContainer");
-            video.bind({
-                "mouseenter": function (evt) {
-                    controllers.delay(10).slideDown();
-                    $(".flc-videoPlayer-captionArea").attr("position", "relative");
-                },
-                "mouseleave": function (evt) {
-                    controllers.delay(1000).slideUp();
-                    
-                    $(".flc-videoPlayer-captionArea").attr("position", "absolute");
-                }
-            });
-                        
+
+            that.locate("controllers").hide();
             that.events.onReady.fire(that);
         });
         
@@ -544,16 +560,45 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /*********************************************************************************
+     * Event Binder:                                                                 *
+     * Shared by all video player component whenever an event binder component is    *
+     * needed                                                                        *
+     *********************************************************************************/
+        
+    fluid.defaults("fluid.videoPlayer.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
+
+    /*********************************************************************************
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
     
-    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+    fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
                 "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
+            }
+        }
+    });
+
+    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript", "fluid.videoPlayer.controllers"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onCurrentTranscriptChanged": "{controllers}.transcriptControls.menu.activate",
+                "{videoPlayer}.events.onHideTranscript": "{controllers}.transcriptControls.menu.requestShowHide"
+            }
+        }
+    });
+
+    // Prevent the above demands block from being resolved in the absence of "controllers" component
+    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onCurrentTranscriptChanged": null,
+                "{videoPlayer}.events.onHideTranscript": null
             }
         }
     });

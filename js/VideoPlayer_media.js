@@ -29,7 +29,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.viewComponent", "autoInit"],
         components: {
             mediaEventBinder: {
-                type: "fluid.videoPlayer.media.eventBinder",
+                type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onMediaReady"
             }
         },
@@ -186,13 +186,5 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         bindMediaDOMEvents(that);
         that.events.onMediaReady.fire(that);
     };
-
-    /*********************************************************************************
-     * Media Event Binder: Binds events between components "videoPlayer" and "media" *
-     *********************************************************************************/
-        
-    fluid.defaults("fluid.videoPlayer.media.eventBinder", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"]
-    });
 
 })(jQuery);
