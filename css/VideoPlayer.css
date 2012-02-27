@@ -305,11 +305,6 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     width: 100%;
 }
 
-.fl-videoPlayer-captionArea-up {
-    /*  Place captions appear above the scrub bar */
-    bottom: 2.8em;
-}
-
 .fl-videoPlayer-caption-captionText {
     color: white;
     background-color: black;
