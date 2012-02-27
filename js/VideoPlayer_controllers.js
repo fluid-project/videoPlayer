@@ -108,7 +108,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             playButton: {
-                type: "fluid.videoPlayer.controllers.toggleButton",
+                type: "fluid.toggleButton",
                 container: "{controllers}.container",
                 options: {
                     selectors: {
@@ -128,7 +128,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             fullScreenButton: {
-                type: "fluid.videoPlayer.controllers.toggleButton",
+                type: "fluid.toggleButton",
                 container: "{controllers}.container",
                 options: {
                     selectors: {
@@ -415,7 +415,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         components: {
             muteButton: {
-                type: "fluid.videoPlayer.controllers.toggleButton",
+                type: "fluid.toggleButton",
                 options: {
                     selectors: {
                         button: ".flc-videoPlayer-mute"

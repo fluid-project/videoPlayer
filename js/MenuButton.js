@@ -251,7 +251,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         components: {
             button: {
-                type: "fluid.videoPlayer.controllers.toggleButton",
+                type: "fluid.toggleButton",
                 container: "{languageControls}.container",
                 options: {
                     selectors: {
@@ -354,7 +354,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 listener: "{languageControls}.updateLanguage",
                 args: ["{arguments}.1"]
             },
-            "{menu}.events.hiddenByKeyboard": "{button}.focus",
             "{menu}.events.languageOnOff": "{languageControls}.updateShowHide"
         },
         finalInitFunction: "fluid.videoPlayer.controllers.languageControls.eventBinder.finalInit"
