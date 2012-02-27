@@ -67,7 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }  
         },
         selectors: {
-            langaugeDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
+            languageDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
             closeButton: ".flc-videoPlayer-transcripts-close-button",
             transcriptText: ".flc-videoPlayer-transcript-text"
         },
@@ -277,8 +277,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             // Select the new transcript in the drop down list box
             var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
-            that.locate("langaugeDropdown").find("option:selected").removeAttr("selected");
-            that.locate("langaugeDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
+            that.locate("languageDropdown").find("option:selected").removeAttr("selected");
+            that.locate("languageDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
             
             that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
@@ -317,7 +317,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         
         return {
-            langaugeDropdown: {
+            languageDropdown: {
                 selection: "${currentTracks.transcripts.0}",
                 optionlist: "${choices}",
                 optionnames: "${labels}"
