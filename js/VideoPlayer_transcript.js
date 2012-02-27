@@ -164,11 +164,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.transcript.highlightTranscriptElement = function (that, currentTrackId, previousTrackId) {
-        // Remove the highlight from the previous transcript
-        if (previousTrackId !== null) {
-            var previousTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, previousTrackId);
-            $("#" + previousTranscriptElementId).removeClass(that.options.styles.highlight);
-        }
+        // Remove the previous highlights. The previous highlight may not necessarily be the "previousTrackId"
+        // since a slight time delay is applied on the interval change listener to prevent the event queuing-up
+        // when the scrubber bar is slid back and forth quickly
+        that.locate("transcriptText").children().removeClass(that.options.styles.highlight);
+        
         // Highlight the current transcript
         if (currentTrackId !== null) {
             var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, currentTrackId);
@@ -287,8 +287,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.transriptInterval.setIntervalList(intervalList);
         });
         
+        var savedCurrentInterval;
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
-            fluid.videoPlayer.transcript.highlightTranscriptElement(that, currentInterval, previousInterval);
+            setTimeout(function () {
+                if (currentInterval === savedCurrentInterval) {
+                    fluid.videoPlayer.transcript.highlightTranscriptElement(that, currentInterval, previousInterval);
+                }
+            }, 100);
+            savedCurrentInterval = currentInterval;
         });
     };
 
@@ -296,7 +302,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // build the 'choices' from the transcript list provided
         fluid.each(that.options.transcripts, function (value, key) {
             // ToDo: convert the integer to string to avoid the "unrecognized text" error at rendering dropdown list box
-            // The integer is converted back at the listener for currentTracks.transcripts.0. Needs a better solution for this.
+            // The integer is converted back in the listener function for currentTracks.transcripts.0. 
+            // Needs a better solution for this.
             that.model.choices.push(key.toString());
             that.model.labels.push(value.label);
         });

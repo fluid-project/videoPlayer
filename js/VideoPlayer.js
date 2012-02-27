@@ -407,9 +407,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.preInit = function (that) {
 
         /**
-         * Adjust the sizes of various video player containers according to these factors:
+         * Adjust the sizes of various video player containers based on these factors:
          * 1. on/off of "full screen"
-         * 2. show/hide of the transcript
+         * 2. show/hide transcript
          */
         that.fullscreen = function () {
             var videoContainer = that.locate("videoContainer");
