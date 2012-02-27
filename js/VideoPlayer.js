@@ -409,8 +409,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var videoWidth, videoHeight;
             
             if (that.model.fullscreen === true) {
-                videoWidth = window.innerWidth + "px";
-                videoHeight = window.innerHeight - 20 + "px";
+                if (navigator.userAgent.search("Firefox") > 0) {
+                    video[0].mozRequestFullScreen();
+                } else {
+                    video[0].webkitEnterFullScreen();
+                }
             } else {
                 videoWidth = video[0].videoWidth;
                 videoHeight = video[0].videoHeight;
