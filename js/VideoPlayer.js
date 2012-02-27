@@ -171,7 +171,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     events: {
                         onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
-                        onHideTranscript: "{videoPlayer}.events.onHideTranscript",
+                        onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
+                        onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                         onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange"
                     }
                 }
@@ -214,7 +215,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
             onCurrentTranscriptChanged: null,
-            onHideTranscript: null,
+            onTranscriptHide: null,
+            onTranscriptShow: null,
             onTranscriptElementChange: null,
             onReady: null,
             
@@ -228,7 +230,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onHTML5BrowserDetected: null
         },
         listeners: {
-            onViewReady: "{videoPlayer}.fullscreen"
+            onViewReady: "{videoPlayer}.fullscreen",
+            onTranscriptShow: "{videoPlayer}.fullscreen",
+            onTranscriptHide: "{videoPlayer}.fullscreen"
         },
         selectors: {
             videoContainer: ".flc-videoPlayer-videoContainer",
@@ -402,6 +406,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.preInit = function (that) {
 
+        /**
+         * Adjust the sizes of various video player containers according to these factors:
+         * 1. on/off of "full screen"
+         * 2. show/hide of the transcript
+         */
         that.fullscreen = function () {
             var videoContainer = that.locate("videoContainer");
             var video = that.locate("video");
@@ -426,11 +435,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             that.locate("transcript").css("height", videoControllersContainer.height());
 
+            var transcriptWidth = that.locate("transcript").width();
+            if (!that.model.displayTranscripts) {
+                transcriptWidth = 0;
+            }
+            
             // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
             // otherwise, the transcript area gets showed up underneath the controller bar.
             // Need a better solution.
             that.container.css({
-                width: videoWidth + that.locate("transcript").width() + 3,
+                width: videoWidth + transcriptWidth + 3,
                 height: videoControllersContainer.height()
             });
         };
@@ -587,7 +601,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         options: {
             listeners: {
                 "{videoPlayer}.events.onCurrentTranscriptChanged": "{controllers}.transcriptControls.menu.activate",
-                "{videoPlayer}.events.onHideTranscript": "{controllers}.transcriptControls.menu.requestShowHide"
+                "{videoPlayer}.events.onTranscriptHide": {
+                    listener: "{controllers}.transcriptControls.menu.requestShowHide",
+                    args: [false]
+                }
             }
         }
     });
@@ -597,7 +614,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         options: {
             listeners: {
                 "{videoPlayer}.events.onCurrentTranscriptChanged": null,
-                "{videoPlayer}.events.onHideTranscript": null
+                "{videoPlayer}.events.onTranscriptHide": null
             }
         }
     });

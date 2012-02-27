@@ -38,13 +38,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             transcriptEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onReady",
-                options: {
-                    events: {
-                        onCurrentTranscriptChanged: "{transcript}.events.onCurrentTranscriptChanged",
-                        onHideTranscript: "{transcript}.events.onHideTranscript"
-                    }
-                }
+                createOnEvent: "onReady"
             }
         },
         events: {
@@ -54,7 +48,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onLoadTranscriptError: null,
             onIntervalChange: null,
             onCurrentTranscriptChanged: null,
-            onHideTranscript: null,
+            onTranscriptHide: null,
+            onTranscriptShow: null,
             onTranscriptElementChange: null,
             onReady: null
         },
@@ -99,8 +94,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.switchTranscriptArea = function (that) {
         if (that.model.displayTranscripts) {
             fluid.videoPlayer.transcript.showTranscriptArea(that);
+            that.events.onTranscriptShow.fire();
         } else {
             fluid.videoPlayer.transcript.hideTranscriptArea(that);
+            that.events.onTranscriptHide.fire();
         }
     };
     
@@ -244,7 +241,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.transcript.prepareTranscript = function (that) {
         // Transcript display only supports one language at a time
-        // Exit if the current transcript is not chosen
+        // Exit if the current transcript language is not set
         if (that.model.currentTracks.transcripts.length === 0) {
             return true;
         }
@@ -267,7 +264,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.bindTranscriptDOMEvents = function (that) {
         that.locate("closeButton").click(function () {
             that.applier.requestChange("displayTranscripts", false);
-            that.events.onHideTranscript.fire(false);
         });
     };
 
@@ -284,7 +280,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("langaugeDropdown").find("option:selected").removeAttr("selected");
             that.locate("langaugeDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
             
-            that.transcriptEventBinder.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
+            that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
         
         that.events.onTranscriptsLoaded.addListener(function (intervalList) {
