@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
-                container: "{videoPlayer}.dom.videoContainer",
+                container: "{videoPlayer}.dom.videoControllersContainer",
                 createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
@@ -331,14 +331,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var showControllers = function (that) {
         that.locate("controllers").slideDown();
-        that.locate("caption").addClass("fl-videoPlayer-captionArea-up"); // TODO: if we keep this strategy, put the class into a styles block
+        // Removing this code since cpation div will be sliding automatically when controller bar hides/shows
+        //that.locate("caption").addClass("fl-videoPlayer-captionArea-up"); // TODO: if we keep this strategy, put the class into a styles block
     };
 
     var hideControllers = function (that) {
         that.locate("controllers").delay(500).slideUp();
-        setTimeout(function () { // TODO: Hack to move the captions down when the controllers disappear. They should slide down instead of jumping.
-            that.locate("caption").removeClass("fl-videoPlayer-captionArea-up");
-        }, 800);
+        // Removing this code since cpation div will be sliding automatically when controller bar hides/shows
+        //setTimeout(function () { // TODO: Hack to move the captions down when the controllers disappear. They should slide down instead of jumping.
+        //    that.locate("caption").removeClass("fl-videoPlayer-captionArea-up");
+        //}, 800);
     };
 
     var bindVideoPlayerDOMEvents = function (that) {

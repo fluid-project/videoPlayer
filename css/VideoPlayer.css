@@ -37,7 +37,8 @@
 
 .fl-videoPlayer-controller {
     width:100%;
-    position: absolute;
+/*     Disabling this styling to make controller and captionator div to be in the same container */
+/*     position: absolute; */
     bottom: 0;
 }
 
@@ -297,8 +298,15 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  */
  
 .fl-videoPlayer-captionArea {
-    position: relative;
+/*     Disabling this styling to make controller and captionator div to be in the same container */
+/*     position: relative; */
     text-align:center;
+}
+
+.fl-videoPlayer-overlay {
+    bottom: 0em;
+    position: absolute;
+    width: 100%;
 }
 
 .fl-videoPlayer-captionArea-up {
