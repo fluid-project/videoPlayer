@@ -41,7 +41,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "onReady",
                 options: {
                     events: {
-                        onCurrentTranscriptChanged: "{transcript}.events.onCurrentTranscriptChanged"
+                        onCurrentTranscriptChanged: "{transcript}.events.onCurrentTranscriptChanged",
+                        onHideTranscript: "{transcript}.events.onHideTranscript"
                     }
                 }
             }
@@ -53,15 +54,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onLoadTranscriptError: null,
             onIntervalChange: null,
             onCurrentTranscriptChanged: null,
+            onHideTranscript: null,
+            onTranscriptElementChange: null,
             onReady: null
         },
         model: {
             selection: undefined,
             choices: [],
-            labels: []
+            labels: [],
+            transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"  // ToDo: Is this the right place to save this info?
         },
         transcripts: [],
-        transcriptElementIdPrefix: "flc-videoPlayer-transcript-element",  // ToDo: Is this the right place to save this info?
         invokers: {
             convertToMilli: {
                 funcName: "fluid.videoPlayer.transcript.convertToMilli",
@@ -141,7 +144,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.transcript.getTranscriptElementId = function (that, transcriptIndex) {
-        return that.options.transcriptElementIdPrefix + "-" + that.id + "-" + transcriptIndex;
+        return that.options.model.transcriptElementIdPrefix + "-" + transcriptIndex;
     };
     
     fluid.videoPlayer.transcript.getTranscriptElement = function (transcriptElementContent, idName) {
@@ -150,6 +153,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.videoPlayer.transcript.displayTranscript = function (that, transcriptText) {
         that.locate("transcriptText").html(transcriptText);
+
+        $('span[id|="' + that.model.transcriptElementIdPrefix + '"]').click(function (element) {
+            var elementId = element.currentTarget.id;
+            var trackId = parseInt(elementId.substring(that.model.transcriptElementIdPrefix.length + 1), 10);
+            
+            var transcriptIndex = that.model.currentTracks.transcripts[0];
+            var track = that.options.transcripts[transcriptIndex].tracks[trackId];
+            
+            // Fire the onTranscriptElementChange event with the track start time and the track itself
+            that.events.onTranscriptElementChange.fire(that.convertToMilli(track.inTime)/1000, track);
+        });
     };
     
     fluid.videoPlayer.transcript.highlightTranscriptElement = function (that, currentTrackId, previousTrackId) {
@@ -231,7 +245,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.prepareTranscript = function (that) {
         // Transcript display only supports one language at a time
         // Exit if the current transcript is not chosen
-        if (that.model.currentTracks.transcripts.length == 0) {
+        if (that.model.currentTracks.transcripts.length === 0) {
             return true;
         }
         
@@ -253,6 +267,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.bindTranscriptDOMEvents = function (that) {
         that.locate("closeButton").click(function () {
             that.applier.requestChange("displayTranscripts", false);
+            that.events.onHideTranscript.fire(false);
         });
     };
 
@@ -267,7 +282,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Select the new transcript in the drop down list box
             var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
             that.locate("langaugeDropdown").find("option:selected").removeAttr("selected");
-            that.locate("langaugeDropdown").find("option[value='"+currentTranscriptIndex+"']").attr("selected", "selected");
+            that.locate("langaugeDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
             
             that.transcriptEventBinder.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
@@ -286,9 +301,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.each(that.options.transcripts, function (value, key) {
             // ToDo: convert the integer to string to avoid the "unrecognized text" error at rendering dropdown list box
             // The integer is converted back at the listener for currentTracks.transcripts.0. Needs a better solution for this.
-            that.options.model.choices.push(key.toString());
-            that.options.model.labels.push(value.label);
+            that.model.choices.push(key.toString());
+            that.model.labels.push(value.label);
         });
+        
+        that.model.transcriptElementIdPrefix = that.model.transcriptElementIdPrefix + "-" + that.id;
     };
     
     fluid.videoPlayer.transcript.produceTree = function (that) {

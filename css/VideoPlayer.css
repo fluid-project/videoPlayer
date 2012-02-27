@@ -37,7 +37,6 @@
 
 .fl-videoPlayer-controller {
     width:100%;
-    position: absolute;
     bottom: 0;
 }
 
@@ -300,10 +299,13 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  */
  
 .fl-videoPlayer-captionArea {
-/*     This just a quick hack to make captions appear above the scrub bar before we make a proper divs */
-    bottom: 6em;
-    position: relative;
     text-align:center;
+}
+
+.fl-videoPlayer-overlay {
+    bottom: 0em;
+    position: absolute;
+    width: 100%;
 }
 
 .fl-videoPlayer-caption-captionText {
@@ -318,6 +320,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     bottom: -40px;
     z-index: 101;   /* To make our div showin on top since captionator has 100 so */
 }
+
 
 /*
  * Transcript area
@@ -344,8 +347,10 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     margin-top: 2em;
     word-spacing: 0.1em;
     padding: 1em;
-    overflow: scroll;
-    height: 83%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    cursor: pointer;
+    height: 78%;
     width: 85%;
 }
 .fl-videoPlayer-transcript-element-highlight {
