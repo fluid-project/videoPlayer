@@ -407,46 +407,61 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.preInit = function (that) {
 
         /**
-         * Adjust the sizes of various video player containers according to these factors:
+         * Adjust the sizes of various video player containers based on these factors:
          * 1. on/off of "full screen"
-         * 2. show/hide of the transcript
+         * 2. show/hide transcript
          */
         that.fullscreen = function () {
             var videoContainer = that.locate("videoContainer");
             var video = that.locate("video");
             var videoControllersContainer = that.locate("videoControllersContainer");
             var videoWidth, videoHeight;
+            var videoEl = video[0];
             
             if (that.model.fullscreen === true) {
-                videoWidth = window.innerWidth + "px";
-                videoHeight = window.innerHeight - 20 + "px";
+                if (videoEl.mozRequestFullScreen) {
+                    videoEl.mozRequestFullScreen();
+                } else if (videoEl.webkitEnterFullScreen) {
+                    videoEl.webkitEnterFullScreen();
+                }
+                // else {
+                //      TODO: Fallback to other versions of browsers
+                // }
             } else {
+                
+                ////
+                //      This MUST be fixed!
+                //      
+                //      Line 563 should not be on the first place but we still keep it to make transcripts render properly
+                //      This whole block of code must be moved somewhere else
+                ////
+                
                 videoWidth = video[0].videoWidth;
                 videoHeight = video[0].videoHeight;
+                
+                // Set the width/height of each container
+                videoContainer.css({
+                    width: videoWidth,
+                    height: videoHeight
+                });
+                
+                videoControllersContainer.css({width: videoWidth});
+            
+                that.locate("transcript").css("height", videoControllersContainer.height());
+    
+                var transcriptWidth = that.locate("transcript").width();
+                if (!that.model.displayTranscripts) {
+                    transcriptWidth = 0;
+                }
+    
+                // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
+                // otherwise, the transcript area gets showed up underneath the controller bar.
+                // Need a better solution.
+                that.container.css({
+                    width: videoWidth + transcriptWidth + 3,
+                    height: videoControllersContainer.height()
+                });
             }
-
-            // Set the width/height of each container
-            videoContainer.css({
-                width: videoWidth,
-                height: videoHeight
-            });
-            
-            videoControllersContainer.css({width: videoWidth});
-            
-            that.locate("transcript").css("height", videoControllersContainer.height());
-
-            var transcriptWidth = that.locate("transcript").width();
-            if (!that.model.displayTranscripts) {
-                transcriptWidth = 0;
-            }
-            
-            // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
-            // otherwise, the transcript area gets showed up underneath the controller bar.
-            // Need a better solution.
-            that.container.css({
-                width: videoWidth + transcriptWidth + 3,
-                height: videoControllersContainer.height()
-            });
         };
     };
 
