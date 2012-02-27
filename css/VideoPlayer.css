@@ -354,6 +354,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     word-spacing: 0.1em;
     padding: 1em;
     overflow: scroll;
+    cursor: pointer;
     height: 83%;
     width: 85%;
 }

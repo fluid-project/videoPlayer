@@ -171,7 +171,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     events: {
                         onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
-                        onHideTranscript: "{videoPlayer}.events.onHideTranscript"
+                        onHideTranscript: "{videoPlayer}.events.onHideTranscript",
+                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange"
                     }
                 }
             },
@@ -214,6 +215,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTemplateLoadError: null,
             onCurrentTranscriptChanged: null,
             onHideTranscript: null,
+            onTranscriptElementChange: null,
             onReady: null,
             
             // public, time events
@@ -581,7 +583,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
                 "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
-                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
+                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
+                "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
             }
         }
     });
