@@ -244,7 +244,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.transcript.prepareTranscript = function (that) {
         // Transcript display only supports one language at a time
-        // Exit if the current transcript is not chosen
+        // Exit if the current transcript language is not set
         if (that.model.currentTracks.transcripts.length === 0) {
             return true;
         }
