@@ -349,7 +349,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     overflow-x: hidden;
     overflow-y: scroll;
     cursor: pointer;
-    height: 78%;
+    height: 73%;
     width: 85%;
 }
 .fl-videoPlayer-transcript-element-highlight {
