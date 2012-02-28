@@ -155,21 +155,21 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-languageMenu {
     position: absolute;
-    bottom: 2.3em;
+    bottom: 2.5em;
     padding: 0;
-    width:22%;
-    font-size: 15%;
+    width: 10em;
+    font-size: 0.8em;
     background: #f2f2f2;
     z-index: 2;
 }
 
 /* TODO: This is a temporary workaround to absolute positioning issues with the menu buttons */
 .fl-videoPlayer-captions .fl-videoPlayer-languageMenu {
-    margin-left: -3em;
+    margin-left: -3.5em;
 }
 
 .fl-videoPlayer-transcript .fl-videoPlayer-languageMenu {
-    margin-left: 0em;
+    margin-left: -1em;
 }
 
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem {
