@@ -148,6 +148,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{videoPlayer}.dom.transcript",
                 createOnEvent: "onHTML5BrowserDetected",
                 options: {
+                    // TODO (long term) - should not really share entire model and applier with transcripts
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     transcripts: "{videoPlayer}.options.video.transcripts",
@@ -256,6 +257,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             sources: [],
             captions: [],
             transcripts: []
+        },
+        defaultKinds: {
+            captions: "subtitles",
+            transcripts: "transcripts"
         },
         model: {
             currentTracks: {
@@ -403,8 +408,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         return tree;
     };
+    
+    fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
+        fluid.each(tracks, function(track) {
+            if (!track.kind) {
+                track.kind = defaultKind;
+            }
+        });
+    };
 
     fluid.videoPlayer.preInit = function (that) {
+        fluid.each(that.options.defaultKinds, function(defaultKind, index) {
+            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
+        });
 
         /**
          * Adjust the sizes of various video player containers based on these factors:
