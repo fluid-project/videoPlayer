@@ -1,11 +1,5 @@
-/*
- * Videoplayer container
- */
-
-.fl-videoPlayer:focus,
-.fl-videoPlayer :focus {
-    /* TODO: This is a temporary style, to be replaced when we have the final designs */
-    border: 1px solid red;
+.fl-videoPlayer {
+    font-family: sans-serif;
 }
 
 /*
@@ -159,22 +153,42 @@ a.fl-videoPlayer-button-wrapper {
     display: inline;
 }
 
-/*
- * Language menus
- * colours are temporary
- */
-.fl-videoPlayer-languageMenu * {
+.fl-videoPlayer-languageMenu {
+    position: absolute;
+    bottom: 2.3em;
+    padding: 0;
+    width:22%;
+    font-size: 15%;
+    background: #f2f2f2;
+    z-index: 2;
+}
+
+/* TODO: This is a temporary workaround to absolute positioning issues with the menu buttons */
+.fl-videoPlayer-captions .fl-videoPlayer-languageMenu {
+    margin-left: -3em;
+}
+
+.fl-videoPlayer-transcript .fl-videoPlayer-languageMenu {
+    margin-left: 0em;
+}
+
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem {
     display: block;
+    background: #fff;
+    width: 81%;
+    padding: 5% 5% 5% 10%;
+    margin: 2% 0 0% 2%;
 }
-.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover {
-    color: yellow;
-}
+
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover,
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
-    color: orange;
+    background-color: #ffcc00;
 }
+
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active {
-    color: green;
+    background: #fff;
+    font-weight: bold;
 }
 
 /*
@@ -199,6 +213,7 @@ ul.fl-videoPlayer-captions-languageList,
 ul.fl-videoPlayer-captions-languageList li {
     display: block;
 }
+
 ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     color: yellow;
 }

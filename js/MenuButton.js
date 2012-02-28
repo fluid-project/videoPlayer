@@ -110,7 +110,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // focus must be return to the button
         that.locate("language").fluid("activatable", function (evt) {
             that.activate(that.locate("language").index(evt.currentTarget));
-            that.events.activatedByKeyboard.fire();
             return false;
         });
         var noneButton = that.locate("showHide");
