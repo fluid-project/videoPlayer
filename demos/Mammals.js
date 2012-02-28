@@ -79,9 +79,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 currentTracks: {
                     captions: [0],
                     transcripts: [0]
-                },
-                displayCaptions: true,
-                displayTranscripts: true
+                }
             }
         });
 
@@ -139,9 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 currentTracks: {
                     captions: [0],
                     transcripts: [0]
-                },
-                displayCaptions: true,
-                displayTranscripts: true
+                }
             }
         });
 
@@ -198,9 +194,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 currentTracks: {
                     captions: [0],
                     transcripts: [0]
-                },
-                displayCaptions: true,
-                displayTranscripts: true
+                }
             }
         });
     });

@@ -90,6 +90,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions || [];
         var elPaths = that.options.elPaths;
+        var displayCaptions = fluid.get(that.model, elPaths.displayCaptions);
         
         // Before we go any further check if it makes sense to create captionator and bind events
         if(captions.length === 0) {
@@ -110,7 +111,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var trackTag = $("<track />");
             var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
 
-            if ($.inArray(key, fluid.get(that.model, elPaths.currentCaptions)) !== -1) {
+            if ($.inArray(key, fluid.get(that.model, elPaths.currentCaptions)) !== -1 && displayCaptions) {
                 attributes["default"] = "true";
             }
             trackTag.attr(attributes);
