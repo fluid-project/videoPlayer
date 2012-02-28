@@ -297,6 +297,8 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  
 .fl-videoPlayer-captionArea {
     text-align:center;
+    position: relative;
+    bottom: 1.1em;
 }
 
 .fl-videoPlayer-overlay {
