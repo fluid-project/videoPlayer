@@ -570,7 +570,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
         videoControllersContainer.css({width: videoWidth});
         
-        that.locate("transcript").css("height", videoControllersContainer.height());
+        that.locate("transcript").css("height", videoControllersContainer.height() - 2);
 
         var transcriptWidth = that.locate("transcript").width();
         if (!that.model.displayTranscripts) {
