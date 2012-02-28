@@ -80,8 +80,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captions: [0],
                     transcripts: [0]
                 },
-                displayCaptions: true,
-                displayTranscripts: true
+                displayCaptions: false,
+                displayTranscripts: false
             }
         });
 
@@ -140,8 +140,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captions: [0],
                     transcripts: [0]
                 },
-                displayCaptions: true,
-                displayTranscripts: true
+                displayCaptions: false,
+                displayTranscripts: false
             }
         });
 
@@ -199,8 +199,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captions: [0],
                     transcripts: [0]
                 },
-                displayCaptions: true,
-                displayTranscripts: true
+                displayCaptions: false,
+                displayTranscripts: false
             }
         });
     });
