@@ -229,10 +229,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCreateMediaReady: null,
             onHTML5BrowserDetected: null
         },
+        invokers: {
+            resize: {
+                funcName: "fluid.videoPlayer.resize",
+                args: "{videoPlayer}"
+            }  
+        },
         listeners: {
-            onViewReady: "{videoPlayer}.fullscreen",
-            onTranscriptShow: "{videoPlayer}.fullscreen",
-            onTranscriptHide: "{videoPlayer}.fullscreen"
+            onViewReady: "{videoPlayer}.resizeHanlder",
+            onTranscriptShow: "{videoPlayer}.resizeHanlder",
+            onTranscriptHide: "{videoPlayer}.resizeHanlder"
         },
         selectors: {
             videoContainer: ".flc-videoPlayer-videoContainer",
@@ -363,36 +369,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         video.bind("loadedmetadata", function () {
-            var videoContainer = that.locate("videoContainer");
-            var video = that.locate("video");
-            var videoControllersContainer = that.locate("videoControllersContainer");
-            var videoWidth, videoHeight;
-            
-            videoWidth = video[0].videoWidth;
-            videoHeight = video[0].videoHeight;
-                
-            // Set the width/height of each container
-            videoContainer.css({
-                width: videoWidth,
-                height: videoHeight
-            });
-                
-            videoControllersContainer.css({width: videoWidth});
-            
-            that.locate("transcript").css("height", videoControllersContainer.height());
-    
-            var transcriptWidth = that.locate("transcript").width();
-            if (!that.model.displayTranscripts) {
-                transcriptWidth = 0;
-            }
-    
-            // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
-            // otherwise, the transcript area gets showed up underneath the controller bar.
-            // Need a better solution.
-            that.container.css({
-                width: videoWidth + transcriptWidth + 3,
-                height: videoControllersContainer.height()
-            });
+            that.resize();
             
             bindKeyboardControl(that);
         });
@@ -432,6 +409,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
+    
+        that.resizeHanlder = function () {
+            that.resize();
+        };
 
         that.fullscreen = function () {
 
@@ -569,6 +550,40 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ret = fullTime + ":";
         }
         return ret + min + ":" + sec;
+    };
+    
+    // Function which modifies containers and their sizes
+    fluid.videoPlayer.resize = function (that) {
+        var videoContainer = that.locate("videoContainer");
+        var video = that.locate("video");
+        var videoControllersContainer = that.locate("videoControllersContainer");
+        var videoWidth, videoHeight;
+        
+        videoWidth = video[0].videoWidth;
+        videoHeight = video[0].videoHeight;
+            
+        // Set the width/height of each container
+        videoContainer.css({
+            width: videoWidth,
+            height: videoHeight
+        });
+            
+        videoControllersContainer.css({width: videoWidth});
+        
+        that.locate("transcript").css("height", videoControllersContainer.height());
+
+        var transcriptWidth = that.locate("transcript").width();
+        if (!that.model.displayTranscripts) {
+            transcriptWidth = 0;
+        }
+
+        // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
+        // otherwise, the transcript area gets showed up underneath the controller bar.
+        // Need a better solution.
+        that.container.css({
+            width: videoWidth + transcriptWidth + 3,
+            height: videoControllersContainer.height()
+        });
     };
 
     /*********************************************************************************
