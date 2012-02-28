@@ -243,7 +243,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
                         0, currentTracks.captions[0]);
                 
-                testTrackShowing(html5Captionator, 0);
+                testTrackNotShowing(html5Captionator, 0);
                 testTrackNotShowing(html5Captionator, 1);
                 
                 start();
