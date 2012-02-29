@@ -242,12 +242,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptHide: "{videoPlayer}.resizeHanlder"
         },
         selectors: {
-            videoContainer: ".flc-videoPlayer-videoContainer",
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
             transcript: ".flc-videoPlayer-transcriptArea",
-            videoControllersContainer: ".flc-videoPlayer-video-controller-area"
+            videoControllersContainer: ".flc-videoPlayer-video-controller-area",
+            overlay: ".flc-videoPlayer-overlay"
         },
         strings: {
             captionsOff: "Captions OFF",
@@ -255,7 +255,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["videoContainer", "caption", "videoControllersContainer", "transcript"],
+        selectorsToIgnore: ["overlay", "caption", "videoControllersContainer", "transcript"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -570,36 +570,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     // Function which modifies containers and their sizes
     fluid.videoPlayer.resize = function (that) {
-        var videoContainer = that.locate("videoContainer");
         var video = that.locate("video");
         var videoControllersContainer = that.locate("videoControllersContainer");
-        var videoWidth, videoHeight;
+        var overlay = that.locate("overlay");
         
-        videoWidth = video[0].videoWidth;
-        videoHeight = video[0].videoHeight;
-            
-        // Set the width/height of each container
-        videoContainer.css({
-            width: videoWidth,
-            height: videoHeight
-        });
-            
-        videoControllersContainer.css({width: videoWidth});
+        // Get the video sizes first
+        var videoWidth = video[0].videoWidth;
+        var videoHeight = video[0].videoHeight;
         
-        that.locate("transcript").css("height", videoControllersContainer.height() - 2);
-
-        var transcriptWidth = that.locate("transcript").width();
-        if (!that.model.displayTranscripts) {
-            transcriptWidth = 0;
-        }
-
-        // ToDo: A hacky way by adding 3px onto the videoPlayer full container width, 
-        // otherwise, the transcript area gets showed up underneath the controller bar.
-        // Need a better solution.
-        that.container.css({
-            width: videoWidth + transcriptWidth + 3,
-            height: videoControllersContainer.height()
-        });
+        // Set height on the controller area. To make overlay to show up exatly at the bottom of the video regardless to UIO settings
+        videoControllersContainer.css({height: videoHeight});
+        
+        // Set the width of the overlay to be the width of the video
+        overlay.css({width: videoWidth});
     };
 
     /*********************************************************************************
