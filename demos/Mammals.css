@@ -118,12 +118,6 @@ section, aside {
     font-size: .88em; 
 }
 
-.fl-videoPlayer {
-    max-width: 100%;
-    margin: auto;
-    padding: .2em;
-}
-
 .pic {
     background-color: #F3F3F3;
     border: .1em solid #DDDDDD;
@@ -189,6 +183,13 @@ footer a {
 
 
 /* Customize video player related styles */
+
+.fl-videoPlayer {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    text-align: center;
+    max-width: 100%;
+}
 
 .fl-videoPlayer-captionArea {
     background-color: #000000;
