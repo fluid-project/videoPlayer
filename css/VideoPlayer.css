@@ -386,6 +386,56 @@ ul.fl-videoPlayer-transcripts-languageList li {
     color: #FFFFFF;
 }
 
+
+/********************
+ * UIO theme styling 
+ ********************/
+ 
+.fl-theme-uio-bw .fl-videoPlayer-video-controller-area,
+.fl-theme-uio-by .fl-videoPlayer-video-controller-area {
+    border: 1px solid #fff;  /* This will go away once we have the proper styling for the initial overlay */
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-video-controller-area {
+    border: 1px solid white;  /* This will go away once we have the proper styling for the initial overlay */
+}
+ 
+.fl-theme-uio-yb .fl-videoPlayer-video-controller-area {
+    border: 1px solid yellow;  /* This will go away once we have the proper styling for the initial overlay */
+}
+
+/***********************************************************
+ * Styling overrides for the scrubber when using UIO themes
+ ***********************************************************/
+
+.fl-theme-uio-bw .fl-videoPlayer-scrubber,
+.fl-theme-uio-wb .fl-videoPlayer-scrubber,
+.fl-theme-uio-by .fl-videoPlayer-scrubber,
+.fl-theme-uio-yb .fl-videoPlayer-scrubber,
+.fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-handle,
+.fl-theme-uio-wb .fl-videoPlayer-scrubber .ui-slider-handle,
+.fl-theme-uio-by .fl-videoPlayer-scrubber .ui-slider-handle,
+.fl-theme-uio-yb .fl-videoPlayer-scrubber .ui-slider-handle {
+     border-width: 1px;
+ }
+
+.fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-range,
+.fl-theme-uio-by .fl-videoPlayer-scrubber .ui-slider-range {
+    background-image: none;
+    background-color: black !important;
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-scrubber .ui-slider-range {
+    background-image: none;
+    background-color: white !important;
+}
+
+.fl-theme-uio-yb .fl-videoPlayer-scrubber .ui-slider-range {
+    background-image: none;
+    background-color: yellow !important;
+}
+
+ 
 /***********************************************************
  * Styling overrides for the controls when using UIO themes
  ***********************************************************/
@@ -624,6 +674,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/black/captions_hover.png');
 }
 
+.fl-theme-uio-bw .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-by .fl-videoPlayer-captions-button-on {
+    background-image: url('../images/black/captions_on.png');
+}
+
 .fl-theme-uio-yb .fl-videoPlayer-captions-button {
     background-image: url('../images/yellow/captions.png');
 }
@@ -632,12 +687,20 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/yellow/captions_hover.png');
 }
 
+.fl-theme-uio-yb .fl-videoPlayer-captions-button-on {
+    background-image: url('../images/yellow/captions_on.png');
+}
+
 .fl-theme-uio-wb .fl-videoPlayer-captions-button {
     background-image: url('../images/white/captions.png');
 }
 
 .fl-theme-uio-wb .fl-videoPlayer-captions-button:hover {
     background-image: url('../images/white/captions_hover.png');
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-captions-button-on {
+    background-image: url('../images/white/captions_on.png');
 }
 
 .fl-theme-uio-bw .fl-videoPlayer-transcripts-button,
@@ -650,6 +713,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/black/transcript_hover.png');
 }
 
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button-on,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/black/transcript_on.png');
+}
+
 .fl-theme-uio-yb .fl-videoPlayer-transcripts-button {
     background-image: url('../images/yellow/transcript.png');
 }
@@ -658,10 +726,18 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/yellow/transcript_hover.png');
 }
 
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/yellow/transcript_on.png');
+}
+
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-button {
     background-image: url('../images/white/transcript.png');
 }
 
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-button:hover {
     background-image: url('../images/white/transcript_hover.png');
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/white/transcript_on.png');
 }

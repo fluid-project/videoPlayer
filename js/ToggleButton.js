@@ -36,6 +36,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             button: ".flc-videoPlayer-button"
         },
         styles: {
+            init: "fl-videoPlayer-button-init",
             pressed: "fl-videoPlayer-button-pressed",
             tooltip: "fl-videoPlayer-tooltip"
         },
@@ -66,6 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.updatePressedState = function () {
             var button = that.locate("button");
             var pressed = !!fluid.get(that.model, that.options.modelPath);
+            button.toggleClass(that.options.styles.init, !pressed);
             button.toggleClass(that.options.styles.pressed, pressed);
             button.attr("aria-pressed", pressed.toString());
         };

@@ -256,6 +256,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     selectors: {
                         button: "{languageControls}.options.selectors.button"
                     },
+                    styles: { 
+                        init: "{languageControls}.options.styles.init",
+                        pressed: "{languageControls}.options.styles.pressed"
+                    },
                     // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
                     strings: "{languageControls}.options.strings",
                     events: {

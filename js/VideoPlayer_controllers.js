@@ -77,6 +77,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: ".flc-videoPlayer-captions-button",
                         menu: ".flc-videoPlayer-captions-languageMenu"
                     },
+                    styles: { 
+                        init: "fl-videoPlayer-captions-button",
+                        pressed: "fl-videoPlayer-captions-button-on"
+                    },
                     strings: {
                         showLanguage: "Show Captions",
                         hideLanguage: "Hide Captions",
@@ -99,6 +103,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: ".flc-videoPlayer-transcripts-button",
                         menu: ".flc-videoPlayer-transcripts-languageMenu"
                     },
+                    styles: { 
+                        init: "fl-videoPlayer-transcripts-button",
+                        pressed: "fl-videoPlayer-transcripts-button-on"
+                    },
                     strings: {
                         showLanguage: "Show Transcripts",
                         hideLanguage: "Hide Transcripts",
@@ -115,6 +123,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: ".flc-videoPlayer-play"
                     },
                     styles: {
+                        init: "fl-videoPlayer-play",
                         pressed: "fl-videoPlayer-playing"
                     },
                     // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
@@ -135,6 +144,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: ".flc-videoPlayer-fullscreen"
                     },
                     styles: {
+                        init: "fl-videoPlayer-fullscreen",
                         pressed: "fl-videoPlayer-fullscreen-on"
                     },
                     // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
@@ -421,6 +431,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         button: ".flc-videoPlayer-mute"
                     },
                     styles: {
+                        init: "fl-videoPlayer-mute",
                         pressed: "fl-videoPlayer-muted"
                     },
                     // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
