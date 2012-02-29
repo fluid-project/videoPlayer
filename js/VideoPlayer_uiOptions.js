@@ -41,27 +41,42 @@ fluid.defaults("fluid.modelRelay", {
 });
 
 fluid.modelRelay.registerTarget = function(that, target) {
-    fluid.each(that.options.rules, function(value, key) {
+    var specListeners = fluid.transform(that.options.rules, function(value, key) {
         var listener = function (newModel, oldModel, changeList) {
             var newValue = fluid.get(newModel, key);
             if (typeof(value) === "string") {
                  target.applier.requestChange(value, newValue);
             } else {
-                var fullargs = [newValue, key, fluid.makeArray(arguments)]
+                var fullargs = [newValue, key, target, changeList]
                 if (value.lens) {
-                    var transformed = value.lens.transform.apply(null, fullargs);
+                    var transformed = value.lens.transform.apply(null, [newValue, key]);
                     target.applier.requestChange(value.targetPath, newValue);
                 }
-                else {
+                // Do not apply irreversible/general operations to the modelRelay's own model
+                else if (target !== that) {
                     var changes = value.func.apply(null, fullargs);
                     fluid.each(changes, function(change) {
                         target.applier.fireChangeRequest(change);
                     });
                 }
+                else {
+                   that.pentChanges = that.pentChanges.concat(changeList);
+                }
             }   
         };
-        that.options.sourceApplier.modelChanged.addListener(key, listener); 
+        that.options.sourceApplier.modelChanged.addListener(key, listener);
+        return value.func? listener: null;
     });
+    // Replay any pent-up changes into a new genuine target 
+    if (target !== that) {
+        fluid.each(that.pentChanges, function(change) {
+            console.log("Replaying pent change ", change, " to target ", target);
+            var listener = specListeners[change.path];
+            if (listener) {
+                listener(change.value, change.path, target, change);
+            }
+        });
+    }
 };
 
 fluid.modelRelay.processLookup = function(struct, member, relayType, key, expectedType) {
@@ -80,6 +95,7 @@ fluid.modelRelay.processLookup = function(struct, member, relayType, key, expect
 
 fluid.modelRelay.postInit = function(that) {
     that.targets = {};
+    that.pentChanges = [];
     that.addTarget = function(target) {
         fluid.modelRelay.registerTarget(that, target);
         that.targets[target.id] = target;
@@ -133,21 +149,21 @@ fluid.videoPlayer.matchLanguageRecord = function (language) {
 
 // Transforms a language change request as output from UIOptions into a changeApplier stream
 // capable of modifying the target videoPlayer model to match it
-fluid.videoPlayer.transformLanguageChange = function (value, videoPlayer) {
+fluid.videoPlayer.transformLanguageChange = function (value, valuePath, videoPlayer) {
     var ml = fluid.videoPlayer.matchLanguageRecord(value);
     var togo = [];
-    function pushRecord(path) {
-        var index = fluid.find(videoPlayer[path], ml);
+    function pushRecord(sourcePath, targetPath) {
+        var index = fluid.find(fluid.get(videoPlayer, sourcePath), ml);
         if (index !== undefined) {
             togo.push({
                 type: "ADD",
-                path: "currentTracks."+path,
-                value: index
+                path: targetPath,
+                value: [index]
             });
         }
     }
-    pushRecord("captions");
-    pushRecord("transcripts");
+    pushRecord("options.video.captions",    "currentTracks.captions");
+    pushRecord("options.video.transcripts", "currentTracks.transcripts");
     return togo;
 }; 
 
@@ -169,9 +185,18 @@ fluid.defaults("fluid.videoPlayer.relay", {
     }
 });
 
+fluid.videoPlayer.defaultModel = {
+    model: {
+        currentTracks: {
+            captions: [0],
+            transcripts: [0]
+        }
+    }
+};
+
 fluid.videoPlayer.makeEnhancedInstances = function(instances, relay) {
     return fluid.transform(instances, function(instance) {
-        var mergedOptions = $.extend(true, {}, {model: fluid.copy(relay.model)}, instance.options);
+        var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, {model: relay.model}, instance.options);
         var player = fluid.videoPlayer(instance.container, mergedOptions);
         relay.addTarget(player);
         return player;

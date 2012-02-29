@@ -1,11 +1,5 @@
-/*
- * Videoplayer container
- */
-
-.fl-videoPlayer:focus,
-.fl-videoPlayer :focus {
-    /* TODO: This is a temporary style, to be replaced when we have the final designs */
-    border: 1px solid red;
+.fl-videoPlayer {
+    font-family: sans-serif;
 }
 
 /*
@@ -159,22 +153,42 @@ a.fl-videoPlayer-button-wrapper {
     display: inline;
 }
 
-/*
- * Language menus
- * colours are temporary
- */
-.fl-videoPlayer-languageMenu * {
+.fl-videoPlayer-languageMenu {
+    position: absolute;
+    bottom: 2.5em;
+    padding: 0;
+    width: 10em;
+    font-size: 0.8em;
+    background: #f2f2f2;
+    z-index: 2;
+}
+
+/* TODO: This is a temporary workaround to absolute positioning issues with the menu buttons */
+.fl-videoPlayer-captions .fl-videoPlayer-languageMenu {
+    margin-left: -3.5em;
+}
+
+.fl-videoPlayer-transcript .fl-videoPlayer-languageMenu {
+    margin-left: -1em;
+}
+
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem {
     display: block;
+    background: #fff;
+    width: 81%;
+    padding: 5% 5% 5% 10%;
+    margin: 2% 0 0% 2%;
 }
-.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover {
-    color: yellow;
-}
+
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover,
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
-    color: orange;
+    background-color: #ffcc00;
 }
+
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active {
-    color: green;
+    background: #fff;
+    font-weight: bold;
 }
 
 /*
@@ -199,6 +213,7 @@ ul.fl-videoPlayer-captions-languageList,
 ul.fl-videoPlayer-captions-languageList li {
     display: block;
 }
+
 ul.fl-videoPlayer-captions-languageList .fl-videoPlayer-caption-selected {
     color: yellow;
 }
@@ -264,16 +279,19 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     width: 3em;
     margin-left: -1.5em;
     margin-top: -0.9em;
-    background: #000;
+    background: rgba(0, 0, 0, 0);
     border-width: 0px 0px 0px 0px;
     border-radius: 2px;
     color: #fff;
     text-decoration: none;
     text-align: center;
+
 }
 
 .fl-videoPlayer-scrubber .ui-slider-handle > span {
     font-size: 50%;
+    background-color: #000;
+    padding: 0 5% 0 5%;
 }
 
 .fl-videoPlayer-time {
@@ -297,6 +315,8 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
  
 .fl-videoPlayer-captionArea {
     text-align:center;
+    position: relative;
+    bottom: 1.1em;
 }
 
 .fl-videoPlayer-overlay {
@@ -347,7 +367,7 @@ ul.fl-videoPlayer-transcripts-languageList .fl-videoPlayer-transcript-selected {
     overflow-x: hidden;
     overflow-y: scroll;
     cursor: pointer;
-    height: 78%;
+    height: 73%;
     width: 85%;
 }
 .fl-videoPlayer-transcript-element-highlight {
