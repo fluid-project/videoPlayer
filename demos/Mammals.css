@@ -122,7 +122,6 @@ section, aside {
     max-width: 100%;
     margin: auto;
     padding: .2em;
-    background-color: #808080;
 }
 
 .pic {
@@ -194,4 +193,9 @@ footer a {
 .fl-videoPlayer-captionArea {
     background-color: #000000;
     color: #FFFFFF;
+}
+
+.fl-videoPlayer-video-controller-area {
+    border: 2px solid #808080;
+    background-color: #808080;
 }

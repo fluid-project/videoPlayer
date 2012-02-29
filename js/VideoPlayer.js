@@ -241,12 +241,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptHide: "{videoPlayer}.resizeHanlder"
         },
         selectors: {
-            videoContainer: ".flc-videoPlayer-videoContainer",
+            //videoContainer: ".flc-videoPlayer-videoContainer",
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
             transcript: ".flc-videoPlayer-transcriptArea",
-            videoControllersContainer: ".flc-videoPlayer-video-controller-area"
+            videoControllersContainer: ".flc-videoPlayer-video-controller-area",
+            overlay: ".flc-videoPlayer-overlay"
         },
         strings: {
             captionsOff: "Captions OFF",
@@ -254,7 +255,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["videoContainer", "caption", "videoControllersContainer", "transcript"],
+        selectorsToIgnore: ["overlay", "caption", "videoControllersContainer", "transcript"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -346,7 +347,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var hideControllers = function (that) {
-        that.locate("controllers").delay(500).slideUp();
+        //that.locate("controllers").delay(500).slideUp();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -530,7 +531,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
 
-            that.locate("controllers").hide();
+            //that.locate("controllers").hide();
             that.events.onReady.fire(that);
         });
         
@@ -557,12 +558,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var videoContainer = that.locate("videoContainer");
         var video = that.locate("video");
         var videoControllersContainer = that.locate("videoControllersContainer");
+        var transcript = that.locate("transcript");
+        var overlay = that.locate("overlay");
         var videoWidth, videoHeight;
         
+        // Get the video sizes first
         videoWidth = video[0].videoWidth;
         videoHeight = video[0].videoHeight;
+        
+        // First set main container height. To make text on the website to flow around the videoPlayer nicely
+        that.container.css({height: videoHeight});
+        // Set height on the controller area. To make overlay to show up exatly at the bottom of the video regardless to UIO settings
+        videoControllersContainer.css({height: videoHeight});
+        // Set height of the transcript area. So that transcript text would be restricted by the height of the video
+        transcript.css({height: videoHeight - 2});
+        
+        // Set the width of the overlay to be the width of the video
+        overlay.css({width: videoWidth});
+        
+        
+        
+        
             
-        // Set the width/height of each container
+        /*
+// Set the width/height of each container
         videoContainer.css({
             width: videoWidth,
             height: videoHeight
@@ -584,6 +603,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             width: videoWidth + transcriptWidth + 3,
             height: videoControllersContainer.height()
         });
+*/
     };
 
     /*********************************************************************************
