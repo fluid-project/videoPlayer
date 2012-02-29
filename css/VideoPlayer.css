@@ -633,6 +633,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/black/captions_hover.png');
 }
 
+.fl-theme-uio-bw .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-by .fl-videoPlayer-captions-button-on {
+    background-image: url('../images/black/captions_on.png');
+}
+
 .fl-theme-uio-yb .fl-videoPlayer-captions-button {
     background-image: url('../images/yellow/captions.png');
 }
@@ -641,12 +646,20 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/yellow/captions_hover.png');
 }
 
+.fl-theme-uio-yb .fl-videoPlayer-captions-button-on {
+    background-image: url('../images/yellow/captions_on.png');
+}
+
 .fl-theme-uio-wb .fl-videoPlayer-captions-button {
     background-image: url('../images/white/captions.png');
 }
 
 .fl-theme-uio-wb .fl-videoPlayer-captions-button:hover {
     background-image: url('../images/white/captions_hover.png');
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-captions-button-on {
+    background-image: url('../images/white/captions_on.png');
 }
 
 .fl-theme-uio-bw .fl-videoPlayer-transcripts-button,
@@ -659,6 +672,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/black/transcript_hover.png');
 }
 
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button-on,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/black/transcript_on.png');
+}
+
 .fl-theme-uio-yb .fl-videoPlayer-transcripts-button {
     background-image: url('../images/yellow/transcript.png');
 }
@@ -667,10 +685,18 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/yellow/transcript_hover.png');
 }
 
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/yellow/transcript_on.png');
+}
+
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-button {
     background-image: url('../images/white/transcript.png');
 }
 
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-button:hover {
     background-image: url('../images/white/transcript_hover.png');
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/white/transcript_on.png');
 }
