@@ -136,6 +136,10 @@ a.fl-videoPlayer-button-wrapper {
     background-image: url('../images/default/captions_hover.png');
 }
 
+.fl-videoPlayer-captions-button-on {
+    background-image: url('../images/default/captions_on.png');
+}
+
 /* Transcript button */
 .fl-videoPlayer-transcripts-button {
     background-image: url('../images/default/transcript.png');
@@ -143,6 +147,10 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-transcripts-button:hover {
     background-image: url('../images/default/transcript_hover.png');
+}
+
+.fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/default/transcript_on.png');
 }
 
 
