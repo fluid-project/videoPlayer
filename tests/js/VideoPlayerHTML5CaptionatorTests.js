@@ -50,14 +50,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             video: {
                 captions: [
                     {
-                        src: "ReorganizeFuture.en.vtt",
+                        src: "TestCaptions.en.vtt",
                         type: "text/vtt",
                         srclang: "en",
                         label: "English Subtitles",
                         kind: "subtitles"
                     },
                     {
-                        src: "ReorganizeFuture.fr.vtt",
+                        src: "TestCaptions.fr.vtt",
                         type: "text/vtt",
                         srclang: "fr",
                         label: "French Subtitles",

@@ -47,14 +47,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         src: "videos/Mammals/Mammals.en.vtt",
                         type: "text/vtt",
                         srclang: "en",
-                        label: "English Subtitles",
+                        label: "English",
                         kind: "subtitles"
                     }, 
                     {
                         src: "videos/Mammals/Mammals.fr.vtt",
                         type: "text/vtt",
                         srclang: "fr",
-                        label: "French Subtitles",
+                        label: "French",
                         kind: "subtitles"
                     }
                 ],
@@ -63,14 +63,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         src: "videos/Mammals/Mammals.transcripts.en.json",
                         type: "JSONcc",
                         srclang: "en",
-                        label: "English Transcripts",
+                        label: "English",
                         kind: "transcripts"
                     }, 
                     {
                         src: "videos/Mammals/Mammals.transcripts.fr.json",
                         type: "JSONcc",
                         srclang: "fr",
-                        label: "French Transcripts",
+                        label: "French",
                         kind: "transcripts"
                     }
                 ]
