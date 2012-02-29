@@ -413,13 +413,32 @@ ul.fl-videoPlayer-transcripts-languageList li {
     border: 1px solid yellow;  /* This will go away once we have the proper styling for the initial overlay */
 }
 
- 
+.fl-theme-uio-bw .fl-videoPlayer-scrubber,
+.fl-theme-uio-wb .fl-videoPlayer-scrubber,
+.fl-theme-uio-by .fl-videoPlayer-scrubber,
+.fl-theme-uio-yb .fl-videoPlayer-scrubber,
 .fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-wb .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-by .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-yb .fl-videoPlayer-scrubber .ui-slider-handle {
      border-width: 1px;
  }
+
+.fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-range,
+.fl-theme-uio-by .fl-videoPlayer-scrubber .ui-slider-range {
+    background-image: none;
+    background-color: black !important;
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-scrubber .ui-slider-range {
+    background-image: none;
+    background-color: white !important;
+}
+
+.fl-theme-uio-yb .fl-videoPlayer-scrubber .ui-slider-range {
+    background-image: none;
+    background-color: yellow !important;
+}
 
  
 /***********************************************************
