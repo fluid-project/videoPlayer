@@ -2,20 +2,12 @@
     font-family: sans-serif;
 }
 
-.fl-videoPlayer {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    text-align: center;
-}
-
 /*
 * Video and Controller area
 */
 
 .fl-videoPlayer-video-controller-area {
-/*     float: left; */
     position: relative;
-/*     left: 20%; */
     display: inline-block;
 }
 
@@ -24,8 +16,6 @@
 */
 
 .fl-videoPlayer-video {
-	width: 100%;
-	height: 100%;
 	float: left;
 }
 
@@ -339,8 +329,9 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-transcriptArea {
     float: right;
     border: 1px solid black;
+    height: 100%;
     width: 15em;
-    overflow: hidden;
+    overflow: hidden; 
 }
 
 .fl-videoPlayer-transcripts-language-dropdown {
