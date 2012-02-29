@@ -48,16 +48,26 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0"]
             }
         },
+        invokers: {
+            setIntervalList: {
+                funcName: "fluid.videoPlayer.intervalEventsConductor.setIntervalList",
+                args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0"]
+            }  
+        },
         
         // An array of the time intervals with all the begin and end time in millisecond
         // Example: Array[intervalID] = {begin: beginTimeInMilli, end: endTimeInMilli}
-        intervalList: null,
+        intervalList: [],
         
         model: {
             // The saved interval that was fired at the previous intervalChange event
             previousIntervalId: null
         }
     });
+    
+    fluid.videoPlayer.intervalEventsConductor.setIntervalList = function (that, intervalList) {
+        that.options.intervalList = intervalList;
+    };
     
     fluid.videoPlayer.intervalEventsConductor.inInterval = function (currentTimeInMillis, interval) {
         return interval.begin <= currentTimeInMillis && interval.end >= currentTimeInMillis;
