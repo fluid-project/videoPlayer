@@ -3,10 +3,10 @@
 }
 
 /*
-* Video and Controller area
+* Video player main container
 */
 
-.fl-videoPlayer-video-controller-area {
+.fl-videoPlayer-main {
     position: relative;
     display: inline-block;
 }
@@ -16,7 +16,14 @@
 */
 
 .fl-videoPlayer-video {
-	float: left;
+    float: left;
+}
+
+.fl-videoPlayer-video-element {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /*
@@ -407,16 +414,16 @@ ul.fl-videoPlayer-transcripts-languageList li {
  * UIO theme styling 
  ********************/
  
-.fl-theme-uio-bw .fl-videoPlayer-video-controller-area,
-.fl-theme-uio-by .fl-videoPlayer-video-controller-area {
+.fl-theme-uio-bw .fl-videoPlayer-main,
+.fl-theme-uio-by .fl-videoPlayer-main {
     border: 1px solid #fff;  /* This will go away once we have the proper styling for the initial overlay */
 }
 
-.fl-theme-uio-wb .fl-videoPlayer-video-controller-area {
+.fl-theme-uio-wb .fl-videoPlayer-main {
     border: 1px solid white;  /* This will go away once we have the proper styling for the initial overlay */
 }
  
-.fl-theme-uio-yb .fl-videoPlayer-video-controller-area {
+.fl-theme-uio-yb .fl-videoPlayer-main {
     border: 1px solid yellow;  /* This will go away once we have the proper styling for the initial overlay */
 }
 
