@@ -33,6 +33,7 @@
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_transcript.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_uiOptions.js"></script>
 
         </head>
     <body>
@@ -57,11 +58,16 @@
         </div>
 
         <script>
-            fluid.uiOptions.fatPanel(".flc-uiOptions", {
-                prefix: "../lib/infusion/components/uiOptions/html/"
+            var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+                prefix: "../lib/infusion/components/uiOptions/html/",
+                components: {
+                    relay: {
+                        type: "fluid.videoPlayer.relay"
+                    }
+                }
             });
 
-            var vp = fluid.videoPlayer(".videoPlayer", {
+            var videoOptions = {container: ".videoPlayer", options: {
                 video: {
                     sources: [
                         {
@@ -83,14 +89,12 @@
                             type: "text/vtt",
                             srclang: "en",
                             label: "English",
-                            kind: "subtitles"
                         },
                         {
                             src: "videos/ReorganizeFuture/ReorganizeFuture.fr.vtt",
                             type: "text/vtt",
                             srclang: "fr",
                             label: "French",
-                            kind: "subtitles"
                         }
                     ],
                     transcripts: [
@@ -99,24 +103,17 @@
                             type: "JSONcc",
                             srclang: "en",
                             label: "English",
-                            kind: "transcripts"
                         },
                         {
                             src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
                             type: "JSONcc",
                             srclang: "fr",
                             label: "French",
-                            kind: "transcripts"
                         }
                     ]
-                },
-                model: {
-                    currentTracks: {
-                        captions: [0],
-                        transcripts: [0]
-                    }
                 }
-            });
+            }};
+            fluid.videoPlayer.makeEnhancedInstances(videoOptions, uiOptions.relay);
         </script>
     </body>
 </html>

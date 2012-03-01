@@ -200,6 +200,7 @@ fluid.videoPlayer.defaultModel = {
 };
 
 fluid.videoPlayer.makeEnhancedInstances = function(instances, relay) {
+    instances = fluid.makeArray(instances);
     return fluid.transform(instances, function(instance) {
         var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, {model: relay.model}, instance.options);
         var player = fluid.videoPlayer(instance.container, mergedOptions);
