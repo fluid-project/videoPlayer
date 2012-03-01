@@ -57,10 +57,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{controllers}.dom.volumeContainer",
                 options: {
                     model: "{controllers}.model",
-                    applier: "{controllers}.applier",
-                    events: {
-                        onChange: "{controllers}.events.onVolumeChange"
-                    }
+                    applier: "{controllers}.applier"
                 }
             },
             captionControls: {
@@ -161,7 +158,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onControllersReady: null,
-            onVolumeChange: null,
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
@@ -325,6 +321,37 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onScrubberReady.fire();
     };
 
+    // TODO: put into framework
+    fluid.hasChangeSource = function (changes, source) {
+        return fluid.find(changes, function(change) {
+            if (change.source === source) {
+                return true;
+            }
+        });
+    };
+    
+    // Add a listener to a ChangeApplier event that only acts in the case the event
+    // has not come from the specified source (typically ourself)
+    fluid.addSourceGuardedListener = function(modelEvent, path, source, func) {
+        modelEvent.addListener(path, 
+            function(newModel, oldModel, changes) {
+                if (!fluid.hasChangeSource(changes, source)) {
+                    func();
+            }
+        });
+    };
+
+    // special function which marks changes inbound from the ui so that "backwash" 
+    // may be prevented
+    fluid.fireSourcedChange = function (applier, path, value, source) {
+        applier.fireChangeRequest({
+            path: path,
+            value: value,
+            source: source
+        });         
+    };
+    
+
     /********************************************************
     * Volume Control: a button that turns into a slider     *
     *           To control the volume                       *
@@ -333,18 +360,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindVolumeDOMEvents = function (that) {
         // Bind the volume Control slide event to change the video's volume and its image.
         that.locate("volumeControl").bind("slide", function (evt, ui) {
-            that.events.onChange.fire(ui.value / 100.0);
+            fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
         });
 
         that.locate("volumeControl").bind("slidechange", function (evt, ui) {
-            that.events.onChange.fire(ui.value / 100.0);
+            fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
         });
 
     };
 
     // TODO: Privacy is inherited. Consider making this public
     var bindVolumeModel = function (that) {
-        that.applier.modelChanged.addListener("volume", that.updateVolume);
+        fluid.addSourceGuardedListener(that.applier.modelChanged, 
+            "volume", "slider", that.updateVolume); 
         that.applier.modelChanged.addListener("canPlay", function () {
             that.locate("mute").attr("disabled", !that.model.canPlay);
         });
@@ -400,8 +428,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.controllers.volumeControls.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.volumeControls.finalInit",
         events: {
-            onReady: null,
-            onChange: null
+            onReady: null
         },
         model: {
             muted: false,
