@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
-                container: "{videoPlayer}.dom.videoControllersContainer",
+                container: "{videoPlayer}.dom.videoPlayer",
                 createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
@@ -241,11 +241,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptHide: "{videoPlayer}.resizeHanlder"
         },
         selectors: {
+            videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
             transcript: ".flc-videoPlayer-transcriptArea",
-            videoControllersContainer: ".flc-videoPlayer-video-controller-area",
             overlay: ".flc-videoPlayer-overlay"
         },
         strings: {
@@ -254,7 +254,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["overlay", "caption", "videoControllersContainer", "transcript"],
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript"],
         keyBindings: defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -356,7 +356,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.play();
         });
 
-        that.locate("videoControllersContainer").mouseenter(function () {
+        that.locate("videoPlayer").mouseenter(function () {
             showControllers(that);
         });
 
@@ -555,7 +555,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // Function which modifies containers and their sizes
     fluid.videoPlayer.resize = function (that) {
         var video = that.locate("video");
-        var videoControllersContainer = that.locate("videoControllersContainer");
+        var videoPlayer = that.locate("videoPlayer");
         var overlay = that.locate("overlay");
         
         // Get the video sizes first
@@ -563,7 +563,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var videoHeight = video[0].videoHeight;
         
         // Set height on the controller area. To make overlay to show up exatly at the bottom of the video regardless to UIO settings
-        videoControllersContainer.css({height: videoHeight});
+        videoPlayer.css({height: videoHeight});
         
         // Set the width of the overlay to be the width of the video
         overlay.css({width: videoWidth});
