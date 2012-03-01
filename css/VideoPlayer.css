@@ -16,7 +16,14 @@
 */
 
 .fl-videoPlayer-video {
-	float: left;
+    float: left;
+}
+
+.fl-videoPlayer-video-element {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /*

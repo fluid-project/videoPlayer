@@ -200,3 +200,8 @@ footer a {
     border: 2px solid #808080;
     background-color: #808080;
 }
+
+.fl-videoPlayer-video {
+    width: 500px;
+    height: 500px;
+}

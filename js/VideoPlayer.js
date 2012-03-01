@@ -235,11 +235,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: "{videoPlayer}"
             }  
         },
-        listeners: {
-            onViewReady: "{videoPlayer}.resizeHanlder",
-            onTranscriptShow: "{videoPlayer}.resizeHanlder",
-            onTranscriptHide: "{videoPlayer}.resizeHanlder"
-        },
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
@@ -559,13 +554,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var overlay = that.locate("overlay");
         
         // Get the video sizes first
-        var videoWidth = video[0].videoWidth;
-        var videoHeight = video[0].videoHeight;
-        
-        // Set height on the controller area. To make overlay to show up exatly at the bottom of the video regardless to UIO settings
+        // ToDo: A video wrapper container is used for video scaling. The video width/height are determined by the wrapper container
+        // rather then the video itself. This solution needs a re-consideration once we decide on scaling the video through css or
+        // API.
+//        var videoWidth = video[0].videoWidth;
+//        var videoHeight = video[0].videoHeight;
+        var videoWidth = video.width();
+        var videoHeight = video.height();
+
+        // Set height on the controller area. To make overlay to show up exactly at the bottom of the video regardless to UIO settings
         videoPlayer.css({height: videoHeight});
         
-        // Set the width of the overlay to be the width of the video
+        // Set the width of the overlay to be the width of the video, otherwise, the controller bar spreads into transcript area
         overlay.css({width: videoWidth});
     };
 
