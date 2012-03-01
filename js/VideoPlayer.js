@@ -429,10 +429,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
     
-        that.resizeHanlder = function () {
-            that.resize();
-        };
-
         that.fullscreen = function () {
             var video = that.locate("video");
             var videoEl = video[0];
