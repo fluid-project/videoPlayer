@@ -54,13 +54,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             src: "videos/Mammals/Mammals.en.vtt",
                             type: "text/vtt",
                             srclang: "en",
-                            label: "English Subtitles"
+                            label: "English"
                         }, 
                         {
                             src: "videos/Mammals/Mammals.fr.vtt",
                             type: "text/vtt",
                             srclang: "fr",
-                            label: "French Subtitles"
+                            label: "French"
                         }
                     ],
                     transcripts: [
@@ -68,13 +68,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             src: "videos/Mammals/Mammals.transcripts.en.json",
                             type: "JSONcc",
                             srclang: "en",
-                            label: "English Transcripts"
+                            label: "English"
                         }, 
                         {
                             src: "videos/Mammals/Mammals.transcripts.fr.json",
                             type: "JSONcc",
                             srclang: "fr",
-                            label: "French Transcripts"
+                            label: "French"
                         }
                     ]
                 }
@@ -102,13 +102,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             src: "videos/PolarMammals/PolarMammals.en.vtt",
                             type: "text/vtt",
                             srclang: "en",
-                            label: "English Subtitles"
+                            label: "English"
                         }, 
                         {
                             src: "videos/PolarMammals/PolarMammals.fr.vtt",
                             type: "text/vtt",
                             srclang: "fr",
-                            label: "French Subtitles"
+                            label: "French"
                         }
                     ],
                     transcripts: [
@@ -116,13 +116,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             src: "videos/PolarMammals/PolarMammals.transcripts.en.json",
                             type: "JSONcc",
                             srclang: "en",
-                            label: "English Transcripts"
+                            label: "English"
                         }, 
                         {
                             src: "videos/PolarMammals/PolarMammals.transcripts.fr.json",
                             type: "JSONcc",
                             srclang: "fr",
-                            label: "French Transcripts"
+                            label: "French"
                         }
                     ]
                 }
@@ -150,13 +150,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.en.vtt",
                             type: "text/vtt",
                             srclang: "en",
-                            label: "English Subtitles"
+                            label: "English"
                         }, 
                         {
                             src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.fr.vtt",
                             type: "text/vtt",
                             srclang: "fr",
-                            label: "French Subtitles"
+                            label: "French"
                         }
                     ],
                     transcripts: [
@@ -164,13 +164,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.transcripts.en.json",
                             type: "JSONcc",
                             srclang: "en",
-                            label: "English Transcripts"
+                            label: "English"
                         }, 
                         {
                             src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.transcripts.fr.json",
                             type: "JSONcc",
                             srclang: "fr",
-                            label: "French Transcripts"
+                            label: "French"
                         }
                     ]
                 }
