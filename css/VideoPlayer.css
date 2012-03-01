@@ -364,24 +364,30 @@ ul.fl-videoPlayer-transcripts-languageList li {
     position: relative;
 }
 .fl-videoPlayer-transcript-element-highlight {
-    color: white !important;
+    color: white;
     background-color: #0099CC;
     padding: 0.2em;
 }
+
 .fl-videoPlayer-transcript-controls {
     height: 10%;
 }
 
 .fl-videoPlayer-transcripts-close-button {
-    background: url('../images/default/transcriptclose.png') no-repeat center center;
+    background-image: url('../images/default/transcriptclose.png');
+    background-repeat: no-repeat;
+    background-position: center center;
 }
-
 .fl-videoPlayer-transcripts-close-button:hover {
-    background: url('../images/default/transcriptclose_hover.png') no-repeat center center;
+    background-image: url('../images/default/transcriptclose_hover.png');
 }
 
 .fl-videoPlayer-transcript-element:hover {
     color: #25b3d3;
+}
+/* Do not allow hover to change text color of the highlighted text */
+.fl-videoPlayer-transcript-element-highlight:hover {
+    color: white;
 }
 
 /**********************
@@ -766,17 +772,17 @@ ul.fl-videoPlayer-transcripts-languageList li {
 /* Transcript close button */
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-close-button,
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-close-button:hover {
-    background: url('../images/white/transcriptclose.png') no-repeat center center;
+    background-image: url('../images/white/transcriptclose.png');
 }
 
 .fl-theme-uio-yb .fl-videoPlayer-transcripts-close-button,
 .fl-theme-uio-yb .fl-videoPlayer-transcripts-close-button:hover {
-    background: url('../images/yellow/transcriptclose.png') no-repeat center center;
+    background-image: url('../images/yellow/transcriptclose.png');
 }
 
 .fl-theme-uio-bw .fl-videoPlayer-transcripts-close-button,
 .fl-theme-uio-bw .fl-videoPlayer-transcripts-close-button:hover,
 .fl-theme-uio-by .fl-videoPlayer-transcripts-close-button,
 .fl-theme-uio-by .fl-videoPlayer-transcripts-close-button:hover {
-    background: url('../images/black/transcriptclose.png') no-repeat center center;
+    background-image: url('../images/black/transcriptclose.png');
 }
