@@ -126,7 +126,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
-                        onVolumeChange: "{videoPlayer}.events.onVolumeChange",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub"
@@ -148,6 +147,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{videoPlayer}.dom.transcript",
                 createOnEvent: "onHTML5BrowserDetected",
                 options: {
+                    // TODO (long term) - should not share entire model and applier with transcripts
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     transcripts: "{videoPlayer}.options.video.transcripts",
@@ -204,7 +204,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            onVolumeChange: null,
             onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
@@ -257,6 +256,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             sources: [],
             captions: [],
             transcripts: []
+        },
+        defaultKinds: {
+            captions: "subtitles",
+            transcripts: "transcripts"
         },
         model: {
             currentTracks: {
@@ -316,11 +319,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, {
                 modifier: that.options.keyBindings.volumePlus.modifier,
                 key: that.options.keyBindings.volumePlus.key,
-                activateHandler: that.incrVolume
+                activateHandler: function() {
+                    that.applier.fireChangeRequest( {
+                        path: "volume",
+                        value: that.model.volume + 10
+                    })
+                }
             }, {
                 modifier: that.options.keyBindings.volumeMinus.modifier,
                 key: that.options.keyBindings.volumeMinus.key,
-                activateHandler: that.decrVolume
+                activateHandler: function() {
+                    that.applier.fireChangeRequest( {
+                        path: "volume",
+                        value: that.model.volume - 10
+                    })
+                }
             }, {
                 modifier: that.options.keyBindings.forward.modifier,
                 key: that.options.keyBindings.forward.key,
@@ -337,11 +350,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var showControllers = function (that) {
-        that.locate("controllers").slideDown();
+        that.locate("controllers").stop(false, true).slideDown();
     };
 
     var hideControllers = function (that) {
-        that.locate("controllers").delay(500).slideUp();
+        that.locate("controllers").stop(false, true).delay(500).slideUp();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -402,15 +415,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         return tree;
     };
+    
+    fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
+        fluid.each(tracks, function(track) {
+            if (!track.kind) {
+                track.kind = defaultKind;
+            }
+        });
+    };
 
     fluid.videoPlayer.preInit = function (that) {
+        fluid.each(that.options.defaultKinds, function(defaultKind, index) {
+            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
+        });
     
         that.resizeHanlder = function () {
             that.resize();
         };
 
         that.fullscreen = function () {
-
             var video = that.locate("video");
             var videoEl = video[0];
             
@@ -426,8 +449,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
     };
+// TODO: move into DataBinding
+    fluid.linearRangeGuard = function(min, max) {
+        return function (model, changeRequest, applier) {
+            var newValue = changeRequest.value;
+    
+            if (newValue < min) {
+                newValue = min;
+            } else if (newValue > max) {
+                newValue = model.max;
+            }
+            changeRequest.value = newValue;
+        }
+    };
 
     fluid.videoPlayer.postInit = function (that) {
+        // TODO: declarative syntax for this in framework
+        // note that the "mega-model" is shared throughout all components - morally, this should go into the 
+        // volume control component, but it is best to get at the single model + applier as early as possible
+        that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
+   
         that.canRenderControllers = function (controlsType) {
             return fluid.hasFeature("fluid.browser.html5") && controlsType === "custom";
         };
@@ -441,20 +482,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "path": "play",
                 "value": !that.model.play
             });
-        };
-
-        that.incrVolume = function () {
-            if (that.model.volume < 100) {
-                var newVol = (that.model.volume + 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
-            }
-        };
-
-        that.decrVolume = function () {
-            if (that.model.volume > 0) {
-                var newVol = (that.model.volume - 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
-            }
         };
 
         that.incrTime = function () {
@@ -587,7 +614,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         options: {
             listeners: {
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
-                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
                 "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
@@ -598,7 +624,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript", "fluid.videoPlayer.controllers"], {
         options: {
             listeners: {
-                "{videoPlayer}.events.onCurrentTranscriptChanged": "{controllers}.transcriptControls.menu.activate",
                 "{videoPlayer}.events.onTranscriptHide": {
                     listener: "{controllers}.transcriptControls.menu.requestShowHide",
                     args: [false]

@@ -54,10 +54,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null
         },
         model: {
+            displayTranscripts: false,
             selection: undefined,
             choices: [],
             labels: [],
-            transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"  // ToDo: Is this the right place to save this info?
+            transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"  // TODO: this belongs as a plain option
         },
         transcripts: [],
         invokers: {
@@ -73,6 +74,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         selectorsToIgnore: ["closeButton", "transcriptText"],
         styles: {
+            element: "fl-videoPlayer-transcript-element",
             highlight: "fl-videoPlayer-transcript-element-highlight"
         }
     });
@@ -90,7 +92,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onTranscriptAreaHide.fire();
     };
 
-    // Show/Hide the transcript area based on the flag "states.displayTranscripts"
+    // Update visibility of the transcript area based on the flag "model.displayTranscripts"
     fluid.videoPlayer.transcript.switchTranscriptArea = function (that) {
         if (that.model.displayTranscripts) {
             fluid.videoPlayer.transcript.showTranscriptArea(that);
@@ -144,8 +146,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return that.options.model.transcriptElementIdPrefix + "-" + transcriptIndex;
     };
     
-    fluid.videoPlayer.transcript.getTranscriptElement = function (transcriptElementContent, idName) {
-        return "<span id=\"" + idName + "\">" + transcriptElementContent + "</span>";
+    fluid.videoPlayer.transcript.getTranscriptElement = function (transcriptElementContent, idName, tClass) {
+        return "<span id=\"" + idName + "\" class=\"" + tClass + "\">" + transcriptElementContent + "</span>";
     };
     
     fluid.videoPlayer.transcript.displayTranscript = function (that, transcriptText) {
@@ -191,7 +193,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Generate the transcript text
         var transcriptText = "";
         for (var i = 0; i < transcripts.length; i++) {
-            transcriptText = transcriptText + fluid.videoPlayer.transcript.getTranscriptElement(transcripts[i].transcript, fluid.videoPlayer.transcript.getTranscriptElementId(that, i)) + "&nbsp;";
+            transcriptText = transcriptText + fluid.videoPlayer.transcript.getTranscriptElement(transcripts[i].transcript, fluid.videoPlayer.transcript.getTranscriptElementId(that, i), that.options.styles.element) + "&nbsp;";
         }
         
         that.options.transcripts[currentIndex].transcriptText = transcriptText;

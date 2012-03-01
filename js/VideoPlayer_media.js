@@ -63,7 +63,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             return placeholder;
         }
     };
-        
+    
     var renderSources = function (that) {
         $.each(that.options.sources, function (idx, source) {
             var renderer = that.options.sourceRenderers[source.type];
@@ -78,6 +78,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindMediaModel = function (that) {
         that.applier.modelChanged.addListener("play", that.play);
         that.applier.modelChanged.addListener("muted", that.mute);
+        fluid.addSourceGuardedListener(that.applier.modelChanged, 
+            "volume", "media", that.updateVolume);
     };
 
     var getcanPlayData = function (data) {
@@ -85,7 +87,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             || data.readyState === 2; 
     };
 
-    var bindMediaDOMEvents = function (that) {
+    var bindMediaDOMEvents = function (that) {      
         var video = that.container;
 
         video.bind("durationchange", {obj: video[0]}, function (ev) {
@@ -106,10 +108,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         video.bind("volumechange", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "volume",
-                value: ev.data.obj.volume * 100
-            });
+            fluid.fireSourcedChange(that.applier, "volume", ev.data.obj.volume * 100, "media");
         });
 
         //all browser don't support the canplay so we do all different states
@@ -158,8 +157,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container[0].currentTime = time;
         };
 
-        that.setVolume = function (vol) {
-            that.container[0].volume = vol;
+        that.updateVolume = function () {
+            that.container[0].volume = that.model.volume / 100;
         };
 
         that.play = function () {
@@ -175,7 +174,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.refresh = function () {
-            that.setVolume(that.model.volume / 100);
+            that.updateVolume();
             that.play();
         };
     };
