@@ -175,7 +175,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.toggleView = function () {
             that.container.toggle();
-            return false;
         };
         that.hide = function () {
             that.locate("language").removeClass(that.options.styles.selected);
