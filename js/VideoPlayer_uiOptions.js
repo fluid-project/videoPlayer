@@ -45,22 +45,22 @@ fluid.modelRelay.registerTarget = function(that, target) {
         var listener = function (newModel, oldModel, changeList) {
             var newValue = fluid.get(newModel, key);
             if (typeof(value) === "string") {
-                 target.applier.requestChange(value, newValue);
+                target.applier.requestChange(value, newValue);
             } else {
                 var fullargs = [newValue, key, target, changeList]
                 if (value.lens) {
                     var transformed = value.lens.transform.apply(null, [newValue, key]);
                     target.applier.requestChange(value.targetPath, newValue);
                 }
-                // Do not apply irreversible/general operations to the modelRelay's own model
                 else if (target !== that) {
                     var changes = value.func.apply(null, fullargs);
-                    fluid.each(changes, function(change) {
-                        target.applier.fireChangeRequest(change);
-                    });
+                    fluid.requestChanges(target.applier, changes);
                 }
                 else {
-                   that.pentChanges = that.pentChanges.concat(changeList);
+                    // Do not apply irreversible/general operations to the modelRelay's own model
+                    // instead, replay the original changes into the "pent model" reach to be
+                    // transformed later
+                    fluid.requestChanges(that.pentApplier, changeList);
                 }
             }   
         };
@@ -69,11 +69,14 @@ fluid.modelRelay.registerTarget = function(that, target) {
     });
     // Replay any pent-up changes into a new genuine target 
     if (target !== that) {
-        fluid.each(that.pentChanges, function(change) {
-            console.log("Replaying pent change ", change, " to target ", target);
-            var listener = specListeners[change.path];
-            if (listener) {
-                listener(change.value, change.path, target, change);
+        fluid.each(that.options.rules, function(value, key) {
+            if (value.func) {
+                var newValue = fluid.get(that.pentModel, key);
+                // synthetic change summarising ultimate individual effect of pent change
+                var synthChange = {type: "ADD", path: key, value: newValue};
+                console.log("Replaying pent change ", synthChange, " to target ", target);
+                var changes = value.func(newValue, key, target, [synthChange]);
+                fluid.requestChanges(target.applier, changes);
             }
         });
     }
@@ -95,7 +98,10 @@ fluid.modelRelay.processLookup = function(struct, member, relayType, key, expect
 
 fluid.modelRelay.postInit = function(that) {
     that.targets = {};
-    that.pentChanges = [];
+    // This is used for holding pent up changes produced by irreversible transforms - it holds
+    // the raw changes which would be destined for the model, ready to be re-transformed
+    that.pentModel = {};
+    that.pentApplier = fluid.makeChangeApplier(that.pentModel);
     that.addTarget = function(target) {
         fluid.modelRelay.registerTarget(that, target);
         that.targets[target.id] = target;
@@ -179,8 +185,7 @@ fluid.defaults("fluid.videoPlayer.relay", {
     rules: {
         "selections.captions": "displayCaptions",
         "selections.transcripts": "displayTranscripts",
-        "selections.volume": {targetPath: "volume",
-                 lens: "fluid.videoPlayer.transformVolumeChange"},
+        "selections.volume": "volume",
         "selections.language": {func: "fluid.videoPlayer.transformLanguageChange"}
     }
 });

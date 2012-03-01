@@ -37,7 +37,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             activated: null,
-            hiddenByKeyboard: null,
             languageOnOff: null,
             trackChanged: "preventable"
         },
@@ -94,8 +93,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.container.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
             selectableSelector: that.options.selectors.menuItem,
+            // TODO: add simple style class support to selectable 
             onSelect: function (el) {
-                that.show();
                 $(el).addClass(that.options.styles.selected);
             },
             onUnselect: function (el) {
@@ -116,9 +115,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         noneButton.fluid("activatable", function (evt) {
             that.applier.requestChange("showLanguage", !that.model.showLanguage);
             that.hide();
-            if (that.model.showLanguage) {
-                that.events.hiddenByKeyboard.fire();
-            }
             return false;
         });
 
@@ -127,7 +123,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         noneButton.keydown(function (evt) {
             if (evt.which === $.ui.keyCode.DOWN) {
                 that.hide();
-                that.events.hiddenByKeyboard.fire();
                 return false;
             }
             return true;
@@ -135,16 +130,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.controllers.languageMenu.bindEventListeners = function (that) {
+        // any click on the container must have the effect of hiding it, since its action 
+        // always completes
+        that.container.click(that.hide);
+        
         var langList = that.locate("language");
         langList.click(function (evt) {
             that.activate(langList.index(evt.currentTarget));
-            return false;
         });
 
         that.locate("showHide").click(function (evt) {
             that.applier.requestChange("showLanguage", !that.model.showLanguage);
-            that.hide();
-            return false;
         });
 
         // TODO: We currently only support one active language. Indexing into the array will change
@@ -155,7 +151,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             if (newTrack[0] === oldTrack[0]) {
                 return;
             }
-            that.applier.requestChange("showLanguage", true);
             that.events.trackChanged.fire(that, newTrack, oldTrack);
         });
 
@@ -174,15 +169,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
         $(menuItems[that.model.activeLanguages[0]]).addClass(that.options.styles.active);
-        that.hide();
     };
 
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
-        if (that.options.model.languages) {
-            if (that.options.model.activeLanguages[0] === undefined) {
-                that.options.model.activeLanguages[0] = 0;
-            }
-        }
 
         that.toggleView = function () {
             that.container.toggle();
@@ -204,6 +193,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.activate = function (index) {
             that.applier.requestChange("activeLanguages.0", index);
+            that.applier.requestChange("showLanguage", true);
         };
         that.requestShowHide = function (showHide) {
             that.applier.requestChange("showLanguage", showHide);
