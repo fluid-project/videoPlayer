@@ -300,6 +300,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     text-align:center;
     position: relative;
     bottom: 1.1em;
+    pointer-events:none;
 }
 
 .fl-videoPlayer-overlay {
@@ -328,10 +329,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
  
 .fl-videoPlayer-transcriptArea {
     float: right;
-    border: 1px solid black;
+    border: 1px solid #cccccc;
     height: 100%;
     width: 15em;
-    overflow: hidden; 
+    overflow: hidden;
+    background-color: #f2f2f2;
 }
 
 .fl-videoPlayer-transcripts-language-dropdown {
@@ -350,29 +352,34 @@ ul.fl-videoPlayer-transcripts-languageList li {
     overflow-x: hidden;
     overflow-y: scroll;
     cursor: pointer;
-    height: 85%;
-    width: 85%;
+    height: 81%;
+    width: 90%;
     text-align: left;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding: 0.5em;
+    background-color: #ffffff;
+    left: 0.5em;
+    position: relative;
 }
 .fl-videoPlayer-transcript-element-highlight {
-    color: white;
+    color: white !important;
     background-color: #0099CC;
     padding: 0.2em;
 }
 .fl-videoPlayer-transcript-controls {
-    height: 15%;
+    height: 10%;
 }
 
 .fl-videoPlayer-transcripts-close-button {
-    background: #fff url('../images/default/transcriptclose.png') no-repeat center center;
+    background: url('../images/default/transcriptclose.png') no-repeat center center;
 }
 
 .fl-videoPlayer-transcripts-close-button:hover {
-    background: #fff url('../images/default/transcriptclose_hover.png') no-repeat center center;
+    background: url('../images/default/transcriptclose_hover.png') no-repeat center center;
 }
 
+.fl-videoPlayer-transcript-element:hover {
+    color: #25b3d3;
+}
 
 /**********************
  * Captionator Styles *
@@ -509,21 +516,25 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-uio-bw .fl-videoPlayer-transcript-element-highlight {
     background-color: black !important;
     color: white !important;
+    text-decoration: none !important;
 }
 
 .fl-theme-uio-wb .fl-videoPlayer-transcript-element-highlight {
     background-color: white !important;
     color: black !important;
+    text-decoration: none !important;
 }
 
 .fl-theme-uio-yb .fl-videoPlayer-transcript-element-highlight {
     background-color: yellow !important;
     color: black !important;
+    text-decoration: none !important;
 }
 
 .fl-theme-uio-by .fl-videoPlayer-transcript-element-highlight {
     background-color: black !important;
     color: yellow !important;
+    text-decoration: none !important;
 }
 
 
@@ -740,4 +751,29 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .fl-theme-uio-wb .fl-videoPlayer-transcripts-button-on {
     background-image: url('../images/white/transcript_on.png');
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-transcript-element:hover,
+.fl-theme-uio-yb .fl-videoPlayer-transcript-element:hover,
+.fl-theme-uio-bw .fl-videoPlayer-transcript-element:hover,
+.fl-theme-uio-by .fl-videoPlayer-transcript-element:hover {
+    text-decoration:underline;
+}
+
+/* Transcript close button */
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-close-button,
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-close-button:hover {
+    background: url('../images/white/transcriptclose.png') no-repeat center center;
+}
+
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-close-button,
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-close-button:hover {
+    background: url('../images/yellow/transcriptclose.png') no-repeat center center;
+}
+
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-close-button,
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-close-button:hover,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-close-button,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-close-button:hover {
+    background: url('../images/black/transcriptclose.png') no-repeat center center;
 }
