@@ -54,10 +54,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null
         },
         model: {
+            displayTranscripts: false,
             selection: undefined,
             choices: [],
             labels: [],
-            transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"  // ToDo: Is this the right place to save this info?
+            transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"  // TODO: this belongs as a plain option
         },
         transcripts: [],
         invokers: {
@@ -90,7 +91,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onTranscriptAreaHide.fire();
     };
 
-    // Show/Hide the transcript area based on the flag "states.displayTranscripts"
+    // Update visibility of the transcript area based on the flag "model.displayTranscripts"
     fluid.videoPlayer.transcript.switchTranscriptArea = function (that) {
         if (that.model.displayTranscripts) {
             fluid.videoPlayer.transcript.showTranscriptArea(that);
