@@ -161,7 +161,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var track = that.options.transcripts[transcriptIndex].tracks[trackId];
             
             // Fire the onTranscriptElementChange event with the track start time and the track itself
-            that.events.onTranscriptElementChange.fire(that.convertToMilli(track.inTime)/1000, track);
+            that.events.onTranscriptElementChange.fire((1 + that.convertToMilli(track.inTime))/1000, track);
         });
     };
     
