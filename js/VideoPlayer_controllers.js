@@ -66,17 +66,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     languages: "{controllers}.options.captions",
                     model: "{controllers}.model",
-                    modelPath: "currentTracks.captions",
+                    applier: "{controllers}.applier",
                     showHidePath: "displayCaptions",
                     currentLanguagePath: "currentTracks.captions",
-                    applier: "{controllers}.applier",
                     selectors: {
                         button: ".flc-videoPlayer-captions-button",
                         menu: ".flc-videoPlayer-captions-languageMenu"
                     },
-                    styles: { 
-                        init: "fl-videoPlayer-captions-button",
-                        pressed: "fl-videoPlayer-captions-button-on"
+                    styles: {
+                        button: "fl-videoPlayer-captions-button",
+                        buttonWithShowing: "fl-videoPlayer-captions-button-on"
                     },
                     strings: {
                         showLanguage: "Show Captions",
@@ -92,17 +91,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     languages: "{controllers}.options.transcripts",
                     model: "{controllers}.model",
-                    modelPath: "currentTracks.transcripts",
+                    applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
                     currentLanguagePath: "currentTracks.transcripts",
-                    applier: "{controllers}.applier",
                     selectors: {
                         button: ".flc-videoPlayer-transcripts-button",
                         menu: ".flc-videoPlayer-transcripts-languageMenu"
                     },
-                    styles: { 
-                        init: "fl-videoPlayer-transcripts-button",
-                        pressed: "fl-videoPlayer-transcripts-button-on"
+                    styles: {
+                        button: "fl-videoPlayer-transcripts-button",
+                        buttonWithShowing: "fl-videoPlayer-transcripts-button-on"
                     },
                     strings: {
                         showLanguage: "Show Transcripts",
@@ -130,6 +128,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     model: "{controllers}.model",
                     modelPath: "play",
+                    ownModel: false,
                     applier: "{controllers}.applier"
                 }
             },
@@ -151,6 +150,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     model: "{controllers}.model",
                     modelPath: "fullscreen",
+                    ownModel: false,
                     applier: "{controllers}.applier"
                 }
             }
@@ -337,36 +337,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.events.onScrubberReady.fire();
     };
-
-    // TODO: put into framework
-    fluid.hasChangeSource = function (changes, source) {
-        return fluid.find(changes, function(change) {
-            if (change.source === source) {
-                return true;
-            }
-        });
-    };
-    
-    // Add a listener to a ChangeApplier event that only acts in the case the event
-    // has not come from the specified source (typically ourself)
-    fluid.addSourceGuardedListener = function(modelEvent, path, source, func) {
-        modelEvent.addListener(path, 
-            function(newModel, oldModel, changes) {
-                if (!fluid.hasChangeSource(changes, source)) {
-                    func();
-            }
-        });
-    };
-
-    // special function which marks changes inbound from the ui so that "backwash" 
-    // may be prevented
-    fluid.fireSourcedChange = function (applier, path, value, source) {
-        applier.fireChangeRequest({
-            path: path,
-            value: value,
-            source: source
-        });         
-    };
     
 
     /********************************************************
@@ -422,7 +392,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tabindex(that.locate("handle"), -1);
 
         fluid.activatable(that.container, function (evt) {
-            that.muteButton.events.onPress.fire(evt);
+            that.muteButton.events.onPress.fire();
         });
         // TODO: This will be converted to use the activatable plugin
         // as part of FLUID-4552

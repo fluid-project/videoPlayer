@@ -80,7 +80,7 @@ fluid.registerNamespace("fluid.tests");
             expect(6);
             jqUnit.assertEquals("There should be exactly one " + name + " button", 1, buttonEl.length);
             jqUnit.assertEquals(name + " button should have role of 'button'", "button", buttonEl.attr("role"));
-            jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", "false", buttonEl.attr("aria-pressed"));
+            jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", false, buttonEl.prop("aria-pressed"));
             jqUnit.assertFalse(name + " button should not have the 'pressed' style", buttonEl.hasClass(stylePressed));
 
             var tooltip = fluid.tests.getTooltipCheckString(buttonEl, tooltipReleased);
@@ -93,13 +93,13 @@ fluid.registerNamespace("fluid.tests");
             if (clickToggles) {
                 expect(6);
                 buttonEl.click();
-                jqUnit.assertEquals("After click, " + name + " button should have aria-pressed of 'true'", "true", buttonEl.attr("aria-pressed"));
+                jqUnit.assertEquals("After click, " + name + " button should have aria-pressed of 'true'", true, buttonEl.prop("aria-pressed"));
                 jqUnit.assertTrue("While pressed, " + name + " button should have the 'pressed' style", buttonEl.hasClass(stylePressed));
                 buttonEl.blur().focus(); // tooltip not updated until 'requested' again
                 jqUnit.assertEquals("Tooltip should contain " + tooltipPressed, tooltipPressed, tooltip.text());
     
                 buttonEl.click();
-                jqUnit.assertEquals("After another click, " + name + " button should have aria-pressed of 'false' again", "false", buttonEl.attr("aria-pressed"));
+                jqUnit.assertEquals("After another click, " + name + " button should have aria-pressed of 'false' again", false, buttonEl.prop("aria-pressed"));
                 jqUnit.assertFalse(name + " button should not have the 'pressed' style", buttonEl.hasClass(stylePressed));
                 buttonEl.blur().focus();
                 jqUnit.assertEquals("Tooltip should contain " + tooltipReleased + " again", tooltipReleased, tooltip.text());
@@ -131,55 +131,6 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        videoPlayerControlsTests.asyncTest("Toggle button, press and release functions", function () {
-            expect(8);
-
-            var testComponent = fluid.tests.initToggleButton({
-                listeners: {
-                    onReady: function (that) {
-                        var toggleButton = that.locate("button");
-                        that.requestRelease();
-                        jqUnit.assertEquals("Releasing when already released, button should still have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
-                        jqUnit.assertFalse("Toggle button should not get the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-                        that.requestPress();
-                        jqUnit.assertEquals("After press(), button should have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
-                        jqUnit.assertTrue("Button should have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-                        that.requestPress();
-                        jqUnit.assertEquals("Pressing when already pressed, button should still have aria-pressed of 'true'", "true", toggleButton.attr("aria-pressed"));
-                        jqUnit.assertTrue("AButton should still have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-                        that.requestRelease();
-                        jqUnit.assertEquals("After release, button should have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
-                        jqUnit.assertFalse("Button should not have the 'pressed' style", toggleButton.hasClass(fluid.tests.toggleButtonDefaults.styles.pressed));
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerControlsTests.asyncTest("Toggle button, prevent the toggle", function () {
-            expect(3);
-            var testComponent = fluid.tests.initToggleButton({
-                listeners: {
-                    onPress: function () {
-                        // prevent the toggle from happening
-                        return false;
-                    },
-                    onReady: function (that) {
-                        var toggleButton = that.locate("button");
-                        jqUnit.assertEquals("Toggle button should have aria-pressed of 'false' initially", "false", toggleButton.attr("aria-pressed"));
-                        var tooltip = fluid.tests.getTooltipCheckString(toggleButton, fluid.tests.toggleButtonDefaults.strings.press);
-
-                        toggleButton.click();
-                        jqUnit.assertEquals("After click, toggle button should still have aria-pressed of 'false'", "false", toggleButton.attr("aria-pressed"));
-                        toggleButton.blur().focus(); // tooltip not updated until 'requested' again
-                        jqUnit.assertEquals("After click, Tooltip should still contain '" + fluid.tests.toggleButtonDefaults.strings.press + "'", fluid.tests.toggleButtonDefaults.strings.press, tooltip.text());
-
-                        start();
-                    }
-                }
-            });
-        });
 
         videoPlayerControlsTests.asyncTest("Toggle button, overriding strings", function () {
             expect(1);
@@ -205,7 +156,6 @@ fluid.registerNamespace("fluid.tests");
         });
 
         var baseMenuOpts = {
-            model: {
                 languages: [{
                     srclang: "klingon",
                     label: "Klingo√±"
@@ -219,6 +169,7 @@ fluid.registerNamespace("fluid.tests");
                     srclang: "elvish",
                     label: "Elv√Æsh"
                 }],
+             model: {
                 activeLanguages: [0],
                 showLanguage: false
             }
@@ -233,7 +184,7 @@ fluid.registerNamespace("fluid.tests");
         var verifyActivation = function (actionString, that, activatedIndex) {
             expect(5);
             var menuItems = that.locate("menuItem");
-            jqUnit.assertEquals(actionString + " updates the active language", activatedIndex, that.model.activeLanguages[0]);
+            jqUnit.assertEquals(actionString + " updates the active language", activatedIndex, that.readIndirect("currentLanguagePath")[0]);
             jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
             jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
             jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
@@ -249,7 +200,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.asyncTest("Language Menu: Default configuration", function () {
-            var numLangs = baseMenuOpts.model.languages.length;
+            var numLangs = baseMenuOpts.languages.length;
             expect(9);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
@@ -292,7 +243,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Language Menu: Custom 'show/hide' option strings", function () {
-            var numLangs = baseMenuOpts.model.languages.length;
+            var numLangs = baseMenuOpts.languages.length;
             expect(2);
             var testStrings = {
                 showLanguage: "No one is talking",
@@ -361,17 +312,17 @@ fluid.registerNamespace("fluid.tests");
                             var button = that.locate("button");
                             button[0].click();
                             jqUnit.isVisible("Clicking the button should show menu", that.menu.container);
-                            jqUnit.assertFalse("Buttons state should still be released", that.button.model.pressed);
+                            jqUnit.assertTrue("Buttons state should be released", that.button.model.pressed);
                             button[0].click();
                             jqUnit.notVisible("Clicking the button again should hide menu again", that.menu.container);
 
                             button[0].click();
                             $(langList[1]).click();
                             jqUnit.notVisible("Show the menu, click a language, menu should hide", that.menu.container);
-                            jqUnit.assertEquals("'current langauge' should be udated", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
+                            jqUnit.assertEquals("'current langauge' should be updated", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
                             jqUnit.assertTrue("'show language' model flag should be true", fluid.get(that.model, that.options.showHidePath));
                             jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
-                            jqUnit.assertTrue("Button state should be pressed", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+                            jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
 
                             button[0].click();
                             $(showHideOption[0]).click();
@@ -384,7 +335,7 @@ fluid.registerNamespace("fluid.tests");
                             $(showHideOption[0]).click();
                             jqUnit.assertTrue("Click the show/hide option, 'show language' model flag should be true again", fluid.get(that.model, that.options.showHidePath));
                             jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
-                            jqUnit.assertTrue("Button state should be pressed", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+                            jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
 
                             start();
                         }

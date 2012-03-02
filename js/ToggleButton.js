@@ -18,19 +18,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
 
     fluid.defaults("fluid.toggleButton", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
-        preInitFunction: "fluid.toggleButton.preInit",
+        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         postInitFunction: "fluid.toggleButton.postInit",
         finalInitFunction: "fluid.toggleButton.finalInit",
         events: {
-            onPress: "preventable", // listeners can prevent button from becoming pressed
+            onPress: null,
             onReady: null
-        },
-        listeners: {
-            onPress: {
-                listener: "{toggleButton}.requestStateChange",
-                priority: "last"
-            }
         },
         selectors: {    // Integrators may override this selector
             button: ".flc-videoPlayer-button"
@@ -40,6 +33,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             pressed: "fl-videoPlayer-button-pressed",
             tooltip: "fl-videoPlayer-tooltip"
         },
+        ownModel: true,
         model: {},
         modelPath: "pressed",
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
@@ -49,27 +43,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.toggleButton.preInit = function (that) {
-        that.requestStateChange = function () {
-            that.applier.requestChange(that.options.modelPath, !fluid.get(that.model, that.options.modelPath));
-        };
-    };
-
     fluid.toggleButton.postInit = function (that) {
-        that.requestPress = function () {
-            that.applier.requestChange(that.options.modelPath, true);
+        if (that.options.ownModel || that.readIndirect("modelPath") === undefined) {
+            that.writeIndirect("modelPath", false);
+        }
+        that.requestStateChange = function () {
+            that.writeIndirect("modelPath", !that.readIndirect("modelPath"));
         };
-        
-        that.requestRelease = function () {
-            that.applier.requestChange(that.options.modelPath, false);
-        };
-        
-        that.updatePressedState = function () {
+
+        that.refreshView = function () {
             var button = that.locate("button");
-            var pressed = !!fluid.get(that.model, that.options.modelPath);
-            button.toggleClass(that.options.styles.init, !pressed);
-            button.toggleClass(that.options.styles.pressed, pressed);
-            button.attr("aria-pressed", pressed.toString());
+            var pressed = that.readIndirect("modelPath");
+            var styles = that.options.styles;
+            if (styles.init === styles.pressed) {
+                button.addClass(styles.init);
+            } else {
+                button.toggleClass(styles.init, !pressed);
+                button.toggleClass(styles.pressed, pressed);
+            }
+            button.prop("aria-pressed", pressed);
         };
         
         that.enabled = function (state) {
@@ -86,22 +78,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 tooltip: that.options.styles.tooltip
             },
             content: function () {
-                return (fluid.get(that.model, that.options.modelPath) ? that.options.strings.release : that.options.strings.press);
+                return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
             }
         });
 
-        that.updatePressedState();
+        that.refreshView();
     };
 
     fluid.toggleButton.bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
-        button.click(function (evt) {
-            that.events.onPress.fire(evt);
+        button.click(function () {
+            that.requestStateChange();
+            that.events.onPress.fire();
             return false;
         });
 
-        that.applier.modelChanged.addListener(that.options.modelPath, function (model, oldModel, changeRequest) {
-            that.updatePressedState();
+        that.applier.modelChanged.addListener(that.options.modelPath, function () {
+            that.refreshView();
         });
     };
 
