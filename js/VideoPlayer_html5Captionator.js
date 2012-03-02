@@ -26,7 +26,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
      ********************************************************************/
 
     fluid.defaults("fluid.videoPlayer.html5Captionator", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.html5Captionator.finalInit",
         preInitFunction:   "fluid.videoPlayer.html5Captionator.preInit",
         model: {},
@@ -48,8 +48,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     var bindCaptionatorModel = function (that) {
         var elPaths = that.options.elPaths;
-        that.applier.modelChanged.addListener(elPaths.currentCaptions, that.changeCaptions);
-        that.applier.modelChanged.addListener(elPaths.displayCaptions, that.displayCaptions);
+        that.applier.modelChanged.addListener(elPaths.currentCaptions, that.refreshCaptions);
+        that.applier.modelChanged.addListener(elPaths.displayCaptions, that.refreshCaptions);
     };
     
     // Hide all tracks
@@ -70,50 +70,32 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.html5Captionator.preInit = function (that) {
   
         // listener for hiding/showing all captions
-        that.displayCaptions = function () {
+        that.refreshCaptions = function () {
             var tracks = that.locate("video")[0].tracks;
-            var elPaths = that.options.elPaths;
-            if (fluid.get(that.model, elPaths.displayCaptions)) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(fluid.get(that.model, elPaths.currentCaptions), tracks, that.options.captions);
+            var display = that.readIndirect("elPaths.displayCaptions");
+            if (display) {
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
+                    tracks, that.options.captions);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
             }
         };
 
-        // listener for changed selected currentTrack
-        that.changeCaptions = function () {
-            fluid.videoPlayer.html5Captionator.showCurrentTrack(fluid.get(that.model, that.options.elPaths.currentCaptions), that.locate("video")[0].tracks, that.options.captions);
-        };
     };
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions || [];
-        var elPaths = that.options.elPaths;
-        var displayCaptions = fluid.get(that.model, elPaths.displayCaptions);
-        
-        // Before we go any further check if it makes sense to create captionator and bind events
-        if(captions.length === 0) {
-            return false;
-        }
-        
-        var currentCaptions = fluid.get(that.model, elPaths.currentCaptions) || [];
-        
-        // If currentTrack is not specified, then default it to the first track
-        if (currentCaptions.length === 0) {
-            //that.model.currentCaptions.push(0);
-            that.applier.requestChange(elPaths.currentCaptions, [0]);
-        }
         
         // Start adding tracks to the video tag
         fluid.each(captions, function (element, key) {
             
             var trackTag = $("<track />");
             var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
-
-            if ($.inArray(key, fluid.get(that.model, elPaths.currentCaptions)) !== -1 && displayCaptions) {
+            if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaption")) {
                 attributes["default"] = "true";
             }
+
             trackTag.attr(attributes);
 
             that.locate("video").append(trackTag);

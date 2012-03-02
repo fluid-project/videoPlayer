@@ -17,6 +17,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
 
+
     /*****************************************************************************
         Language Menu subcomponent
         Used for Captions, Transcripts, Audio Descriptions.
@@ -26,25 +27,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         needs the list of captions (or transcripts, etc) as its model for rendering.
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.languageMenu", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        gradeNames: ["fluid.rendererComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         renderOnInit: true,
         preInitFunction: "fluid.videoPlayer.controllers.languageMenu.preInit",
         postInitFunction: "fluid.videoPlayer.controllers.languageMenu.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
-        languages: {},
+        languages: [],
+        currentLanguagePath: "activeLanguages",
+        showHidePath: "showLanguage",
         model: {},
         events: {
             onReady: null,
             activated: null,
-            languageOnOff: null,
-            trackChanged: "preventable"
-        },
-        listeners: {
-            trackChanged: {
-                listener: "fluid.videoPlayer.controllers.languageMenu.updateTracks",
-                priority: "last"
-            }
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
@@ -60,11 +55,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             selected: "fl-videoPlayer-menuItem-selected",
             active: "fl-videoPlayer-menuItem-active"
         },
+        invokers: {
+            updateTracks: { funcName: "fluid.videoPlayer.controllers.languageMenu.updateTracks", args: ["{languageMenu}"] },
+            updateShowHide: { funcName: "fluid.videoPlayer.controllers.languageMenu.updateShowHide", args: ["{languageMenu}"] }
+        },
         hideOnInit: true
     });
 
     // TODO: Could this be specified declaratively, in a "protoTree" option?
+    // Ans: not very effectively... the renderer still needs to be burned to the ground
     fluid.videoPlayer.controllers.languageMenu.produceTree = function (that) {
+        // Silly damn renderer with its crazy JSON idiolect!
+        that.model.languages = that.options.languages;
         var tree = {
             // create a menu item for each language in the model
             expander: {
@@ -78,14 +80,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             // add the 'turn off' option
             showHide: {
-                value: that.model.showLanguage ? that.options.strings.hideLanguage : that.options.strings.showLanguage
+                value: that.options.strings[that.readIndirect("showHide")? "hideLanguage" : "showLanguage"]
             }
         };
         return tree;
-    };
-
-    fluid.videoPlayer.controllers.languageMenu.selectLastItem = function (that) {
-        that.container.fluid("selectable.select", that.locate("menuItem").last());
     };
 
     fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y = function (that) {
@@ -113,7 +111,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         var noneButton = that.locate("showHide");
         noneButton.fluid("activatable", function (evt) {
-            that.applier.requestChange("showLanguage", !that.model.showLanguage);
+            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
             that.hide();
             return false;
         });
@@ -140,35 +138,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.locate("showHide").click(function (evt) {
-            that.applier.requestChange("showLanguage", !that.model.showLanguage);
+            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
         });
 
-        // TODO: We currently only support one active language. Indexing into the array will change
-        //       when we support more
-        that.applier.modelChanged.addListener("activeLanguages.0", function (model, oldModel, changeRequest) {
-            var newTrack = model.activeLanguages;
-            var oldTrack = oldModel.activeLanguages;
-            if (newTrack[0] === oldTrack[0]) {
-                return;
-            }
-            that.events.trackChanged.fire(that, newTrack, oldTrack);
-        });
-
-        that.applier.modelChanged.addListener("showLanguage", function (model, oldModel, changeRequest) {
-            // Prevent the mutual triggering between the "menu" and "transcript" components from being trapped into infinite loop
-            if (model.showLanguage === oldModel.showLanguage) {
-                return;
-            }
-            that.locate("showHide").text(that.model.showLanguage ? that.options.strings.hideLanguage : that.options.strings.showLanguage);
-            that.events.languageOnOff.fire(that.model.showLanguage);
-        });
+        that.applier.modelChanged.addListener(that.options.showHidePath, that.updateShowHide);
+        that.applier.modelChanged.addListener(that.options.currentLanguagePath, that.updateTracks);
 
     };
 
-    fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that, activeTrack) {
+    fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that) {
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
-        $(menuItems[that.model.activeLanguages[0]]).addClass(that.options.styles.active);
+        var langIndex = that.readIndirect("currentLanguagePath")[0];
+        $(menuItems[langIndex]).addClass(that.options.styles.active);
+    };
+    
+    fluid.videoPlayer.controllers.languageMenu.updateShowHide = function(that) {
+        var showHide = that.readIndirect("showHidePath"); 
+        that.locate("showHide").text(that.options.strings[showHide? "hideLanguage": "showLanguage"]);
     };
 
     fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
@@ -177,7 +164,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container.toggle();
         };
         that.hide = function () {
-            that.locate("language").removeClass(that.options.styles.selected);
             that.container.hide();
         };
     };
@@ -191,21 +177,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container.fluid("selectable.select", that.locate("menuItem").last());
         };
         that.activate = function (index) {
-            that.applier.requestChange("activeLanguages.0", index);
-            that.applier.requestChange("showLanguage", true);
-        };
-        that.requestShowHide = function (showHide) {
-            that.applier.requestChange("showLanguage", showHide);
+            that.writeIndirect("currentLanguagePath", [index]);
+            that.writeIndirect("showHidePath", true);
         };
     };
 
     fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
         fluid.videoPlayer.controllers.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
-        if (that.model.languages) {
-            $(that.locate("menuItem")[that.model.activeLanguages[0]]).addClass(that.options.styles.active);
-        }
         that.hide();
+        that.updateTracks();
+        that.updateShowHide();
         that.events.onReady.fire(that);
     };
 
@@ -218,8 +200,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         activation only shows the menu
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.controllers.languageControls", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
-        preInitFunction: "fluid.videoPlayer.controllers.languageControls.preInit",
+        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.languageControls.finalInit",
         selectors: {
             button: ".flc-videoPlayer-languageButton",
@@ -227,8 +208,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
-            onRenderingComplete: null,
-            activatedByKeyboard: null
+            onRenderingComplete: null
         },
         languages: [],
         currentLanguagePath: "",
@@ -237,37 +217,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             showLanguage: "Show Language",
             hideLanguage: "Hide Language"
         },
+        styles: {
+            button: "fl-videoPlayer-button",
+            buttonWithShowing: "fl-videoPlayer-buttonWithShowing"  
+        },
         components: {
             button: {
                 type: "fluid.toggleButton",
                 container: "{languageControls}.container",
                 options: {
+                    styles: {
+                        init: "{languageControls}.options.styles.button",
+                        // TODO: see if we want different style for pressed form
+                        pressed: "{languageControls}.options.styles.button"  
+                    },
                     selectors: {
                         button: "{languageControls}.options.selectors.button"
                     },
-                    styles: { 
-                        init: "{languageControls}.options.styles.init",
-                        pressed: "{languageControls}.options.styles.pressed"
-                    },
-                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
                     strings: "{languageControls}.options.strings",
-                    events: {
-                        activatedByKeyboard: "{languageControls}.events.activatedByKeyboard"
-                    },
-                    model: "{languageControls}.model",
-                    modelPath: "{languageControls}.options.showHidePath",
-                    applier: "{languageControls}.applier"
                 }
             },
             menu: {
                 type: "fluid.videoPlayer.controllers.languageMenu",
                 container: "{languageControls}.dom.menu",
                 options: {
-                    model: {
-                        languages: "{languageControls}.options.languages"
-                    },
-                    modelPath: "{languageControls}.options.modelPath",
+                    model: "{languageControls}.model",
+                    languages: "{languageControls}.options.languages",
+                    applier: "{languageControls}.applier",
                     showHidePath: "{languageControls}.options.showHidePath",
+                    currentLanguagePath: "{languageControls}.options.currentLanguagePath",
                     strings: "{languageControls}.options.strings"
                 }
             },
@@ -278,19 +256,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.videoPlayer.controllers.languageControls.preInit = function (that) {
-        that.options.components.menu.options.model.activeLanguages = fluid.get(that.model, that.options.currentLanguagePath);
-        that.options.components.menu.options.model.showLanguage = fluid.get(that.model, that.options.showHidePath);
-        
-        that.updateLanguage = function (newIndex) {
-            that.applier.requestChange(that.options.currentLanguagePath, newIndex);
-        };
-
-        that.updateShowHide = function (show) {
-            that.applier.requestChange(that.options.showHidePath, show);
-        };
-    };
-
     fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y = function (that) {
         fluid.tabindex(that.locate("menu"), -1);
         that.locate("button").fluid("activatable", [fluid.identity, {
@@ -300,7 +265,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // i.e. the bottom item in the menu
                 key: $.ui.keyCode.UP,
                 activateHandler: function () {
-                    that.events.activatedByKeyboard.fire();
+                    that.menu.showAndSelect();
                     return false;
                 }
             }]
@@ -320,13 +285,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
         fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y(that);
         that.events.onRenderingComplete.fire(that);
+        
+        function refreshButtonClass() {
+            var showHide = that.readIndirect("showHidePath");
+            that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
+        };
 
-        that.applier.modelChanged.addListener(that.options.showHidePath, function (model, oldModel, changeRequest) {
-            // TODO: This assumes an API for the button subcomponent: Should this be accomplished though and event?
-            that.button.updatePressedState();
-        });
+        that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
+        refreshButtonClass();
         that.events.onReady.fire(that);
-
     };
 
     /**************************************************************************************
@@ -335,23 +302,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("fluid.videoPlayer.controllers.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
-        events: {
-            onReady: null
-        },
         listeners: {
             "{button}.events.onPress": "{menu}.toggleView",
-            "{button}.events.activatedByKeyboard": "{menu}.showAndSelect",
-
-            "{menu}.events.trackChanged": {
-                listener: "{languageControls}.updateLanguage",
-                args: ["{arguments}.1"]
-            },
-            "{menu}.events.languageOnOff": "{languageControls}.updateShowHide"
         },
-        finalInitFunction: "fluid.videoPlayer.controllers.languageControls.eventBinder.finalInit"
     });
-    fluid.videoPlayer.controllers.languageControls.eventBinder.finalInit = function (that) {
-        that.events.onReady.fire();
-    };
 })(jQuery);
     
