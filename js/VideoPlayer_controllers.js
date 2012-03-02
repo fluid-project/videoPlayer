@@ -307,7 +307,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             updateTime(that, "currentTime");
             var scrubber = that.locate("scrubber");
             scrubber.slider("value", that.model.currentTime);
-            console.log("currentTime: " + that.model.currentTime);
             that.locate("handle").attr({
                 "aria-valuenow": that.model.currentTime,
                 "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
@@ -317,16 +316,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.updateBuffered = function () {
             var startTime = that.model.startTime || 0;
             var lastBufferedTime = that.model.buffered.end(that.model.buffered.length - 1);
-            lastBufferedTime = 2;
             var scrubber = that.locate("scrubber");
             
             scrubber.slider("option", "max", lastBufferedTime);
-            console.log("max: "+ lastBufferedTime);
             that.locate("handle").attr({
                 "aria-valuemax": lastBufferedTime
             });
-
-            // console.log("length: " + length + "; start: " + that.model.buffered.start(length-1) + "; end: " + that.model.buffered.end(length - 1));
         };
     };
 
