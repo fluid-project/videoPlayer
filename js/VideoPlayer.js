@@ -268,6 +268,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             currentTime: 0,
             totalTime: 0,
+            buffered: 0,
             displayCaptions: false,
             displayTranscripts: false,
             fullscreen: false,
@@ -354,7 +355,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var hideControllers = function (that) {
-        that.locate("controllers").stop(false, true).delay(500).slideUp();
+        // that.locate("controllers").stop(false, true).delay(500).slideUp();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -548,7 +549,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
 
-            that.locate("controllers").hide();
+            // that.locate("controllers").hide();
             that.events.onReady.fire(that);
         });
         

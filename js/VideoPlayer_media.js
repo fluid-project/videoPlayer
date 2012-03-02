@@ -146,10 +146,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.media.preInit = function (that) {
-        that.updateCurrentTime = function (currentTime) {
+        that.updateCurrentTime = function (currentTime, buffered) {
             that.applier.fireChangeRequest({
                 path: "currentTime", 
                 value: currentTime
+            });
+            that.applier.fireChangeRequest({
+                path: "buffered", 
+                value: buffered
             });
         };
         

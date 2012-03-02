@@ -45,7 +45,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         listeners: {
             onTick: {
                 listener: "fluid.videoPlayer.intervalEventsConductor.handleTicks",
-                args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0"]
+                args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0", "{arguments}.1"]
             }
         },
         invokers: {
@@ -102,8 +102,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     /**
      * The main process to re-wire the events
      */
-    fluid.videoPlayer.intervalEventsConductor.handleTicks = function (that, currentTime) {
-        that.events.onTimeChange.fire(currentTime);
+    fluid.videoPlayer.intervalEventsConductor.handleTicks = function (that, currentTime, buffered) {
+        that.events.onTimeChange.fire(currentTime, buffered);
         
         if (that.options.intervalList) {
             var previousInterval = that.options.model.previousIntervalId;
@@ -140,8 +140,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
         media.bind("timeupdate", function (ev) {
             var currentTime = ev.currentTarget.currentTime;
+            var buffered = ev.currentTarget.buffered;  // A TimeRanges object with {length, start(), end()}
             
-            that.events.onTick.fire(currentTime);
+            that.events.onTick.fire(currentTime, buffered);
         });
     };
 
