@@ -210,9 +210,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
                 var html5Captionator = videoPlayer.html5Captionator;
                 
-                html5Captionator.displayCaptions();
-                
-                html5Captionator.changeCaptions();
+                html5Captionator.refreshCaptions();
                 
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
 
@@ -224,7 +222,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerCaptionatorTests.asyncTest("html5Captionator without currentTrack", function () {
             var testIndex = 5;
             
-            expect(6);
+            expect(5);
             
             setupEnvironment(true);
             
@@ -237,11 +235,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
                 
-                jqUnit.assertEquals("Current track is NOT empty in the html5Captionator model it has only one element in it", 
-                        1, currentTracks.captions.length);
-                        
-                jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
-                        0, currentTracks.captions[0]);
+                jqUnit.assertEquals("Current track is also empty in the html5Captionator model", 
+                        0, currentTracks.captions.length);
+                // Can't support this "self-modification" of the model of captionator since it may corrupt data belonging
+                // to others during startup
+                //jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
+                //        0, currentTracks.captions[0]);
                 
                 testTrackNotShowing(html5Captionator, 0);
                 testTrackNotShowing(html5Captionator, 1);

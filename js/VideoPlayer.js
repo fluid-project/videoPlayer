@@ -55,8 +55,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * support HTML5.                                                              * 
      *******************************************************************************/
     
+    fluid.registerNamespace("fluid.videoPlayer");
+    
     //This is the default key bindings
-    var defaultKeys = {
+    fluid.videoPlayer.defaultKeys = {
         play: {
             modifier: $.ui.keyCode.SHIFT,
             key: 80
@@ -249,7 +251,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnTranscriptsOff: "Turn Transcripts OFF"
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript"],
-        keyBindings: defaultKeys,
+        keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
         video: {
@@ -445,19 +447,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
     };
-// TODO: move into DataBinding
-    fluid.linearRangeGuard = function(min, max) {
-        return function (model, changeRequest, applier) {
-            var newValue = changeRequest.value;
-    
-            if (newValue < min) {
-                newValue = min;
-            } else if (newValue > max) {
-                newValue = model.max;
-            }
-            changeRequest.value = newValue;
-        }
-    };
 
     fluid.videoPlayer.postInit = function (that) {
         // TODO: declarative syntax for this in framework
@@ -613,27 +602,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
                 "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
-            }
-        }
-    });
-
-    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript", "fluid.videoPlayer.controllers"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onTranscriptHide": {
-                    listener: "{controllers}.transcriptControls.menu.requestShowHide",
-                    args: [false]
-                }
-            }
-        }
-    });
-
-    // Prevent the above demands block from being resolved in the absence of "controllers" component
-    fluid.demands("transcriptEventBinder", ["fluid.videoPlayer.transcript"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onCurrentTranscriptChanged": null,
-                "{videoPlayer}.events.onTranscriptHide": null
             }
         }
     });
