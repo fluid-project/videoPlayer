@@ -45,6 +45,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
+                    components: {
+                        bufferedProgress: {
+                            type: "fluid.progress",
+                            container: "{scrubber}.dom.bufferedProgress",
+                            options: {
+                                initiallyHidden: false,
+                                speed: 1000,
+                                minWidth: 0
+                            }
+                        },
+                    },
                     events: {
                         onScrub: "{controllers}.events.onScrub",
                         afterScrub: "{controllers}.events.afterScrub",
@@ -274,7 +285,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             totalTime: ".flc-videoPlayer-total",
             currentTime: ".flc-videoPlayer-current",
             scrubber: ".flc-videoPlayer-scrubber",
-            handle: ".ui-slider-handle"
+            handle: ".ui-slider-handle",
+            bufferedProgress: ".flc-videoPlayer-buffered-progress"
         },
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
@@ -313,15 +325,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         };
 
+        var bufferCompleted = false;
+        
         that.updateBuffered = function () {
-            var startTime = that.model.startTime || 0;
             var lastBufferedTime = that.model.buffered.end(that.model.buffered.length - 1);
-            var scrubber = that.locate("scrubber");
+            var totalTime = that.model.totalTime;
             
-            scrubber.slider("option", "max", lastBufferedTime);
-            that.locate("handle").attr({
-                "aria-valuemax": lastBufferedTime
-            });
+            if (totalTime && lastBufferedTime && !bufferCompleted) {
+                var percent = Math.round(lastBufferedTime / totalTime * 100);
+                
+                that.bufferedProgress.update(percent);
+                
+                // Stops the buffer progress from being kept updated once the progress reaches 100%
+                if (lastBufferedTime === totalTime) {
+                    bufferCompleted = true;
+                }
+            }
         };
     };
 
@@ -329,7 +348,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
         bindScrubberModel(that);
-
+        
         that.events.onScrubberReady.fire();
     };
     

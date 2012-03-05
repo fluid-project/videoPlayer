@@ -244,6 +244,47 @@ ul.fl-videoPlayer-transcripts-languageList li {
     display: block;
 }
 
+/*********************
+ * Buffered Progress *
+ *********************/
+
+.fl-videoPlayer-buffered-progress {
+    float: left;
+    height: 1em;
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 100%;
+    pointer-events:none;
+}
+
+/* progress bar */
+.fl-progress-popUp {
+    display: none;
+    text-align: center;
+    color: black;
+    margin: 0px auto;
+    width: 100%;
+    height: 100%;
+}
+
+.fl-progress-theBar {
+    text-align: left;
+    background-position: left top;
+    background-repeat: repeat;
+    background-attachment: fixed;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
+.fl-progress-indicator {
+    height: 100%;
+    width: 100%;
+    background-color: #F2F2F2;
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}
 
 /************
  * Scrubber *
@@ -264,7 +305,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 }
 
 .fl-videoPlayer-scrubber.ui-widget-content {
-    background: rgba(204, 204, 204, 0.6);
+    background: rgba(0, 0, 0, 0.45);
     border-width: 0;
     border-top: 1px solid #fff;
 }
