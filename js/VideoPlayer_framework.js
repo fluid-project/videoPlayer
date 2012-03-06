@@ -81,7 +81,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     var newValue = fluid.get(that.pentModel, key);
                     // synthetic change summarising ultimate individual effect of pent change
                     var synthChange = {type: "ADD", path: key, value: newValue};
-                    console.log("Replaying pent change ", synthChange, " to target ", target);
+                    // console.log("Replaying pent change ", synthChange, " to target ", target);
                     var changes = value.func(newValue, key, target, [synthChange]);
                     fluid.requestChanges(target.applier, changes);
                 }
