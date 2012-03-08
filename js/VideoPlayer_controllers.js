@@ -48,12 +48,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     components: {
                         bufferedProgress: {
                             type: "fluid.progress",
-                            container: "{scrubber}.dom.bufferedProgress",
-                            options: {
-                                initiallyHidden: false,
-                                speed: 1000,
-                                minWidth: 0
-                            }
+                            container: "{scrubber}.dom.bufferedProgress"
                         },
                     },
                     events: {
@@ -275,6 +270,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
         postInitFunction: "fluid.videoPlayer.controllers.scrubber.postInit",
+        components: {
+            bufferedProgress: {
+                type: "fluid.progress",
+                options: {
+                    initiallyHidden: false,
+                    minWidth: 0
+                }
+            },
+        },
         events: {
             afterScrub: null,
             onScrub: null,
@@ -286,7 +290,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             currentTime: ".flc-videoPlayer-current",
             scrubber: ".flc-videoPlayer-scrubber",
             handle: ".ui-slider-handle",
-            bufferedProgress: ".flc-videoPlayer-buffered-progress"
+            bufferedProgress: ".flc-videoPlayer-buffered-progress",
+            bufferedProgressBar: ".flc-progress-bar"
         },
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
@@ -334,6 +339,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             if (totalTime && lastBufferedTime && !bufferCompleted) {
                 var percent = Math.round(lastBufferedTime / totalTime * 100);
                 
+                // Explicitly setting the width of .flc-progress-bar is a work-around for the Chrome/IE9 issue
+                // that the width of the progress div is reduced at the controller bar slide-up
+                that.locate("bufferedProgressBar").width(that.model.videoWidth);
                 that.bufferedProgress.update(percent);
                 
                 // Stops the buffer progress from being kept updated once the progress reaches 100%

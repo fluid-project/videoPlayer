@@ -249,7 +249,6 @@ ul.fl-videoPlayer-transcripts-languageList li {
  *********************/
 
 .fl-videoPlayer-buffered-progress {
-    float: left;
     height: 1em;
     left: 0;
     top: 0;
@@ -294,6 +293,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     width: 100%;
     text-align: center;
     margin-bottom: -0.4em;
+    position: relative;
 }
 .fl-videoPlayer-scrubberContainer * {
     margin: auto;
