@@ -45,12 +45,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
-                    components: {
-                        bufferedProgress: {
-                            type: "fluid.progress",
-                            container: "{scrubber}.dom.bufferedProgress"
-                        },
-                    },
                     events: {
                         onScrub: "{controllers}.events.onScrub",
                         afterScrub: "{controllers}.events.afterScrub",
@@ -273,6 +267,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         components: {
             bufferedProgress: {
                 type: "fluid.progress",
+                container: "{scrubber}.dom.bufferedProgress",
                 options: {
                     initiallyHidden: false,
                     minWidth: 0
@@ -284,6 +279,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onScrub: null,
             onScrubberReady: null,
             onStartScrub: null
+        },
+        invokers: {
+            updateBuffered: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
+                args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            }  
         },
         selectors: {
             totalTime: ".flc-videoPlayer-total",
@@ -298,6 +299,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             scrubber: "Time scrub"
         }
     });
+
+    // The flag that stops the buffer progress update once the video is fully buffered.
+    var bufferCompleted = false;
+    
+    fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
+        // "model.buffered" is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
+        var lastBufferedTime = that.model.buffered.end(that.model.buffered.length - 1);
+        var totalTime = that.model.totalTime;
+        
+        // Turn on buffer progress update if the re-buffering is triggered, for instance, 
+        // by rewinding back
+        if (lastBufferedTime !== totalTime) {
+            bufferCompleted = false;
+        }
+        
+        if (totalTime && lastBufferedTime && !bufferCompleted) {
+            var percent = Math.round(lastBufferedTime / totalTime * 100);
+            
+            // Explicitly setting the width of .flc-progress-bar is a work-around for the Chrome/IE9 issue
+            // that the width of the progress div is reduced at the controller bar slide-up
+            that.locate("bufferedProgressBar").width(that.model.videoWidth);
+            that.bufferedProgress.update(percent);
+            
+            // Stops the buffer progress from being kept updated once the progress reaches 100%
+            if (lastBufferedTime === totalTime) {
+                bufferCompleted = true;
+            }
+        }
+    };
 
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
         // TODO: these methods should be public functions, since people might like to alter them
@@ -330,26 +360,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         };
 
-        var bufferCompleted = false;
-        
-        that.updateBuffered = function () {
-            var lastBufferedTime = that.model.buffered.end(that.model.buffered.length - 1);
-            var totalTime = that.model.totalTime;
-            
-            if (totalTime && lastBufferedTime && !bufferCompleted) {
-                var percent = Math.round(lastBufferedTime / totalTime * 100);
-                
-                // Explicitly setting the width of .flc-progress-bar is a work-around for the Chrome/IE9 issue
-                // that the width of the progress div is reduced at the controller bar slide-up
-                that.locate("bufferedProgressBar").width(that.model.videoWidth);
-                that.bufferedProgress.update(percent);
-                
-                // Stops the buffer progress from being kept updated once the progress reaches 100%
-                if (lastBufferedTime === totalTime) {
-                    bufferCompleted = true;
-                }
-            }
-        };
     };
 
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {

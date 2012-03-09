@@ -87,6 +87,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions || [];
         
+        if (captions.length === 0) return;  // Exit if captions are not provided
+        
         // Start adding tracks to the video tag
         fluid.each(captions, function (element, key) {
             

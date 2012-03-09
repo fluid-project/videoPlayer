@@ -42,8 +42,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         },
         events: {
-            onTranscriptAreaShow: null,
-            onTranscriptAreaHide: null,
             onTranscriptsLoaded: null,
             onLoadTranscriptError: null,
             onIntervalChange: null,
@@ -80,16 +78,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     /** Functions to show/hide the transcript area **/
+    // Show the transcript area
     fluid.videoPlayer.transcript.showTranscriptArea = function (that) {
-        // Show the transcript area
         that.container.show();
-        that.events.onTranscriptAreaShow.fire();
     };
     
     // Hide the transcript area
     fluid.videoPlayer.transcript.hideTranscriptArea = function (that) {
         that.container.hide();
-        that.events.onTranscriptAreaHide.fire();
     };
 
     // Update visibility of the transcript area based on the flag "model.displayTranscripts"
