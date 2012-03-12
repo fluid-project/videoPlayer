@@ -270,6 +270,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             currentTime: 0,
             totalTime: 0,
+            buffered: 0,
             displayCaptions: false,
             displayTranscripts: false,
             fullscreen: false,
@@ -579,6 +580,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         // Set the width of the overlay to be the width of the video, otherwise, the controller bar spreads into transcript area
         overlay.css({width: videoWidth});
+        
+        // Save the video width/height in the model so they are accessible by the sub-components
+        that.model.videoWidth = videoWidth;
+        that.model.videoHeight = videoHeight;
     };
 
     /*********************************************************************************

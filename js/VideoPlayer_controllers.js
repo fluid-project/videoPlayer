@@ -226,6 +226,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         that.applier.modelChanged.addListener("currentTime", that.updateCurrent);
+        that.applier.modelChanged.addListener("buffered", that.updateBuffered);
 
         that.applier.modelChanged.addListener("canPlay", function () {
             var scrubber = that.locate("scrubber");
@@ -263,23 +264,70 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
         postInitFunction: "fluid.videoPlayer.controllers.scrubber.postInit",
+        components: {
+            bufferedProgress: {
+                type: "fluid.progress",
+                container: "{scrubber}.dom.bufferedProgress",
+                options: {
+                    initiallyHidden: false,
+                    minWidth: 0
+                }
+            },
+        },
         events: {
             afterScrub: null,
             onScrub: null,
             onScrubberReady: null,
             onStartScrub: null
         },
+        invokers: {
+            updateBuffered: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
+                args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            }  
+        },
         selectors: {
             totalTime: ".flc-videoPlayer-total",
             currentTime: ".flc-videoPlayer-current",
             scrubber: ".flc-videoPlayer-scrubber",
-            handle: ".ui-slider-handle"
+            handle: ".ui-slider-handle",
+            bufferedProgress: ".flc-videoPlayer-buffered-progress",
+            bufferedProgressBar: ".flc-progress-bar"
         },
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
             scrubber: "Time scrub"
         }
     });
+
+    // The flag that stops the buffer progress update once the video is fully buffered.
+    var bufferCompleted = false;
+    
+    fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
+        // "model.buffered" is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
+        var lastBufferedTime = that.model.buffered.end(that.model.buffered.length - 1);
+        var totalTime = that.model.totalTime;
+        
+        // Turn on buffer progress update if the re-buffering is triggered, for instance, 
+        // by rewinding back
+        if (lastBufferedTime !== totalTime) {
+            bufferCompleted = false;
+        }
+        
+        if (totalTime && lastBufferedTime && !bufferCompleted) {
+            var percent = Math.round(lastBufferedTime / totalTime * 100);
+            
+            // Explicitly setting the width of .flc-progress-bar is a work-around for the Chrome/IE9 issue
+            // that the width of the progress div is reduced at the controller bar slide-up
+            that.locate("bufferedProgressBar").width(that.model.videoWidth);
+            that.bufferedProgress.update(percent);
+            
+            // Stops the buffer progress from being kept updated once the progress reaches 100%
+            if (lastBufferedTime === totalTime) {
+                bufferCompleted = true;
+            }
+        }
+    };
 
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
         // TODO: these methods should be public functions, since people might like to alter them
@@ -307,17 +355,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var scrubber = that.locate("scrubber");
             scrubber.slider("value", that.model.currentTime);
             that.locate("handle").attr({
-                "aria-valuenow": that.model.totalTime,
+                "aria-valuenow": that.model.currentTime,
                 "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
             });
         };
+
     };
 
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
         bindScrubberModel(that);
-
+        
         that.events.onScrubberReady.fire();
     };
     
