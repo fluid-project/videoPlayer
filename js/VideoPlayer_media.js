@@ -78,7 +78,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindMediaModel = function (that) {
         that.applier.modelChanged.addListener("play", that.play);
         that.applier.modelChanged.addListener("muted", that.mute);
-        fluid.addSourceGuardedListener(that.applier.modelChanged, 
+        fluid.addSourceGuardedListener(that.applier, 
             "volume", "media", that.updateVolume);
     };
 

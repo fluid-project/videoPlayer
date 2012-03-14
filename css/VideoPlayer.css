@@ -171,11 +171,11 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-volumeControl {
     display: none;
     z-index: 1000;
-    border-width: 5px 10px;
+    border-width: 5px 11px;
     border-style: solid #c2c2c2;
     position: absolute;
-    bottom: 20px;
-    right: 5px;
+    bottom: 19px; /* 20px is right on FF */
+    right: 1px; /* 5px is right on FF */
     width: 25%;
     background-color: #F2F2F2;
 }
@@ -186,7 +186,7 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-volumeControl .ui-slider-handle {
     height: 10%;
-    left: -0.4em;
+    left: -8px;
 }
 
 .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-volumeControl,

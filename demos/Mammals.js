@@ -31,6 +31,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
         
+        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel", {
+            options: {
+                strings: {
+                    showText: "+ Show Learner Options",
+                }
+            }
+        });
+        
         var videoPlayerInstances = [ {
             container: ".mammals-video", 
             options: {

@@ -391,8 +391,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.updateMuteStatus = function (that) {
-        return function(newModel, oldModel, changes) {
-            if (!fluid.hasChangeSource(changes, "mute")) {
+        return function(newModel, oldModel) {
+            if (!that.applier.hasChangeSource("mute")) {
                 if (that.model.volume === 0) {
                     that.oldVolume = oldModel.volume;
                     console.log("updateMuteStatus volume listener - model volume " + that.model.volume + " old volume " + oldModel.volume + " stored");
@@ -406,7 +406,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.volumeControls.bindModel = function (that) {
         // Relay non-slider based volume changes to slider, and all volume changes to mute status
-        fluid.addSourceGuardedListener(that.applier.modelChanged, 
+        fluid.addSourceGuardedListener(that.applier, 
             "volume", "slider", that.updateSlider);
         that.applier.modelChanged.addListener("volume", 
             fluid.videoPlayer.updateMuteStatus(that));
@@ -415,14 +415,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("mute").attr("disabled", !that.model.canPlay);
         });
         
-        that.applier.modelChanged.addListener("muted", function (newModel, oldModel, changes) {
+        that.applier.modelChanged.addListener("muted", function (newModel, oldModel) {
             console.log("Controller muted listener");
             // See updateVolume method for converse logic
             if (oldModel.volume > 0) {
                 console.log("Storing old volume of " +oldModel.volume);
                 that.oldVolume = oldModel.volume;
             }
-            var fromVolume = fluid.hasChangeSource(changes, "volume");
+            var fromVolume = that.applier.hasChangeSource("volume");
             console.log("Change source fromVolume: " + fromVolume);
             if (!fromVolume) { 
                 var isMuting = newModel.muted;
