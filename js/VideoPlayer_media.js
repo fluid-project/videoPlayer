@@ -29,7 +29,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.viewComponent", "autoInit"],
         components: {
             mediaEventBinder: {
-                type: "fluid.videoPlayer.media.eventBinder",
+                type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onMediaReady"
             }
         },
@@ -44,7 +44,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "video/ogg": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/ogv": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "youtube": "fluid.videoPlayer.media.createSourceMarkup.youTubePlayer"
-        }
+        },
+        sources: []
     });
 
     fluid.videoPlayer.media.createSourceMarkup = {
@@ -62,21 +63,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             return placeholder;
         }
     };
-        
+    
     var renderSources = function (that) {
-        $.each(that.model.video.sources, function (idx, source) {
+        $.each(that.options.sources, function (idx, source) {
             var renderer = that.options.sourceRenderers[source.type];
             if ($.isFunction(renderer)) {
                 renderer.apply(null, [that, source]);
             } else {
-                fluid.invokeGlobalFunction(renderer, [that, source]); 
+                fluid.invokeGlobalFunction(renderer, [that, source]);
             }                                      
         });
     };
 
     var bindMediaModel = function (that) {
-        that.applier.modelChanged.addListener("states.play", that.play);
-        that.applier.modelChanged.addListener("states.muted", that.mute);
+        that.applier.modelChanged.addListener("play", that.play);
+        that.applier.modelChanged.addListener("muted", that.mute);
+        fluid.addSourceGuardedListener(that.applier, 
+            "volume", "media", that.updateVolume);
     };
 
     var getcanPlayData = function (data) {
@@ -84,72 +87,77 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             || data.readyState === 2; 
     };
 
-    var bindMediaDOMEvents = function (that) {
+    var bindMediaDOMEvents = function (that) {      
         var video = that.container;
 
         video.bind("durationchange", {obj: video[0]}, function (ev) {
             // FF doesn't implement startTime from the HTML 5 spec.
             var startTime = ev.data.obj.startTime || 0;
             that.applier.fireChangeRequest({
-                path: "states.totalTime",
+                path: "totalTime",
                 value: ev.data.obj.duration
             });
             that.applier.fireChangeRequest({
-                path: "states.currentTime",
+                path: "currentTime",
                 value: ev.data.obj.currentTime
             });
             that.applier.fireChangeRequest({
-                path: "states.startTime",
+                path: "startTime",
                 value: startTime
             });
         });
 
         video.bind("volumechange", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "states.volume",
-                value: ev.data.obj.volume * 100
-            });
+            var mediaVolume = ev.data.obj.volume * 100;
+            // Don't fire self-generated volume changes on zero when muted, to avoid cycles
+            if (!that.model.muted || mediaVolume !== 0) {
+                fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
+            }
         });
 
         //all browser don't support the canplay so we do all different states
         video.bind("canplay", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
-                path: "states.canPlay",
+                path: "canPlay",
                 value: getcanPlayData(ev.data.obj)
             });
         });
 
         video.bind("canplaythrough", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
-                path: "states.canPlay",
+                path: "canPlay",
                 value: getcanPlayData(ev.data.obj)
             });
         });
 
         video.bind("loadeddata", {obj: video[0]}, function (ev) {
             that.applier.fireChangeRequest({
-                path: "states.canPlay",
+                path: "canPlay",
                 value: getcanPlayData(ev.data.obj)
             });
         });
 
         video.bind("ended", function () {
             that.applier.fireChangeRequest({
-                path: "states.play",
+                path: "play",
                 value: false
             });
             that.applier.fireChangeRequest({
-                path: "states.currentTime",
+                path: "currentTime",
                 value: 0
             });
         });
     };
 
     fluid.videoPlayer.media.preInit = function (that) {
-        that.updateCurrentTime = function (currentTime) {
+        that.updateCurrentTime = function (currentTime, buffered) {
             that.applier.fireChangeRequest({
-                path: "states.currentTime", 
+                path: "currentTime", 
                 value: currentTime
+            });
+            that.applier.fireChangeRequest({
+                path: "buffered", 
+                value: buffered
             });
         };
         
@@ -157,12 +165,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container[0].currentTime = time;
         };
 
-        that.setVolume = function (vol) {
-            that.container[0].volume = vol;
+        that.updateVolume = function () {
+            that.container[0].volume = that.model.volume / 100;
         };
 
         that.play = function () {
-            if (that.model.states.play === true) {
+            if (that.model.play === true) {
                 that.container[0].play();
             } else {
                 that.container[0].pause();
@@ -170,11 +178,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.mute = function () {
-            that.container[0].muted = that.model.states.muted;
+            that.container[0].muted = that.model.muted;
         };
 
         that.refresh = function () {
-            that.setVolume(that.model.states.volume / 100);
+            that.updateVolume();
             that.play();
         };
     };
@@ -185,13 +193,5 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         bindMediaDOMEvents(that);
         that.events.onMediaReady.fire(that);
     };
-
-    /*********************************************************************************
-     * Media Event Binder: Binds events between components "videoPlayer" and "media" *
-     *********************************************************************************/
-        
-    fluid.defaults("fluid.videoPlayer.media.eventBinder", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"]
-    });
 
 })(jQuery);

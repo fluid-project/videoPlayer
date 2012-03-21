@@ -10,41 +10,36 @@
         <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-by-uio.css" />
         <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-yb-uio.css" />
         <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-text-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-wb/wb.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-bw/bw.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-by/by.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/lib/jquery/ui/css/fl-theme-yb/yb.css" />
         <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/FatPanelUIOptions.css" />
 
-        
         <link type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
+        <link type="text/css" href="../lib/captionator/css/captions.css" rel="stylesheet" />
 
         <!-- Fluid and jQuery Dependencies -->
         <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
         <!-- Utils -->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
+        <script type="text/javascript" src="../lib/captionator/js/captionator.js"></script>
         <!--[if lt IE 9]>
-        	<script type="text/javascript" src="../js/HTML5-backcompat.js"></script>
-        <![endif]-->      
+            <script type="text/javascript" src="../js/HTML5-backcompat.js"></script>
+        <![endif]-->
         <!-- VideoPlayer dependencies -->
+        <script type="text/javascript" src="../js/VideoPlayer_framework.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayer_captionner.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayer_captionLoader.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_html5Captionator.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_controllers.js"></script>
+        <script type="text/javascript" src="../js/ToggleButton.js"></script>
+        <script type="text/javascript" src="../js/MenuButton.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_transcript.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_uiOptions.js"></script>
 
         </head>
     <body>
         <script>
             fluid.pageEnhancer({
-                // Specify the default theme class name
-                classnameMap: {
-                    theme: {
-                        "default": "fl-videoPlayer-theme"
-                    }
-                },
                 tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
             });
         </script>
@@ -59,63 +54,67 @@
 
         <h1>Infusion HTML 5 Video Player</h1>
 
-        <div class="videoPlayer fl-videoPlayer fl-videoPlayer-theme">
-        	
+        <div class="videoPlayer fl-videoPlayer">
+            
         </div>
 
         <script>
-            fluid.uiOptions.fatPanel(".flc-uiOptions", {
-                prefix: "../lib/infusion/components/uiOptions/html/"
-            });
-
-            var vp = fluid.videoPlayer(".videoPlayer", {
-                model: {
-                    video: {
-                        sources: [
-                            {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.mp4",
-                                type: "video/mp4"
-                            },
-                            {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.webm",
-                                type: "video/webm"
-                            },
-                            {
-                                src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
-                                type: "youtube"
-                            }
-                        ]
-                    },
-                    captions: {
-                        sources: {
-                            english: {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.en.json",
-                                type: "JSONcc"
-                            }, 
-                            francaise: {
-                                src: "videos/ReorganizeFuture/ReorganizeFuture.fr.json",
-                                type: "JSONcc"
-                            }
-                        },
-                        currentTrack: "english",
-
-                        // The following options (choices, names, selection) shouldn't be necessary.
-                        // This is a temporary workaround for FLUID-4585
-                        choices: [],
-                        names: [],
-                        // TODO: setting 'selection' to something other than 'none' is a workaround
-                        //       for FLUID-4592: a default caption *must* be loaded for the
-                        //       intervalEventsConductor to be created
-                        selection: "english",
-
-                        show: false,
-                        conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                        maxNumber: 3,
-                        track: undefined
+            var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+                prefix: "../lib/infusion/components/uiOptions/html/",
+                components: {
+                    relay: {
+                        type: "fluid.videoPlayer.relay"
                     }
-
                 }
             });
+
+            var videoOptions = {container: ".videoPlayer", options: {
+                video: {
+                    sources: [
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.mp4",
+                            type: "video/mp4"
+                        },
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.webm",
+                            type: "video/webm"
+                        },
+                        {
+                            src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
+                            type: "youtube"
+                        }
+                    ],
+                    captions: [
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.en.vtt",
+                            type: "text/vtt",
+                            srclang: "en",
+                            label: "English",
+                        },
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.fr.vtt",
+                            type: "text/vtt",
+                            srclang: "fr",
+                            label: "French",
+                        }
+                    ],
+                    transcripts: [
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
+                            type: "JSONcc",
+                            srclang: "en",
+                            label: "English",
+                        },
+                        {
+                            src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
+                            type: "JSONcc",
+                            srclang: "fr",
+                            label: "French",
+                        }
+                    ]
+                }
+            }};
+            fluid.videoPlayer.makeEnhancedInstances(videoOptions, uiOptions.relay);
         </script>
-	</body>
+    </body>
 </html>
