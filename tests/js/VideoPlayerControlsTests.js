@@ -357,7 +357,7 @@ fluid.registerNamespace("fluid.tests");
         fluid.tests.initVolumeControls = function (testOpts) {
             var opts = fluid.copy(baseVolumeOpts);
             $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.volumeControls("#basic-volume-controls-test", opts);
+            return fluid.videoPlayer.volumeControls("#basic-volume-controls-test", opts);
         };
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
