@@ -109,7 +109,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         video.bind("volumechange", {obj: video[0]}, function (ev) {
             var mediaVolume = ev.data.obj.volume * 100;
-            console.log("Media volume change to " + ev.data.obj.volume);
             // Don't fire self-generated volume changes on zero when muted, to avoid cycles
             if (!that.model.muted || mediaVolume !== 0) {
                 fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
@@ -179,9 +178,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.mute = function () {
-            console.log("Updating media muted value: " + that.model.muted);
             that.container[0].muted = that.model.muted;
-            console.log("Done updating muted value: " + that.model.muted);
         };
 
         that.refresh = function () {

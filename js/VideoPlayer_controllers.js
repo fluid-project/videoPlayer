@@ -395,7 +395,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             if (!that.applier.hasChangeSource("mute")) {
                 if (that.model.volume === 0) {
                     that.oldVolume = oldModel.volume;
-                    console.log("updateMuteStatus volume listener - model volume " + that.model.volume + " old volume " + oldModel.volume + " stored");
                     fluid.fireSourcedChange(that.applier, "muted", true, "volume");
                 } else if (that.model.muted) {
                     fluid.fireSourcedChange(that.applier, "muted", false, "volume");
@@ -416,14 +415,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         that.applier.modelChanged.addListener("muted", function (newModel, oldModel) {
-            console.log("Controller muted listener");
             // See updateVolume method for converse logic
             if (oldModel.volume > 0) {
-                console.log("Storing old volume of " +oldModel.volume);
                 that.oldVolume = oldModel.volume;
             }
             var fromVolume = that.applier.hasChangeSource("volume");
-            console.log("Change source fromVolume: " + fromVolume);
             if (!fromVolume) { 
                 var isMuting = newModel.muted;
                 if (isMuting) {
@@ -431,7 +427,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
                 }
                 else {
-                    console.log("restoring old volume " + that.oldVolume);
                     fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
                 }
             }

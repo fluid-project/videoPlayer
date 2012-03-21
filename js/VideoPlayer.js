@@ -154,7 +154,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{videoPlayer}.applier",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     components: {
-                        transriptInterval: {
+                        transcriptInterval: {
                             type: "fluid.videoPlayer.intervalEventsConductor",
                             options: {
                                 components: {

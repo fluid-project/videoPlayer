@@ -40,11 +40,14 @@ var fluid_1_5 = fluid_1_5 || {};
     // as "state".
     
     fluid.defaults("fluid.modelRelay", {
-        gradeNames: ["fluid.modelComponent", "autoInit"],
+        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         postInitFunction: "fluid.modelRelay.postInit",
         targets: {},
         rules: {},
-        // sourceApplier
+        events: {
+            // triggerEvent [optional injected event]
+        }
+        // sourceApplier [required]
     });
     
     fluid.modelRelay.registerTarget = function(that, target) {
