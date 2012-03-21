@@ -35,6 +35,7 @@
         <script type="text/javascript" src="../js/VideoPlayer_transcript.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_uiOptions.js"></script>
+        <script type="text/javascript" src="http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&callback=function(data){alert(data);}"></script>
 
         </head>
     <body>
@@ -86,8 +87,8 @@
                     ],
                     captions: [
                         {
-                            src: "videos/ReorganizeFuture/ReorganizeFuture.en.vtt",
-                            type: "text/vtt",
+                            src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E",
+                            type: "jsonp/vtt",
                             srclang: "en",
                             label: "English",
                         },
