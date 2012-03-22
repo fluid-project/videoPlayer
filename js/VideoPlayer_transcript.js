@@ -32,7 +32,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.transcript.finalInit",
         produceTree: "fluid.videoPlayer.transcript.produceTree",
         components: {
-            transriptInterval: {
+            transcriptInterval: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
                 createOnEvent: "onReady"
             },
@@ -56,6 +56,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             selection: undefined,
             choices: [],
             labels: [],
+            transcriptIntervalId: null,
             transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"  // TODO: this belongs as a plain option
         },
         transcripts: [],
@@ -148,6 +149,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.videoPlayer.transcript.displayTranscript = function (that, transcriptText) {
         that.locate("transcriptText").html(transcriptText);
+        that.updateTranscriptHighlight();
 
         $('span[id|="' + that.model.transcriptElementIdPrefix + '"]').click(function (element) {
             var elementId = element.currentTarget.id;
@@ -170,11 +172,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Highlight the current transcript
         if (currentTrackId !== null) {
             var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, currentTrackId);
-            $("#" + currentTranscriptElementId).addClass(that.options.styles.highlight);
+            var element = fluid.jById(currentTranscriptElementId); 
+            element.addClass(that.options.styles.highlight);
             
             // auto scroll the div to display the highlighted transcript element in the middle of the div
             var scrollToOffset = that.locate("transcriptText").height() / 3 * (-1);
-            that.locate("transcriptText").scrollTo($("#" + currentTranscriptElementId), 1000, {offset: scrollToOffset});
+            that.locate("transcriptText").scrollTo(element, 1000, {offset: scrollToOffset});
         }
     };
 
@@ -277,23 +280,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
             that.locate("languageDropdown").find("option:selected").removeAttr("selected");
             that.locate("languageDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
+            that.updateTranscriptHighlight();
             
             that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
         
         that.events.onTranscriptsLoaded.addListener(function (intervalList) {
-            that.transriptInterval.setIntervalList(intervalList);
+            that.transcriptInterval.setIntervalList(intervalList);
         });
         
-        var savedCurrentInterval;
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
-            setTimeout(function () {
-                if (currentInterval === savedCurrentInterval) {
-                    fluid.videoPlayer.transcript.highlightTranscriptElement(that, currentInterval, previousInterval);
-                }
-            }, 100);
-            savedCurrentInterval = currentInterval;
+            if (currentInterval != that.model.transcriptIntervalId) {
+               // TODO: use a better strategy for this, which was intended to prevent event pile-up 
+                setTimeout(function () {
+                    that.applier.requestChange("transcriptIntervalId", currentInterval);
+                   }, 100);
+            }
         });
+        that.applier.modelChanged.addListener("transcriptIntervalId", that.updateTranscriptHighlight);
     };
 
     fluid.videoPlayer.transcript.preInit = function (that) {
@@ -307,6 +311,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         that.model.transcriptElementIdPrefix = that.model.transcriptElementIdPrefix + "-" + that.id;
+        that.updateTranscriptHighlight = function (previousInterval) {
+            fluid.videoPlayer.transcript.highlightTranscriptElement(that, that.model.transcriptIntervalId, previousInterval);
+        };
     };
     
     fluid.videoPlayer.transcript.produceTree = function (that) {

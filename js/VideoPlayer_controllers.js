@@ -53,7 +53,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             volumeControl: {
-                type: "fluid.videoPlayer.controllers.volumeControls",
+                type: "fluid.videoPlayer.volumeControls",
                 container: "{controllers}.dom.volumeContainer",
                 options: {
                     model: "{controllers}.model",
@@ -375,8 +375,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     * Volume Control: a button that turns into a slider     *
     *           To control the volume                       *
     *********************************************************/
-    // TODO: Privacy is inherited. Consider making this public
-    var bindVolumeDOMEvents = function (that) {
+    
+    fluid.registerNamespace("fluid.videoPlayer.volumeControls");
+    
+    fluid.videoPlayer.volumeControls.bindDOMEvents = function (that) {
         // Bind the volume Control slide event to change the video's volume and its image.
         that.locate("volumeControl").bind("slide", function (evt, ui) {
             fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
@@ -387,18 +389,51 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
     };
+    
+    fluid.videoPlayer.updateMuteStatus = function (that) {
+        return function(newModel, oldModel) {
+            if (!that.applier.hasChangeSource("mute")) {
+                if (that.model.volume === 0) {
+                    that.oldVolume = oldModel.volume;
+                    fluid.fireSourcedChange(that.applier, "muted", true, "volume");
+                } else if (that.model.muted) {
+                    fluid.fireSourcedChange(that.applier, "muted", false, "volume");
+                }
+            }
+        };
+    };
 
-    // TODO: Privacy is inherited. Consider making this public
-    var bindVolumeModel = function (that) {
-        fluid.addSourceGuardedListener(that.applier.modelChanged, 
-            "volume", "slider", that.updateVolume); 
+    fluid.videoPlayer.volumeControls.bindModel = function (that) {
+        // Relay non-slider based volume changes to slider, and all volume changes to mute status
+        fluid.addSourceGuardedListener(that.applier, 
+            "volume", "slider", that.updateSlider);
+        that.applier.modelChanged.addListener("volume", 
+            fluid.videoPlayer.updateMuteStatus(that));
+            
         that.applier.modelChanged.addListener("canPlay", function () {
             that.locate("mute").attr("disabled", !that.model.canPlay);
         });
+        
+        that.applier.modelChanged.addListener("muted", function (newModel, oldModel) {
+            // See updateVolume method for converse logic
+            if (oldModel.volume > 0) {
+                that.oldVolume = oldModel.volume;
+            }
+            var fromVolume = that.applier.hasChangeSource("volume");
+            if (!fromVolume) { 
+                var isMuting = newModel.muted;
+                if (isMuting) {
+                    // If this mute event was not already sourced from a volume change, fire volume to 0
+                    fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
+                }
+                else {
+                    fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
+                }
+            }
+        });  
     };
 
-    // TODO: Privacy is inherited. Consider making this public
-    var setUpVolumeControls = function (that) {
+    fluid.videoPlayer.volumeControls.init = function (that) {
         var volumeControl = that.locate("volumeControl");
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
@@ -442,10 +477,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
+    fluid.defaults("fluid.videoPlayer.volumeControls", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
-        postInitFunction: "fluid.videoPlayer.controllers.volumeControls.postInit",
-        finalInitFunction: "fluid.videoPlayer.controllers.volumeControls.finalInit",
+        postInitFunction: "fluid.videoPlayer.volumeControls.postInit",
+        finalInitFunction: "fluid.videoPlayer.volumeControls.finalInit",
         events: {
             onReady: null
         },
@@ -455,6 +490,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             minVolume: 0,
             maxVolume: 100
         },
+        unmuteVolume: 10,
         selectors: {
             mute: ".flc-videoPlayer-mute",
             volumeControl: ".flc-videoPlayer-volumeControl",
@@ -486,24 +522,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Un-mute"
                     },
                     model: "{volumeControls}.model",
+                    applier: "{volumeControls}.applier",
                     modelPath: "muted",
-                    applier: "{volumeControls}.applier"
                 }
             }
         }
     });
 
-    fluid.videoPlayer.controllers.volumeControls.postInit = function (that) {
+    fluid.videoPlayer.volumeControls.postInit = function (that) {
         that.options.components.muteButton.container = that.container;
-        
-        that.showVolumeControl = function () {
-            that.locate("volumeControl").show();
-        };
-        that.hideVolumeControl = function () {
-            that.locate("volumeControl").hide();
-        };
+        that.oldVolume = that.options.unmuteVolume;
 
-        that.updateVolume = function () {
+        that.updateSlider = function () {
             var volume = that.model.volume;
             var volumeControl = that.locate("volumeControl");
             volumeControl.slider("value", volume);
@@ -514,10 +544,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.videoPlayer.controllers.volumeControls.finalInit = function (that) {
-        setUpVolumeControls(that);
-        bindVolumeDOMEvents(that);
-        bindVolumeModel(that);
+    fluid.videoPlayer.volumeControls.finalInit = function (that) {
+        fluid.videoPlayer.volumeControls.init(that);
+        fluid.videoPlayer.volumeControls.bindDOMEvents(that);
+        fluid.videoPlayer.volumeControls.bindModel(that);
         that.events.onReady.fire(that);
     };
 

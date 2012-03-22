@@ -78,7 +78,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindMediaModel = function (that) {
         that.applier.modelChanged.addListener("play", that.play);
         that.applier.modelChanged.addListener("muted", that.mute);
-        fluid.addSourceGuardedListener(that.applier.modelChanged, 
+        fluid.addSourceGuardedListener(that.applier, 
             "volume", "media", that.updateVolume);
     };
 
@@ -108,7 +108,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         video.bind("volumechange", {obj: video[0]}, function (ev) {
-            fluid.fireSourcedChange(that.applier, "volume", ev.data.obj.volume * 100, "media");
+            var mediaVolume = ev.data.obj.volume * 100;
+            // Don't fire self-generated volume changes on zero when muted, to avoid cycles
+            if (!that.model.muted || mediaVolume !== 0) {
+                fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
+            }
         });
 
         //all browser don't support the canplay so we do all different states

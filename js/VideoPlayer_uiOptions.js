@@ -55,6 +55,11 @@ fluid.defaults("fluid.videoPlayer.relay", {
     // (fetch is called in finalInit function) TODO: make a proper API for this, although
     // better to implement "model events system"
     sourceApplier: "{fluid.uiOptions.fatPanel}.applier",
+    events: {
+        // This is rather late - the settings store actually executes on "onUIOptionsComponentReady" but
+        // this is an implementation detail that the relayer may as well not be aware of
+        bindingTrigger: "{fluid.uiOptions.fatPanel}.events.onReady"
+    },
     rules: {
         "selections.captions": "displayCaptions",
         "selections.transcripts": "displayTranscripts",
@@ -72,14 +77,30 @@ fluid.videoPlayer.defaultModel = {
     }
 };
 
-fluid.videoPlayer.makeEnhancedInstances = function(instances, relay) {
+fluid.videoPlayer.makeEnhancedInstances = function(instances, relay, callback) {
+    callback = callback || fluid.identity;
     instances = fluid.makeArray(instances);
-    return fluid.transform(instances, function(instance) {
-        var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, {model: relay.model}, instance.options);
-        var player = fluid.videoPlayer(instance.container, mergedOptions);
-        relay.addTarget(player);
-        return player;
-    }); 
+    
+    var listener = function() {
+        var players = fluid.transform(instances, function(instance) {
+            var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, {model: relay.model}, instance.options);
+            var player = fluid.videoPlayer(instance.container, mergedOptions);
+            relay.addTarget(player);
+            return player;
+        });
+        callback(players);
+    };
+    var lateListener = function() {
+        // awful workaround for FLUID-4192, "broken trees"
+        setTimeout(listener, 1);
+    }
+    
+    if (!relay.events.bindingTrigger) {
+        relay.events.bindingTrigger.addListener(lateListener);
+    }
+    else {
+        lateListener();
+    }
 };
 
 })(jQuery);

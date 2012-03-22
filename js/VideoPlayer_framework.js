@@ -40,11 +40,14 @@ var fluid_1_5 = fluid_1_5 || {};
     // as "state".
     
     fluid.defaults("fluid.modelRelay", {
-        gradeNames: ["fluid.modelComponent", "autoInit"],
+        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         postInitFunction: "fluid.modelRelay.postInit",
         targets: {},
         rules: {},
-        // sourceApplier
+        events: {
+            // triggerEvent [optional injected event]
+        }
+        // sourceApplier [required]
     });
     
     fluid.modelRelay.registerTarget = function(that, target) {
@@ -165,41 +168,6 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
 
-    // TODO: put into framework
-    fluid.hasChangeSource = function (changes, source) {
-        return fluid.find(changes, function(change) {
-            if (change.source === source) {
-                return true;
-            }
-        });
-    };
-    
-    /** Add a listener to a ChangeApplier event that only acts in the case the event
-     * has not come from the specified source (typically ourself)
-     * @param modelEvent An model event held by a changeApplier (typically applier.modelChanged)
-     * @param path The path specification to listen to
-     * @param source The source value to exclude (direct equality used)
-     * @param func The listener to be notified of a change
-     */
-    fluid.addSourceGuardedListener = function(modelEvent, path, source, func) {
-        modelEvent.addListener(path, 
-            function(newModel, oldModel, changes) {
-                if (!fluid.hasChangeSource(changes, source)) {
-                    func.apply(null, arguments);
-            }
-        });
-    };
-
-    /** Convenience method to fire a change event to a specified applier, including
-     * a supplied "source" identified (perhaps for use with addSourceGuardedListener)
-     */ 
-    fluid.fireSourcedChange = function (applier, path, value, source) {
-        applier.fireChangeRequest({
-            path: path,
-            value: value,
-            source: source
-        });         
-    };
     
     
     // A "mini-grade" to ease the work of dealing with "modelPath" idiom components - this
