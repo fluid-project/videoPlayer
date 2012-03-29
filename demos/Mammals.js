@@ -22,16 +22,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
         });
 
-        var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+        var uiOptions = fluid.uiOptions.fatPanel.withMediaPanel(".flc-uiOptions", {
             prefix: "../lib/infusion/components/uiOptions/html/",
             components: {
                 relay: {
                     type: "fluid.videoPlayer.relay"
+                },
+                templateLoader: {
+                    options: {
+                        templates: {
+                            mediaControls: "../html/UIOptionsTemplate-media.html"
+                        }
+                    }
                 }
             }
         });
         
-        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel", {
+        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel.withMediaPanel", {
             options: {
                 strings: {
                     showText: "+ Show Learner Options",
