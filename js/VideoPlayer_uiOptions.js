@@ -198,12 +198,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
     
-    fluid.videoPlayer.makeEnhancedInstances = function(instances, relay, callback) {
+    fluid.videoPlayer.makeEnhancedInstances = function (instances, relay, callback) {
         callback = callback || fluid.identity;
         instances = fluid.makeArray(instances);
         
-        var listener = function() {
-            var players = fluid.transform(instances, function(instance) {
+        var listener = function () {
+            var players = fluid.transform(instances, function (instance) {
                 var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, {model: relay.model}, instance.options);
                 var player = fluid.videoPlayer(instance.container, mergedOptions);
                 relay.addTarget(player);
@@ -211,15 +211,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
             callback(players);
         };
-        var lateListener = function() {
+        var lateListener = function () {
+            console.log("Listener for " + instances.length);
+            relay.options.bindingTriggered = true;
             // awful workaround for FLUID-4192, "broken trees"
             setTimeout(listener, 1);
         }
         
-        if (!relay.events.bindingTrigger) {
+        if (relay.events.bindingTrigger && !relay.options.bindingTriggered) {
+            console.log("Late binding instances " + instances.length);
             relay.events.bindingTrigger.addListener(lateListener);
         }
         else {
+            console.log("Immediate binding instances " + instances.length);
             lateListener();
         }
     };

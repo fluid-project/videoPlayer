@@ -46,7 +46,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
         
-        var videoPlayerInstances = [ {
+        var earlyVideoPlayerInstances = [ {
             container: ".mammals-video", 
             options: {
                 video: {
@@ -142,7 +142,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     ]
                 }
             }
-        }, {
+        }];
+        
+        var lateVideoPlayerInstances = [{
             container: ".polar-adapt-video", 
             options: {
                 video: {
@@ -193,7 +195,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     ];
     
-    fluid.videoPlayer.makeEnhancedInstances(videoPlayerInstances, uiOptions.relay);
+    fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, uiOptions.relay);
+    
+    // Initialise one video player extremely late to show that this method still works 
+    setTimeout(function() {
+        fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, uiOptions.relay);      
+    }, 5000);
+    
     });
     
 })(jQuery);

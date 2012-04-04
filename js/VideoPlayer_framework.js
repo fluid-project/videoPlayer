@@ -46,7 +46,9 @@ var fluid_1_5 = fluid_1_5 || {};
         rules: {},
         events: {
             // triggerEvent [optional injected event]
-        }
+        },
+        // TODO: upgrade event framework to support "latched events"
+        bindingTriggered: false
         // sourceApplier [required]
     });
     
