@@ -133,6 +133,12 @@ var fluid_1_5 = fluid_1_5 || {};
             fluid.modelRelay.registerTarget(that, target);
         });
         fluid.modelRelay.registerTarget(that, that);
+        if (that.events.bindingTrigger) {
+            that.events.bindingTrigger.addListener(function () { // TODO: add this as a framework facility
+                console.log("Binding triggered");
+                that.options.bindingTriggered = true;
+            });
+        }
     };
     
     fluid.defaults("fluid.lens", {
