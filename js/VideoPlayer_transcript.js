@@ -162,6 +162,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var transcriptIndex = that.model.currentTracks.transcripts[0];
             var track = that.options.transcripts[transcriptIndex].tracks[trackId];
             
+            // TODO: This test for Universal Subtitles file format should be factored better,
+            // as part of a general strategy (see parseUniSubTranscriptFile() and parseTranscriptFile())
             var inTimeMillis;
             if (track.text) { // this is a Universal Subtitles format file
                 inTimeMillis = fluid.videoPlayer.transcript.convertSecsToMilli(track.start_time);
@@ -220,6 +222,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onTranscriptsLoaded.fire(intervalList);
     };  
     
+    // TODO: This is very similar to the original parseTranscriptFile()
+    // Should probably be factored as a strategy
     fluid.videoPlayer.transcript.parseUniSubTranscriptFile = function (that, transcripts, currentIndex) {
         transcripts = (typeof (transcripts) === "string") ? JSON.parse(transcripts) : transcripts;
         if (transcripts.transcriptCollection) {
