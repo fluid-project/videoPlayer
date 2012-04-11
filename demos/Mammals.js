@@ -195,14 +195,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     ];
     
-    setTimeout(function() {    
+//    setTimeout(function() {    
         fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, uiOptions.relay);
-    }, 5000);
+//    }, 5000);
     
     // Initialise one video player extremely late to show that this method still works 
-    setTimeout(function() {
+//    setTimeout(function() {
         fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, uiOptions.relay);      
-    }, 10000);
+//    }, 10000);
     
     });
     
