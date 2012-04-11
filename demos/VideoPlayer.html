@@ -35,6 +35,7 @@
         <script type="text/javascript" src="../js/VideoPlayer_transcript.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_uiOptions.js"></script>
+        <script type="text/javascript" src="../js/UniSubComponent.js"></script>
 
         </head>
     <body>
@@ -80,11 +81,14 @@
                             type: "video/webm"
                         },
                         {
-                            src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
+                            src: "http://www.youtube.com/watch?v=3_3p2ylZDAE",
+// Temporarily test with a video with two subtitles
+//                            src: "http://www.youtube.com/v/_VxQEPw1x9E&hl=en&fs=1",
                             type: "youtube"
                         }
                     ],
                     captions: [
+/*
                         {
                             src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
                             type: "jsonp/vtt",
@@ -97,8 +101,10 @@
                             srclang: "fr",
                             label: "French",
                         }
+*/
                     ],
                     transcripts: [
+/*
                         {
                             src: "videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
                             type: "JSONcc",
@@ -111,6 +117,7 @@
                             srclang: "fr",
                             label: "French",
                         }
+*/
                     ]
                 }
             }};

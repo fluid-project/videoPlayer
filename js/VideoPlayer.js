@@ -120,7 +120,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             controllers: {
                 type: "fluid.videoPlayer.controllers",
                 container: "{videoPlayer}.dom.controllers",
-                createOnEvent: "onCreateControllersReady",
+                createOnEvent: "controllersReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -137,7 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onHTML5BrowserDetected",
+                createOnEvent: "capsTranscriptsReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -147,7 +147,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcript: {
                 type: "fluid.videoPlayer.transcript",
                 container: "{videoPlayer}.dom.transcript",
-                createOnEvent: "onHTML5BrowserDetected",
+                createOnEvent: "capsTranscriptsReady",
                 options: {
                     // TODO (long term) - should not share entire model and applier with transcripts
                     model: "{videoPlayer}.model",
@@ -200,6 +200,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onIntervalChange: "{videoPlayer}.events.onIntervalChange"
                     }
                 }
+            },
+            uniSubs: {
+                type: "fluid.unisubComponent",
+                priority: "first",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    urls: {
+                        video: "{videoPlayer}.options.video.sources.2.src"
+                    },
+                    captions: "{videoPlayer}.options.video.captions",
+                    transcripts: "{videoPlayer}.options.video.transcripts",
+                    events: {
+                        modelReady: "{videoPlayer}.events.unisubReady"
+                    }
+                }
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -228,7 +244,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onHTML5BrowserDetected: null
+            onHTML5BrowserDetected: null,
+
+            unisubReady: null,
+            capsTranscriptsReady: {
+                events: {
+                    unisub: "{fluid.videoPlayer}.events.unisubReady",
+                    html5detect: "{fluid.videoPlayer}.events.onHTML5BrowserDetected"
+                }
+            },
+            controllersReady: {
+                events: {
+                    unisub: "{fluid.videoPlayer}.events.unisubReady",
+                    controllers: "{fluid.videoPlayer}.events.onCreateControllersReady"
+                }
+            }
+
         },
         invokers: {
             resize: {
