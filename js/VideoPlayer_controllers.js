@@ -360,6 +360,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         };
 
+        that.updateMin();
+        that.updateMax();
+        that.updateCurrent();
+
     };
 
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
