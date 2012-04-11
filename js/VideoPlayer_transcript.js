@@ -139,6 +139,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return Math.round(secs * 1000 + parseInt(splitSec[1], 10));
     };
 
+    fluid.videoPlayer.transcript.convertSecsToMilli = function (time) {
+        return Math.round(time * 1000);
+    };
+
     fluid.videoPlayer.transcript.getTranscriptElementId = function (that, transcriptIndex) {
         return that.options.model.transcriptElementIdPrefix + "-" + transcriptIndex;
     };
@@ -158,8 +162,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var transcriptIndex = that.model.currentTracks.transcripts[0];
             var track = that.options.transcripts[transcriptIndex].tracks[trackId];
             
+            // TODO: This test for Universal Subtitles file format should be factored better,
+            // as part of a general strategy (see parseUniSubTranscriptFile() and parseTranscriptFile())
+            var inTimeMillis;
+            if (track.text) { // this is a Universal Subtitles format file
+                inTimeMillis = fluid.videoPlayer.transcript.convertSecsToMilli(track.start_time);
+            } else {
+                inTimeMillis = that.convertToMilli(track.inTime);
+            }
             // Fire the onTranscriptElementChange event with the track start time and the track itself
-            that.events.onTranscriptElementChange.fire((1 + that.convertToMilli(track.inTime))/1000, track);
+            that.events.onTranscriptElementChange.fire((1 + inTimeMillis)/1000, track);
         });
     };
     
@@ -210,33 +222,76 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onTranscriptsLoaded.fire(intervalList);
     };  
     
+    // TODO: This is very similar to the original parseTranscriptFile()
+    // Should probably be factored as a strategy
+    fluid.videoPlayer.transcript.parseUniSubTranscriptFile = function (that, transcripts, currentIndex) {
+        transcripts = (typeof (transcripts) === "string") ? JSON.parse(transcripts) : transcripts;
+        if (transcripts.transcriptCollection) {
+            transcripts = transcripts.transcriptCollection;
+        }
+
+        that.options.transcripts[currentIndex].tracks = transcripts;
+
+        // Generate the transcript text
+        var transcriptText = "";
+        for (var i = 0; i < transcripts.length; i++) {
+            transcriptText = transcriptText
+                               + fluid.videoPlayer.transcript.getTranscriptElement(transcripts[i].text,
+                                                                                   fluid.videoPlayer.transcript.getTranscriptElementId(that, i),
+                                                                                   that.options.styles.element)
+                               + "&nbsp;";
+        }
+
+        that.options.transcripts[currentIndex].transcriptText = transcriptText;
+        fluid.videoPlayer.transcript.displayTranscript(that, transcriptText);
+
+        // Construct intervalList that's used by intervalEventsConductor to fire intervalChange event
+        var intervalList = [];
+        fluid.each(transcripts, function (value, key) {
+            intervalList[key] = {
+                begin: fluid.videoPlayer.transcript.convertSecsToMilli(value.start_time),
+                end: fluid.videoPlayer.transcript.convertSecsToMilli(value.end_time)
+            };
+        });
+
+        that.events.onTranscriptsLoaded.fire(intervalList);
+    };
+
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
         var transcriptSource = that.options.transcripts[currentIndex];
         if (transcriptSource) {
-            var opts = {
-                type: "GET",
-                dataType: "text",
-                success: function (data) {
-                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex);
-                },
-                error: function () {
-                    fluid.log("Error loading transcript: " + transcriptSource.src + ". Are you sure this file exists?");
-                    that.events.onLoadTranscriptError.fire(transcriptSource);
-                }
-            };
-            if (transcriptSource.type !== "JSONcc") {
-                opts.url = that.model.conversionServiceUrl;
-                opts.data = {
-                    cc_result: 0,
-                    cc_url: transcriptSource.src,
-                    cc_target: "JSONcc",
-                    cc_name: "__no_name"
-                };
+
+            // Handle Universal Subtitles JSON files for transcripts
+            if (transcriptSource.type.match(/^jsonp\//)) {
+                captionator.getJSONP("".concat(transcriptSource.src, "&callback=?"), function (data) {
+                    fluid.videoPlayer.transcript.parseUniSubTranscriptFile(that, data, currentIndex);
+                })
             } else {
-                opts.url = transcriptSource.src;
-                
+                var opts = {
+                    type: "GET",
+                    dataType: "text",
+                    success: function (data) {
+                        fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex);
+                    },
+                    error: function () {
+                        fluid.log("Error loading transcript: " + transcriptSource.src + ". Are you sure this file exists?");
+                        that.events.onLoadTranscriptError.fire(transcriptSource);
+                    }
+                };
+
+                if (transcriptSource.type !== "JSONcc") {
+                    opts.url = that.model.conversionServiceUrl;
+                    opts.data = {
+                        cc_result: 0,
+                        cc_url: transcriptSource.src,
+                        cc_target: "JSONcc",
+                        cc_name: "__no_name"
+                    };
+                } else {
+                    opts.url = transcriptSource.src;
+                }
+                $.ajax(opts);
             }
-            $.ajax(opts);
         }
     };
 
