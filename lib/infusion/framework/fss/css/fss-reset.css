@@ -1,1 +1,8 @@
-@import url('fss-reset-global.css');@import url('fss-base-global.css');
+/* 
+    Deprecated:
+    This file is provided solely for backwards compatibility.
+    It is recommended to link directly to the reset and base files as needed.
+*/
+
+@import url('fss-reset-global.css');
+@import url('fss-base-global.css');
