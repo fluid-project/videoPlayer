@@ -209,7 +209,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     urls: {
-                        video: "{videoPlayer}.options.video.sources.2.src"
+                        video: "{videoPlayer}.options.video.sources.0.src"
                     },
                     captions: "{videoPlayer}.options.video.captions",
                     transcripts: "{videoPlayer}.options.video.transcripts",
