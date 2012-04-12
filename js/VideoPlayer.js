@@ -40,6 +40,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.merge(null, fluid.staticEnvironment, features);
     
+    // TODO: This method cut and pasted from UIEnhancer.js 
     fluid.hasFeature = function (tagName) {
         return fluid.find(fluid.staticEnvironment, function (value) {
             return value && value.typeName === tagName ? true : undefined;

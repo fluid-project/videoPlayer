@@ -1,4 +1,4 @@
-MyInfusion was built from an unreleased version of Infusion (24356162b4ed56891af361b682c211f3fed67e39) using the following command:
+MyInfusion was built from an unreleased version of Infusion (a84ee8), amb26 branch FLUID-4531 using the following command:
 
 Build the minified Infusion:
 ant customBuild -Dinclude="uiOptions, uploader, tooltip" -lib lib/rhino

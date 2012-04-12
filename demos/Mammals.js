@@ -22,16 +22,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
         });
 
-        var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+        var uiOptions = fluid.uiOptions.fatPanel.withMediaPanel(".flc-uiOptions", {
             prefix: "../lib/infusion/components/uiOptions/html/",
             components: {
                 relay: {
                     type: "fluid.videoPlayer.relay"
+                },
+                templateLoader: {
+                    options: {
+                        templates: {
+                            mediaControls: "../html/UIOptionsTemplate-media.html"
+                        }
+                    }
                 }
             }
         });
         
-        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel", {
+        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel.withMediaPanel", {
             options: {
                 strings: {
                     showText: "+ Show Learner Options",
@@ -39,7 +46,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
         
-        var videoPlayerInstances = [ {
+        var earlyVideoPlayerInstances = [ {
             container: ".mammals-video", 
             options: {
                 video: {
@@ -135,7 +142,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     ]
                 }
             }
-        }, {
+        }];
+        
+        var lateVideoPlayerInstances = [{
             container: ".polar-adapt-video", 
             options: {
                 video: {
@@ -186,7 +195,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     ];
     
-    fluid.videoPlayer.makeEnhancedInstances(videoPlayerInstances, uiOptions.relay);
+//    setTimeout(function() {    
+        fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, uiOptions.relay);
+//    }, 5000);
+    
+    // Initialise one video player extremely late to show that this method still works 
+//    setTimeout(function() {
+        fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, uiOptions.relay);      
+//    }, 10000);
+    
     });
     
 })(jQuery);
