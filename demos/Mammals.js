@@ -161,6 +161,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             src: "http://www.youtube.com/v/3_3p2ylZDAE",
                             type: "youtube"
                         }
+/*
                     ],
                     captions: [
                         {
@@ -189,6 +190,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             srclang: "fr",
                             label: "French"
                         }
+*/
                     ]
                 }
             }

@@ -18,10 +18,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     "use strict";
 
-    fluid.defaults("fluid.unisubComponent", {
+    fluid.defaults("fluid.videoPlayer.unisubComponent", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
-        finalInitFunction: "fluid.unisubComponent.finalInit",
-        preInitFunction: "fluid.unisubComponent.preInit",
+        finalInitFunction: "fluid.videoPlayer.unisubComponent.finalInit",
+        preInitFunction: "fluid.videoPlayer.unisubComponent.preInit",
         model: {
             languages: []
         },
@@ -31,7 +31,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onVideo: null
         },
         listeners: {
-            onVideo: "{fluid.unisubComponent}.onVideoHandler"
+            onVideo: "{fluid.videoPlayer.unisubComponent}.onVideoHandler"
         },
         "api-key": "0c01f5ca0ec8d1dc4e9e0f320a4d1afb1a50273d",
         "api-password": "idrcunisub",
@@ -49,7 +49,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
     
-    fluid.unisubComponent.buildCapsAndTranscripts = function (that, subtitleInfo) {
+    fluid.videoPlayer.unisubComponent.buildCapsAndTranscripts = function (that, subtitleInfo) {
         var templ = "%apiSubtitle?video_url=%url&language=%langCode";
         fluid.each(subtitleInfo, function (item) {
             var url = fluid.stringTemplate(templ, {
@@ -71,13 +71,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onReady.fire(that);
     };
 
-    fluid.unisubComponent.preInit = function (that) {
+    fluid.videoPlayer.unisubComponent.preInit = function (that) {
         that.onVideoHandler = function (options) {
             $.ajax({
                 dataType: "jsonp",
                 url: options.url
             }).done(function (data) {
-                fluid.unisubComponent.buildCapsAndTranscripts(that, data);
+                fluid.videoPlayer.unisubComponent.buildCapsAndTranscripts(that, data);
             }).fail(function (jqXHR, textStatus) {
                 console.log("Query for language failed: " + textStatus)
             });
@@ -104,7 +104,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
     
-    fluid.unisubComponent.finalInit = function (that) {
+    fluid.videoPlayer.unisubComponent.finalInit = function (that) {
         
         // If captions and transcripts already offered in the options, we don't
         // need Universal Subtitles

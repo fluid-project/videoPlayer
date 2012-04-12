@@ -203,7 +203,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             uniSubs: {
-                type: "fluid.unisubComponent",
+                type: "fluid.videoPlayer.unisubComponent",
                 priority: "first",
                 options: {
                     model: "{videoPlayer}.model",
