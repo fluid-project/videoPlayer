@@ -20,8 +20,6 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        // TODO: The various "fluid.tests.initXXX" functions could probably be refactored to reduce duplication
-
         var menuButtonTests = new jqUnit.TestCase("Menu Button Tests");
 
         /*===================
@@ -31,20 +29,20 @@ fluid.registerNamespace("fluid.tests");
         fluid.tests.languageMenuDefaults = fluid.defaults("fluid.videoPlayer.controllers.languageMenu");
 
         var baseMenuOpts = {
-                languages: [{
-                    srclang: "klingon",
-                    label: "Klingo√±"
-                }, {
-                    srclang: "esperanto",
-                    label: "Esp√©ranto"
-                }, {
-                    srclang: "lolspeak",
-                    label: "LOLspeak"
-                }, {
-                    srclang: "elvish",
-                    label: "Elv√Æsh"
-                }],
-             model: {
+            languages: [{
+                srclang: "klingon",
+                label: "Klingo√±"
+            }, {
+                srclang: "esperanto",
+                label: "Esp√©ranto"
+            }, {
+                srclang: "lolspeak",
+                label: "LOLspeak"
+            }, {
+                srclang: "elvish",
+                label: "Elv√Æsh"
+            }],
+            model: {
                 activeLanguages: [0],
                 showLanguage: false
             }
