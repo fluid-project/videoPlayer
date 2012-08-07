@@ -63,10 +63,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             button.prop("aria-pressed", pressed);
         };
-        
-        that.enabled = function (state) {
-            that.locate("button").prop("disabled", !state);
-        };
     };
 
     fluid.toggleButton.setUpToggleButton = function (that) {

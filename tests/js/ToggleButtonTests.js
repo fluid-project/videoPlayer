@@ -40,8 +40,40 @@ fluid.registerNamespace("fluid.tests");
             return fluid.toggleButton("#basic-toggle-button-test", opts);
         };
 
-        toggleButtonTests.asyncTest("Toggle button, default functionality", function () {
+        toggleButtonTests.asyncTest("State change", function () {
             expect(3);
+            var testComponent = fluid.tests.initToggleButton({
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("Initial state should be 'false'", false, that.readIndirect("modelPath"));
+                        that.requestStateChange();
+                        jqUnit.assertEquals("After request for state change, state should be 'true'", true, that.readIndirect("modelPath"));
+                        that.requestStateChange();
+                        jqUnit.assertEquals("After another request for state change, state should be 'false'", false, that.readIndirect("modelPath"));
+
+                        start();
+                    }
+                }
+            });
+        });
+
+        toggleButtonTests.asyncTest("onPress event", function () {
+            expect(1);
+            var testComponent = fluid.tests.initToggleButton({
+                listeners: {
+                    onReady: function (that) {
+                        var toggleButton = that.locate("button");
+                        toggleButton.click();
+                    },
+                    onPress: function () {
+                        jqUnit.assertTrue("onPress event should fire", true);
+                        start();
+                    }
+                }
+            });
+        });
+
+        toggleButtonTests.asyncTest("Default integrated functionality", function () {
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onPress: fluid.tests.onPressEventHandler,
@@ -53,20 +85,13 @@ fluid.registerNamespace("fluid.tests");
                             fluid.tests.toggleButtonDefaults.strings.release,
                             fluid.tests.toggleButtonDefaults.styles.pressed);
 
-                        jqUnit.assertFalse("By default, button should be enabled", toggleButton.prop("disabled"));
-                        that.enabled(false);
-                        jqUnit.assertTrue("enabled(false) should disable the button", toggleButton.prop("disabled"));
-                        that.enabled(true);
-                        jqUnit.assertFalse("enabled(true) should re-enable the button", toggleButton.prop("disabled"));
-
                         start();
                     }
                 }
             });
         });
 
-
-        toggleButtonTests.asyncTest("Toggle button, overriding strings", function () {
+        toggleButtonTests.asyncTest("Overriding strings", function () {
             expect(1);
             var testStrings = {
                 press: "press me",
