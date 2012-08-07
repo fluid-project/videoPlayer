@@ -20,7 +20,7 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        var toggleButtonTests = new jqUnit.TestCase("Video Player Controls Tests");
+        var toggleButtonTests = new jqUnit.TestCase("Toggle Button Tests");
 
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.toggleButton");
 
