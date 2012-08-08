@@ -26,7 +26,7 @@ fluid.registerNamespace("fluid.tests");
          * LanguageMenu Tests
          *===================*/
         
-        fluid.tests.languageMenuDefaults = fluid.defaults("fluid.videoPlayer.controllers.languageMenu");
+        fluid.tests.languageMenuDefaults = fluid.defaults("fluid.videoPlayer.languageMenu");
 
         var baseMenuOpts = {
             languages: [{
@@ -51,7 +51,7 @@ fluid.registerNamespace("fluid.tests");
         fluid.tests.initMenu = function (testOpts) {
             var opts = fluid.copy(baseMenuOpts);
             $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.languageMenu("#basic-menu-test", opts);
+            return fluid.videoPlayer.languageMenu("#basic-menu-test", opts);
         };
 
         var verifyActivation = function (actionString, that, activatedIndex) {
@@ -168,7 +168,7 @@ fluid.registerNamespace("fluid.tests");
         fluid.tests.initLangControls = function (testOpts) {
             var opts = fluid.copy(baseLanguageControlsOpts);
             $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.languageControls("#basic-languageControls-test", opts);
+            return fluid.videoPlayer.languageControls("#basic-languageControls-test", opts);
         };
 
         menuButtonTests.asyncTest("Language Controls: default functionality", function () {

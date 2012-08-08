@@ -61,7 +61,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             captionControls: {
-                type: "fluid.videoPlayer.controllers.languageControls",
+                type: "fluid.videoPlayer.languageControls",
                 container: "{controllers}.dom.captionControlsContainer",
                 options: {
                     languages: "{controllers}.options.captions",
@@ -86,7 +86,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             transcriptControls: {
-                type: "fluid.videoPlayer.controllers.languageControls",
+                type: "fluid.videoPlayer.languageControls",
                 container: "{controllers}.dom.transcriptControlsContainer",
                 options: {
                     languages: "{controllers}.options.transcripts",
