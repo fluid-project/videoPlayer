@@ -171,48 +171,46 @@ fluid.registerNamespace("fluid.tests");
             return fluid.videoPlayer.controllers.languageControls("#basic-languageControls-test", opts);
         };
 
-        // TODO: These tests could possibly be refactored to reduce duplication
         menuButtonTests.asyncTest("Language Controls: default functionality", function () {
             var numLangs = baseLanguageControlsOpts.languages.length;
             var testControls = fluid.tests.initLangControls({
                 listeners: {
                     onReady: {
                         listener: function (that) {
+                            expect(8);
                             var langList = that.menu.locate("language");
-                            var showHideOption = that.menu.locate("showHide");
+                            var showHide = $(that.menu.locate("showHide")[0]);
+                            var verifyLanguageState = function (expectedShowText, expectedShowHideFlag) {
+                                expect(2);
+                                jqUnit.assertEquals("The 'show language' model flag should be " + expectedShowHideFlag, expectedShowHideFlag, fluid.get(that.model, that.options.showHidePath));
+                                jqUnit.assertEquals("The 'show language' text should be updated", expectedShowText, showHide.text());
+                            };
+
                             jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
                             jqUnit.notVisible("Menu should not be visible initially", that.menu.container);
-                            jqUnit.assertFalse("'show language' model flag should be false", fluid.get(that.model, that.options.showHidePath));
-                            jqUnit.assertEquals("'show language' text should be correct", that.options.strings.showLanguage, showHideOption.text());
-                            jqUnit.assertFalse("Buttons state should be released", that.button.model.pressed);
+                            verifyLanguageState(that.options.strings.showLanguage, false);
 
-                            var button = that.locate("button");
-                            button[0].click();
+                            var button = $(that.locate("button")[0]);
+                            button.click();
                             jqUnit.isVisible("Clicking the button should show menu", that.menu.container);
                             jqUnit.assertTrue("Buttons state should be released", that.button.model.pressed);
-                            button[0].click();
+                            button.click();
                             jqUnit.notVisible("Clicking the button again should hide menu again", that.menu.container);
 
-                            button[0].click();
+                            button.click();
                             $(langList[1]).click();
                             jqUnit.notVisible("Show the menu, click a language, menu should hide", that.menu.container);
                             jqUnit.assertEquals("'current langauge' should be updated", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
-                            jqUnit.assertTrue("'show language' model flag should be true", fluid.get(that.model, that.options.showHidePath));
-                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
-                            jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+                            verifyLanguageState(that.options.strings.hideLanguage, true);
 
-                            button[0].click();
-                            $(showHideOption[0]).click();
-                            jqUnit.assertFalse("Show the menu, click the show/hide option, 'show language' model flag should be false", fluid.get(that.model, that.options.showHidePath));
-                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.showLanguage, showHideOption.text());
-                            jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+                            button.click();
+                            showHide.click();
+                            verifyLanguageState(that.options.strings.showLanguage, false);
                             jqUnit.assertEquals("'current langauge' should be not be changed", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
 
-                            button[0].click();
-                            $(showHideOption[0]).click();
-                            jqUnit.assertTrue("Click the show/hide option, 'show language' model flag should be true again", fluid.get(that.model, that.options.showHidePath));
-                            jqUnit.assertEquals("'show language' text should be updated", that.options.strings.hideLanguage, showHideOption.text());
-                            jqUnit.assertFalse("Button state should be released", fluid.get(that.button.model, baseLanguageControlsOpts.showHidePath));
+                            button.click();
+                            showHide.click();
+                            verifyLanguageState(that.options.strings.hideLanguage, true);
 
                             start();
                         }
