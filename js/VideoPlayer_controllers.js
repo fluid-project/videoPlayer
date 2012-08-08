@@ -221,7 +221,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindScrubberModel = function (that) {
         // Setup the scrubber when we know the duration of the video.
         that.applier.modelChanged.addListener("startTime", that.updateMin);
-        that.applier.modelChanged.addListener("startTime", that.updateMax);
         that.applier.modelChanged.addListener("totalTime", that.updateMax);
 
         // Bind to the video's timeupdate event so we can programmatically update the slider.
