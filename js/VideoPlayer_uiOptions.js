@@ -212,17 +212,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             callback(players);
         };
         var lateListener = function () {
-            console.log("Listener for " + instances.length);
+            fluid.log("Listener for " + instances.length);
             // awful workaround for FLUID-4192, "broken trees"
             setTimeout(listener, 1);
         };
         
         if (relay.events.bindingTrigger && !relay.options.bindingTriggered) {
-            console.log("Late binding instances " + instances.length);
+            fluid.log("Late binding instances " + instances.length);
             relay.events.bindingTrigger.addListener(lateListener);
         }
         else {
-            console.log("Immediate binding instances " + instances.length);
+            fluid.log("Immediate binding instances " + instances.length);
             lateListener();
         }
     };
