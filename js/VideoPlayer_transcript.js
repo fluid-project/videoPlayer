@@ -175,7 +175,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
     
-    fluid.videoPlayer.transcript.highlightTranscriptElement = function (that, currentTrackId, previousTrackId) {
+    fluid.videoPlayer.transcript.highlightTranscriptElement = function (that, currentTrackId) {
         // Remove the previous highlights. The previous highlight may not necessarily be the "previousTrackId"
         // since a slight time delay is applied on the interval change listener to prevent the event queuing-up
         // when the scrubber bar is slid back and forth quickly
@@ -219,7 +219,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             };
         });
         
-        that.events.onTranscriptsLoaded.fire(intervalList);
+        that.events.onTranscriptsLoaded.fire(intervalList, that);
     };  
     
     // TODO: This is very similar to the original parseTranscriptFile()
