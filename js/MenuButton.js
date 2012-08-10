@@ -26,13 +26,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         Note that the language menu cannot share the model of the controls: it
         needs the list of captions (or transcripts, etc) as its model for rendering.
      *****************************************************************************/
-    fluid.defaults("fluid.videoPlayer.controllers.languageMenu", {
+    fluid.defaults("fluid.videoPlayer.languageMenu", {
         gradeNames: ["fluid.rendererComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         renderOnInit: true,
-        preInitFunction: "fluid.videoPlayer.controllers.languageMenu.preInit",
-        postInitFunction: "fluid.videoPlayer.controllers.languageMenu.postInit",
-        finalInitFunction: "fluid.videoPlayer.controllers.languageMenu.finalInit",
-        produceTree: "fluid.videoPlayer.controllers.languageMenu.produceTree",
+        preInitFunction: "fluid.videoPlayer.languageMenu.preInit",
+        postInitFunction: "fluid.videoPlayer.languageMenu.postInit",
+        finalInitFunction: "fluid.videoPlayer.languageMenu.finalInit",
+        produceTree: "fluid.videoPlayer.languageMenu.produceTree",
         languages: [],
         currentLanguagePath: "activeLanguages",
         showHidePath: "showLanguage",
@@ -56,15 +56,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             active: "fl-videoPlayer-menuItem-active"
         },
         invokers: {
-            updateTracks: { funcName: "fluid.videoPlayer.controllers.languageMenu.updateTracks", args: ["{languageMenu}"] },
-            updateShowHide: { funcName: "fluid.videoPlayer.controllers.languageMenu.updateShowHide", args: ["{languageMenu}"] }
+            updateTracks: { funcName: "fluid.videoPlayer.languageMenu.updateTracks", args: ["{languageMenu}"] },
+            updateShowHide: { funcName: "fluid.videoPlayer.languageMenu.updateShowHide", args: ["{languageMenu}"] }
         },
         hideOnInit: true
     });
 
     // TODO: Could this be specified declaratively, in a "protoTree" option?
     // Ans: not very effectively... the renderer still needs to be burned to the ground
-    fluid.videoPlayer.controllers.languageMenu.produceTree = function (that) {
+    fluid.videoPlayer.languageMenu.produceTree = function (that) {
         // Silly damn renderer with its crazy JSON idiolect!
         that.model.languages = that.options.languages;
         var tree = {
@@ -86,7 +86,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return tree;
     };
 
-    fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y = function (that) {
+    fluid.videoPlayer.languageMenu.setUpKeyboardA11y = function (that) {
         that.container.fluid("tabbable");
         that.container.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
@@ -127,7 +127,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.controllers.languageMenu.bindEventListeners = function (that) {
+    fluid.videoPlayer.languageMenu.bindEventListeners = function (that) {
         // any click on the container must have the effect of hiding it, since its action 
         // always completes
         that.container.click(that.hide);
@@ -146,19 +146,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     };
 
-    fluid.videoPlayer.controllers.languageMenu.updateTracks = function (that) {
+    fluid.videoPlayer.languageMenu.updateTracks = function (that) {
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
         var langIndex = that.readIndirect("currentLanguagePath")[0];
         $(menuItems[langIndex]).addClass(that.options.styles.active);
     };
     
-    fluid.videoPlayer.controllers.languageMenu.updateShowHide = function(that) {
+    fluid.videoPlayer.languageMenu.updateShowHide = function(that) {
         var showHide = that.readIndirect("showHidePath"); 
         that.locate("showHide").text(that.options.strings[showHide? "hideLanguage": "showLanguage"]);
     };
 
-    fluid.videoPlayer.controllers.languageMenu.preInit = function (that) {
+    fluid.videoPlayer.languageMenu.preInit = function (that) {
 
         that.toggleView = function () {
             that.container.toggle();
@@ -168,7 +168,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.videoPlayer.controllers.languageMenu.postInit = function (that) {
+    fluid.videoPlayer.languageMenu.postInit = function (that) {
         that.show = function () {
             that.container.show();
         };
@@ -182,9 +182,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.videoPlayer.controllers.languageMenu.finalInit = function (that) {
-        fluid.videoPlayer.controllers.languageMenu.bindEventListeners(that);
-        fluid.videoPlayer.controllers.languageMenu.setUpKeyboardA11y(that);
+    fluid.videoPlayer.languageMenu.finalInit = function (that) {
+        fluid.videoPlayer.languageMenu.bindEventListeners(that);
+        fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
         that.hide();
         that.updateTracks();
         that.updateShowHide();
@@ -199,9 +199,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         state of the captions, and so does not become "pressed" when activated;
         activation only shows the menu
      *****************************************************************************/
-    fluid.defaults("fluid.videoPlayer.controllers.languageControls", {
+    fluid.defaults("fluid.videoPlayer.languageControls", {
         gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.controllers.languageControls.finalInit",
+        finalInitFunction: "fluid.videoPlayer.languageControls.finalInit",
         selectors: {
             button: ".flc-videoPlayer-languageButton",
             menu: ".flc-videoPlayer-languageMenu"
@@ -238,7 +238,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             menu: {
-                type: "fluid.videoPlayer.controllers.languageMenu",
+                type: "fluid.videoPlayer.languageMenu",
                 container: "{languageControls}.dom.menu",
                 options: {
                     model: "{languageControls}.model",
@@ -250,13 +250,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             eventBinder: {
-                type: "fluid.videoPlayer.controllers.languageControls.eventBinder",
+                type: "fluid.videoPlayer.languageControls.eventBinder",
                 createOnEvent: "onRenderingComplete"
             }
         }
     });
 
-    fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y = function (that) {
+    fluid.videoPlayer.languageControls.setUpKeyboardA11y = function (that) {
         fluid.tabindex(that.locate("menu"), -1);
         that.locate("button").fluid("activatable", [fluid.identity, {
             additionalBindings: [{
@@ -276,14 +276,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.menu.hide();
             }
         });
-
-        // TODO: This is a workaround for around FLUID-4606 (there's a button tag inside the anchor;
-        //       it's for styling only, and we don't want it in the tab order)
-        $("button", that.locate("button")).fluid("tabindex", -1);
     };
 
-    fluid.videoPlayer.controllers.languageControls.finalInit = function (that) {
-        fluid.videoPlayer.controllers.languageControls.setUpKeyboardA11y(that);
+    fluid.videoPlayer.languageControls.finalInit = function (that) {
+        fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         that.events.onRenderingComplete.fire(that);
         
         function refreshButtonClass() {
@@ -300,7 +296,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * LanguageControls Event Binder: Binds events between components "button" and "menu" *
      **************************************************************************************/
 
-    fluid.defaults("fluid.videoPlayer.controllers.languageControls.eventBinder", {
+    fluid.defaults("fluid.videoPlayer.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         listeners: {
             "{button}.events.onPress": "{menu}.toggleView",
