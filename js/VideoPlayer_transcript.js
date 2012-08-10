@@ -9,7 +9,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid*/
+/*global jQuery, window, fluid, captionator*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -56,15 +56,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             selection: undefined,
             choices: [],
             labels: [],
-            transcriptIntervalId: null,
-            transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"  // TODO: this belongs as a plain option
+            transcriptIntervalId: null
         },
         transcripts: [],
         invokers: {
             convertToMilli: {
                 funcName: "fluid.videoPlayer.transcript.convertToMilli",
                 args: ["{arguments}.0"]
-            }  
+            },
+            convertSecsToMilli: {
+                funcName: "fluid.videoPlayer.transcript.convertSecsToMilli",
+                args: ["{arguments}.0"]
+            }
         },
         selectors: {
             languageDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
@@ -75,7 +78,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         styles: {
             element: "fl-videoPlayer-transcript-element",
             highlight: "fl-videoPlayer-transcript-element-highlight"
-        }
+        },
+        transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"
     });
 
     /** Functions to show/hide the transcript area **/
@@ -139,12 +143,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return Math.round(secs * 1000 + parseInt(splitSec[1], 10));
     };
 
+    /**
+     * Convert the start/end time of the transcripts retrieved with the Universal Subtitles jsonP API
+     */
     fluid.videoPlayer.transcript.convertSecsToMilli = function (time) {
         return Math.round(time * 1000);
     };
 
-    fluid.videoPlayer.transcript.getTranscriptElementId = function (that, transcriptIndex) {
-        return that.options.model.transcriptElementIdPrefix + "-" + transcriptIndex;
+    fluid.videoPlayer.transcript.getTranscriptElementId = function (transcriptElementIdPrefix, transcriptIndex) {
+        return transcriptElementIdPrefix + "-" + transcriptIndex;
     };
     
     fluid.videoPlayer.transcript.getTranscriptElement = function (transcriptElementContent, idName, tClass) {
@@ -155,23 +162,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.locate("transcriptText").html(transcriptText);
         that.updateTranscriptHighlight();
 
-        $('span[id|="' + that.model.transcriptElementIdPrefix + '"]').click(function (element) {
+        $('span[id|="' + that.options.transcriptElementIdPrefix + '"]').click(function (element) {
             var elementId = element.currentTarget.id;
-            var trackId = parseInt(elementId.substring(that.model.transcriptElementIdPrefix.length + 1), 10);
+            var trackId = parseInt(elementId.substring(that.options.transcriptElementIdPrefix.length + 1), 10);
             
             var transcriptIndex = that.model.currentTracks.transcripts[0];
             var track = that.options.transcripts[transcriptIndex].tracks[trackId];
             
             // TODO: This test for Universal Subtitles file format should be factored better,
-            // as part of a general strategy (see parseUniSubTranscriptFile() and parseTranscriptFile())
+            // as part of a general strategy (see parseTranscriptFile())
             var inTimeMillis;
-            if (track.text) { // this is a Universal Subtitles format file
-                inTimeMillis = fluid.videoPlayer.transcript.convertSecsToMilli(track.start_time);
+            if (track.text) { 
+                // this is a Universal Subtitles format file
+                inTimeMillis = that.convertSecsToMilli(track.start_time);
             } else {
+                // a WebVTT compatible json format file 
                 inTimeMillis = that.convertToMilli(track.inTime);
             }
             // Fire the onTranscriptElementChange event with the track start time and the track itself
-            that.events.onTranscriptElementChange.fire((1 + inTimeMillis)/1000, track);
+            that.events.onTranscriptElementChange.fire((1 + inTimeMillis) / 1000, track);
         });
     };
     
@@ -183,7 +192,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         // Highlight the current transcript
         if (currentTrackId !== null) {
-            var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that, currentTrackId);
+            var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that.options.transcriptElementIdPrefix, currentTrackId);
             var element = fluid.jById(currentTranscriptElementId); 
             element.addClass(that.options.styles.highlight);
             
@@ -193,7 +202,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
 
-    fluid.videoPlayer.transcript.parseTranscriptFile = function (that, transcripts, currentIndex) {
+    /**
+     * Parse the json transcript string to extract the interval list and fires onTranscriptsLoaded event 
+     * with the list and the transcript component. The first event argument "interval list" is a must-have
+     * for the other video player components to respond. The 2nd event argument "transcript component" is
+     * currently only used for writing unit tests.
+     * 
+     * 2 format of transcripts are accepted by this function: WebVTT compatible json format & universal
+     * subtitle jsonP format. These formats have different paths to identify text, start/end times, which
+     * is the reason to have 3 path parameters (textPath, startTimePath, endTimePath).
+     * 
+     * @param that - transcript component
+     * @param transcripts - json string of transcripts text and start/end time
+     * @param currentIndex - the index of the transcript to display
+     * @param convertToMilliFunc - the function that converts the start/end time of each transcript text to millisecond
+     * @param textPath - the EL path on the transcripts json string to retrieve each transcript text
+     * @param startTimePath - the EL path on the transcripts json string to retrieve the start time of each transcript text
+     * @param endTimetPath - the EL path on the transcripts json string to retrieve the end time of each transcript text
+     * @return fires onTranscriptsLoaded event with extracted interval list and the transcript component
+     */
+    fluid.videoPlayer.transcript.parseTranscriptFile = function (that, transcripts, currentIndex, convertToMilliFunc, textPath, startTimePath, endTimePath) {
         transcripts = (typeof (transcripts) === "string") ? JSON.parse(transcripts) : transcripts;
         if (transcripts.transcriptCollection) {
             transcripts = transcripts.transcriptCollection;
@@ -204,7 +232,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Generate the transcript text
         var transcriptText = "";
         for (var i = 0; i < transcripts.length; i++) {
-            transcriptText = transcriptText + fluid.videoPlayer.transcript.getTranscriptElement(transcripts[i].transcript, fluid.videoPlayer.transcript.getTranscriptElementId(that, i), that.options.styles.element) + "&nbsp;";
+            transcriptText = transcriptText + 
+                fluid.videoPlayer.transcript.getTranscriptElement(
+                    fluid.get(transcripts[i], textPath), 
+                    fluid.videoPlayer.transcript.getTranscriptElementId(that.options.transcriptElementIdPrefix, i), 
+                    that.options.styles.element
+                ) + 
+                "&nbsp;";
         }
         
         that.options.transcripts[currentIndex].transcriptText = transcriptText;
@@ -214,49 +248,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var intervalList = [];
         fluid.each(transcripts, function (value, key) {
             intervalList[key] = {
-                begin: that.convertToMilli(value.inTime),
-                end: that.convertToMilli(value.outTime)
+                begin: convertToMilliFunc(fluid.get(value, startTimePath)),
+                end: convertToMilliFunc(fluid.get(value, endTimePath))
             };
         });
         
-        that.events.onTranscriptsLoaded.fire(intervalList);
+        // The 2nd event parameter "that" is for writing unit test, no used at implementing functionalities 
+        that.events.onTranscriptsLoaded.fire(intervalList, that);
     };  
     
-    // TODO: This is very similar to the original parseTranscriptFile()
-    // Should probably be factored as a strategy
-    fluid.videoPlayer.transcript.parseUniSubTranscriptFile = function (that, transcripts, currentIndex) {
-        transcripts = (typeof (transcripts) === "string") ? JSON.parse(transcripts) : transcripts;
-        if (transcripts.transcriptCollection) {
-            transcripts = transcripts.transcriptCollection;
-        }
-
-        that.options.transcripts[currentIndex].tracks = transcripts;
-
-        // Generate the transcript text
-        var transcriptText = "";
-        for (var i = 0; i < transcripts.length; i++) {
-            transcriptText = transcriptText
-                               + fluid.videoPlayer.transcript.getTranscriptElement(transcripts[i].text,
-                                                                                   fluid.videoPlayer.transcript.getTranscriptElementId(that, i),
-                                                                                   that.options.styles.element)
-                               + "&nbsp;";
-        }
-
-        that.options.transcripts[currentIndex].transcriptText = transcriptText;
-        fluid.videoPlayer.transcript.displayTranscript(that, transcriptText);
-
-        // Construct intervalList that's used by intervalEventsConductor to fire intervalChange event
-        var intervalList = [];
-        fluid.each(transcripts, function (value, key) {
-            intervalList[key] = {
-                begin: fluid.videoPlayer.transcript.convertSecsToMilli(value.start_time),
-                end: fluid.videoPlayer.transcript.convertSecsToMilli(value.end_time)
-            };
-        });
-
-        that.events.onTranscriptsLoaded.fire(intervalList);
-    };
-
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
         var transcriptSource = that.options.transcripts[currentIndex];
         if (transcriptSource) {
@@ -264,14 +264,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type.match(/^jsonp\//)) {
                 captionator.getJSONP("".concat(transcriptSource.src, "&callback=?"), function (data) {
-                    fluid.videoPlayer.transcript.parseUniSubTranscriptFile(that, data, currentIndex);
-                })
+                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertSecsToMilli, "text", "start_time", "end_time");
+                });
             } else {
                 var opts = {
                     type: "GET",
                     dataType: "text",
                     success: function (data) {
-                        fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex);
+                        fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertToMilli, "transcript", "inTime", "outTime");
                     },
                     error: function () {
                         fluid.log("Error loading transcript: " + transcriptSource.src + ". Are you sure this file exists?");
@@ -345,11 +345,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
-            if (currentInterval != that.model.transcriptIntervalId) {
+            if (currentInterval !== that.model.transcriptIntervalId) {
                // TODO: use a better strategy for this, which was intended to prevent event pile-up 
                 setTimeout(function () {
                     that.applier.requestChange("transcriptIntervalId", currentInterval);
-                   }, 100);
+                }, 100);
             }
         });
         that.applier.modelChanged.addListener("transcriptIntervalId", that.updateTranscriptHighlight);
@@ -358,14 +358,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.preInit = function (that) {
         // build the 'choices' from the transcript list provided
         fluid.each(that.options.transcripts, function (value, key) {
-            // ToDo: convert the integer to string to avoid the "unrecognized text" error at rendering dropdown list box
+            // TODO: convert the integer to string to avoid the "unrecognized text" error at rendering dropdown list box
             // The integer is converted back in the listener function for currentTracks.transcripts.0. 
             // Needs a better solution for this.
             that.model.choices.push(key.toString());
             that.model.labels.push(value.label);
         });
         
-        that.model.transcriptElementIdPrefix = that.model.transcriptElementIdPrefix + "-" + that.id;
+        that.options.transcriptElementIdPrefix = that.options.transcriptElementIdPrefix + "-" + that.id;
         that.updateTranscriptHighlight = function (previousInterval) {
             fluid.videoPlayer.transcript.highlightTranscriptElement(that, that.model.transcriptIntervalId, previousInterval);
         };
