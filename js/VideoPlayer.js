@@ -450,13 +450,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         
         // FLUID-4661: This should be removed once a proper fullscreen mode is implemented
-        document.addEventListener("mozfullscreenchange", function () {
-            if (!document.mozFullScreen) {
-                that.applier.fireChangeRequest({
-                    path: "fullscreen",
-                    value: false
-                });
-            }
+        fluid.each({
+            "fullscreenchange": "fullscreen",
+            "mozfullscreenchange": "mozFullScreen",
+            "webkitfullscreenchange": "webkitIsFullScreen"
+        }, function (value, key) {
+            document.addEventListener(key, function () {
+                if (!document[value]) {
+                    that.applier.fireChangeRequest({
+                        path: "fullscreen",
+                        value: false
+                    });
+                }
+            });
         });
     };
 
