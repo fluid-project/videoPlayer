@@ -326,7 +326,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 activateHandler: function() {
                     that.applier.fireChangeRequest( {
                         path: "volume",
-                        value: that.model.volume + 10
+                        value: (that.model.volume < 91) ? that.model.volume + 10 : 100
                     })
                 }
             }, {
@@ -335,7 +335,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 activateHandler: function() {
                     that.applier.fireChangeRequest( {
                         path: "volume",
-                        value: that.model.volume - 10
+                        value: (that.model.volume > 9) ? that.model.volume - 10 : 0
                     })
                 }
             }, {
