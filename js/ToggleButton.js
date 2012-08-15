@@ -63,6 +63,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             button.prop("aria-pressed", pressed);
         };
+        
+        that.changeToolTip = function () {
+            if (!that.tooltip) {
+                return;
+            }
+            
+            that.tooltip.updateContent(that.options.strings[that.readIndirect("modelPath")? "release": "press"]);
+            that.tooltip.close();
+            that.tooltip.open();
+        };
     };
 
     fluid.toggleButton.setUpToggleButton = function (that) {
@@ -91,6 +101,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.applier.modelChanged.addListener(that.options.modelPath, function () {
             that.refreshView();
+            that.changeToolTip();
         });
     };
 
