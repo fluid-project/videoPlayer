@@ -29,7 +29,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         type: "video/mp4"
                     },
                     {
-                        src: "TestVideo.webm",
+                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
                         type: "video/webm"
                     },
                 ],
@@ -106,8 +106,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     var currentTimeAfterPause = video[0].currentTime;
                     jqUnit.assertEquals("The video is paused", currentTimeBeforePause, currentTimeAfterPause);
                     start();
-                }, 200);
-            }, 1000);
+                }, 500);
+            }, 1500);
         };
         
         videoPlayerIntegrationTests.asyncTest("Play button - Play/Pause", function () {
@@ -225,25 +225,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
                 
                 // click on one transcript span advances video
-                // Wait 1 sec for the video to be fully loaded
+                // Use a time delay for the video to be fully loaded
                 setTimeout(function () {
                     if (!testedTranscriptSpanClick) {
                         var video = $(".flc-videoPlayer-video");
                         var currentTimeBf = video[0].currentTime;
 
-                        var transcriptSpan = $("#" + that.model.transcriptElementIdPrefix + "-4");
+                        var transcriptSpan = $("#" + that.options.transcriptElementIdPrefix + "-4");
                         transcriptSpan.click();
                         jqUnit.assertNotEquals("The video is advanced", video[0].currentTime, currentTimeBf);
                         
                         testedTranscriptSpanClick = true;
                     }
                     
-                    // The 200 millisec delay is to allow the transcript span highlight function to finish. This function is executed with
+                    // The delay is to allow the transcript span highlight function to finish. This function is executed with
                     // a slight time delay (100 millisec, see VideoPlayer_transcript.js), after another transcript span is clicked, 
                     // to prevent the event queuing-up.
                     setTimeout(function () {
                         start();
-                    }, 200);
+                    }, 500);
                 }, 1000);
             };
             
