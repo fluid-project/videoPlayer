@@ -117,7 +117,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     /**************************************************************************************
-     * Timer component for HTML5 media element                                            *
+     * Timer component for mediaElement object                                            *
      *                                                                                    *
      * The timer component fires the onTick event with the arguments of "currentTime"     *
      * and "buffered" time ranges object at the firing of html5 media event "timeupdate". *
@@ -138,9 +138,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         if (!media) {
             fluid.fail("Undefined mediaElement option in " + that.typeName + ".");
         }
-        media.bind("timeupdate", function (ev) {
-            var currentTime = ev.currentTarget.currentTime;
-            var buffered = ev.currentTarget.buffered;
+        media.addEventListener("timeupdate", function () {
+            var currentTime = media.currentTime;
+            var buffered = media.buffered || 0;
             
             /**
              * onTick event is fired with these arguments,

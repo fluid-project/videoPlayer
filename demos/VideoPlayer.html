@@ -21,8 +21,9 @@
         <!-- Utils -->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../lib/captionator/js/captionator.js"></script>
+        <script type="text/javascript" src="../lib/mediaelement/build/mediaelement.js"></script>
         <!--[if lt IE 9]>
-            <script type="text/javascript" src="../js/HTML5-backcompat.js"></script>
+            <script type="text/javascript" src="../lib/html5shiv/js/html5shiv.js"></script>
         <![endif]-->
         <!-- VideoPlayer dependencies -->
         <script type="text/javascript" src="../js/VideoPlayer_framework.js"></script>
@@ -57,6 +58,8 @@
         <div class="videoPlayer fl-videoPlayer">
             
         </div>
+<input type="button" id="pp" value="toggle" />
+<span id="time"></span>
 
         <script>
             var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
