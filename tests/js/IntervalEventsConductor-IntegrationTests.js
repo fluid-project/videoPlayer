@@ -46,7 +46,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     html5MediaTimer: {
                         type: "fluid.videoPlayer.html5MediaTimer",
                         options: {
-                            mediaElement: videoContainer
+                            mediaElement: videoContainer[0]
                         }
                     }
                 },
@@ -67,7 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
             
             setTimeout(function () {
-                that.html5MediaTimer.options.mediaElement[0].currentTime = timeToSet;
+                that.html5MediaTimer.options.mediaElement.currentTime = timeToSet;
             }, 100);
             
         });

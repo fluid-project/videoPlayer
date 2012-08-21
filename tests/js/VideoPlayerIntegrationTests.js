@@ -252,10 +252,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onReady: fluid.videoPlayer.testTranscript
                     },
                     components: {
-                        transcript: {
+                        media: {
                             options: {
-                                listeners: {
-                                    onTranscriptsLoaded: fluid.videoPlayer.testTranscriptLoaded
+                                components: {
+                                    transcript: {
+                                        options: {
+                                            listeners: {
+                                                onTranscriptsLoaded: fluid.videoPlayer.testTranscriptLoaded
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

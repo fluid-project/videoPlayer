@@ -132,6 +132,40 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     onIntervalChange: "{videoPlayer}.events.onIntervalChange"
                                 }
                             }
+                        },
+                        transcript: {
+                            type: "fluid.videoPlayer.transcript",
+                            container: "{videoPlayer}.dom.transcript",
+                            options: {
+                                // TODO (long term) - should not share entire model and applier with transcripts
+                                model: "{videoPlayer}.model",
+                                applier: "{videoPlayer}.applier",
+                                transcripts: "{videoPlayer}.options.video.transcripts",
+                                components: {
+                                    transcriptInterval: {
+                                        type: "fluid.videoPlayer.intervalEventsConductor",
+                                        options: {
+                                            components: {
+                                                html5MediaTimer: {
+                                                    type: "fluid.videoPlayer.html5MediaTimer",
+                                                    options: {
+                                                        mediaElement: "{media}.model.mediaElementVideo"
+                                                    }
+                                                }
+                                            },
+                                            events: {
+                                                onIntervalChange: "{transcript}.events.onIntervalChange"
+                                            }
+                                        }
+                                    }
+                                },
+                                events: {
+                                    onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                                    onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
+                                    onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
+                                    onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange"
+                                }
+                            }
                         }
                     },
                     events: {
@@ -166,41 +200,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.options.video.captions"
-                }
-            },
-            transcript: {
-                type: "fluid.videoPlayer.transcript",
-                container: "{videoPlayer}.dom.transcript",
-                createOnEvent: "onHTML5BrowserDetected",
-                options: {
-                    // TODO (long term) - should not share entire model and applier with transcripts
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
-                    transcripts: "{videoPlayer}.options.video.transcripts",
-                    components: {
-                        transcriptInterval: {
-                            type: "fluid.videoPlayer.intervalEventsConductor",
-                            options: {
-                                components: {
-                                    html5MediaTimer: {
-                                        type: "fluid.videoPlayer.html5MediaTimer",
-                                        options: {
-                                            mediaElement: "{media}.model.mediaElementVideo"
-                                        }
-                                    }
-                                },
-                                events: {
-                                    onIntervalChange: "{transcript}.events.onIntervalChange"
-                                }
-                            }
-                        }
-                    },
-                    events: {
-                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
-                        onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
-                        onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
-                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange"
-                    }
                 }
             }
         },
@@ -536,8 +535,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.events.onCreateControllersReady.fire();
                 }
                 
-                // TODO: Once we have a non-html5 fall-back for captions
-                //    (i.e. captionator), we will not need to do this.
+                // TODO: Once we have a non-html5 fall-back for captions to replace captionator, 
+                // the if check on html5 browser can be removed.
                 if (fluid.hasFeature("fluid.browser.html5")) {
                     that.events.onHTML5BrowserDetected.fire();
                 }

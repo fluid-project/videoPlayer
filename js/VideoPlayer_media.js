@@ -35,6 +35,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             intervalEventsConductor: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
                 createOnEvent: "onMediaReady"
+            },
+            transcript: {
+                type: "fluid.videoPlayer.transcript",
+                createOnEvent: "onMediaReady"
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
@@ -101,13 +105,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Html5 browsers tolerate this workaround without initiatively playing the video
             mediaElementVideo.play();
             
-            document.getElementById('pp')['onclick'] = function() {
-                if (mediaElementVideo.paused)
-                    mediaElementVideo.play();
-                else
-                    mediaElementVideo.pause();
-            };
-
             mediaElementVideo.addEventListener("durationchange", function () {
                 // FF doesn't implement startTime from the HTML 5 spec.
                 console.log("event duration change");
