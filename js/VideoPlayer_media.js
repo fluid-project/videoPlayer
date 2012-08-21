@@ -167,6 +167,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.events.onLoadedMetadata.fire();
             });
 
+            // Fire onMediaReady here rather than finalInit() because the instantiation
+            // of the media element object is asynchronous
             that.events.onMediaReady.fire(that);
         }});
 
@@ -217,106 +219,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.play();
         };
     };
-
-//    var bindMediaDOMEvents = function (that) {      
-//        var video = that.container;
-//
-//        video.bind("durationchange", {obj: video[0]}, function (ev) {
-//            // FF doesn't implement startTime from the HTML 5 spec.
-//            var startTime = ev.data.obj.startTime || 0;
-//            that.applier.fireChangeRequest({
-//                path: "totalTime",
-//                value: ev.data.obj.duration
-//            });
-//            that.applier.fireChangeRequest({
-//                path: "currentTime",
-//                value: ev.data.obj.currentTime
-//            });
-//            that.applier.fireChangeRequest({
-//                path: "startTime",
-//                value: startTime
-//            });
-//        });
-//
-//        video.bind("volumechange", {obj: video[0]}, function (ev) {
-//            var mediaVolume = ev.data.obj.volume * 100;
-//            // Don't fire self-generated volume changes on zero when muted, to avoid cycles
-//            if (!that.model.muted || mediaVolume !== 0) {
-//                fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
-//            }
-//        });
-//
-//        //all browser don't support the canplay so we do all different states
-//        video.bind("canplay", {obj: video[0]}, function (ev) {
-//            that.applier.fireChangeRequest({
-//                path: "canPlay",
-//                value: getcanPlayData(ev.data.obj)
-//            });
-//        });
-//
-//        video.bind("canplaythrough", {obj: video[0]}, function (ev) {
-//            that.applier.fireChangeRequest({
-//                path: "canPlay",
-//                value: getcanPlayData(ev.data.obj)
-//            });
-//        });
-//
-//        video.bind("loadeddata", {obj: video[0]}, function (ev) {
-//            that.applier.fireChangeRequest({
-//                path: "canPlay",
-//                value: getcanPlayData(ev.data.obj)
-//            });
-//        });
-//
-//        video.bind("ended", function () {
-//            that.applier.fireChangeRequest({
-//                path: "play",
-//                value: false
-//            });
-//            that.applier.fireChangeRequest({
-//                path: "currentTime",
-//                value: 0
-//            });
-//        });
-//    };
-//
-//    fluid.videoPlayer.media.preInit = function (that) {
-//        that.updateCurrentTime = function (currentTime, buffered) {
-//            that.applier.fireChangeRequest({
-//                path: "currentTime", 
-//                value: currentTime
-//            });
-//            that.applier.fireChangeRequest({
-//                path: "buffered", 
-//                value: buffered
-//            });
-//        };
-//        
-//        that.setTime = function (time) {
-//            that.container[0].currentTime = time;
-//        };
-//
-//        that.updateVolume = function () {
-//            that.container[0].volume = that.model.volume / 100;
-//        };
-//
-//        that.play = function () {
-//            if (that.model.play === true) {
-//                that.container[0].play();
-//            } else {
-//                that.container[0].pause();
-//            }
-//        };
-//
-//        that.mute = function () {
-//            that.container[0].muted = that.model.muted;
-//        };
-//
-//        that.refresh = function () {
-//            that.updateVolume();
-//            that.play();
-//        };
-//    };
 
     fluid.videoPlayer.media.finalInit = function (that) {
         renderSources(that);
