@@ -31,6 +31,10 @@ fluid.registerNamespace("fluid.tests");
                     {
                         src: "TestVideo.mp4",
                         type: "video/mp4"
+                    },
+                    {
+                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
+                        type: "video/webm"
                     }
                 ]
             },

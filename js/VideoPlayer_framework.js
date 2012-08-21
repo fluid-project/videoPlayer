@@ -189,7 +189,6 @@ var fluid_1_5 = fluid_1_5 || {};
              return fluid.get(that.model, fluid.get(that.options, pathName));
          };
          that.writeIndirect = function(pathName, value, source) {
-             console.log("fire: " + pathName + "; value: " + value + "; source: " + source);
              fluid.fireSourcedChange(that.applier, fluid.get(that.options, pathName), value, source);
          };
     };

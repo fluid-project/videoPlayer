@@ -98,7 +98,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var bindMediaDOMEvents = function (that) {      
         MediaElement(that.container[0], {success: function (mediaElementVideo) {
-            console.log('assigning');
             that.model.mediaElementVideo = mediaElementVideo;
             
             // IE8 workaround to trigger the video initial loading. Otherwise, a blank is displayed at the video area
@@ -107,7 +106,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             mediaElementVideo.addEventListener("durationchange", function () {
                 // FF doesn't implement startTime from the HTML 5 spec.
-                console.log("event duration change");
                 var startTime = mediaElementVideo.startTime || 0;
                 that.applier.fireChangeRequest({
                     path: "totalTime",
@@ -124,7 +122,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
 
             mediaElementVideo.addEventListener("volumechange", function () {
-                console.log("event volume change");
                 var mediaVolume = mediaElementVideo.volume * 100;
                 // Don't fire self-generated volume changes on zero when muted, to avoid cycles
                 if (!that.model.muted || mediaVolume !== 0) {
@@ -134,7 +131,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             // all browser don't support the canplay so we do all different states
             mediaElementVideo.addEventListener("canplay", function () {
-                console.log("event canplay");
                 that.applier.fireChangeRequest({
                     path: "canPlay",
                     value: getcanPlayData(mediaElementVideo)
@@ -142,7 +138,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
 
             mediaElementVideo.addEventListener("canplaythrough", function () {
-                console.log("event canplaythrough");
                 that.applier.fireChangeRequest({
                     path: "canPlay",
                     value: getcanPlayData(mediaElementVideo)
@@ -150,7 +145,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
 
             mediaElementVideo.addEventListener("loadeddata", function () {
-                console.log("event loadeddata");
                 that.applier.fireChangeRequest({
                     path: "canPlay",
                     value: getcanPlayData(mediaElementVideo)
@@ -158,7 +152,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
 
             mediaElementVideo.addEventListener("ended", function () {
-                console.log("event ended");
                 that.applier.fireChangeRequest({
                     path: "play",
                     value: false
@@ -181,7 +174,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.media.preInit = function (that) {
         that.updateCurrentTime = function (currentTime, buffered) {
-            console.log("updateCurrentTime: " + currentTime);
             that.applier.fireChangeRequest({
                 path: "currentTime", 
                 value: currentTime
@@ -194,32 +186,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         that.setTime = function (time) {
             if (!that.model.mediaElementVideo) return;
-            console.log("in setTime");
+            
             that.model.mediaElementVideo.currentTime = time;
         };
 
         that.updateVolume = function () {
             if (!that.model.mediaElementVideo) return;
-            console.log("in updateVolume");
+            
             that.model.mediaElementVideo.volume = that.model.volume / 100;
         };
 
         that.play = function () {
-            console.log("play");
             if (!that.model.mediaElementVideo) return;
             
             if (that.model.play === true) {
-                console.log("in play - play");
                 that.model.mediaElementVideo.play();
             } else {
-                console.log("in play - pause");
                 that.model.mediaElementVideo.pause();
             }
         };
 
         that.mute = function () {
             if (!that.model.mediaElementVideo) return;
-            console.log("in mute");
+            
             that.model.mediaElementVideo.muted = that.model.muted;
         };
 
