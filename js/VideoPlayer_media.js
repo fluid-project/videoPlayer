@@ -104,23 +104,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Html5 browsers tolerate this workaround without initiatively playing the video
             mediaElementVideo.play();
             
-            mediaElementVideo.addEventListener("durationchange", function () {
-                // FF doesn't implement startTime from the HTML 5 spec.
-                var startTime = mediaElementVideo.startTime || 0;
-                that.applier.fireChangeRequest({
-                    path: "totalTime",
-                    value: mediaElementVideo.duration
-                });
-                that.applier.fireChangeRequest({
-                    path: "currentTime",
-                    value: mediaElementVideo.currentTime
-                });
-                that.applier.fireChangeRequest({
-                    path: "startTime",
-                    value: startTime
-                });
-            });
-
             mediaElementVideo.addEventListener("volumechange", function () {
                 var mediaVolume = mediaElementVideo.volume * 100;
                 // Don't fire self-generated volume changes on zero when muted, to avoid cycles
@@ -145,9 +128,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
 
             mediaElementVideo.addEventListener("loadeddata", function () {
+                var startTime = mediaElementVideo.startTime || 0;
+
                 that.applier.fireChangeRequest({
                     path: "canPlay",
                     value: getcanPlayData(mediaElementVideo)
+                });
+                that.applier.fireChangeRequest({
+                    path: "totalTime",
+                    value: mediaElementVideo.duration
+                });
+                that.applier.fireChangeRequest({
+                    path: "currentTime",
+                    value: mediaElementVideo.currentTime
+                });
+                that.applier.fireChangeRequest({
+                    path: "startTime",
+                    value: startTime
                 });
             });
 
