@@ -128,23 +128,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
 
             mediaElementVideo.addEventListener("loadeddata", function () {
-                var startTime = mediaElementVideo.startTime || 0;
-
                 that.applier.fireChangeRequest({
                     path: "canPlay",
                     value: getcanPlayData(mediaElementVideo)
-                });
-                that.applier.fireChangeRequest({
-                    path: "totalTime",
-                    value: mediaElementVideo.duration
-                });
-                that.applier.fireChangeRequest({
-                    path: "currentTime",
-                    value: mediaElementVideo.currentTime
-                });
-                that.applier.fireChangeRequest({
-                    path: "startTime",
-                    value: startTime
                 });
             });
 
@@ -160,6 +146,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
             
             mediaElementVideo.addEventListener("loadedmetadata", function () {
+                var startTime = mediaElementVideo.startTime || 0;
+
+                that.applier.fireChangeRequest({
+                    path: "totalTime",
+                    value: mediaElementVideo.duration
+                });
+                that.applier.fireChangeRequest({
+                    path: "currentTime",
+                    value: mediaElementVideo.currentTime
+                });
+                that.applier.fireChangeRequest({
+                    path: "startTime",
+                    value: startTime
+                });
+
                 // escalated to the main videoPlayer component
                 that.events.onLoadedMetadata.fire();
             });
