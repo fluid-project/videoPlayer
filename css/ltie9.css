@@ -1,0 +1,119 @@
+/***********
+ * Buttons *
+ ***********/
+ 
+.fl-videoPlayer-button {
+    background-color: transparent;
+}
+
+.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
+    background-color: rgb(153, 153, 153);
+}
+
+.fl-videoPlayer-controller-buttons { 
+    background-color: rgb(242, 242, 242);
+}
+
+/************
+ * Scrubber *
+ ************/
+ 
+.fl-videoPlayer-scrubber.ui-widget-content {
+    background: rgb(0, 0, 0);
+}
+
+.fl-videoPlayer-scrubber .ui-slider-handle {
+    background: rgb(0, 0, 0);
+}
+
+/* Play button */
+/* TODO: Need "filter: ..." to control the sizes of background images. However, somehow it stops the video loading in IE8 */
+/*
+.fl-videoPlayer-play {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/default/play.png',sizingMethod='scale');
+}
+
+.fl-videoPlayer-play:hover {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/play_hover.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-playing {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/pause.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-playing:hover {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/pause_hover.png",sizingMethod="scale");
+}
+*/
+/* Fullscreen button */
+/*
+.fl-videoPlayer-fullscreen {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/fullscreen.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-fullscreen:hover {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/fullscreen_hover.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-fullscreen-on {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/smallscreen.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-fullscreen-on:hover {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/smallscreen_hover.png",sizingMethod="scale");
+}
+*/
+/* Volume button */
+/*
+.fl-videoPlayer-mute {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/volume.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-muted {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/volume_off.png",sizingMethod="scale");
+}
+*/
+/* Captions button */
+/*
+.fl-videoPlayer-captions-button {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/captions.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-captions-button:hover {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/captions_hover.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-captions-button-on {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/captions_on.png",sizingMethod="scale");
+}
+*/
+/* Transcript button */
+/*
+.fl-videoPlayer-transcripts-button {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/transcript.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-transcripts-button:hover {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/transcript_hover.png",sizingMethod="scale");
+}
+
+.fl-videoPlayer-transcripts-button-on {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/default/transcript_on.png",sizingMethod="scale");
+}
+*/

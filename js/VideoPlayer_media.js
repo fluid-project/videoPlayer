@@ -92,8 +92,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var getcanPlayData = function (data) {
-        return data.readyState === 4 || data.readyState === 3 
-            || data.readyState === 2; 
+        return typeof (data.readyState) === "undefined" ? 
+            true : data.readyState === 4 || data.readyState === 3 || data.readyState === 2;
     };
 
     var bindMediaDOMEvents = function (that) {      
@@ -185,19 +185,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         
         that.setTime = function (time) {
-            if (!that.model.mediaElementVideo) return;
+            if (!that.model.mediaElementVideo) { return; }
             
             that.model.mediaElementVideo.currentTime = time;
         };
 
         that.updateVolume = function () {
-            if (!that.model.mediaElementVideo) return;
+            if (!that.model.mediaElementVideo) { return; }
             
             that.model.mediaElementVideo.volume = that.model.volume / 100;
         };
 
         that.play = function () {
-            if (!that.model.mediaElementVideo) return;
+            if (!that.model.mediaElementVideo) { return; }
             
             if (that.model.play === true) {
                 that.model.mediaElementVideo.play();
@@ -207,7 +207,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         that.mute = function () {
-            if (!that.model.mediaElementVideo) return;
+            if (!that.model.mediaElementVideo) { return; }
             
             that.model.mediaElementVideo.muted = that.model.muted;
         };
