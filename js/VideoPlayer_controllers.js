@@ -244,8 +244,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             unittext: "seconds",
             range: "min",
             disabled: true
-        }).attr({
-            "role": "slider"
         });
         
         // TODO: This in inherited. Do we need to add aria to sliders ourselves?
@@ -254,7 +252,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "aria-valuemin": 0,
             "aria-valuemax": 0,
             "aria-valuenow": 0,
-            "aria-valuetext": 0
+            "aria-valuetext": 0,
+            "role": "slider"
         });
         return scrubber;
     };
