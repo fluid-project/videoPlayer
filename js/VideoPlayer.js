@@ -119,14 +119,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         intervalEventsConductor: {
                             type: "fluid.videoPlayer.intervalEventsConductor",
                             options: {
-                                components: {
-                                    html5MediaTimer: {
-                                        type: "fluid.videoPlayer.html5MediaTimer",
-                                        options: {
-                                            mediaElement: "{media}.model.mediaElementVideo"
-                                        }
-                                    }
-                                },
                                 events: {
                                     onTimeChange: "{videoPlayer}.events.onTimeChange",
                                     onIntervalChange: "{videoPlayer}.events.onIntervalChange"
@@ -145,14 +137,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     transcriptInterval: {
                                         type: "fluid.videoPlayer.intervalEventsConductor",
                                         options: {
-                                            components: {
-                                                html5MediaTimer: {
-                                                    type: "fluid.videoPlayer.html5MediaTimer",
-                                                    options: {
-                                                        mediaElement: "{media}.model.mediaElementVideo"
-                                                    }
-                                                }
-                                            },
                                             events: {
                                                 onIntervalChange: "{transcript}.events.onIntervalChange"
                                             }

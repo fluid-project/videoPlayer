@@ -17,17 +17,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 (function ($) {
 
-    /*************************************************************************************
-     * The wiring up of the onTick event btw timer component and intervalEventsConductor *
-     *************************************************************************************/
-    fluid.demands("fluid.videoPlayer.html5MediaTimer", ["fluid.videoPlayer.intervalEventsConductor"], {
-        options: {
-            events: {
-                onTick: "{intervalEventsConductor}.events.onTick"
-            }
-        }
-    });
-
     /*********************************************************************************
      * fluid.videoPlayer.intervalEventsConductor                                     *
      *                                                                               *
@@ -114,42 +103,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 that.events.onIntervalChange.fire(currentInterval, previousInterval);
             }
         }
-    };
-
-    /**************************************************************************************
-     * Timer component for mediaElement object                                            *
-     *                                                                                    *
-     * The timer component fires the onTick event with the arguments of "currentTime"     *
-     * and "buffered" time ranges object at the firing of html5 media event "timeupdate". *
-     **************************************************************************************/
-    
-    fluid.defaults("fluid.videoPlayer.html5MediaTimer", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.html5MediaTimer.finalInit",
-        mediaElement: null,
-        events: {
-            onTick: null
-        }
-    });
-
-    fluid.videoPlayer.html5MediaTimer.finalInit = function (that) {
-        var media = that.options.mediaElement;
-        
-        if (!media) {
-            fluid.fail("Undefined mediaElement option in " + that.typeName + ".");
-        }
-        media.addEventListener("timeupdate", function () {
-            var currentTime = media.currentTime;
-            var buffered = media.buffered || 0;
-            
-            /**
-             * onTick event is fired with these arguments,
-             * @arguments
-             * currentTime - the current time that the video plays
-             * buffered - A TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-             */
-            that.events.onTick.fire(currentTime, buffered);
-        });
     };
 
 })(jQuery);

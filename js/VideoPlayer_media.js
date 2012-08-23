@@ -165,6 +165,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.events.onLoadedMetadata.fire();
             });
 
+            // The handling of "timeupdate" event is moved from html5MediaTimer, which has been demolished, to here
+            // because with media element library, the attach of video event listeners must occur in this success callback.
+            mediaElementVideo.addEventListener("timeupdate", function () {
+                var currentTime = mediaElementVideo.currentTime || 0;
+                var buffered = mediaElementVideo.buffered || 0;
+                
+                that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
+                that.transcript.transcriptInterval.events.onTick.fire(currentTime);
+            });
+
             // Fire onMediaReady here rather than finalInit() because the instantiation
             // of the media element object is asynchronous
             that.events.onMediaReady.fire(that);
