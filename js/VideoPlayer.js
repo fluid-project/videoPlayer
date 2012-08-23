@@ -449,11 +449,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
         
-        // FLUID-4661: This should be removed once a proper fullscreen mode is implemented
+        // FLUID-4661: Change the fullscreen model flag back to false when browser exits its HTML5 fullscreen mode
+        // Once our own custome fullscreen mode is implemented we want to call this fireChangeRequest in another function
+        // which will be called by pressing a full screen toggle Button or when a key shortcut for exiting a fullscreen is pressed
         fluid.each({
             "fullscreenchange": "fullscreen",
             "mozfullscreenchange": "mozFullScreen",
-            "webkitfullscreenchange": "webkitIsFullScreen"
+            "webkitfullscreenchange": "webkitIsFullScreen",
+            "ofullscreenchange": "oFullScreen"
         }, function (value, key) {
             document.addEventListener(key, function () {
                 if (!document[value]) {
