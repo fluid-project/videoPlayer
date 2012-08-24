@@ -135,8 +135,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             fluid.videoPlayer.testContainerClick = function (that) {
                 // Clicking on video container plays and pauses video
-                var videoPlayerContainer = $(".flc-videoPlayer-video");
-                var clickFunc = function () { videoPlayerContainer.click() };
+                var videoPlayerContainer = $(".flc-videoPlayer-video-container");
+                var clickFunc = function () { videoPlayerContainer.mousedown() };
                 
                 testPlayPause(clickFunc);
             };
