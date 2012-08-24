@@ -184,6 +184,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
+        
+        // FLUID-4779: Hide fullscreen button if browser does not have a fullscreen functionality
+        // should be removed once we implement our own fullscreen functionality
+        if (!fluid.hasFeature("fluid.browser.hasFullScreenMode")) {
+            that.locate("fullscreen").hide();
+        }
 
         that.events.onControllersReady.fire(that);
     };

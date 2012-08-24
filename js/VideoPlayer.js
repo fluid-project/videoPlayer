@@ -33,9 +33,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
+    
+    // FLUID-4779: This check should be removed once we implement our own fullScreen mode
+    // and won't rely on browser's built-in fullscreen mode
+    fluid.browser.hasFullScreenMode = function () {
+        var hasFullScreenMode = !!!($.browser.msie || $.browser.opera);
+        return hasFullScreenMode ? fluid.typeTag("fluid.browser.hasFullScreenMode") : undefined;
+    };
 
     var features = {
-        browserHtml5: fluid.browser.html5()
+        browserHtml5: fluid.browser.html5(),
+        hasFullScreenMode: fluid.browser.hasFullScreenMode()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);

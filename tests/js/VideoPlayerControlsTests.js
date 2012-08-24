@@ -115,6 +115,44 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
+        
+        function setupEnvironment(hasFullScreenMode) {
+            delete fluid.staticEnvironment.hasFullScreenMode;
+            
+            if (hasFullScreenMode) {
+                fluid.staticEnvironment.hasFullScreenMode = fluid.typeTag("fluid.browser.hasFullScreenMode");
+            }
+        }
+        
+        videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
+            expect(1);
+            
+            setupEnvironment(true);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        var fullScreenButton = that.locate("fullscreen").attr("style");
+                        jqUnit.assertEquals("Full screen button should be present", fullScreenButton, undefined);
+                        start();
+                    }
+                }
+            });
+        });
+        
+        videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present in the browsers which support fullscreen mode", function () {
+            expect(1);
+            
+            setupEnvironment(false);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        var fullScreenButton = that.locate("fullscreen").attr("style");
+                        jqUnit.assertEquals("Full screen button should NOT be present", fullScreenButton, "display: none;");
+                        start();
+                    }
+                }
+            });
+        });
 
         fluid.tests.checkFullScreenButtonStyle = function (options) {
             jqUnit[options.expectedFullScreen ? "assertTrue": "assertFalse"](options.message, options.modelFullScreen);
