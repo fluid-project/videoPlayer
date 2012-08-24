@@ -131,8 +131,8 @@ fluid.registerNamespace("fluid.tests");
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
-                        var fullScreenButton = that.locate("fullscreen").attr("style");
-                        jqUnit.assertEquals("Full screen button should be present", fullScreenButton, undefined);
+                        var fullScreenButtonDisplay = that.locate("fullscreen").css("display");
+                        jqUnit.assertNotEquals("Full screen button should be present", fullScreenButtonDisplay, "none");
                         start();
                     }
                 }
@@ -146,8 +146,8 @@ fluid.registerNamespace("fluid.tests");
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
-                        var fullScreenButton = that.locate("fullscreen").attr("style");
-                        jqUnit.assertEquals("Full screen button should NOT be present", fullScreenButton, "display: none;");
+                        var fullScreenButtonDisplay = that.locate("fullscreen").css("display");
+                        jqUnit.assertEquals("Full screen button should NOT be present", fullScreenButtonDisplay, "none");
                         start();
                     }
                 }
