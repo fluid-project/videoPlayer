@@ -165,14 +165,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.events.onLoadedMetadata.fire();
             });
 
-            // The handling of "timeupdate" event is moved from html5MediaTimer, which has been demolished, to here
-            // because with media element library, the attach of video event listeners must occur in this success callback.
+            // The handling of "timeupdate" event is moved out of html5MediaTimer component, which 
+            // has been demolished, to here because with media element library in IE8, the link of 
+            // video event listeners must occur in the success callback, otherwise, listeners are 
+            // not fired.
             mediaElementVideo.addEventListener("timeupdate", function () {
-                var currentTime = mediaElementVideo.currentTime || 0;
-                var buffered = mediaElementVideo.buffered || 0;
-                
-                that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
-                that.transcript.transcriptInterval.events.onTick.fire(currentTime);
+                // A workaround to deal with the time delay in IE8 between calling setCurrentTime()
+                // and "currentTime" property gets really set. The delay causes the click on the
+                // scrubber does not reposition the progress handler at the first click, but 
+                // happens at the second click. The issue is easier to produce when the video is 
+                // at pause.
+                setTimeout(function () {
+                    var currentTime = mediaElementVideo.currentTime || 0;
+                    var buffered = mediaElementVideo.buffered || 0;
+                    
+                    that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
+                    that.transcript.transcriptInterval.events.onTick.fire(currentTime);
+                }, 300);
+
             });
 
             // Fire onMediaReady here rather than finalInit() because the instantiation
@@ -197,13 +207,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.setTime = function (time) {
             if (!that.model.mediaElementVideo) { return; }
             
-            that.model.mediaElementVideo.currentTime = time;
+            that.model.mediaElementVideo.setCurrentTime(time);
         };
 
         that.updateVolume = function () {
             if (!that.model.mediaElementVideo) { return; }
             
-            that.model.mediaElementVideo.volume = that.model.volume / 100;
+            that.model.mediaElementVideo.setVolume(that.model.volume / 100);
         };
 
         that.play = function () {
@@ -219,7 +229,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.mute = function () {
             if (!that.model.mediaElementVideo) { return; }
             
-            that.model.mediaElementVideo.muted = that.model.muted;
+            that.model.mediaElementVideo.setMuted(that.model.muted);
         };
 
         that.refresh = function () {

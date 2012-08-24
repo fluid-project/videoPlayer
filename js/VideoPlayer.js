@@ -224,6 +224,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
+            videoContainer: ".flc-videoPlayer-video-container",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
             transcript: ".flc-videoPlayer-transcriptArea",
@@ -235,7 +236,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video"],
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -346,8 +347,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
-        var video = that.locate("video");
-        video.click(function (ev) {
+        var videoContainer = that.locate("videoContainer");
+        
+        fluid.tabindex(videoContainer, 0);
+        
+        // Using "mousedown" event rather than "click", which does not work
+        // with the flash fallback in IE8
+        videoContainer.mousedown(function (ev) {
             ev.preventDefault();
             that.play();
         });
@@ -360,7 +366,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             hideControllers(that);
         });
 
-        video.focus(function () {
+        videoContainer.focus(function () {
             showControllers(that);
         });
 

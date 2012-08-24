@@ -270,12 +270,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         }]);
-        fluid.deadMansBlur(that.container, {
-            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
-            handler: function () {
-                that.menu.hide();
-            }
-        });
+        
+        // TODO: Causing IE8 failure at clicking caption or transcript button due to FLUID-4762.
+        // Should be uncommented once FLUID-4762 is fixed.
+//        fluid.deadMansBlur(that.container, {
+//            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
+//            handler: function () {
+//                that.menu.hide();
+//            }
+//        });
     };
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {

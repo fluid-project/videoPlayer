@@ -26,8 +26,13 @@
     background: rgb(0, 0, 0);
 }
 
+.fl-videoPlayer-buffered-progress {
+    z-index: -1;
+}
+
 /* Play button */
-/* TODO: Need "filter: ..." to control the sizes of background images. However, somehow it stops the video loading in IE8 */
+/* TODO: Need "filter: ..." to control the sizes of background images in IE8. 
+         But somehow it stops the media element video loading */
 /*
 .fl-videoPlayer-play {
     background-image: none;
