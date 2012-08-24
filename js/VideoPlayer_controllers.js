@@ -523,7 +523,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{volumeControls}.model",
                     applier: "{volumeControls}.applier",
                     modelPath: "muted",
-                    toolTipContainer: "{volumeControls}.container"
+                    tooltipContainer: "{volumeControls}.container"
                 }
             }
         }

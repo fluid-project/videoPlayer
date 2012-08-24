@@ -174,8 +174,8 @@ a.fl-videoPlayer-button-wrapper {
     border-width: 5px 11px;
     border-style: solid #c2c2c2;
     position: absolute;
-    bottom: 29px; /* 20px is right on FF */
-    right: 1px; /* 5px is right on FF */
+    bottom: 31px;
+    right: 0px;
     width: 25%;
     background-color: #F2F2F2;
 }
