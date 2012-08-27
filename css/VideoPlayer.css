@@ -28,6 +28,9 @@
 .fl-videoPlayer-video-element:focus {
     outline: solid 3px #3195C7;
 }
+.fl-theme-uio-yb .fl-videoPlayer-video-element:focus {
+    outline: solid 3px #FFFF00;
+}
 
 /*
  * Controller area
@@ -36,6 +39,9 @@
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 3px 5px;
+}
+.fl-theme-uio-yb .fl-videoPlayer-tooltip {
+    background: none;
 }
 
 .fl-videoPlayer-controller {
@@ -57,6 +63,9 @@
 }
 .fl-videoPlayer-button:focus {
     background-color: #3195C7;
+}
+.fl-theme-uio-yb .fl-videoPlayer-button:focus {
+    background-color: #FFFF00 !important;
 }
 
 .fl-videoPlayer-controller-buttons .fl-videoPlayer-button,
@@ -107,6 +116,9 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-play:focus {
     background-image: url('../images/white/play.png');
 }
+.fl-theme-uio-yb .fl-videoPlayer-play:focus {
+    background-image: url('../images/black/play.png');
+}
 
 .fl-videoPlayer-playing {
     background-image: url('../images/default/pause.png');
@@ -118,6 +130,9 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-playing:focus {
     background-image: url('../images/white/pause.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-playing:focus {
+    background-image: url('../images/black/pause.png');
 }
 
 /* Fullscreen button */
@@ -132,6 +147,9 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-fullscreen:focus {
     background-image: url('../images/white/fullscreen.png');
 }
+.fl-theme-uio-yb .fl-videoPlayer-fullscreen:focus {
+    background-image: url('../images/black/fullscreen.png');
+}
 
 .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/default/smallscreen.png');
@@ -143,6 +161,9 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-fullscreen-on:focus {
     background-image: url('../images/white/smallscreen.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-fullscreen-on:focus {
+    background-image: url('../images/black/smallscreen.png');
 }
 
 /* Volume button */
@@ -166,12 +187,18 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-captions-button:focus {
     background-image: url('../images/white/captions.png');
 }
+.fl-theme-uio-yb .fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/black/captions.png');
+}
 
 .fl-videoPlayer-captions-button-on {
     background-image: url('../images/default/captions_on.png');
 }
 .fl-videoPlayer-captions-button-on:focus {
     background-image: url('../images/white/captions_on.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/black/captions_on.png');
 }
 
 /* Transcript button */
@@ -186,12 +213,18 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-transcripts-button:focus {
     background-image: url('../images/white/transcript.png');
 }
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button:focus {
+    background-image: url('../images/black/transcript.png');
+}
 
 .fl-videoPlayer-transcripts-button-on {
     background-image: url('../images/default/transcript_on.png');
 }
 .fl-videoPlayer-transcripts-button-on:focus {
     background-image: url('../images/white/transcript_on.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button-on:focus {
+    background-image: url('../images/black/transcript_on.png');
 }
 
 
@@ -201,6 +234,7 @@ a.fl-videoPlayer-button-wrapper {
  
 .fl-videoPlayer-volumeContainer {
     position: relative;
+    top: 2px;
 }
 
 .fl-videoPlayer-volumeControl {
@@ -222,9 +256,17 @@ a.fl-videoPlayer-button-wrapper {
     background-color: #3195C7;
     background-image: url('../images/white/volume.png');
 }
+.fl-theme-uio-yb .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-color: #FFFF00 !important;
+    background-image: url('../images/black/volume.png');
+}
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
     background-color: #3195C7;
     background-image: url('../images/white/volume_off.png');
+}
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-color: #FFFF00 !important;
+    background-image: url('../images/black/volume_off.png');
 }
 .fl-videoPlayer-volumeControl.ui-corner-all {
     border-radius: 0px 0px 0px 0px;
@@ -300,7 +342,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-buffered-progress {
     height: 1em;
     left: 0;
-    top: 0;
+    top: 1px;
     position: absolute;
     width: 100%;
     pointer-events:none;
@@ -341,8 +383,9 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-scrubberContainer {
     width: 100%;
     text-align: center;
-    margin-bottom: -0.4em;
     position: relative;
+    bottom: 2px;
+    height: 1em;
 }
 .fl-videoPlayer-scrubberContainer * {
     margin: auto;
@@ -351,6 +394,9 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .fl-videoPlayer-scrubber {
     width: 100%;
+}
+.fl-videoPlayer-scrubber.ui-slider-horizontal {
+    height: 1em;
 }
 
 .fl-videoPlayer-scrubber.ui-widget-content {
@@ -363,25 +409,27 @@ ul.fl-videoPlayer-transcripts-languageList li {
     width: 5em;
     margin-left: -1.5em;
     margin-top: -0.9em;
-    background: rgba(0, 0, 0, 0);
+    background: #000000;
     border-width: 0px 0px 0px 0px;
     color: #fff;
     text-decoration: none;
     text-align: center;
-
-}
-
-.fl-videoPlayer-scrubber .ui-slider-handle > span {
-    font-size: 70%;
+    font-size: 90%;
     font-weight: lighter;
-    background-color: #000;
-    padding: 0 5% 0 5%;
+    padding: 0.2em;
 }
-.fl-videoPlayer-scrubber .ui-slider-handle:focus > span {
+
+.fl-videoPlayer-scrubber .ui-slider-handle:focus {
     border: solid 1px #FFFFFF;
     color: #FFFFFF;
     background-color: #3195C7;
 }
+.fl-theme-uio-yb .fl-videoPlayer-scrubber .ui-slider-handle:focus, 
+.fl-theme-uio-yb .fl-videoPlayer-scrubber .ui-slider-handle:focus span {
+    color: #000000 !important;
+    background-color: #FFFF00 !important;
+}
+
 .fl-videoPlayer-time {
     height: 100%;
 }
@@ -483,6 +531,9 @@ ul.fl-videoPlayer-transcripts-languageList li {
 }
 .fl-videoPlayer-transcripts-close-button:focus {
     background-image: url('../images/white/transcriptclose.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-close-button:focus {
+    background-image: url('../images/black/transcriptclose.png');
 }
 
 .fl-videoPlayer-transcript-element:hover {
