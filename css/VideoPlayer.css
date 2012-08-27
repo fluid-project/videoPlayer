@@ -25,6 +25,9 @@
     width: 100%;
     height: 100%;
 }
+.fl-videoPlayer-video-element:focus {
+    outline: solid 3px #3195C7;
+}
 
 /*
  * Controller area
@@ -51,6 +54,9 @@
     border: 0;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0);
+}
+.fl-videoPlayer-button:focus {
+    background-color: #3195C7;
 }
 
 .fl-videoPlayer-controller-buttons .fl-videoPlayer-button,
@@ -98,6 +104,9 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-play:hover {
     background-image: url('../images/default/play_hover.png');
 }
+.fl-videoPlayer-play:focus {
+    background-image: url('../images/white/play.png');
+}
 
 .fl-videoPlayer-playing {
     background-image: url('../images/default/pause.png');
@@ -105,6 +114,10 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-playing:hover {
     background-image: url('../images/default/pause_hover.png');
+}
+
+.fl-videoPlayer-playing:focus {
+    background-image: url('../images/white/pause.png');
 }
 
 /* Fullscreen button */
@@ -116,12 +129,20 @@ a.fl-videoPlayer-button-wrapper {
     background-image: url('../images/default/fullscreen_hover.png');
 }
 
+.fl-videoPlayer-fullscreen:focus {
+    background-image: url('../images/white/fullscreen.png');
+}
+
 .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/default/smallscreen.png');
 }
 
 .fl-videoPlayer-fullscreen-on:hover {
     background-image: url('../images/default/smallscreen_hover.png');
+}
+
+.fl-videoPlayer-fullscreen-on:focus {
+    background-image: url('../images/white/smallscreen.png');
 }
 
 /* Volume button */
@@ -142,8 +163,15 @@ a.fl-videoPlayer-button-wrapper {
     background-image: url('../images/default/captions_hover.png');
 }
 
+.fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/white/captions.png');
+}
+
 .fl-videoPlayer-captions-button-on {
     background-image: url('../images/default/captions_on.png');
+}
+.fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/white/captions_on.png');
 }
 
 /* Transcript button */
@@ -155,8 +183,15 @@ a.fl-videoPlayer-button-wrapper {
     background-image: url('../images/default/transcript_hover.png');
 }
 
+.fl-videoPlayer-transcripts-button:focus {
+    background-image: url('../images/white/transcript.png');
+}
+
 .fl-videoPlayer-transcripts-button-on {
     background-image: url('../images/default/transcript_on.png');
+}
+.fl-videoPlayer-transcripts-button-on:focus {
+    background-image: url('../images/white/transcript_on.png');
 }
 
 
@@ -172,14 +207,25 @@ a.fl-videoPlayer-button-wrapper {
     display: none;
     z-index: 1000;
     border-width: 5px 11px;
-    border-style: solid #c2c2c2;
+    border-style: solid;
+    border-color: #c2c2c2;
     position: absolute;
     bottom: 19px; /* 20px is right on FF */
     right: 1px; /* 5px is right on FF */
     width: 25%;
     background-color: #F2F2F2;
 }
-
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
+    border-color: #3195C7;
+}
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-color: #3195C7;
+    background-image: url('../images/white/volume.png');
+}
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-color: #3195C7;
+    background-image: url('../images/white/volume_off.png');
+}
 .fl-videoPlayer-volumeControl.ui-corner-all {
     border-radius: 0px 0px 0px 0px;
 }
@@ -328,7 +374,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-color: #000;
     padding: 0 5% 0 5%;
 }
-
+.fl-videoPlayer-scrubber .ui-slider-handle:focus > span {
+    border: solid 1px #FFFFFF;
+    color: #FFFFFF;
+    background-color: #3195C7;
+}
 .fl-videoPlayer-time {
     height: 100%;
 }
