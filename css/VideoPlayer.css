@@ -357,6 +357,26 @@ a.fl-videoPlayer-button-wrapper {
     color: #FFFFFF;
     background-color: #3195C7;
 }
+.fl-theme-uio-yb .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
+.fl-theme-uio-yb .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
+    color: #000000 !important;
+    background-color: #FFFF00 !important;
+}
+.fl-theme-uio-wb .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
+.fl-theme-uio-wb .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
+    color: #000000 !important;
+    background-color: #FFFFFF !important;
+}
+.fl-theme-uio-by .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
+.fl-theme-uio-by .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
+    color: #FFFF00 !important;
+    background-color: #000000 !important;
+}
+.fl-theme-uio-bw .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
+.fl-theme-uio-bw .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
+    color: #FFFFFF !important;
+    background-color: #000000 !important;
+}
 
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active {
     background: #fff;
