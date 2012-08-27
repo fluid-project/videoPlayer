@@ -272,10 +272,13 @@ a.fl-videoPlayer-button-wrapper {
     margin: 2% 0 0% 2%;
 }
 
-.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover,
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover {
+    background-color: #ffcc00;
+}
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
-    background-color: #ffcc00;
+    color: #FFFFFF;
+    background-color: #3195C7;
 }
 
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active {
@@ -445,11 +448,6 @@ ul.fl-videoPlayer-transcripts-languageList li {
     width: 65%;
 }
 
-.fl-videoPlayer-transcripts-close-button {
-    float: right;
-    margin: 0.2em;
-}
-
 .fl-videoPlayer-transcript-text {
     word-spacing: 0.1em;
     overflow-x: hidden;
@@ -474,12 +472,17 @@ ul.fl-videoPlayer-transcripts-languageList li {
 }
 
 .fl-videoPlayer-transcripts-close-button {
+    float: right;
+    margin: 0.2em;
     background-image: url('../images/default/transcriptclose.png');
     background-repeat: no-repeat;
     background-position: center center;
 }
 .fl-videoPlayer-transcripts-close-button:hover {
     background-image: url('../images/default/transcriptclose_hover.png');
+}
+.fl-videoPlayer-transcripts-close-button:focus {
+    background-image: url('../images/white/transcriptclose.png');
 }
 
 .fl-videoPlayer-transcript-element:hover {
