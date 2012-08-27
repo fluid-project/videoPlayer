@@ -41,9 +41,10 @@
     position    : absolute;
     padding     : 3px 5px;
 }
-.fl-theme-uio-yb .fl-videoPlayer-tooltip {
-    background: none;
-}
+.fl-theme-uio-yb .fl-videoPlayer-tooltip,
+.fl-theme-uio-by .fl-videoPlayer-tooltip,
+.fl-theme-uio-wb .fl-videoPlayer-tooltip,
+.fl-theme-uio-bw .fl-videoPlayer-tooltip { background: none; }
 
 .fl-videoPlayer-controller {
     width:100%;
