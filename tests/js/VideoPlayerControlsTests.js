@@ -122,7 +122,7 @@ fluid.registerNamespace("fluid.tests");
             jqUnit.assertEquals("After click, full screen button should have a proper styling", options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.pressed));
         };
         
-        videoPlayerControlsTests.asyncTest("Fullscreen button (Some tests fail in Chrome that will be dealt with in FLUID-4673)", function () {
+        videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
             expect(9);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
