@@ -440,7 +440,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     width: 100%;
     text-align: center;
     position: absolute;
-    bottom: 3em;
+    bottom: 2.3em;
     left: 0;
     height: 1em;
 }
@@ -526,7 +526,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-captionArea {
     text-align:center;
     position: relative;
-    bottom: 2em;
+    bottom: 1.5em;
     pointer-events:none;
 }
 
@@ -535,7 +535,12 @@ ul.fl-videoPlayer-transcripts-languageList li {
     position: absolute;
     width: 100%;
 }
-
+.fl-theme-uio-yb .fl-videoPlayer-overlay,
+.fl-theme-uio-wb .fl-videoPlayer-overlay,
+.fl-theme-uio-by .fl-videoPlayer-overlay,
+.fl-theme-uio-bw .fl-videoPlayer-overlay {
+    background-color: transparent !important;
+}
 .fl-videoPlayer-caption-captionText {
     color: white;
     background-color: black;
