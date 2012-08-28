@@ -48,7 +48,7 @@
 
 .fl-videoPlayer-controller {
     width:100%;
-    bottom: 0;
+    position: relative;
 }
 
 
@@ -92,16 +92,16 @@
     display: inline;
 }
 
-.fl-videoPlayer-controller-buttons > div {
-    height: 100%;
-}
-
 .fl-videoPlayer-controller-buttons-main {
-    float: left;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 
 .fl-videoPlayer-controller-buttons-secondary {
-    float: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 a.fl-videoPlayer-button-wrapper {
@@ -439,10 +439,12 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-scrubberContainer {
     width: 100%;
     text-align: center;
-    position: relative;
-    bottom: 2px;
+    position: absolute;
+    bottom: 3em;
+    left: 0;
     height: 1em;
 }
+.fl-theme-uio-yb .fl-videoPlayer-scrubberContainer { background-color: transparent !important;}
 .fl-videoPlayer-scrubberContainer * {
     margin: auto;
     display: inline-block;
@@ -524,7 +526,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-captionArea {
     text-align:center;
     position: relative;
-    bottom: 1.1em;
+    bottom: 2em;
     pointer-events:none;
 }
 

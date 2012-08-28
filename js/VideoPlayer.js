@@ -441,7 +441,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         };
-        that.container.fluid("tabbable");
         that.container.fluid("activatable", [that.container, opts]);
     };
 
