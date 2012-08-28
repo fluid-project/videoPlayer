@@ -48,7 +48,7 @@
 
 .fl-videoPlayer-controller {
     width:100%;
-    bottom: 0;
+    position: relative;
 }
 
 
@@ -92,16 +92,17 @@
     display: inline;
 }
 
-.fl-videoPlayer-controller-buttons > div {
-    height: 100%;
-}
-
-.fl-videoPlayer-controller-buttons-main {
-    float: left;
-}
-
+.fl-videoPlayer-controller-buttons-main,
 .fl-videoPlayer-controller-buttons-secondary {
-    float: right;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+}
+.fl-videoPlayer-controller-buttons-main {
+    left: 0;
+}
+.fl-videoPlayer-controller-buttons-secondary {
+    right: 0;
 }
 
 a.fl-videoPlayer-button-wrapper {
@@ -439,10 +440,12 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-scrubberContainer {
     width: 100%;
     text-align: center;
-    position: relative;
-    bottom: 2px;
+    position: absolute;
+    bottom: 2.3em;
+    left: 0;
     height: 1em;
 }
+.fl-theme-uio-yb .fl-videoPlayer-scrubberContainer { background-color: transparent !important;}
 .fl-videoPlayer-scrubberContainer * {
     margin: auto;
     display: inline-block;
@@ -524,7 +527,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-captionArea {
     text-align:center;
     position: relative;
-    bottom: 1.1em;
+    bottom: 1.5em;
     pointer-events:none;
 }
 
@@ -533,7 +536,12 @@ ul.fl-videoPlayer-transcripts-languageList li {
     position: absolute;
     width: 100%;
 }
-
+.fl-theme-uio-yb .fl-videoPlayer-overlay,
+.fl-theme-uio-wb .fl-videoPlayer-overlay,
+.fl-theme-uio-by .fl-videoPlayer-overlay,
+.fl-theme-uio-bw .fl-videoPlayer-overlay {
+    background-color: transparent !important;
+}
 .fl-videoPlayer-caption-captionText {
     color: white;
     background-color: black;
