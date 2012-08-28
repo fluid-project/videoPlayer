@@ -92,15 +92,16 @@
     display: inline;
 }
 
-.fl-videoPlayer-controller-buttons-main {
+.fl-videoPlayer-controller-buttons-main,
+.fl-videoPlayer-controller-buttons-secondary {
+    height: 100%;
     position: absolute;
     bottom: 0;
+}
+.fl-videoPlayer-controller-buttons-main {
     left: 0;
 }
-
 .fl-videoPlayer-controller-buttons-secondary {
-    position: absolute;
-    bottom: 0;
     right: 0;
 }
 
