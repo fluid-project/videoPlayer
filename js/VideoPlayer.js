@@ -83,11 +83,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             key: $.ui.keyCode.DOWN
         },
         forward: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.RIGHT
         },
         rewind: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.LEFT
         },
         escape: {
