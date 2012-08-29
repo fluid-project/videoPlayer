@@ -89,9 +89,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.toggleButton.bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
-        button.click(function () {
-            that.press();
-        });
+        button.click(that.press);
 
         that.applier.modelChanged.addListener(that.options.modelPath, function () {
             that.refreshView();
