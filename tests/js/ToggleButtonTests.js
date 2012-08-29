@@ -73,6 +73,24 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
+        toggleButtonTests.asyncTest("Press", function () {
+            expect(3);
+            var testComponent;
+            testComponent = fluid.tests.initToggleButton({
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("Initial state should be 'false'", false, that.readIndirect("modelPath"));
+                        that.press();
+                    },
+                    onPress: function (that) {
+                        jqUnit.assertTrue("onPress event should fire", true);
+                        jqUnit.assertEquals("State should change to be 'true'", true, that.readIndirect("modelPath"));
+                        start();
+                    }
+                }
+            });
+        });
+
         toggleButtonTests.asyncTest("Default integrated functionality", function () {
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {

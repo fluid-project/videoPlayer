@@ -458,7 +458,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tabindex(that.locate("handle"), -1);
 
         fluid.activatable(that.container, function (evt) {
-            that.muteButton.events.onPress.fire();
+            that.muteButton.press();
         });
         // TODO: This will be converted to use the activatable plugin
         // as part of FLUID-4552
