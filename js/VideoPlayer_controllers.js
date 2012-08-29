@@ -459,20 +459,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         fluid.activatable(that.container, function (evt) {
             that.muteButton.events.onPress.fire();
-        });
-        // TODO: This will be converted to use the activatable plugin
-        // as part of FLUID-4552
-        that.container.keydown(function (evt) {
-            var volumeControl = that.locate("volumeControl");
-            var code = evt.which ? evt.which : evt.keyCode;
-            if ((code === $.ui.keyCode.UP)  || (code === $.ui.keyCode.RIGHT)) {
-                volumeControl.slider("value", volumeControl.slider("value") + 1);
-            } else if ((code === $.ui.keyCode.DOWN)  || (code === $.ui.keyCode.LEFT)) {
-                volumeControl.slider("value", volumeControl.slider("value") - 1);
-            } else {
-                return true;
-            }
-            return false;
+        }, {
+            additionalBindings: [{
+                key: $.ui.keyCode.UP,
+                activateHandler: function () {
+                    volumeControl.slider("value", volumeControl.slider("value") + 1);
+                    return false;
+                }
+            },{
+                key: $.ui.keyCode.DOWN,
+                activateHandler: function () {
+                    volumeControl.slider("value", volumeControl.slider("value") - 1);
+                    return false;
+                }
+            }]
         });
     };
 
