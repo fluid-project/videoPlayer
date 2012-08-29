@@ -23,7 +23,7 @@ fluid.registerNamespace("fluid.tests");
         var videoFrameworkTests = new jqUnit.TestCase("Video Framework Tests");
 
         videoFrameworkTests.asyncTest("linearRangeGuard", function () {
-            expect(2);
+            expect(3);
 
             var model = {
                 volume: 60,
@@ -44,6 +44,13 @@ fluid.registerNamespace("fluid.tests");
                 value: model.minVolume - 10
             });
             jqUnit.assertEquals("linearRangeGuard should prevent a value lower than the min", model.minVolume, model.volume);
+
+            var newValue = model.volume / 2;
+            applier.fireChangeRequest({
+                path: "volume",
+                value: newValue
+            });
+            jqUnit.assertEquals("linearRangeGuard should allow a value within the range", newValue, model.volume);
 
             start();
         });
