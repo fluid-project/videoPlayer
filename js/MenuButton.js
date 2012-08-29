@@ -100,7 +100,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             rememberSelectionState: false,
             autoSelectFirstItem: false,
-            noWrap: true
+            noWrap: false
         });
 
         // When a menu item is activated using the keyboard, in addition to hiding the menu,
@@ -114,16 +114,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
             that.hide();
             return false;
-        });
-
-        // when the DOWN arrow is used on the bottom item of the menu, the menu should hide
-        // and focus should return to the button
-        noneButton.keydown(function (evt) {
-            if (evt.which === $.ui.keyCode.DOWN) {
-                that.hide();
-                return false;
-            }
-            return true;
         });
     };
 
@@ -171,6 +161,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.languageMenu.postInit = function (that) {
         that.show = function () {
             that.container.show();
+        };
+        that.hide = function () {
+            that.container.hide();
         };
         that.showAndSelect = function () {
             that.show();
@@ -270,6 +263,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         }]);
+        that.container.fluid("activatable", [fluid.identity, {
+            additionalBindings: [{
+                key: $.ui.keyCode.ESCAPE,
+                activateHandler: function () {
+                    that.menu.hide();
+                    that.locate("button").focus();
+                }
+            }]
+        }]);
+
         fluid.deadMansBlur(that.container, {
             exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
             handler: function () {
