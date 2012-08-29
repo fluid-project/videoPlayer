@@ -429,19 +429,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.bindEscKey = function (that) {
-        var opts = {
-            additionalBindings: [{
-                key: that.options.keyBindings.escape.key,
-                activateHandler: function () {
-                    that.controllers.captionControls.menu.hide();
-                    that.controllers.transcriptControls.menu.hide();
-                }
-            }]
-        };
-        that.container.fluid("activatable", [that.container, opts]);
-    };
-
     fluid.videoPlayer.preInit = function (that) {
         fluid.each(that.options.defaultKinds, function(defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
@@ -573,7 +560,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
-            fluid.videoPlayer.bindEscKey(that);
             
             that.events.onReady.fire(that);
         });
