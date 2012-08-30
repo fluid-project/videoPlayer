@@ -103,18 +103,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             noWrap: false
         });
 
-        // When a menu item is activated using the keyboard, in addition to hiding the menu,
-        // focus must be return to the button
-        that.locate("language").fluid("activatable", function (evt) {
-            that.activate(that.locate("language").index(evt.currentTarget));
-            return false;
-        });
-        var noneButton = that.locate("showHide");
-        noneButton.fluid("activatable", function (evt) {
-            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
-            that.hide();
-            return false;
-        });
     };
 
     fluid.videoPlayer.languageMenu.bindEventListeners = function (that) {
@@ -152,9 +140,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.toggleView = function () {
             that.container.toggle();
-        };
-        that.hide = function () {
-            that.container.hide();
         };
     };
 
@@ -251,7 +236,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.languageControls.setUpKeyboardA11y = function (that) {
         fluid.tabindex(that.locate("menu"), -1);
-        that.locate("button").fluid("activatable", [fluid.identity, {
+        var button = that.locate("button");
+        button.fluid("activatable", [fluid.identity, {
             additionalBindings: [{
                 // in addition to space and enter, we want the UP arrow key to show the menu
                 // but we also want it to automatically select the first item above the button,
@@ -268,10 +254,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 key: $.ui.keyCode.ESCAPE,
                 activateHandler: function () {
                     that.menu.hide();
-                    that.locate("button").focus();
+                    button.focus();
                 }
             }]
         }]);
+
+        that.menu.locate("language").fluid("activatable", function (evt) {
+            that.menu.activate(that.menu.locate("language").index(evt.currentTarget));
+            that.menu.hide();
+            button.focus();
+            return false;
+        });
+        var noneButton = that.menu.locate("showHide");
+        noneButton.fluid("activatable", function (evt) {
+            that.menu.writeIndirect("showHidePath", !that.menu.readIndirect("showHidePath"), "menuButton"); 
+            that.menu.hide();
+            button.focus();
+            return false;
+        });
 
         fluid.deadMansBlur(that.container, {
             exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
