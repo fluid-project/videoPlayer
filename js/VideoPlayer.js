@@ -91,6 +91,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         rewind: {
             modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.LEFT
+        },
+        escape: {
+            key: $.ui.keyCode.ESCAPE
         }
     };
 
@@ -438,16 +441,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var videoEl = video[0];
             
             if (that.model.fullscreen === true) {
-                if (videoEl.mozRequestFullScreen) {
-                    videoEl.mozRequestFullScreen();
-                } else if (videoEl.webkitEnterFullScreen) {
-                    videoEl.webkitEnterFullScreen();
-                }
-                // else {
-                //      TODO: Fallback to other versions of browsers
-                // }
+                // FLUID-4661: Using browser'ss full screen video mode for now until we implement our own fullscreen mode
+                fluid.each(["moz", "webkit", "o"], function (value) {
+                    var functionName = value + "RequestFullScreen";
+                    if (videoEl[functionName]) {
+                        videoEl[functionName]();
+                        return false;
+                    }
+                });
             }
         };
+        
+        // FLUID-4661: Change the fullscreen model flag back to false when browser exits its HTML5 fullscreen mode
+        // Once our own custome fullscreen mode is implemented we want to call this fireChangeRequest in another function
+        // which will be called by pressing a full screen toggle Button or when a key shortcut for exiting a fullscreen is pressed
+        fluid.each({
+            "fullscreenchange": "fullscreen",
+            "mozfullscreenchange": "mozFullScreen",
+            "webkitfullscreenchange": "webkitIsFullScreen",
+            "ofullscreenchange": "oFullScreen"
+        }, function (value, key) {
+            document.addEventListener(key, function () {
+                if (!document[value]) {
+                    that.applier.fireChangeRequest({
+                        path: "fullscreen",
+                        value: false
+                    });
+                }
+            });
+        });
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -540,6 +562,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
+            
             that.events.onReady.fire(that);
         });
         
