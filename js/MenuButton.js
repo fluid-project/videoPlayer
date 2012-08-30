@@ -106,17 +106,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.languageMenu.bindEventListeners = function (that) {
-        // any click on the container must have the effect of hiding it, since its action 
-        // always completes
-        that.container.click(that.hide);
-        
         var langList = that.locate("language");
         langList.click(function (evt) {
             that.activate(langList.index(evt.currentTarget));
         });
 
         that.locate("showHide").click(function (evt) {
-            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
+            that.showHide()
         });
 
         that.applier.modelChanged.addListener(that.options.showHidePath, that.updateShowHide);
@@ -157,6 +153,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.activate = function (index) {
             that.writeIndirect("currentLanguagePath", [index]);
             that.writeIndirect("showHidePath", true);
+            that.hide();
+        };
+        that.showHide = function () {
+            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
+            that.hide();
         };
     };
 
@@ -261,14 +262,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.menu.locate("language").fluid("activatable", function (evt) {
             that.menu.activate(that.menu.locate("language").index(evt.currentTarget));
-            that.menu.hide();
             button.focus();
             return false;
         });
-        var noneButton = that.menu.locate("showHide");
-        noneButton.fluid("activatable", function (evt) {
-            that.menu.writeIndirect("showHidePath", !that.menu.readIndirect("showHidePath"), "menuButton"); 
-            that.menu.hide();
+        that.menu.locate("showHide").fluid("activatable", function (evt) {
+            that.menu.showHide();
             button.focus();
             return false;
         });
