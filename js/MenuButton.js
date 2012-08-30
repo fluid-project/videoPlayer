@@ -40,6 +40,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             activated: null,
+            hiddenByKeyboard: null
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
@@ -103,6 +104,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             noWrap: false
         });
 
+        that.locate("language").fluid("activatable", function (evt) {
+            that.activate(that.locate("language").index(evt.currentTarget));
+            that.events.hiddenByKeyboard.fire();
+            return false;
+        });
+        that.locate("showHide").fluid("activatable", function (evt) {
+            that.showHide();
+            that.events.hiddenByKeyboard.fire();
+            return false;
+        });
     };
 
     fluid.videoPlayer.languageMenu.bindEventListeners = function (that) {
@@ -259,18 +270,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         }]);
-
-        that.menu.locate("language").fluid("activatable", function (evt) {
-            that.menu.activate(that.menu.locate("language").index(evt.currentTarget));
+        that.menu.events.hiddenByKeyboard.addListener(function () {
             button.focus();
-            return false;
         });
-        that.menu.locate("showHide").fluid("activatable", function (evt) {
-            that.menu.showHide();
-            button.focus();
-            return false;
-        });
-
         fluid.deadMansBlur(that.container, {
             exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
             handler: function () {
