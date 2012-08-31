@@ -77,7 +77,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectorsToIgnore: ["closeButton", "transcriptText"],
         styles: {
             element: "fl-videoPlayer-transcript-element",
-            highlight: "fl-videoPlayer-transcript-element-highlight"
+            highlight: "fl-videoPlayer-transcript-element-highlight",
+            selected: "fl-videoPlayer-transcript-element-selected"
         },
         transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"
     });
@@ -158,29 +159,33 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return "<span id=\"" + idName + "\" class=\"" + tClass + "\">" + transcriptElementContent + "</span>";
     };
     
+    fluid.videoPlayer.transcript.scrubToTranscriptElement = function (evt, that) {
+        var elementId = evt.currentTarget.id;
+        var trackId = parseInt(elementId.substring(that.options.transcriptElementIdPrefix.length + 1), 10);
+
+        var transcriptIndex = that.model.currentTracks.transcripts[0];
+        var track = that.options.transcripts[transcriptIndex].tracks[trackId];
+
+        // TODO: This test for Universal Subtitles file format should be factored better,
+        // as part of a general strategy (see parseTranscriptFile())
+        var inTimeMillis;
+        if (track.text) {
+            // this is a Universal Subtitles format file
+            inTimeMillis = that.convertSecsToMilli(track.start_time);
+        } else {
+            // a WebVTT compatible json format file
+            inTimeMillis = that.convertToMilli(track.inTime);
+        }
+        // Fire the onTranscriptElementChange event with the track start time and the track itself
+        that.events.onTranscriptElementChange.fire((1 + inTimeMillis) / 1000, track);
+    };
+
     fluid.videoPlayer.transcript.displayTranscript = function (that, transcriptText) {
         that.locate("transcriptText").html(transcriptText);
         that.updateTranscriptHighlight();
 
-        $('span[id|="' + that.options.transcriptElementIdPrefix + '"]').click(function (element) {
-            var elementId = element.currentTarget.id;
-            var trackId = parseInt(elementId.substring(that.options.transcriptElementIdPrefix.length + 1), 10);
-            
-            var transcriptIndex = that.model.currentTracks.transcripts[0];
-            var track = that.options.transcripts[transcriptIndex].tracks[trackId];
-            
-            // TODO: This test for Universal Subtitles file format should be factored better,
-            // as part of a general strategy (see parseTranscriptFile())
-            var inTimeMillis;
-            if (track.text) { 
-                // this is a Universal Subtitles format file
-                inTimeMillis = that.convertSecsToMilli(track.start_time);
-            } else {
-                // a WebVTT compatible json format file 
-                inTimeMillis = that.convertToMilli(track.inTime);
-            }
-            // Fire the onTranscriptElementChange event with the track start time and the track itself
-            that.events.onTranscriptElementChange.fire((1 + inTimeMillis) / 1000, track);
+        $('span[id|="' + that.options.transcriptElementIdPrefix + '"]').click(function (evt) {
+            fluid.videoPlayer.transcript.scrubToTranscriptElement(evt, that);
         });
     };
     
@@ -323,6 +328,36 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    fluid.videoPlayer.transcript.setUpKeyboardA11y = function (intervalList, that) {
+        var transcriptElementSelector = "[id^=" + that.options.transcriptElementIdPrefix + "]";
+        var transcriptList = $(transcriptElementSelector, that.container);
+
+        fluid.tabindex(that.locate("transcriptText"), 0);
+        fluid.tabindex(transcriptList, -1);
+
+        that.container.fluid("selectable", {
+            direction: fluid.a11y.orientation.VERTICAL,
+            selectableSelector: transcriptElementSelector,
+            onSelect: function (el) {
+                $(el).addClass(that.options.styles.selected);
+            },
+            onUnselect: function (el) {
+                $(el).removeClass(that.options.styles.selected);
+            },
+            rememberSelectionState: true,
+            autoSelectFirstItem: false,
+            noWrap: false
+        });
+        transcriptList.fluid("activatable", function (evt) {
+            fluid.videoPlayer.transcript.scrubToTranscriptElement(evt, that);
+            return false;
+        });
+
+        that.locate("transcriptText").focus(function () {
+            that.container.fluid("selectable.select",  transcriptList.first());
+        });
+    };
+
     fluid.videoPlayer.transcript.bindTranscriptModel = function (that) {
         that.applier.modelChanged.addListener("displayTranscripts", function () {
             fluid.videoPlayer.transcript.switchTranscriptArea(that);
@@ -386,6 +421,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.transcript.finalInit = function (that) {
+        that.events.onTranscriptsLoaded.addListener(fluid.videoPlayer.transcript.setUpKeyboardA11y);
         fluid.videoPlayer.transcript.bindTranscriptDOMEvents(that);
         fluid.videoPlayer.transcript.bindTranscriptModel(that);
         
