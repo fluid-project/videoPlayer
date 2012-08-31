@@ -41,7 +41,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             press: "Press",
             release: "Release"
         },
-        tooltipContainer: null // A html body to which we will attach tooltip controlled by the toggleButton
+        tooltipContainer: null, // A html body to which we will attach tooltip controlled by the toggleButton,
+        contentFunction: null
     });
 
     fluid.toggleButton.postInit = function (that) {
@@ -77,13 +78,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             tooltipContainer = that.options.tooltipContainer || toggleButton;
         toggleButton.attr("role", "button");
 
+        that.options.contentFunction = function () {
+            return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
+        };
+
         that.tooltip = fluid.tooltip(tooltipContainer, {
             styles: {
                 tooltip: that.options.styles.tooltip
             },
-            content: function () {
-                return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
-            }
+            content: that.options.contentFunction
         });
 
         that.refreshView();

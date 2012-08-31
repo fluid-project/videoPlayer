@@ -548,6 +548,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.volumeControls.init(that);
         fluid.videoPlayer.volumeControls.bindDOMEvents(that);
         fluid.videoPlayer.volumeControls.bindModel(that);
+        
+        var muteButton = that.muteButton,
+            tooltip = muteButton.tooltip;
+        that.locate("volumeControl").mouseenter(function() {
+            tooltip.updateContent("Volume");
+        }).mouseleave(function() {
+            tooltip.updateContent(muteButton.options.contentFunction);
+        });
+        
         that.events.onReady.fire(that);
     };
 
