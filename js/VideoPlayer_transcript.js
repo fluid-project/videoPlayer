@@ -331,10 +331,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.setUpKeyboardA11y = function (intervalList, that) {
         var transcriptElementSelector = "[id^=" + that.options.transcriptElementIdPrefix + "]";
         var transcriptList = $(transcriptElementSelector, that.container);
+        var transcriptText = that.locate("transcriptText");
 
-        fluid.tabindex(that.locate("transcriptText"), 0);
+        transcriptText.fluid("tabbable");
 
-        that.container.fluid("selectable", {
+        transcriptText.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
             selectableSelector: transcriptElementSelector,
             onSelect: function (el) {
@@ -343,17 +344,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onUnselect: function (el) {
                 $(el).removeClass(that.options.styles.selected);
             },
-            rememberSelectionState: false,
-            autoSelectFirstItem: false,
-            noWrap: false
+            rememberSelectionState: false
         });
         transcriptList.fluid("activatable", function (evt) {
             fluid.videoPlayer.transcript.scrubToTranscriptElement(evt, that);
             return false;
-        });
-
-        that.locate("transcriptText").focus(function () {
-            that.container.fluid("selectable.select",  transcriptList.first());
         });
     };
 
