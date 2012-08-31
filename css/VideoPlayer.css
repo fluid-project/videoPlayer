@@ -26,7 +26,7 @@
     height: 100%;
 }
 .fl-videoPlayer-video-element:focus,
-.fl-videoPlayer-transcript-element:focus {
+.fl-videoPlayer-transcript-element-selected {
     outline: solid 3px #3195C7;
 }
 .fl-theme-uio-yb .fl-videoPlayer-video-element:focus { outline-color: #FFFF00; }

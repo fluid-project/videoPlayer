@@ -350,6 +350,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.transcript.scrubToTranscriptElement(evt, that);
             return false;
         });
+        transcriptList.first().focus(function () {
+            if (that.model.transcriptIntervalId) {
+                transcriptText.fluid("selectable.select", $("[id^=" + that.options.transcriptElementIdPrefix + "-" + that.model.transcriptIntervalId + "]"));
+            }
+        });
     };
 
     fluid.videoPlayer.transcript.bindTranscriptModel = function (that) {
