@@ -333,7 +333,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var transcriptList = $(transcriptElementSelector, that.container);
 
         fluid.tabindex(that.locate("transcriptText"), 0);
-        fluid.tabindex(transcriptList, -1);
 
         that.container.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
@@ -344,7 +343,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onUnselect: function (el) {
                 $(el).removeClass(that.options.styles.selected);
             },
-            rememberSelectionState: true,
+            rememberSelectionState: false,
             autoSelectFirstItem: false,
             noWrap: false
         });
