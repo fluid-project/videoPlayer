@@ -40,6 +40,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             activated: null,
+            hiddenByKeyboard: null
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
@@ -100,45 +101,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             rememberSelectionState: false,
             autoSelectFirstItem: false,
-            noWrap: true
+            noWrap: false
         });
 
-        // When a menu item is activated using the keyboard, in addition to hiding the menu,
-        // focus must be return to the button
         that.locate("language").fluid("activatable", function (evt) {
             that.activate(that.locate("language").index(evt.currentTarget));
+            that.events.hiddenByKeyboard.fire();
             return false;
         });
-        var noneButton = that.locate("showHide");
-        noneButton.fluid("activatable", function (evt) {
-            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
-            that.hide();
+        that.locate("showHide").fluid("activatable", function (evt) {
+            that.showHide();
+            that.events.hiddenByKeyboard.fire();
             return false;
-        });
-
-        // when the DOWN arrow is used on the bottom item of the menu, the menu should hide
-        // and focus should return to the button
-        noneButton.keydown(function (evt) {
-            if (evt.which === $.ui.keyCode.DOWN) {
-                that.hide();
-                return false;
-            }
-            return true;
         });
     };
 
     fluid.videoPlayer.languageMenu.bindEventListeners = function (that) {
-        // any click on the container must have the effect of hiding it, since its action 
-        // always completes
-        that.container.click(that.hide);
-        
         var langList = that.locate("language");
         langList.click(function (evt) {
             that.activate(langList.index(evt.currentTarget));
         });
 
         that.locate("showHide").click(function (evt) {
-            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
+            that.showHide()
         });
 
         that.applier.modelChanged.addListener(that.options.showHidePath, that.updateShowHide);
@@ -163,14 +148,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.toggleView = function () {
             that.container.toggle();
         };
-        that.hide = function () {
-            that.container.hide();
-        };
     };
 
     fluid.videoPlayer.languageMenu.postInit = function (that) {
         that.show = function () {
             that.container.show();
+        };
+        that.hide = function () {
+            that.container.hide();
         };
         that.showAndSelect = function () {
             that.show();
@@ -179,6 +164,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.activate = function (index) {
             that.writeIndirect("currentLanguagePath", [index]);
             that.writeIndirect("showHidePath", true);
+            that.hide();
+        };
+        that.showHide = function () {
+            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
+            that.hide();
         };
     };
 
@@ -258,7 +248,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.languageControls.setUpKeyboardA11y = function (that) {
         fluid.tabindex(that.locate("menu"), -1);
-        that.locate("button").fluid("activatable", [fluid.identity, {
+        var button = that.locate("button");
+        button.fluid("activatable", [fluid.identity, {
             additionalBindings: [{
                 // in addition to space and enter, we want the UP arrow key to show the menu
                 // but we also want it to automatically select the first item above the button,
@@ -270,9 +261,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         }]);
+        that.container.fluid("activatable", [fluid.identity, {
+            additionalBindings: [{
+                key: $.ui.keyCode.ESCAPE,
+                activateHandler: function () {
+                    that.menu.hide();
+                    button.focus();
+                }
+            }]
+        }]);
+        that.menu.events.hiddenByKeyboard.addListener(function () {
+            button.focus();
+        });
         
         // TODO: Causing IE8 failure at clicking caption or transcript button due to FLUID-4762.
-        // Should be uncommented once FLUID-4762 is fixed.
+        // Uncommented the lines below once FLUID-4762 is fixed.
 //        fluid.deadMansBlur(that.container, {
 //            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
 //            handler: function () {

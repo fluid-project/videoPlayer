@@ -168,7 +168,7 @@ var fluid_1_5 = fluid_1_5 || {};
             if (newValue < min) {
                 newValue = min;
             } else if (newValue > max) {
-                newValue = model.max;
+                newValue = max;
             }
             changeRequest.value = newValue;
         }

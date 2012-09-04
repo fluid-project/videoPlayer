@@ -77,19 +77,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             key: 70
         },
         volumePlus: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.UP
         },
         volumeMinus: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.DOWN
         },
         forward: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.RIGHT
         },
         rewind: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.LEFT
         },
         escape: {
@@ -313,6 +309,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         path: "volume",
                         value: that.model.volume + 10
                     });
+                    return false;
                 }
             }, {
                 modifier: that.options.keyBindings.volumeMinus.modifier,
@@ -322,6 +319,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         path: "volume",
                         value: that.model.volume - 10
                     });
+                    return false;
                 }
             }, {
                 modifier: that.options.keyBindings.forward.modifier,
@@ -415,20 +413,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.bindEscKey = function (that) {
-        var opts = {
-            additionalBindings: [{
-                key: that.options.keyBindings.escape.key,
-                activateHandler: function () {
-                    that.controllers.captionControls.menu.hide();
-                    that.controllers.transcriptControls.menu.hide();
-                }
-            }]
-        };
-        that.container.fluid("tabbable");
-        that.container.fluid("activatable", [that.container, opts]);
-    };
-
     fluid.videoPlayer.preInit = function (that) {
         fluid.each(that.options.defaultKinds, function (defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
@@ -439,16 +423,42 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var videoEl = video[0];
             
             if (that.model.fullscreen === true) {
-                if (videoEl.mozRequestFullScreen) {
-                    videoEl.mozRequestFullScreen();
-                } else if (videoEl.webkitEnterFullScreen) {
-                    videoEl.webkitEnterFullScreen();
-                }
-                // else {
-                //      TODO: Fallback to other versions of browsers
-                // }
+                // FLUID-4661: Using browser'ss full screen video mode for now until we implement our own fullscreen mode
+                fluid.each(["moz", "webkit", "o"], function (value) {
+                    var functionName = value + "RequestFullScreen";
+                    if (videoEl[functionName]) {
+                        videoEl[functionName]();
+                        return false;
+                    }
+                });
             }
         };
+        
+        // FLUID-4661: Change the fullscreen model flag back to false when browser exits its HTML5 fullscreen mode
+        // Once our own custome fullscreen mode is implemented we want to call this fireChangeRequest in another function
+        // which will be called by pressing a full screen toggle Button or when a key shortcut for exiting a fullscreen is pressed
+        fluid.each({
+            "fullscreenchange": "fullscreen",
+            "mozfullscreenchange": "mozFullScreen",
+            "webkitfullscreenchange": "webkitIsFullScreen",
+            "ofullscreenchange": "oFullScreen"
+        }, function (value, key) {
+            var turnoffFullScreen = function () {
+                if (!document[value]) {
+                    that.applier.fireChangeRequest({
+                        path: "fullscreen",
+                        value: false
+                    });
+                }
+            };
+            
+            if (document.addEventListener) {
+                document.addEventListener(key, turnoffFullScreen);
+            } else {
+                // IE8 uses attachEvent rather than the standard addEventListener
+                document.attachEvent(key, turnoffFullScreen);
+            }
+        });
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -534,7 +544,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
-            fluid.videoPlayer.bindEscKey(that);
             
             that.events.onReady.fire(that);
         });
