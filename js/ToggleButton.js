@@ -74,15 +74,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.toggleButton.setUpToggleButton = function (that) {
-        var toggleButton = that.locate("button"),
-            tooltipContainer = that.options.tooltipContainer || toggleButton;
+        var toggleButton = that.locate("button");
+        
+        that.options.tooltipContainer = that.options.tooltipContainer || toggleButton;
         toggleButton.attr("role", "button");
 
         that.options.defaultTooltipContentFunction = that.options.defaultTooltipContentFunction || function () {
             return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
         };
 
-        that.tooltip = fluid.tooltip(tooltipContainer, {
+        that.tooltip = fluid.tooltip(that.options.tooltipContainer, {
             styles: {
                 tooltip: that.options.styles.tooltip
             },

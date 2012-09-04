@@ -125,7 +125,7 @@ fluid.registerNamespace("fluid.tests");
                         toggleButton.click();
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
-
+                        toggleButton.blur();
                         start();
                     }
                 }
@@ -173,7 +173,7 @@ fluid.registerNamespace("fluid.tests");
                             mainDiv.blur(); // tooltip not updated until 'requested' again
                             mainDiv.focus();
                             jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
-
+                            mainDiv.blur();
                             start();
                         }
                     }
