@@ -132,5 +132,53 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
+        toggleButtonTests.asyncTest("Changing defaultTooltipContentFunction", function () {
+            var myCustomText = "My custom text to replace default toggleButton's tooltip content behaviour",
+                testStrings = {
+                    press: "press me",
+                    release: "release me"
+                },
+                defaultTooltipContentFunction = function () {
+                    return myCustomText;
+                },
+                testComponent = fluid.tests.initToggleButton({
+                    defaultTooltipContentFunction: defaultTooltipContentFunction,
+                    strings: testStrings,
+                    listeners: {
+                        onReady: function (that) {
+                            var toggleButton = that.locate("button"),
+                                tooltip = fluid.testUtils.getTooltipCheckString(toggleButton, myCustomText);
+                            start();
+                        }
+                    }
+                });
+        });
+
+        toggleButtonTests.asyncTest("Changing default tooltipContainer for a toggleButton", function () {
+            expect(1);
+            var mainDiv = $("#main"),
+                testStrings = {
+                    press: "press me",
+                    release: "release me"
+                },
+                testComponent = fluid.tests.initToggleButton({
+                    strings: testStrings,
+                    tooltipContainer: mainDiv,
+                    listeners: {
+                        onReady: function (that) {
+                            var toggleButton = that.locate("button"),
+                                tooltip = fluid.testUtils.getTooltipCheckString(mainDiv, testStrings.press);
+
+                            toggleButton.click();
+                            mainDiv.blur(); // tooltip not updated until 'requested' again
+                            mainDiv.focus();
+                            jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
+
+                            start();
+                        }
+                    }
+                });
+        });
+
     });
 })(jQuery);
