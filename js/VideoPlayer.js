@@ -283,7 +283,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 forceCache: true,
                 href: "../html/videoPlayer_template.html"
             }
-        }
+        },
+        ariaDescription: "Infusion video player" // Value which will be set into aria-label for the videoPlayer.
     });
 
     var bindKeyboardControl = function (that) {
@@ -512,13 +513,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.finalInit = function (that) {
-        var container = that.container,
-            ariaDescription = that.options.ariaDescription || "Infusion video player";
+        var container = that.container;
         
         container.attr("role", "application");
         
         // Add aria-describedby attribute for screen readers
-        container.attr("aria-label", ariaDescription);
+        container.attr("aria-label", that.options.ariaDescription);
 
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller, captions or transcripts.
