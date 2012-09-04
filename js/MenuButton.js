@@ -147,28 +147,31 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.toggleView = function () {
             that.container.toggle();
+            that.container.attr("aria-hidden", !that.container.is(':visible'));
         };
     };
 
     fluid.videoPlayer.languageMenu.postInit = function (that) {
-        that.show = function () {
+        that.showMenu = function () {
+            that.container.attr("aria-hidden", "false");
             that.container.show();
         };
-        that.hide = function () {
+        that.hideMenu = function () {
             that.container.hide();
+            that.container.attr("aria-hidden", "true");
         };
         that.showAndSelect = function () {
-            that.show();
+            that.showMenu();
             that.container.fluid("selectable.select", that.locate("menuItem").last());
         };
         that.activate = function (index) {
             that.writeIndirect("currentLanguagePath", [index]);
             that.writeIndirect("showHidePath", true);
-            that.hide();
+            that.hideMenu();
         };
         that.showHide = function () {
             that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
-            that.hide();
+            that.hideMenu();
         };
     };
 
@@ -179,7 +182,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.container.attr("role", "menu");
         that.locate("menuItem").attr("role", "menuitem");
 
-        that.hide();
+        that.hideMenu();
         that.updateTracks();
         that.updateShowHide();
         that.events.onReady.fire(that);
@@ -269,7 +272,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             additionalBindings: [{
                 key: $.ui.keyCode.ESCAPE,
                 activateHandler: function () {
-                    that.menu.hide();
+                    that.menu.hideMenu();
                     button.focus();
                 }
             }]
@@ -280,16 +283,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.deadMansBlur(that.container, {
             exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
             handler: function () {
-                that.menu.hide();
+                that.menu.hideMenu();
             }
         });
+    };
+
+    fluid.videoPlayer.languageControls.setUpAria = function (that) {
+        var button = that.button.locate("button");
+        button.attr("aria-owns", fluid.allocateSimpleId(that.menu.container));
+        button.attr("aria-haspopup", "true");
     };
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {
         fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         that.events.onRenderingComplete.fire(that);
         
-        that.button.locate("button").attr("aria-haspopup", "true");
+        fluid.videoPlayer.languageControls.setUpAria(that);
 
         function refreshButtonClass() {
             var showHide = that.readIndirect("showHidePath");

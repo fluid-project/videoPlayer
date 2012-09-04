@@ -86,10 +86,10 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("Initially, 'show/hide' option should have the correct text", that.options.strings.showLanguage, that.locate("showHide").text());
 
                         jqUnit.notVisible("The menu should be hidden by default", that.container);
-                        that.show();
-                        jqUnit.isVisible("show() shows the menu", that.container);
-                        that.hide();
-                        jqUnit.notVisible("hide() hides the menu", that.container);
+                        that.showMenu();
+                        jqUnit.isVisible("showMenu() shows the menu", that.container);
+                        that.hideMenu();
+                        jqUnit.notVisible("hideMenu() hides the menu", that.container);
 
                         that.container.fluid("selectable.select", that.locate("showHide"));
                         verifySelection("Selecting the 'show/hide' option", that, numLangs, 0);
@@ -104,7 +104,7 @@ fluid.registerNamespace("fluid.tests");
                         that.activate(1);
                         verifyActivation("Activating a new language", that, 1);
 
-                        that.show();
+                        that.showMenu();
                         $(that.locate("language")[2]).click();
                         verifyActivation("Clicking a language", that, 2);
 
