@@ -175,6 +175,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.languageMenu.finalInit = function (that) {
         fluid.videoPlayer.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
+
+        that.container.attr("role", "menu");
+        that.locate("menuItem").attr("role", "menuitem");
+
         that.hide();
         that.updateTracks();
         that.updateShowHide();
@@ -285,6 +289,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         that.events.onRenderingComplete.fire(that);
         
+        that.button.locate("button").attr("aria-haspopup", "true");
+
         function refreshButtonClass() {
             var showHide = that.readIndirect("showHidePath");
             that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
