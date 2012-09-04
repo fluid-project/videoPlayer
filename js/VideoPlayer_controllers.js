@@ -379,14 +379,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.videoPlayer.volumeControls.bindDOMEvents = function (that) {
         // Bind the volume Control slide event to change the video's volume and its image.
-        that.locate("volumeControl").bind("slide", function (evt, ui) {
-            fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
+        var applier = that.applier,
+            volumeControl = that.locate("volumeControl"),
+            muteButton = that.muteButton,
+            tooltip = muteButton.tooltip;
+
+        fluid.each(["slide", "slidechange"], function (value) {
+            volumeControl.bind(value, function (evt, ui) {
+                fluid.fireSourcedChange(applier, "volume", ui.value, "slider");
+            });
         });
 
-        that.locate("volumeControl").bind("slidechange", function (evt, ui) {
-            fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
+        volumeControl.mouseenter(function() {
+            tooltip.updateContent(that.options.strings.volume);
+        }).mouseleave(function() {
+            tooltip.updateContent(muteButton.options.tooltipContentFunction);
         });
-
     };
     
     fluid.videoPlayer.updateMuteStatus = function (that) {
@@ -545,18 +553,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.volumeControls.finalInit = function (that) {
-        fluid.videoPlayer.volumeControls.init(that);
-        fluid.videoPlayer.volumeControls.bindDOMEvents(that);
-        fluid.videoPlayer.volumeControls.bindModel(that);
-        
-        var muteButton = that.muteButton,
-            tooltip = muteButton.tooltip;
-        that.locate("volumeControl").mouseenter(function() {
-            tooltip.updateContent("Volume");
-        }).mouseleave(function() {
-            tooltip.updateContent(muteButton.options.contentFunction);
-        });
-        
+        var volumeControls = fluid.videoPlayer.volumeControls;
+
+        volumeControls.init(that);
+        volumeControls.bindDOMEvents(that);
+        volumeControls.bindModel(that);
+
         that.events.onReady.fire(that);
     };
 

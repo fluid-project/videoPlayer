@@ -40,6 +40,7 @@
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 3px 5px;
+    z-index     : 1000; /* Tooltips should be always shown above any other videoPlayer html element */
 }
 .fl-theme-uio-yb .fl-videoPlayer-tooltip,
 .fl-theme-uio-by .fl-videoPlayer-tooltip,
