@@ -76,12 +76,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 controlledBy: "languages",
                 pathAs: "lang",
                 tree: {
-                    value: "${{lang}.label}"
+                    value: "${{lang}.label}",
+                    decorators: {
+                        type: "attrs",
+                        attributes: {
+                            "role": "menuitemcheckbox",
+                            "aria-checked": "false",
+                            "aria-selected": "false"
+                        }
+                    }
                 }
             },
             // add the 'turn off' option
             showHide: {
-                value: that.options.strings[that.readIndirect("showHide")? "hideLanguage" : "showLanguage"]
+                value: that.options.strings[that.readIndirect("showHide")? "hideLanguage" : "showLanguage"],
+                decorators: {
+                    type: "attrs",
+                    attributes: {
+                        "role": "menuitemcheckbox",
+                        "aria-checked": "false",
+                        "aria-selected": "false"
+                    }
+                }
             }
         };
         return tree;
@@ -134,8 +150,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.languageMenu.updateTracks = function (that) {
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
+        menuItems.attr("aria-checked", "false").attr("aria-selected", "false");
         var langIndex = that.readIndirect("currentLanguagePath")[0];
         $(menuItems[langIndex]).addClass(that.options.styles.active);
+        $(menuItems[langIndex]).attr("aria-checked", "true").attr("aria-selected", "true");
     };
     
     fluid.videoPlayer.languageMenu.updateShowHide = function(that) {
@@ -180,7 +198,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
 
         that.container.attr("role", "menu");
-        that.locate("menuItem").attr("role", "menuitem");
 
         that.hideMenu();
         that.updateTracks();
