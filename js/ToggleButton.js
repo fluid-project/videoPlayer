@@ -41,8 +41,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             press: "Press",
             release: "Release"
         },
-        tooltipContainer: null, // A html body to which we will attach tooltip controlled by the toggleButton,
-        defaultTooltipContentFunction: null // Function to return a text for a tooltip. By default it will be using strings press and release to create a tooltip content
+        invokers: {
+            tooltipContentFunction: {
+                funcName: "fluid.toggleButton.tooltipContentFunction",
+                args: "{toggleButton}"
+            }
+        },
+        tooltipContainer: null // A html body to which we will attach tooltip controlled by the toggleButton
     });
 
     fluid.toggleButton.postInit = function (that) {
@@ -73,21 +78,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
+    fluid.toggleButton.tooltipContentFunction = function (that) {
+          return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
+    };
+
     fluid.toggleButton.setUpToggleButton = function (that) {
         var toggleButton = that.locate("button");
         
         that.options.tooltipContainer = that.options.tooltipContainer || toggleButton;
         toggleButton.attr("role", "button");
 
-        that.options.defaultTooltipContentFunction = that.options.defaultTooltipContentFunction || function () {
-            return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
-        };
-
         that.tooltip = fluid.tooltip(that.options.tooltipContainer, {
             styles: {
                 tooltip: that.options.styles.tooltip
             },
-            content: that.options.defaultTooltipContentFunction
+            content: that.tooltipContentFunction
         });
 
         that.refreshView();

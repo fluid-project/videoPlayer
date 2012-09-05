@@ -132,17 +132,22 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        toggleButtonTests.asyncTest("Changing defaultTooltipContentFunction", function () {
-            var myCustomText = "My custom text to replace default toggleButton's tooltip content behaviour",
-                testStrings = {
+        var myCustomText = "My custom text to replace default toggleButton's tooltip content behaviour"; 
+        fluid.tests.tooltipContentFunction = function () {
+            return myCustomText;
+        };
+
+        toggleButtonTests.asyncTest("Changing tooltipContentFunction", function () {
+            var testStrings = {
                     press: "press me",
                     release: "release me"
                 },
-                defaultTooltipContentFunction = function () {
-                    return myCustomText;
-                },
                 testComponent = fluid.tests.initToggleButton({
-                    defaultTooltipContentFunction: defaultTooltipContentFunction,
+                    invokers: {
+                        tooltipContentFunction: {
+                            funcName: "fluid.tests.tooltipContentFunction"
+                        }
+                    },
                     strings: testStrings,
                     listeners: {
                         onReady: function (that) {

@@ -393,7 +393,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         volumeControl.mouseenter(function() {
             tooltip.updateContent(that.options.strings.volume);
         }).mouseleave(function() {
-            tooltip.updateContent(muteButton.options.defaultTooltipContentFunction);
+            tooltip.updateContent(muteButton.tooltipContentFunction);
         });
     };
     
