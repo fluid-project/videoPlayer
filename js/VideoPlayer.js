@@ -429,6 +429,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    fluid.videoPlayer.captionAreaId = function (that) {
+        return fluid.allocateSimpleId(that.locate("caption"));
+    };
+
     fluid.videoPlayer.preInit = function (that) {
         fluid.each(that.options.defaultKinds, function(defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
@@ -561,7 +565,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             that.locate("controllers").hide();
 
-            that.controllers.transcriptControls.menu.container.attr("aria-controls", fluid.allocateSimpleId(that.locate("transcript")));
+//            that.controllers.transcriptControls.menu.container.attr("aria-controls", fluid.allocateSimpleId(that.locate("transcript")));
             that.events.onReady.fire(that);
         });
         
@@ -633,5 +637,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-
 })(jQuery);

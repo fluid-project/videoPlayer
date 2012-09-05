@@ -60,7 +60,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             updateTracks: { funcName: "fluid.videoPlayer.languageMenu.updateTracks", args: ["{languageMenu}"] },
             updateShowHide: { funcName: "fluid.videoPlayer.languageMenu.updateShowHide", args: ["{languageMenu}"] }
         },
-        hideOnInit: true
+        hideOnInit: true,
+        controlledId: null
     });
 
     // TODO: Could this be specified declaratively, in a "protoTree" option?
@@ -80,7 +81,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     decorators: {
                         type: "attrs",
                         attributes: {
-                            "role": "menuitemcheckbox",
+                            "role": "menuitemradio",
                             "aria-checked": "false",
                             "aria-selected": "false"
                         }
@@ -198,6 +199,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
 
         that.container.attr("role", "menu");
+        if (that.options.controlledId) {
+            that.container.attr("aria-controls", that.options.controlledId);
+        }
 
         that.hideMenu();
         that.updateTracks();
@@ -260,7 +264,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{languageControls}.applier",
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
-                    strings: "{languageControls}.options.strings"
+                    strings: "{languageControls}.options.strings",
+                    controlledId: "{languageControls}.options.controlledId"
                 }
             },
             eventBinder: {

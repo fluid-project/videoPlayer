@@ -82,6 +82,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Captions",
                         press: "Captions",
                         release: "Captions"
+                    },
+                    controlledId: {
+                        expander: {
+                            type: "fluid.deferredCall",
+                            func: "fluid.videoPlayer.captionAreaId",
+                            args: ["{videoPlayer}"]
+                        }
                     }
                 }
             },
@@ -107,6 +114,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Transcripts",
                         press: "Transcripts",
                         release: "Transcripts"
+                    },
+                    controlledId: {
+                        expander: {
+                            type: "fluid.deferredCall",
+                            func: "fluid.videoPlayer.transcript.transcriptElementId",
+                            args: ["{videoPlayer}.transcript"]
+                        }
                     }
                 }
             },
