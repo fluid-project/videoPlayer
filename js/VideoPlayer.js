@@ -439,8 +439,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             if (that.model.fullscreen === true) {
                 // FLUID-4661: Using browser'ss full screen video mode for now until we implement our own fullscreen mode
-                var requestFullScreen = videoEl.mozRequestFullScreen || videoEl.webkitRequestFullScreen || videoEl.oRequestFullScreen || videoEl.msieRequestFullScreen;
-                videoEl[requestFullScreen.name]();
+                var requestFullScreen = videoEl.mozRequestFullScreen ||
+                                        videoEl.webkitRequestFullScreen ||
+                                        videoEl.oRequestFullScreen ||
+                                        videoEl.msieRequestFullScreen;
+                requestFullScreen.apply(videoEl);
             }
         };
         
