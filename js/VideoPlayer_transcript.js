@@ -419,12 +419,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
     
-    fluid.videoPlayer.transcript.transcriptElementId = function (/*that*/) {
-        // Should use locate, but this causes resolution problems; need to find out why
-        // return fluid.allocateSimpleId(that.locate("transcriptText"));
-        return fluid.allocateSimpleId($(fluid.defaults("fluid.videoPlayer.transcript").selectors.transcriptText));
-    };
-
     fluid.videoPlayer.transcript.finalInit = function (that) {
         that.events.onTranscriptsLoaded.addListener(fluid.videoPlayer.transcript.setUpKeyboardA11y);
         fluid.videoPlayer.transcript.bindTranscriptDOMEvents(that);

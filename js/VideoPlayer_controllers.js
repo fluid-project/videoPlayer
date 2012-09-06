@@ -83,13 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         press: "Captions",
                         release: "Captions"
                     },
-                    controlledId: {
-                        expander: {
-                            type: "fluid.deferredCall",
-                            func: "fluid.videoPlayer.captionAreaId",
-                            args: ["{videoPlayer}"]
-                        }
-                    }
+                    controlledEl: "{videoPlayer}.dom.caption"
                 }
             },
             transcriptControls: {
@@ -115,14 +109,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         press: "Transcripts",
                         release: "Transcripts"
                     },
-                    controlledId: {
-                        expander: {
-                            type: "fluid.deferredCall",
-                            func: "fluid.videoPlayer.transcript.transcriptElementId"
-                            // Passing the transcript component causes it to be instantiated twice; need to figure out why
-                            //, args: "{videoPlayer}.transcript"
-                        }
-                    }
+                    controlledEl: "{videoPlayer}.transcript.dom.transcriptText"
                 }
             },
             playButton: {
