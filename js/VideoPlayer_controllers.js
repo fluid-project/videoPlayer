@@ -250,8 +250,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             unittext: "seconds",
             range: "min",
             disabled: true
-        }).attr({
-            "role": "slider"
         });
         
         // TODO: This in inherited. Do we need to add aria to sliders ourselves?
@@ -260,7 +258,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "aria-valuemin": 0,
             "aria-valuemax": 0,
             "aria-valuenow": 0,
-            "aria-valuetext": 0
+            "aria-valuetext": 0,
+            "role": "slider"
         });
         return scrubber;
     };
@@ -464,21 +463,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tabindex(that.locate("handle"), -1);
 
         fluid.activatable(that.container, function (evt) {
-            that.muteButton.events.onPress.fire();
-        });
-        // TODO: This will be converted to use the activatable plugin
-        // as part of FLUID-4552
-        that.container.keydown(function (evt) {
-            var volumeControl = that.locate("volumeControl");
-            var code = evt.which ? evt.which : evt.keyCode;
-            if ((code === $.ui.keyCode.UP)  || (code === $.ui.keyCode.RIGHT)) {
-                volumeControl.slider("value", volumeControl.slider("value") + 1);
-            } else if ((code === $.ui.keyCode.DOWN)  || (code === $.ui.keyCode.LEFT)) {
-                volumeControl.slider("value", volumeControl.slider("value") - 1);
-            } else {
-                return true;
-            }
-            return false;
+            that.muteButton.press();
+        }, {
+            additionalBindings: [{
+                key: $.ui.keyCode.UP,
+                activateHandler: function () {
+                    volumeControl.slider("value", volumeControl.slider("value") + 1);
+                    return false;
+                }
+            },{
+                key: $.ui.keyCode.DOWN,
+                activateHandler: function () {
+                    volumeControl.slider("value", volumeControl.slider("value") - 1);
+                    return false;
+                }
+            }]
         });
     };
 
