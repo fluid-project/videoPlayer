@@ -220,7 +220,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         menuButtonTests.asyncTest("Language Controls: ARIA", function () {
-            expect(6);
+            expect(7);
             var testControls = fluid.tests.initLangControls({
                 listeners: {
                     onReady: {
@@ -228,7 +228,8 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.assertTrue("Button should have aria-owns attribute", !!that.button.locate("button").attr("aria-owns"));
                             jqUnit.assertEquals("Button should 'own' menu", that.menu.container.attr("id"), that.button.locate("button").attr("aria-owns"));
                             jqUnit.assertTrue("Button should have aria-haspopup attribute", !!that.button.locate("button").attr("aria-haspopup"));
-                            jqUnit.assertEquals("Menu should be aria-hidden", "true", that.menu.container.attr("aria-hidden"));
+                            jqUnit.assertTrue("Menu should be aria-hidden", that.menu.container.attr("aria-hidden"));
+                            jqUnit.assertEquals("Button should aria-controls the menu", that.menu.container.attr("id"), that.button.locate("button").attr("aria-controls"))
 
                             that.menu.showMenu();
                             jqUnit.assertEquals("After show, menu should not be aria-hidden", "false", that.menu.container.attr("aria-hidden"));

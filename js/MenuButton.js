@@ -314,6 +314,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var button = that.button.locate("button");
         button.attr("aria-owns", fluid.allocateSimpleId(that.menu.container));
         button.attr("aria-haspopup", "true");
+        button.attr("aria-controls", fluid.allocateSimpleId(that.menu.container));
     };
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {
