@@ -565,7 +565,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             that.locate("controllers").hide();
 
-//            that.controllers.transcriptControls.menu.container.attr("aria-controls", fluid.allocateSimpleId(that.locate("transcript")));
             that.events.onReady.fire(that);
         });
         

@@ -118,8 +118,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     controlledId: {
                         expander: {
                             type: "fluid.deferredCall",
-                            func: "fluid.videoPlayer.transcript.transcriptElementId",
-                            args: ["{videoPlayer}.transcript"]
+                            func: "fluid.videoPlayer.transcript.transcriptElementId"
                         }
                     }
                 }
