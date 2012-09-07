@@ -281,16 +281,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     control: ".flc-videoPlayer-captions-languageMenu",
                     controlledName: "captions area",
                     controlled: ".flc-videoPlayer-captionArea"
-                }, {
-                    controlName: "Transcripts menu",
-                    control: ".flc-videoPlayer-transcripts-languageMenu",
-                    controlledName: "transcript text area",
-                    controlled: ".flc-videoPlayer-transcript-text"
-                }, {
-                    controlName: "Transcripts menu show/hide",
-                    control: ".flc-videoPlayer-transcripts-languageMenu li:last",
-                    controlledName: "whole transcript area",
-                    controlled: ".flc-videoPlayer-transcriptArea"
                 }];
 
                 var captionMenuLanguages = $(".flc-videoPlayer-captions-languageMenu .flc-videoPlayer-language");
@@ -300,15 +290,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         control: captionMenuLanguages[i],
                         controlledName: "captions area",
                         controlled: ".flc-videoPlayer-captionArea"
-                    });
-                }
-                var transcriptMenuLanguages = $(".flc-videoPlayer-transcripts-languageMenu .flc-videoPlayer-language");
-                for (i = 0; i < transcriptMenuLanguages.length; i++) {
-                    controlsToTest.push({
-                        controlName: "Transcript language " + i,
-                        control: transcriptMenuLanguages[i],
-                        controlledName: "transcript text area",
-                        controlled: ".flc-videoPlayer-transcript-text"
                     });
                 }
                 expect(controlsToTest.length);

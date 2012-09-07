@@ -108,8 +108,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Transcripts",
                         press: "Transcripts",
                         release: "Transcripts"
-                    },
-                    controlledEl: "{videoPlayer}.transcript.dom.transcriptText"
+                    }
                 }
             },
             playButton: {
