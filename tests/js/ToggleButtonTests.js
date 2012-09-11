@@ -32,6 +32,9 @@ fluid.registerNamespace("fluid.tests");
         var baseToggleButtonOpts = {
             selectors: {
                 button: ".test-toggle-button"
+            },
+            styles: {
+                notcreated: "notcreatedyet"
             }
         };
         fluid.tests.initToggleButton = function (testOpts) {
@@ -41,10 +44,11 @@ fluid.registerNamespace("fluid.tests");
         };
 
         toggleButtonTests.asyncTest("State change", function () {
-            expect(3);
+            expect(4);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onReady: function (that) {
+                        jqUnit.assertFalse("notcreated class should be removed since button has initialized", that.locate("button").hasClass(that.options.styles.notcreated));
                         jqUnit.assertEquals("Initial state should be 'false'", false, that.readIndirect("modelPath"));
                         that.requestStateChange();
                         jqUnit.assertEquals("After request for state change, state should be 'true'", true, that.readIndirect("modelPath"));

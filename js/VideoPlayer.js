@@ -36,15 +36,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     // FLUID-4779: This check should be removed once we implement our own fullScreen mode
     // and won't rely on browser's built-in fullscreen mode
-    fluid.browser.hasFullScreenMode = function () {
+    fluid.browser.noFullScreenMode = function () {
         var v = $("<video />")[0],
-            hasFullScreenMode = v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
-        return hasFullScreenMode ? fluid.typeTag("fluid.browser.hasFullScreenMode") : undefined;
+            noFullScreenMode = v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
+        return noFullScreenMode ? undefined : fluid.typeTag("fluid.browser.noFullScreenMode");
     };
 
     var features = {
         browserHtml5: fluid.browser.html5(),
-        hasFullScreenMode: fluid.browser.hasFullScreenMode()
+        noFullScreenMode: fluid.browser.noFullScreenMode()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);

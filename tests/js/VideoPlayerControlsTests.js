@@ -116,38 +116,38 @@ fluid.registerNamespace("fluid.tests");
             });
         });
         
-        function setupEnvironment(hasFullScreenMode) {
-            delete fluid.staticEnvironment.hasFullScreenMode;
+        function setupEnvironment(noFullScreenMode) {
+            delete fluid.staticEnvironment.noFullScreenMode;
             
-            if (hasFullScreenMode) {
-                fluid.staticEnvironment.hasFullScreenMode = fluid.typeTag("fluid.browser.hasFullScreenMode");
+            if (noFullScreenMode) {
+                fluid.staticEnvironment.noFullScreenMode = fluid.typeTag("fluid.browser.noFullScreenMode");
             }
         }
         
         videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
-            expect(1);
+            expect(2);
             
-            setupEnvironment(true);
+            setupEnvironment(false);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
-                        var fullScreenButtonDisplay = that.locate("fullscreen").css("display");
-                        jqUnit.assertNotEquals("Full screen button should be present", fullScreenButtonDisplay, "none");
+                        jqUnit.assertNotEquals("Full screen button component is not an empty one", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                        jqUnit.assertNotEquals("Full screen button should be present", that.locate("fullscreen").css("display"), "none");
                         start();
                     }
                 }
             });
         });
         
-        videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present in the browsers which support fullscreen mode", function () {
+        videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present since component should be null", function () {
             expect(1);
             
-            setupEnvironment(false);
+            setupEnvironment(true);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
-                        var fullScreenButtonDisplay = that.locate("fullscreen").css("display");
-                        jqUnit.assertEquals("Full screen button should NOT be present", fullScreenButtonDisplay, "none");
+                        jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                        setupEnvironment(false);
                         start();
                     }
                 }
