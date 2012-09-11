@@ -60,6 +60,9 @@
 button.fl-videoPlayer-optional {
     display: none;
 }
+button.fl-videoPlayer-fullscreen.fl-videoPlayer-optional {
+    display: inline;
+}
 .fl-videoPlayer-button {
     width: 30px;
     height: 30px;

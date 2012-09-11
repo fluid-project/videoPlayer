@@ -31,8 +31,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         styles: {
             init: "fl-videoPlayer-button-init",
             pressed: "fl-videoPlayer-button-pressed",
-            tooltip: "fl-videoPlayer-tooltip",
-            notcreated: "fl-videoPlayer-optional"
+            tooltip: "fl-videoPlayer-tooltip"
         },
         ownModel: true,
         model: {},
@@ -84,8 +83,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
             }
         });
-
-        toggleButton.removeClass(that.options.styles.notcreated);
 
         that.refreshView();
     };
