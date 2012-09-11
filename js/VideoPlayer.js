@@ -41,8 +41,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var features = {
-        browserHtml5: fluid.browser.html5(),
-        noFullScreenMode: fluid.browser.noFullScreenMode()
+        browserHtml5: fluid.browser.html5()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);

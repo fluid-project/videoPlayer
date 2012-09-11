@@ -57,12 +57,6 @@
  * Buttons *
  ***********/
 
-button.fl-videoPlayer-optional {
-    display: none;
-}
-button.fl-videoPlayer-fullscreen.fl-videoPlayer-optional {
-    display: inline;
-}
 .fl-videoPlayer-button {
     width: 30px;
     height: 30px;
@@ -96,6 +90,14 @@ button.fl-videoPlayer-fullscreen.fl-videoPlayer-optional {
 }
 
 .fl-videoPlayer-controller-buttons * {
+    display: inline;
+}
+
+.fl-videoPlayer-optional {
+    display: none;
+}
+.fl-videoPlayer-fullscreen.fl-videoPlayer-optional,
+.fl-videoPlayer-fullscreen-on.fl-videoPlayer-optional {
     display: inline;
 }
 
