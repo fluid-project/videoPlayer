@@ -34,8 +34,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
     
-    // FLUID-4779: This check should be removed once we implement our own fullScreen mode
-    // and won't rely on browser's built-in fullscreen mode
     fluid.browser.noFullScreenMode = function () {
         var v = $("<video />")[0],
             noFullScreenMode = v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
