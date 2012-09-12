@@ -116,18 +116,18 @@ fluid.registerNamespace("fluid.tests");
             });
         });
         
-        function setupEnvironment(noFullScreenMode) {
-            delete fluid.staticEnvironment.noFullScreenMode;
+        function setupEnvironment(supportsFullScreenMode) {
+            delete fluid.staticEnvironment.supportsFullScreenMode;
             
-            if (noFullScreenMode) {
-                fluid.staticEnvironment.noFullScreenMode = fluid.typeTag("fluid.browser.noFullScreenMode");
+            if (supportsFullScreenMode) {
+                fluid.staticEnvironment.supportsFullScreenMode = fluid.typeTag("fluid.browser.supportsFullScreenMode");
             }
         }
         
         videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
             expect(2);
             
-            setupEnvironment(false);
+            setupEnvironment(true);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -142,12 +142,11 @@ fluid.registerNamespace("fluid.tests");
         videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present since component should be null", function () {
             expect(1);
             
-            setupEnvironment(true);
+            setupEnvironment(false);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
                         jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
-                        setupEnvironment(false);
                         start();
                     }
                 }
@@ -162,6 +161,8 @@ fluid.registerNamespace("fluid.tests");
         
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
             expect(9);
+            setupEnvironment(true);
+            
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {

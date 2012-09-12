@@ -183,7 +183,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     // Hide fullscreen button if browser does not have a fullscreen functionality
-    fluid.demands("fluid.videoPlayer.controllers", "fluid.browser.noFullScreenMode", {
+    fluid.demands("fluid.videoPlayer.controllers", "fluid.videoPlayer", {
         options: {
             components: {
                 fullScreenButton: {
@@ -191,6 +191,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         }
+    });
+    fluid.demands("fluid.videoPlayer.controllers", ["fluid.browser.supportsFullScreenMode", "fluid.videoPlayer"], {
+        options: fluid.COMPONENT_OPTIONS
     });
 
     fluid.videoPlayer.controllers.finalInit = function (that) {

@@ -27,6 +27,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *******************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
+    // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
+    // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
+    // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
+
     fluid.browser.html5 = function () {
         // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
         // Needs re-work at the integration of mediaElement.
@@ -34,14 +38,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
     
-    fluid.browser.noFullScreenMode = function () {
+    fluid.browser.supportsFullScreenMode = function () {
         var v = $("<video />")[0],
-            noFullScreenMode = v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
-        return noFullScreenMode ? undefined : fluid.typeTag("fluid.browser.noFullScreenMode");
+            supportsFullScreenMode = v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
+        return supportsFullScreenMode ? fluid.typeTag("fluid.browser.supportsFullScreenMode") : undefined;
     };
 
     var features = {
-        browserHtml5: fluid.browser.html5()
+        browserHtml5: fluid.browser.html5(),
+        supportsFullScreenMode: fluid.browser.supportsFullScreenMode()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
