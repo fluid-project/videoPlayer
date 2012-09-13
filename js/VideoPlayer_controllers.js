@@ -192,7 +192,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-    fluid.demands("fluid.videoPlayer.controllers", ["fluid.browser.supportsFullScreenMode", "fluid.videoPlayer"], {
+    fluid.demands("fluid.videoPlayer.controllers", ["fluid.browser.supportsFullScreen", "fluid.videoPlayer"], {
         options: fluid.COMPONENT_OPTIONS
     });
 

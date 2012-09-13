@@ -38,15 +38,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
     
-    fluid.browser.supportsFullScreenMode = function () {
+    fluid.browser.supportsFullScreen = function () {
         var v = $("<video />")[0],
-            supportsFullScreenMode = v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
-        return supportsFullScreenMode ? fluid.typeTag("fluid.browser.supportsFullScreenMode") : undefined;
+            supportsFullScreen = v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
+        return supportsFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
     };
 
     var features = {
         browserHtml5: fluid.browser.html5(),
-        supportsFullScreenMode: fluid.browser.supportsFullScreenMode()
+        supportsFullScreen: fluid.browser.supportsFullScreen()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);

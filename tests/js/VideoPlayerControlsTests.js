@@ -116,11 +116,11 @@ fluid.registerNamespace("fluid.tests");
             });
         });
         
-        function setupEnvironment(supportsFullScreenMode) {
-            delete fluid.staticEnvironment.supportsFullScreenMode;
+        function setupEnvironment(supportsFullScreen) {
+            delete fluid.staticEnvironment.supportsFullScreen;
             
-            if (supportsFullScreenMode) {
-                fluid.staticEnvironment.supportsFullScreenMode = fluid.typeTag("fluid.browser.supportsFullScreenMode");
+            if (supportsFullScreen) {
+                fluid.staticEnvironment.supportsFullScreen = fluid.typeTag("fluid.browser.supportsFullScreen");
             }
         }
         
