@@ -85,20 +85,38 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var captions = that.options.captions || [];
+        var captions = that.options.captions;
         
-        if (captions.length === 0) return;  // Exit if captions are not provided
+        if (!captions || captions.length === 0) return;  // Exit if captions are not provided
         
         // Start adding tracks to the video tag
-        fluid.each(captions, function (element, key) {
-            
+        fluid.each(captions, function (capOpt, key) {
             var trackTag = $("<track />");
-            var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
+            
+            // LOOK AT THIS - DO WE NEED IT?
+            var attributes = fluid.filterKeys(fluid.copy(capOpt), ["kind", "src", "type", "srclang", "label"], false);
+            
             if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaption")) {
                 attributes["default"] = "true";
             }
 
             trackTag.attr(attributes);
+
+            if (capOpt.type === "text/amarajson") {
+                var callback = function (data) {
+                    console.log("callback called");
+                    if (!data) {
+                        return;
+                    }
+
+                    var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
+                    var dataUrl = "data:" + vtt;
+                    trackTag.attr(src, dataUrl);
+                };
+
+                // go fetch the json, is this an issue? I'm fetching all the captions every time, whether or not anyone wants them. 
+                fluid.videoPlayer.fetchAmaraJson(capOpt.src, callback);
+            }
 
             that.locate("video").append(trackTag);
         });
@@ -111,6 +129,62 @@ https://source.fluidproject.org/svn/LICENSE.txt
         
         bindCaptionatorModel(that);
         that.events.onReady.fire(that);
+    };
+
+    /*******************************************************************
+     * Converts seconds into a WebVTT Timestamp:  HH:MM:SS.mmm
+     * @seconds:  time in seconds expressed as a floating point number
+     *******************************************************************/
+    fluid.videoPlayer.secondsToHmsm = function (seconds) {
+        seconds = parseFloat(seconds);
+        seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
+
+        var hours = parseInt(seconds / 3600);
+        var minutes = parseInt(seconds / 60) % 60;
+        var seconds = (seconds % 60).toFixed(3);
+
+        // Return result of type HH:MM:SS.mmm
+        return "" + (hours < 10 ? "0" + hours : hours) + ":"
+            + (minutes < 10 ? "0" + minutes : minutes) + ":"
+            + (seconds  < 10 ? "0" + seconds : seconds);
+    };
+
+    /******************************************************************************************************
+     * Converts JSON from Amara (http://www.universalsubtitles.org/api/1.0/subtitles/) into WebVTT format.
+     * Each caption in WebVTT looks like:
+     *  empty line
+     *  HH:MM:SS.mmm --> HH:MM:SS.mmm
+     *  Caption text
+     *
+     *****************************************************************************************************/
+    fluid.videoPlayer.amaraJsonToVTT = function (json) {
+        var vtt = "WEBVTT";
+
+        for (var i = 0; i < json.length; i++) {
+            var startTime = fluid.videoPlayer.secondsToHmsm(json[i].start_time);
+            var endTime = fluid.videoPlayer.secondsToHmsm(json[i].end_time);
+            vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
+        }
+
+        return vtt;
+    };
+
+    /*************************************************************************
+     *  Fetch the Amara Json for the specified video 
+     *  @vUrl:  URL to the video
+     *  @callbackName: function name which takes the json returned from Amara
+     *************************************************************************/
+    fluid.videoPlayer.fetchAmaraJson = function (vUrl, callback) {
+        // No point continuing because we can't get a useful JSONP response without the url and a callback 
+        if (!vUrl || !callback) {
+            return;
+        }
+        
+        // Hard coded URL to amara here 
+        // IS THIS CRAZY? I'm thinking that we don't want to let this URL be configurable because then we open ourselves to cross site scripting
+        var url = "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + vUrl + "&callback=?";        
+        
+        $.getJSON(url, callback);
     };
 
 })(jQuery);
