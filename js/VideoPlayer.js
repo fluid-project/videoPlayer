@@ -40,7 +40,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.browser.supportsFullScreenMode = function () {
         var v = $("<video />")[0],
-            supportsFullScreenMode = v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
+            supportsFullScreenMode = requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
         return supportsFullScreenMode ? fluid.typeTag("fluid.browser.supportsFullScreenMode") : undefined;
     };
 
