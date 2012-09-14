@@ -444,15 +444,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
-
         fluid.each(that.options.defaultKinds, function(defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);
         });
     
         that.fullscreen = function () {
-            var videoEl = that.locate("video")[0]; 
             if (that.model.fullscreen === true) {
-                fluid.browser.requestFullScreen.apply(videoEl);
+                fluid.browser.requestFullScreen.apply(that.locate("video")[0]);
             }
         };
         
