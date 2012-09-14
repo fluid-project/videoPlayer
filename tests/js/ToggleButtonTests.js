@@ -159,31 +159,5 @@ fluid.registerNamespace("fluid.tests");
                 });
         });
 
-        toggleButtonTests.asyncTest("Changing default tooltipContainer for a toggleButton", function () {
-            expect(1);
-            var mainDiv = $("#main"),
-                testStrings = {
-                    press: "press me",
-                    release: "release me"
-                },
-                testComponent = fluid.tests.initToggleButton({
-                    strings: testStrings,
-                    tooltipContainer: mainDiv,
-                    listeners: {
-                        onReady: function (that) {
-                            var toggleButton = that.locate("button"),
-                                tooltip = fluid.testUtils.getTooltipCheckString(mainDiv, testStrings.press);
-
-                            toggleButton.click();
-                            mainDiv.blur(); // tooltip not updated until 'requested' again
-                            mainDiv.focus();
-                            jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
-                            mainDiv.blur();
-                            start();
-                        }
-                    }
-                });
-        });
-
     });
 })(jQuery);

@@ -392,7 +392,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         volumeControl.mouseenter(function() {
             tooltip.updateContent(that.options.strings.volume);
-        }).mouseleave(function() {
+        });
+        volumeControl.mouseleave(function() {
             tooltip.updateContent(muteButton.tooltipContentFunction);
         });
     };
@@ -531,7 +532,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{volumeControls}.model",
                     applier: "{volumeControls}.applier",
                     modelPath: "muted",
-                    tooltipContainer: "{volumeControls}.container"
+                    components: {
+                        tooltip: {
+                            container: "{volumeControls}.container"
+                        }
+                    }
                 }
             }
         }

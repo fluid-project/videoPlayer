@@ -36,6 +36,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         ownModel: true,
         model: {},
         modelPath: "pressed",
+        toolTipText: "",
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {  // Integrators will likely override these strings
             press: "Press",
@@ -47,7 +48,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: "{toggleButton}"
             }
         },
-        tooltipContainer: null // A html body to which we will attach tooltip controlled by the toggleButton
+        components: {
+            tooltip: {
+                type: "fluid.tooltip",
+                container: "{toggleButton}.dom.button",
+                options: {
+                    styles: {
+                        tooltip: "{toggleButton}.options.styles.tooltip"
+                    }
+                }
+            }
+        }
     });
 
     fluid.toggleButton.postInit = function (that) {
@@ -69,6 +80,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 button.toggleClass(styles.pressed, pressed);
             }
             button.prop("aria-pressed", pressed);
+
+            that.tooltip.updateContent(that.tooltipContentFunction(that));
         };
 
         that.press = function () {
@@ -83,18 +96,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.toggleButton.setUpToggleButton = function (that) {
-        var toggleButton = that.locate("button");
-        
-        that.options.tooltipContainer = that.options.tooltipContainer || toggleButton;
-        toggleButton.attr("role", "button");
-
-        that.tooltip = fluid.tooltip(that.options.tooltipContainer, {
-            styles: {
-                tooltip: that.options.styles.tooltip
-            },
-            content: that.tooltipContentFunction
-        });
-
+        that.locate("button").attr("role", "button");
         that.refreshView();
     };
 

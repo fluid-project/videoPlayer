@@ -72,25 +72,37 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            expect(4);
-            var testVolumeControls = fluid.tests.initVolumeControls({
-                listeners: {
-                    onReady: function (that) {
-                        var muteButton = that.locate("mute");
-                        var volumeSlider = that.locate("volumeControl");
+            expect(5);
+            var checkSlider = function(ariavaluenow, expectedValue) {
+                    jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
+                },
+                checkTooltipOnHover = function (element, expectedText) {
+                    fluid.testUtils.getTooltipCheckString(element, expectedText);
+                    element.mouseleave();
+                },
+                testVolumeControls = fluid.tests.initVolumeControls({
+                    listeners: {
+                        onReady: function (that) {
+                            var muteButton = that.locate("mute"),
+                                volumeSlider = that.locate("volumeControl"),
+                                sliderHandle = that.locate("handle");
 
-                        fluid.testUtils.verifyBasicButtonFunctions(muteButton, "Mute", "Mute", "Un-mute", "fl-videoPlayer-muted");
+                            checkTooltipOnHover(volumeSlider, "Volume");
+                            checkTooltipOnHover(muteButton, "Mute");
+                            muteButton.click();
+                            checkSlider(sliderHandle.attr("aria-valuenow"), "0");
+                            checkTooltipOnHover(muteButton, "Un-mute");
+                            muteButton.click();
 
-                        jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
-                        var sliderHandle = that.locate("handle");
-                        jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
-                        jqUnit.assertEquals("The slider button should have valuenow of '50'", "50", sliderHandle.attr("aria-valuenow"));
-                        jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
+                            jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
+                            jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
+                            checkSlider(sliderHandle.attr("aria-valuenow"), "50");
+                            jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
 
-                        start();
+                            start();
+                        }
                     }
-                }
-            });
+                });
         });
 
         videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
