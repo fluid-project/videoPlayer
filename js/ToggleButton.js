@@ -36,7 +36,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         ownModel: true,
         model: {},
         modelPath: "pressed",
-        toolTipText: "",
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {  // Integrators will likely override these strings
             press: "Press",
