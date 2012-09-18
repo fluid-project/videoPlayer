@@ -73,6 +73,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 return fluid.videoPlayer(container, options);
             },
             // summary:
+            //          IMPORTANT RUNS FROM LOCALHOST: Since captionator attempts to read the file from localsytem these particular tests won't pass if ran from a file system
             //          Function to test if captions are present in UI
             // html5Captionatoar:
             //          Component wrapper around captionator inside of a VideoPlayer
