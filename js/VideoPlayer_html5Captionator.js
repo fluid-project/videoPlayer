@@ -92,29 +92,26 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // Start adding tracks to the video tag
         fluid.each(captions, function (capOpt, key) {
             var trackTag = $("<track />");
-            
-            // LOOK AT THIS - DO WE NEED IT?
-            var attributes = fluid.filterKeys(fluid.copy(capOpt), ["kind", "src", "type", "srclang", "label"], false);
+            var attributes = fluid.filterKeys(fluid.copy(capOpt), ["kind", "src", "srclang", "label"], false);
             
             if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaption")) {
                 attributes["default"] = "true";
             }
-
             trackTag.attr(attributes);
 
             if (capOpt.type === "text/amarajson") {
                 var callback = function (data) {
-                    console.log("callback called");
                     if (!data) {
                         return;
                     }
 
                     var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
-                    var dataUrl = "data:" + vtt;
-                    trackTag.attr(src, dataUrl);
+                    // special chars in vtt should be escaped 
+                    var dataUrl = "data:text/plain," + vtt;
+                    trackTag.attr("src", dataUrl);
                 };
 
-                // go fetch the json, is this an issue? I'm fetching all the captions every time, whether or not anyone wants them. 
+                // Is this an issue? I'm fetching all the captions every time, whether or not anyone wants them. 
                 fluid.videoPlayer.fetchAmaraJson(capOpt.src, callback);
             }
 
@@ -169,20 +166,16 @@ https://source.fluidproject.org/svn/LICENSE.txt
         return vtt;
     };
 
-    /*************************************************************************
-     *  Fetch the Amara Json for the specified video 
-     *  @vUrl:  URL to the video
-     *  @callbackName: function name which takes the json returned from Amara
-     *************************************************************************/
-    fluid.videoPlayer.fetchAmaraJson = function (vUrl, callback) {
+    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, callback) {
         // No point continuing because we can't get a useful JSONP response without the url and a callback 
-        if (!vUrl || !callback) {
+        if (!videoUrl || !callback) {
             return;
         }
         
         // Hard coded URL to amara here 
         // IS THIS CRAZY? I'm thinking that we don't want to let this URL be configurable because then we open ourselves to cross site scripting
-        var url = "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + vUrl + "&callback=?";        
+        // But the trade off is that if the amara url changes, we need to change this code
+        var url = "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?";        
         
         $.getJSON(url, callback);
     };
