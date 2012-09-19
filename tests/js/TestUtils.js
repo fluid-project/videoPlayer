@@ -53,4 +53,9 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.assertEquals("Tooltip should contain " + tooltipReleased + " again", tooltipReleased, tooltip.text());
     };
 
+    fluid.testUtils.setupTestEnvironmentFeature = function (environmentFeature, flag) {
+        delete fluid.staticEnvironment[environmentFeature];
+        fluid.staticEnvironment[environmentFeature] = (flag) ? fluid.typeTag("fluid.browser." + environmentFeature) : undefined;
+    };
+
 })(jQuery);

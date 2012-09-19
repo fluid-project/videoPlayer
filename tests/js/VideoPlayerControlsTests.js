@@ -116,18 +116,10 @@ fluid.registerNamespace("fluid.tests");
             });
         });
         
-        function setupEnvironment(supportsFullScreen) {
-            delete fluid.staticEnvironment.supportsFullScreen;
-            
-            if (supportsFullScreen) {
-                fluid.staticEnvironment.supportsFullScreen = fluid.typeTag("fluid.browser.supportsFullScreen");
-            }
-        }
-        
         videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
             expect(2);
             
-            setupEnvironment(true);
+            fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", true);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -142,7 +134,7 @@ fluid.registerNamespace("fluid.tests");
         videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present since component should be null", function () {
             expect(1);
             
-            setupEnvironment(false);
+            fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", false);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -161,7 +153,7 @@ fluid.registerNamespace("fluid.tests");
         
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
             expect(9);
-            setupEnvironment(true);
+            fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", true);
             
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
