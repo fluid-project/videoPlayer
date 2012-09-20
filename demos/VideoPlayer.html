@@ -59,11 +59,18 @@
         </div>
 
         <script>
-            var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+            var uiOptions = fluid.uiOptions.fatPanel.withMediaPanel(".flc-uiOptions", {
                 prefix: "../lib/infusion/components/uiOptions/html/",
                 components: {
                     relay: {
                         type: "fluid.videoPlayer.relay"
+                    }
+                },
+                templateLoader: {
+                    options: {
+                        templates: {
+                            mediaControls: "../html/UIOptionsTemplate-media.html"
+                        }
                     }
                 }
             });
