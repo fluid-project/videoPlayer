@@ -170,5 +170,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
         }, 500);
 
+        videoPlayerTranscriptTests.asyncTest("Drop-down aria-controls text area", function () {
+            var testOpts = {
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertTrue("Drop-down should have aria-controls attribute", that.locate("languageDropdown").attr("aria-controls"));
+                        jqUnit.assertEquals("aria-controls should reference the text area", that.locate("transcriptText").attr("id"), that.locate("languageDropdown").attr("aria-controls"));
+                        start();
+                    }
+                }
+            };
+
+            var that = initTranscript(localTranscriptOpts, testOpts);
+        });
     });
 })(jQuery);

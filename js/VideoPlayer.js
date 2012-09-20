@@ -571,7 +571,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
-            
+
             that.events.onReady.fire(that);
         });
         
@@ -643,5 +643,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-
 })(jQuery);

@@ -82,7 +82,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Captions",
                         press: "Captions",
                         release: "Captions"
-                    }
+                    },
+                    controlledEl: "{videoPlayer}.dom.caption"
                 }
             },
             transcriptControls: {

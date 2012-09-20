@@ -427,6 +427,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.transcript.prepareTranscript(that);
         fluid.videoPlayer.transcript.switchTranscriptArea(that);
 
+        that.locate("languageDropdown").attr("aria-controls", fluid.allocateSimpleId(that.locate("transcriptText")));
+
         that.events.onReady.fire(that);
     };
 
