@@ -141,7 +141,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var hours = parseFloat(hourStr);
         var mins = parseFloat(minStr) + (hours * 60);
         var secs = parseFloat(splitSec[0]) + (mins * 60);
-        return Math.round(secs * 1000 + parseInt(splitSec[1], 10));
+        var msecs = parseInt((splitSec[1] + "000").slice(0, 3), 10);
+        return Math.round(secs * 1000 + msecs);
     };
 
     /**

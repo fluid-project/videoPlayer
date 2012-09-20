@@ -40,9 +40,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Test convertToMilli
         videoPlayerTranscriptTests.test("Test convertToMilli function", function () {
             // Success cases
-            testConvertToMilli("12:01.1", 721001);
-            testConvertToMilli("12:01.10", 721010);
+            testConvertToMilli("00:04.03", 4030);
+            testConvertToMilli("12:01.1", 721100);
+            testConvertToMilli("12:01.10", 721100);
             testConvertToMilli("12:01.100", 721100);
+            testConvertToMilli("12:01.01", 721010);
+            testConvertToMilli("12:01.010", 721010);
+            testConvertToMilli("12:01.001", 721001);
+            testConvertToMilli("01:12:01.03", 4321030);
             testConvertToMilli("1:12:01.100", 4321100);
             testConvertToMilli("10:12:01.100", 36721100);
 
