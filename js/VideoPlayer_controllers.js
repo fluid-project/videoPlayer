@@ -162,9 +162,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
+testEvent: null,
             onMarkupReady: null
         },
-
+listeners: {
+    testEvent: function () {console.log("testEvent fired");}
+},
         selectors: {
             play: ".flc-videoPlayer-play",
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
@@ -199,6 +202,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
+console.log("controllers firing onControllersReady");
         that.events.onControllersReady.fire(that);
     };
     
@@ -562,5 +566,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.volumeControls.bindModel(that);
         that.events.onReady.fire(that);
     };
-
 })(jQuery);

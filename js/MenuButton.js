@@ -221,7 +221,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
-            onRenderingComplete: null
+            onRenderingComplete: null,
+            onControlledElementReady: null
         },
         languages: [],
         currentLanguagePath: "",
@@ -325,6 +326,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
         refreshButtonClass();
+console.log("languageControls firing onReady");
         that.events.onReady.fire(that);
     };
 

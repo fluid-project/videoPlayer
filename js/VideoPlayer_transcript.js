@@ -259,6 +259,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         // The 2nd event parameter "that" is for writing unit test, no used at implementing transcript functionalities 
+console.log("transcript firing onTranscriptsLoaded");
         that.events.onTranscriptsLoaded.fire(intervalList, that);
     };  
     
@@ -429,7 +430,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.locate("languageDropdown").attr("aria-controls", fluid.allocateSimpleId(that.locate("transcriptText")));
 
+console.log("transcript firing onReady");
         that.events.onReady.fire(that);
+console.log("transcript fired onReady");
     };
 
+
+    fluid.videoPlayer.addAriaControlsToTranscriptMenu = function (that) {
+        console.log("in fluid.videoPlayer.addAriaControlsToTranscriptMenu()");
+    };
+    fluid.demands("fluid.videoPlayer.menuButton", ["fluid.videoPlayer", "fluid.videoPlayer.transcript"], {
+        options: {
+            events: {
+                onControlledElementReady: "{transcript}.onTranscriptReady"
+            },
+            listeners: {
+                onControlledElementReady: fluid.videoPlayer.addAriaControlsToTranscriptMenu
+            }
+        }
+    });
 })(jQuery);

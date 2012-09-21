@@ -132,6 +132,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.controllers",
                 container: "{videoPlayer}.dom.controllers",
                 createOnEvent: "onCreateControllersReady",
+                priority: "last",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -186,10 +187,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
                         onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
-                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange"
+                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
+                        onAttach: "{videoPlayer}.events.onTranscriptsReady"
                     }
                 }
             },
+transcriptMenuEventBinder: {
+    type: "fluid.videoPlayer.eventBinder",
+    createOnEvent: "canBindTranscriptMenu"
+},
             browserCompatibility: {
                 type: "demo.html5BackwardsCompatability",
                 createOnEvent: "onOldBrowserDetected"
@@ -240,7 +246,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCreateControllersReady: null,
             onCreateMediaReady: null,
             onHTML5BrowserDetected: null
-        },
+,
+onTranscriptsReady: null,
+canBindTranscriptMenu: {
+    events: {
+        controllers: "onControllersReady",
+        transcripts: "onTranscriptsReady"
+        }
+    }
+            },
+/*
+listeners: {
+    canBindTranscriptMenu: "{controllers}.events.testEvent.fire" //function () {console.log("foo!!");}
+},
+*/
         invokers: {
             resize: {
                 funcName: "fluid.videoPlayer.resize",
@@ -520,6 +539,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             that.events.afterScrub.fire();
         };
+
+
+
     };
     
     fluid.videoPlayer.finalInit = function (that) {
@@ -640,6 +662,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
                 "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
+            }
+        }
+    });
+
+
+
+    fluid.videoPlayer.addAriaControlsToTranscriptMenu = function (that) {
+        console.log("in fluid.videoPlayer.addAriaControlsToTranscriptMenu()");
+    };
+    fluid.demands("transcriptMenuEventBinder", ["fluid.videoPlayer.transcript", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{transcript}.events.onTranscriptsLoaded": fluid.videoPlayer.addAriaControlsToTranscriptMenu
             }
         }
     });
