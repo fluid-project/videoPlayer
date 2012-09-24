@@ -20,15 +20,73 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     $(document).ready(function () {
         fluid.setLogging(false);    // disable it not to mess up with FireBug in FF
         
-        // containers. A separate one per test
-        var container = [".videoPlayer0", ".videoPlayer1", ".videoPlayer2", ".videoPlayer3", ".videoPlayer4", ".videoPlayer5"];
+        var supportsHtml5 = {
+            typeName: "fluid.browser.supportsHtml5"
+        };
         
-        // selector to find if the captionator div is present on the webpage
+        var container = ".videoPlayer";
+        var firstEnglishCaption = "English caption here";
+        var firstFrenchCaption = "French caption here";
+            // selector to find if the captionator div is present on the webpage
         var captionatorSelector = ".captionator-cue-canvas";
-        
         var videoPlayerCaptionatorTests = new jqUnit.TestCase("Video Player HTML5 Captionator Test Suite");
-        
-        var testOptionsNoCaptions = {            
+        // summary:
+        //          Function to test if the videoPlayer tracks have proper mode set to them
+        // expectedMode:
+        //          Array which consist of two booleans which tell if the mode should be SHOWING or OFF. First boolean is for English and second is for French
+        //
+        var testTrackMode = function(html5Captionator, expectedMode) {
+            expectedMode || (expectedMode = []);
+            expect(expectedMode.length);
+            var addedMessage,
+                tracks = html5Captionator.locate("video")[0].tracks;
+            $.each(expectedMode, function(index, showing) {
+                addedMessage = (showing) ? " set to SHOWING" : " set to OFF";
+                jqUnit.assertEquals(html5Captionator.options.captions[index].label + addedMessage, 
+                                    (showing) ? captionator.TextTrack.SHOWING : captionator.TextTrack.OFF, tracks[index].mode);
+            });
+        };
+        var initVideoPlayer = function (options, callback) {
+            options = options || {};
+
+            fluid.merge(null, options, {
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        callback(videoPlayer);
+                    }
+                }
+            });
+
+            return fluid.videoPlayer(container, options);
+        };
+        // IMPORTANT. RUNS FROM A WEB SERVER: Captionator code does not handle reading files from file system.
+        var testCaptionPresence = function (html5Captionator, captionText) {
+            expect(1);
+            var warningMessage = "WARNING, this test will run only from a web server. ";
+            jqUnit.assertEquals(warningMessage + "Caption should be " + captionText, captionText, html5Captionator.locate("caption").find(".captionator-cue").text());
+        };
+        // config:
+        //      options - options to pass in a videoPlayer
+        //      isHTML5 - boolean flag to set presence of HTML5 in our test environment
+        //      hasComponent - boolean for a check if html5Captionator component is present in the videoPlayer
+        //      hasDOMElement - boolean for a check if html5Captionator component's markup is present in the DOM
+        //
+        var testInit = function (config) {
+            expect(2);
+
+            config.testComponentFunc = config.hasComponent ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
+            config.componentStr = config.hasComponent ? "html5Captionator has been instantiated"
+                                                        : "html5Captionator has NOT been instantiated";
+            config.domStr = config.hasDOMElement ? "Captionator DIV is present in the DOM"
+                                                        : "Captionator DIV is NOT present in the DOM";
+
+            initVideoPlayer(config.options, function (videoPlayer) {
+                config.testComponentFunc(config.componentStr, videoPlayer.html5Captionator);
+                jqUnit.assertEquals(config.domStr, (config.hasDOMElement)?1:0, $(captionatorSelector).length);
+                start();
+            });
+        };
+        var defaultOptionsNoCaptions = {
             video: {
                 sources: [
                     {
@@ -43,10 +101,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         };
-        
-        var testOptionsNoCurrentTrack = {};
-        fluid.merge(null, testOptionsNoCurrentTrack, testOptionsNoCaptions);
-        fluid.merge(null, testOptionsNoCurrentTrack, {
+        var optionsWithoutCurrentTrack = {};
+        var optionsFull = {};
+        var optionsFullWithDisplayCaptionsOff = {};
+
+        // build optionsWithoutCurrentTrack based on defaultOptionsNoCaptions with some extra options
+        fluid.merge(null, optionsWithoutCurrentTrack, defaultOptionsNoCaptions);
+        fluid.merge(null, optionsWithoutCurrentTrack, {
             video: {
                 captions: [
                     {
@@ -66,10 +127,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ]
             }
         });
-        
-        var testOptionsFull = {};
-        fluid.merge(null, testOptionsFull, testOptionsNoCurrentTrack);
-        fluid.merge(null, testOptionsFull, {
+
+        // build optionsFull based on optionsWithoutCurrentTrack with some extra options
+        fluid.merge(null, optionsFull, optionsWithoutCurrentTrack);
+        fluid.merge(null, optionsFull, {
             model: {
                 currentTracks: {
                     captions: [0]
@@ -77,178 +138,162 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 displayCaptions: true
             }
         });
-        
-        var testTrackShowing = function (html5Captionator, index) {
-            var tracks = html5Captionator.locate("video")[0].tracks;
-                
-            jqUnit.assertEquals(html5Captionator.options.captions[index].label + " are showing", captionator.TextTrack.SHOWING, tracks[index].mode);
-        };
-        
-        var testTrackNotShowing = function (html5Captionator, index) {
-            var tracks = html5Captionator.locate("video")[0].tracks;
-                
-            jqUnit.assertEquals(html5Captionator.options.captions[index].label + " are not showing", captionator.TextTrack.OFF, tracks[index].mode);
-        };
-              
-        // videoPlayer creation
-        var initVideoPlayer = function (container, options, callback) {
-            options = options || {};
-            
-            fluid.merge(null, options, {
-                listeners: {
-                    onReady: function (videoPlayer) {
-                        callback(videoPlayer);
-                    }
-                }
-            });
-            
-            return fluid.videoPlayer(container, options);
-        }
 
-        // Function to set or unset HTML5 test environment
-        var setupEnvironment = function (withHtml5) {
-            if (withHtml5) {
-                fluid.staticEnvironment.browserHtml5 = fluid.typeTag("fluid.browser.html5");
-            } else {
-                fluid.staticEnvironment.browserHtml5 = undefined;
+        // build optionsFullWithDisplayCaptionsOff based on optionsWithoutCurrentTrack but with displayCaptions set to false
+        fluid.merge(null, optionsFullWithDisplayCaptionsOff, optionsWithoutCurrentTrack);
+        fluid.merge(null, optionsFullWithDisplayCaptionsOff, {
+            model: {
+                currentTracks: {
+                    captions: [0]
+                },
+                displayCaptions: false
             }
-        }
-        
-        // A template function which checks captionator initalization depending on different provided options and config
-        var testInit = function (config) {
-            expect(2);
-            
-            setupEnvironment(config.isHTML5);
-            
-            config.testComponentFunc = config.hasComponent ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
-            config.componentStr = config.hasComponent ? "html5Captionator has been instantiated"
-                                                        : "html5Captionator has NOT been instantiated";
-            config.domStr = config.hasDOMElement ? "Captionator DIV is present in the DOM"
-                                                        : "Captionator DIV is NOT present in the DOM";
-            
-            initVideoPlayer(container[config.testIndex], config.options, function (videoPlayer) {
-                config.testComponentFunc(config.componentStr, videoPlayer.html5Captionator);
-                jqUnit.assertEquals(config.domStr, (config.hasDOMElement)?1:0, $(captionatorSelector).length);
-                start();
-            });
-        }
-        
-        
-        videoPlayerCaptionatorTests.asyncTest("NO HTML5: html5Captionator was not initialized", function () {
-            testInit({
-                testIndex: 0,
-                options: testOptionsFull,
-                isHTML5: false,
-                hasComponent: false,
-                hasDOMElement: false
-            });
-        });
-        
-        
-        videoPlayerCaptionatorTests.asyncTest("HTML5: html5Captionator was initialized but without tracks", function () {
-            testInit({
-                testIndex: 1,
-                options: testOptionsNoCaptions,
-                isHTML5: true,
-                hasComponent: true,
-                hasDOMElement: false
-            });
         });
 
-        
-        videoPlayerCaptionatorTests.asyncTest("HTML5: html5Captionator was initialized", function () {
-            testInit({
-                testIndex: 2,
-                options: testOptionsFull,
-                isHTML5: true,
-                hasComponent: true,
-                hasDOMElement: true
-            });
-        });
+        // Define tests declaratively
+        var testScenarios = {
+            "NO HTML5: html5Captionator was not initialized": {
+                testEnviornment: videoPlayerCaptionatorTests,
+                integration: {
+                    supportsHtml5: null
+                },
+                testFunction: function () {
+                    testInit({
+                        options: optionsFull,
+                        hasComponent: false,
+                        hasDOMElement: false
+                    });
+                }
+            },
+            "HTML5: html5Captionator was initialized but without tracks": {
+                testEnviornment: videoPlayerCaptionatorTests,
+                integration: {
+                    supportsHtml5: supportsHtml5
+                },
+                testFunction: function () {
+                    testInit({
+                        options: defaultOptionsNoCaptions,
+                        hasComponent: true,
+                        hasDOMElement: false
+                    });
+                }
+            },
+            "HTML5: html5Captionator was initialized": {
+                testEnviornment: videoPlayerCaptionatorTests,
+                integration: {
+                    supportsHtml5: supportsHtml5
+                },
+                testFunction: function () {
+                    testInit({
+                        options: optionsFull,
+                        hasComponent: true,
+                        hasDOMElement: true
+                    });
+                }
+            },
+            "html5Captionator changing tracks and more": {
+                testEnviornment: videoPlayerCaptionatorTests, 
+                integration: {
+                    supportsHtml5: supportsHtml5
+                },
+                testFunction: function () {
+                    initVideoPlayer(optionsFull, function (videoPlayer) {
+                        // VERY BAD. There is no callback for a captionator to fire when it loaded its captions, so we have to wait 1 second before do the test check
+                        setTimeout(function() {
+                            var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks,
+                                html5Captionator = videoPlayer.html5Captionator;
+    
+                            jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
+                            testTrackMode(html5Captionator, [true, false]);
+                            testCaptionPresence(html5Captionator, firstEnglishCaption);
+                            fluid.videoPlayer.html5Captionator.showCurrentTrack([1], tracks, html5Captionator.options.captions);
+    
+                            testTrackMode(html5Captionator, [false, true]);
+                            // VERY BAD. There is no callback for a captionator to fire when it loaded its captions, so we have to wait 1 second before do the test check
+                            setTimeout(function() {
+                                testCaptionPresence(html5Captionator, firstFrenchCaption);
+                                fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
+                                testTrackMode(html5Captionator, [false, false]);
+                                testCaptionPresence(html5Captionator, "");
+                                expect(1);
+                                start();
+                            }, 1000);
+                        }, 1000);
+                    });
+                }
+            },
+            // TEST FLUID-4618. Writing a test to verify that functions in preInit work properly
+            "html5Captionator displayCaptions test": {
+                testEnviornment: videoPlayerCaptionatorTests, 
+                integration: {
+                    supportsHtml5: supportsHtml5
+                },
+                testFunction: function () {
+                    initVideoPlayer(optionsFull, function (videoPlayer) {
+                        // VERY BAD. There is no callback for a captionator to fire when it loaded its captions, so we have to wait 1 second before do the test check
+                        setTimeout(function() {
+                            var html5Captionator = videoPlayer.html5Captionator;
+                            html5Captionator.refreshCaptions();
+                            jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
+                            testCaptionPresence(html5Captionator, firstEnglishCaption);
+                            expect(1);
+                            start();
+                        }, 1000);
+                    });
+                }
+            },
+            "html5Captionator without currentTrack": {
+                testEnviornment: videoPlayerCaptionatorTests, 
+                integration: {
+                    supportsHtml5: supportsHtml5
+                },
+                testFunction: function () {
+                    initVideoPlayer(optionsWithoutCurrentTrack, function (videoPlayer) {
+                        setTimeout(function() {
+                            var html5Captionator = videoPlayer.html5Captionator,
+                                currentTracks = html5Captionator.model.currentTracks;
+    
+                            jqUnit.assertUndefined("currentTracks is empty in the model", optionsWithoutCurrentTrack.currentTracks);
+    
+                            jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
+    
+                            jqUnit.assertEquals("Current track is also empty in the html5Captionator model",
+                                    0, currentTracks.captions.length);
+                            // Can't support this "self-modification" of the model of captionator since it may corrupt data belonging
+                            // to others during startup
+                            //jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
+                            //        0, currentTracks.captions[0]);
+    
+                            testTrackMode(html5Captionator, [false, false]);
+    
+                            // Check that captions are not present in the DOM
+                            testCaptionPresence(html5Captionator, "");
+                            expect(3);
+                            start();
+                        });
+                    });
+                }
+            },
+            "displayCaptions is set to false so no captions should be present at all in the DOM": {
+                testEnviornment: videoPlayerCaptionatorTests,
+                integration: {
+                    supportsHtml5: supportsHtml5
+                },
+                testFunction: function () {
+                    initVideoPlayer(optionsFullWithDisplayCaptionsOff, function (videoPlayer) {
+                        setTimeout(function() {
+                            var html5Captionator = videoPlayer.html5Captionator;
+                            testTrackMode(html5Captionator, [false, false]);
+                            // Check that captions are not present in the DOM
+                            testCaptionPresence(html5Captionator, "");
+                            start();
+                        });
+                    });
+                }
+            }
+        };
 
-                
-        videoPlayerCaptionatorTests.asyncTest("html5Captionator changing tracks and more", function () {
-            var testIndex = 3;
-            
-            expect(7);
-            
-            setupEnvironment(true);
-            
-            initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
-                
-                var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks;
-                var html5Captionator = videoPlayer.html5Captionator;
-                
-                jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
-                
-                testTrackShowing(html5Captionator, 0);
-                testTrackNotShowing(html5Captionator, 1);
-                
-                fluid.videoPlayer.html5Captionator.showCurrentTrack([1], tracks, html5Captionator.options.captions);
-                
-                testTrackNotShowing(html5Captionator, 0);
-                testTrackShowing(html5Captionator, 1);
-                
-                fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
-                
-                testTrackNotShowing(html5Captionator, 0);
-                testTrackNotShowing(html5Captionator, 1);
-                
-                start();
-            });
-        });
-        
-        
-        // TEST FLUID-4618. Writing a test to verify that functions in preInit work properly
-        videoPlayerCaptionatorTests.asyncTest("html5Captionator displayCaptions test", function () {
-            var testIndex = 4;
-            
-            expect(1);
-            
-            setupEnvironment(true);
-            
-            initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
-                var html5Captionator = videoPlayer.html5Captionator;
-                
-                html5Captionator.refreshCaptions();
-                
-                jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
-
-                start();
-            });
-        });
-        
-        
-        videoPlayerCaptionatorTests.asyncTest("html5Captionator without currentTrack", function () {
-            var testIndex = 5;
-            
-            expect(5);
-            
-            setupEnvironment(true);
-            
-            initVideoPlayer(container[testIndex], testOptionsNoCurrentTrack, function (videoPlayer) {
-                
-                var html5Captionator = videoPlayer.html5Captionator;
-                var currentTracks = html5Captionator.model.currentTracks;
-                
-                jqUnit.assertUndefined("currentTracks is empty in the model", testOptionsNoCurrentTrack.currentTracks);
-                
-                jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
-                
-                jqUnit.assertEquals("Current track is also empty in the html5Captionator model", 
-                        0, currentTracks.captions.length);
-                // Can't support this "self-modification" of the model of captionator since it may corrupt data belonging
-                // to others during startup
-                //jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
-                //        0, currentTracks.captions[0]);
-                
-                testTrackNotShowing(html5Captionator, 0);
-                testTrackNotShowing(html5Captionator, 1);
-                
-                start();
-            });
-        });
-
-
+        // Running out tests
+        fluid.testUtils.runTestScenarios(testScenarios);
     });
 })(jQuery);

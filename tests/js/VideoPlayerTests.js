@@ -81,19 +81,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             });
         });
-
-        function setupEnvironment(withHtml5) {
-            delete fluid.staticEnvironment.browserHtml5;
-            
-            if (withHtml5) {
-                fluid.staticEnvironment.browserHtml5 = fluid.typeTag("fluid.browser.html5");
-            }
-        }
         
         videoPlayerTests.asyncTest("HTML5: video player instantiation with customized controller", function () {
             expect(6);
             
-            setupEnvironment(true);
+            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
             
             initVideoPlayer({
                 controls: "custom",
@@ -115,7 +107,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("HTML5: video player instantiation with native controller", function () {
             expect(6);
             
-            setupEnvironment(true);
+            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
             
             initVideoPlayer({
                 controls: "native",
@@ -137,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("HTML5: Controllers instantiation", function () {
             expect(5);
             
-            setupEnvironment(true);
+            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
             
             initVideoPlayer({
                 controls: "custom",
@@ -158,7 +150,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("NON-HTML5: video player instantiation", function () {
             expect(5);
             
-            setupEnvironment(false);
+            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", false);
             
             initVideoPlayer({
                 listeners: {
