@@ -1,13 +1,13 @@
 {
     "captionCollection": [
         {
-            "inTime": "00:00:01.77",
-            "outTime": "00:00:04.03",
+            "inTime": "00:00:01.777",
+            "outTime": "00:00:04.033",
             "caption": "Eeny, meeny, miny, moe,"
         },
         {
-            "inTime": "00:00:04.03",
-            "outTime": "00:00:05.99",
+            "inTime": "00:00:04.033",
+            "outTime": "00:00:05.992",
             "caption": "Catch a tiger by the toe"
         }
    ]
