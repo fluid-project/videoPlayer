@@ -53,6 +53,26 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.assertEquals("Tooltip should contain " + tooltipReleased + " again", tooltipReleased, tooltip.text());
     };
 
+    fluid.testUtils.runTestScenarios = function(testScenarios) {
+        $.each(testScenarios, function(message, testScenario) {
+            testScenario.testEnviornment.asyncTest(message, function() {
+                fluid.testUtils.setStaticEnvironment(testScenario.integration);
+                testScenario.testFunction();
+            });
+            fluid.testUtils.cleanupEnvironment();
+        });
+    };
+    
+    fluid.testUtils.setStaticEnvironment = function(integration) {
+        fluid.staticEnvironment.supportsHtml5 = (integration.supportsHtml5) ? fluid.typeTag(integration.supportsHtml5.typeName) : undefined;
+        fluid.staticEnvironment.supportsFullScreen = (integration.supportsFullScreen) ? fluid.typeTag(integration.supportsFullScreen.typeName) : undefined;
+    };
+    
+    fluid.testUtils.cleanupEnvironment = function() {
+        delete fluid.staticEnvironment.supportsHtml5;
+        delete fluid.staticEnvironment.supportsFullScreen;
+    };
+
     fluid.testUtils.setupTestEnvironmentFeature = function (environmentFeature, flag) {
         delete fluid.staticEnvironment[environmentFeature];
         fluid.staticEnvironment[environmentFeature] = (flag) ? fluid.typeTag("fluid.browser." + environmentFeature) : undefined;
