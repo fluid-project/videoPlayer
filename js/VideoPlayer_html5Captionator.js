@@ -106,8 +106,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     }
 
                     var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
-                    // special chars in vtt should be escaped 
-                    var dataUrl = "data:text/plain," + vtt;
+                    var dataUrl = "data:text/plain," + encodeURIComponent(vtt);
                     trackTag.attr("src", dataUrl);
                 };
 
