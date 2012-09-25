@@ -89,7 +89,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             // add the 'turn off' option
             showHide: {
-                value: that.options.strings[that.readIndirect("showHide")? "hideLanguage" : "showLanguage"],
+                value: that.options.strings[that.readIndirect("showHidePath")? "hideLanguage" : "showLanguage"],
                 decorators: {
                     type: "attrs",
                     attributes: {
@@ -326,7 +326,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
         refreshButtonClass();
-console.log("languageControls firing onReady");
         that.events.onReady.fire(that);
     };
 

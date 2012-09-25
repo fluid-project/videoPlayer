@@ -202,7 +202,6 @@ listeners: {
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
-console.log("controllers firing onControllersReady");
         that.events.onControllersReady.fire(that);
     };
     
@@ -565,5 +564,9 @@ console.log("controllers firing onControllersReady");
         fluid.videoPlayer.volumeControls.bindDOMEvents(that);
         fluid.videoPlayer.volumeControls.bindModel(that);
         that.events.onReady.fire(that);
+    };
+    
+    fluid.videoPlayer.controllers.bindTranscriptMenu = function (that, foo) {
+        console.log("in controllers.bindTranscriptMenu");
     };
 })(jQuery);

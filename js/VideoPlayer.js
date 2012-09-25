@@ -252,14 +252,17 @@ canBindTranscriptMenu: {
     events: {
         controllers: "onControllersReady",
         transcripts: "onTranscriptsReady"
-        }
     }
-            },
-/*
-listeners: {
-    canBindTranscriptMenu: "{controllers}.events.testEvent.fire" //function () {console.log("foo!!");}
 },
-*/
+boiliedCanBindTranscriptMenu: {
+    event: "canBindTranscriptMenu",
+    args: ["27"]
+}
+            },
+listeners: {
+    canBindTranscriptMenu: function () {console.log("foo!");},
+    boiliedCanBindTranscriptMenu: function (thing) {console.log("boiliedCanBindTranscriptMenu handler: thing = "+thing);},
+},
         invokers: {
             resize: {
                 funcName: "fluid.videoPlayer.resize",
@@ -669,13 +672,28 @@ listeners: {
 
 
     fluid.videoPlayer.addAriaControlsToTranscriptMenu = function (that) {
-        console.log("in fluid.videoPlayer.addAriaControlsToTranscriptMenu()");
+        console.log("in fluid.videoPlayer.addAriaControlsToTranscriptMenu(): that = "+that);
     };
+// NB: the transcriptMenuEventBinder is not binding events anymore - not sure if it's even being used at all?
     fluid.demands("transcriptMenuEventBinder", ["fluid.videoPlayer.transcript", "fluid.videoPlayer"], {
         options: {
             listeners: {
-                "{transcript}.events.onTranscriptsLoaded": fluid.videoPlayer.addAriaControlsToTranscriptMenu
+                "{videoPlayer}.events.canBindTranscriptMenu": function () {
+                    console.log("in canBindTranscriptMenu handler");
+                }
             }
         }
     });
+    fluid.demands("fluid.videoPlayer.transcript", "fluid.videoPlayer", {
+        options: {
+            events: {
+                boiledOnTranscriptsLoaded: "{transcript}.events.onTranscriptsLoaded"
+            },
+            listeners: {
+                "boiledOnTranscriptsLoaded": fluid.videoPlayer.addAriaControlsToTranscriptMenu
+            }
+        }
+    });
+    fluid.demands("boiledOnTranscriptsLoaded", ["mediaEventBinder", "fluid.videoPlayer.transcript", "fluid.videoPlayer"],  ["42"]);
+
 })(jQuery);
