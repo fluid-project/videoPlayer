@@ -108,6 +108,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Transcripts",
                         press: "Transcripts",
                         release: "Transcripts"
+                    },
+                    events: {
+                        onControlledElementReady: "{controllers}.events.onTranscriptsReady"
                     }
                 }
             },
@@ -162,11 +165,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
-testEvent: null,
+onTranscriptsReady: null,
             onMarkupReady: null
         },
 listeners: {
-    testEvent: function () {console.log("testEvent fired");}
+    onTranscriptsReady: function () {console.log("onTranscriptsReady fired");}
 },
         selectors: {
             play: ".flc-videoPlayer-play",

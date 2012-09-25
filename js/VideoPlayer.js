@@ -142,7 +142,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
-                        afterScrub: "{videoPlayer}.events.afterScrub"
+                        afterScrub: "{videoPlayer}.events.afterScrub",
+                        onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu"
                     }
                 }
             },
@@ -196,6 +197,12 @@ transcriptMenuEventBinder: {
     type: "fluid.videoPlayer.eventBinder",
     createOnEvent: "canBindTranscriptMenu"
 },
+/*
+transcriptMenuBinder: {
+    type: "fluid.videoPlayer.transcriptMenuBinder.finalInit",
+    createOnEvent: "canBindTranscriptMenu"
+},
+*/
             browserCompatibility: {
                 type: "demo.html5BackwardsCompatability",
                 createOnEvent: "onOldBrowserDetected"
@@ -247,21 +254,26 @@ transcriptMenuEventBinder: {
             onCreateMediaReady: null,
             onHTML5BrowserDetected: null
 ,
+foo: null,
 onTranscriptsReady: null,
 canBindTranscriptMenu: {
     events: {
         controllers: "onControllersReady",
         transcripts: "onTranscriptsReady"
-    }
+    },
+    args: ["{arguments}.controllers.0", "{arguments}.transcripts.0"]
 },
 boiliedCanBindTranscriptMenu: {
-    event: "canBindTranscriptMenu",
-    args: ["27"]
+    event: "canBindTranscriptMenu"
 }
             },
 listeners: {
-    canBindTranscriptMenu: function () {console.log("foo!");},
-    boiliedCanBindTranscriptMenu: function (thing) {console.log("boiliedCanBindTranscriptMenu handler: thing = "+thing);},
+    canBindTranscriptMenu: function (controllers, transcripts) {
+        console.log("canBindTranscriptMenu handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);
+        },
+    boiliedCanBindTranscriptMenu: function (controllers, transcripts) {
+        console.log("boiliedCanBindTranscriptMenu handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);
+        },
 },
         invokers: {
             resize: {
@@ -694,6 +706,18 @@ listeners: {
             }
         }
     });
-    fluid.demands("boiledOnTranscriptsLoaded", ["mediaEventBinder", "fluid.videoPlayer.transcript", "fluid.videoPlayer"],  ["42"]);
+    fluid.demands("boiledOnTranscriptsLoaded", ["fluid.videoPlayer.transcript", "fluid.videoPlayer"],  ["42"]);
 
+    /************
+     * 
+     ************/
+/*
+    fluid.defaults("fluid.videoPlayer.transcriptMenuBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.transcriptMenuBinder.finalInit"
+    });
+    fluid.videoPlayer.transcriptMenuBinder.finalInit = function (that) {
+        console.log("in transcriptMenuBinder.finalInit")
+    };
+*/
 })(jQuery);

@@ -224,6 +224,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onRenderingComplete: null,
             onControlledElementReady: null
         },
+listeners: {
+    onControlledElementReady: function (theLangCtrls, transcriptEl) {
+        console.log("in menuButton onControlledElementReady handler");
+        fluid.videoPlayer.languageControls.updateAriaControls(theLangCtrls, transcriptEl)
+    }
+},
         languages: [],
         currentLanguagePath: "",
         showHidePath: "",
@@ -339,5 +345,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "{button}.events.onPress": "{menu}.toggleView",
         },
     });
+
+
+    fluid.videoPlayer.languageControls.updateAriaControls = function (that, transcriptEl) {
+//        that.menu.attr("aria-controls", transcriptEl.id);
+    };
 })(jQuery);
     
