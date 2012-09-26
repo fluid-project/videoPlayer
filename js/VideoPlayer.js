@@ -189,14 +189,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                         onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                        onAttach: "{videoPlayer}.events.onTranscriptsReady" // wholesale injection: when either event is fired, the other is fired, and listeners on both are called
+                        onAttach: "{videoPlayer}.events.onTranscriptsReady"
                     }
                 }
             },
-transcriptMenuEventBinder: {
-    type: "fluid.videoPlayer.eventBinder",
-    createOnEvent: "canBindTranscriptMenu"
-},
             browserCompatibility: {
                 type: "demo.html5BackwardsCompatability",
                 createOnEvent: "onOldBrowserDetected"
@@ -246,17 +242,16 @@ transcriptMenuEventBinder: {
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onHTML5BrowserDetected: null
-,
-onTranscriptsReady: null,
-canBindTranscriptMenu: {
-    events: {
-        controllers: "onControllersReady",
-        transcripts: "onTranscriptsReady"
-    },
-    args: ["{arguments}.controllers.0", "{arguments}.transcripts.0"]
-}
-            },
+            onHTML5BrowserDetected: null,
+            onTranscriptsReady: null,
+            canBindTranscriptMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    transcripts: "onTranscriptsReady"
+                },
+                args: ["{arguments}.controllers.0", "{arguments}.transcripts.0"]
+            }
+        },
         invokers: {
             resize: {
                 funcName: "fluid.videoPlayer.resize",
@@ -536,9 +531,6 @@ canBindTranscriptMenu: {
             }
             that.events.afterScrub.fire();
         };
-
-
-
     };
     
     fluid.videoPlayer.finalInit = function (that) {
@@ -652,16 +644,6 @@ canBindTranscriptMenu: {
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
     
-    fluid.demands("transcriptMenuEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onScrub": "{media}.setTime",
-                "{videoPlayer}.events.onViewReady": "{media}.refresh",
-                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
-                "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
-            }
-        }
-    });
     fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {

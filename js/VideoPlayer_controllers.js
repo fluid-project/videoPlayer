@@ -165,17 +165,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
-onTranscriptsReady: null,
-boiledOnTranscriptReady: {
-    event: "onTranscriptsReady",
-    args: ["{controllers}.transcriptControls", "{arguments}.1"]
-},
+            onTranscriptsReady: null,
+            boiledOnTranscriptReady: {
+                event: "onTranscriptsReady",
+                // need to move this argument definition into a demands block?
+                args: ["{controllers}.transcriptControls", "{arguments}.1"]
+            },
             onMarkupReady: null
         },
-listeners: {
-    onTranscriptsReady: function (controllers, transcripts) {console.log("controllers onTranscriptsReady handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);},
-    boiledOnTranscriptReady: function (controllers, transcripts) {console.log("controllers boiledOnTranscriptReady handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);}
-},
+
         selectors: {
             play: ".flc-videoPlayer-play",
             scrubberContainer: ".flc-videoPlayer-scrubberContainer",
@@ -573,8 +571,5 @@ listeners: {
         fluid.videoPlayer.volumeControls.bindModel(that);
         that.events.onReady.fire(that);
     };
-    
-    fluid.videoPlayer.controllers.bindTranscriptMenu = function (that, foo) {
-        console.log("in controllers.bindTranscriptMenu");
-    };
+
 })(jQuery);
