@@ -189,7 +189,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                         onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                        onAttach: "{videoPlayer}.events.onTranscriptsReady"
+                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
+
                     }
                 }
             },
@@ -244,12 +245,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCreateMediaReady: null,
             onHTML5BrowserDetected: null,
             onTranscriptsReady: null,
+            onTranscriptsLoaded: null,
             canBindTranscriptMenu: {
                 events: {
                     controllers: "onControllersReady",
-                    transcripts: "onTranscriptsReady"
+                    transcripts: "onTranscriptsLoaded"
                 },
-                args: ["{arguments}.controllers.0", "{arguments}.transcripts.0"]
+                args: ["{arguments}.controllers.0", "{arguments}.transcripts.1"]
             }
         },
         invokers: {

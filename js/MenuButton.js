@@ -171,8 +171,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.container.toggle();
             that.container.attr("aria-hidden", !that.container.is(':visible'));
         };
-        that.setAriaControls = function  (langMenu, transcriptComponent) {
-                console.log("in that.setAriaControls: langMenu = "+langMenu.typeName+", transcriptComponent: "+transcriptComponent.typeName);
+        that.setAriaControls = function  (langMenu, transcriptId) {
+                console.log("in that.setAriaControls: langMenu = "+langMenu.typeName+", transcriptId: "+transcriptId);
         //        that.menu.attr("aria-controls", transcriptEl.id);
         };
     };

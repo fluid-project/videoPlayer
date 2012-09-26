@@ -259,7 +259,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         // The 2nd event parameter "that" is for writing unit test, no used at implementing transcript functionalities 
-        that.events.onTranscriptsLoaded.fire(intervalList, that);
+        that.events.onTranscriptsLoaded.fire(intervalList, that.locate("transcriptText").attr("id"), that);
     };  
     
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
@@ -328,7 +328,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.transcript.setUpKeyboardA11y = function (intervalList, that) {
+    fluid.videoPlayer.transcript.setUpKeyboardA11y = function (intervalList, id, that) {
         var transcriptElementSelector = "[id^=" + that.options.transcriptElementIdPrefix + "]";
         var transcriptList = $(transcriptElementSelector, that.container);
         var transcriptText = that.locate("transcriptText");
@@ -427,7 +427,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.transcript.prepareTranscript(that);
         fluid.videoPlayer.transcript.switchTranscriptArea(that);
 
-        that.locate("languageDropdown").attr("aria-controls", fluid.allocateSimpleId(that.locate("transcriptText")));
+        that.transcriptTextId = function () {
+            return fluid.allocateSimpleId(that.locate("transcriptText"));
+        };
+        that.locate("languageDropdown").attr("aria-controls", that.transcriptTextId());
 
         that.events.onReady.fire(that);
     };

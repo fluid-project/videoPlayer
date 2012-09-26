@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         var initialTranscriptText;
         
-        fluid.videoPlayer.testTranscriptLoaded = function (intervalList, that) {
+        fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
             jqUnit.assertNotNull("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text());
             jqUnit.assertTrue("Each transcript element is wrapped in a properly-named span", 
                     ($(".flc-videoPlayer-transcript-text").find('[id|="' + that.options.transcriptElementIdPrefix + '"]').length > 0));

@@ -212,7 +212,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             };
             
-            fluid.videoPlayer.testTranscriptLoaded = function (intervalList, that) {
+            fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
                 var transcriptTextArea = $(".flc-videoPlayer-transcript-text");
 
                 // make sure the transcript text is switched when another option is selected from the language combo box
