@@ -197,12 +197,6 @@ transcriptMenuEventBinder: {
     type: "fluid.videoPlayer.eventBinder",
     createOnEvent: "canBindTranscriptMenu"
 },
-/*
-transcriptMenuBinder: {
-    type: "fluid.videoPlayer.transcriptMenuBinder.finalInit",
-    createOnEvent: "canBindTranscriptMenu"
-},
-*/
             browserCompatibility: {
                 type: "demo.html5BackwardsCompatability",
                 createOnEvent: "onOldBrowserDetected"
@@ -261,23 +255,8 @@ canBindTranscriptMenu: {
         transcripts: "onTranscriptsReady"
     },
     args: ["{arguments}.controllers.0", "{arguments}.transcripts.0"]
-/*
-},
-boiledCanBindTranscriptMenu: {
-    event: "canBindTranscriptMenu"
-*/
 }
             },
-/*
-listeners: {
-    canBindTranscriptMenu: function (controllers, transcripts) {
-        console.log("canBindTranscriptMenu handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);
-        },
-    boiledCanBindTranscriptMenu: function (controllers, transcripts) {
-        console.log("boiliedCanBindTranscriptMenu handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);
-        }
-},
-*/
         invokers: {
             resize: {
                 funcName: "fluid.videoPlayer.resize",
@@ -693,48 +672,4 @@ listeners: {
             }
         }
     });
-
-
-
-/*
-    fluid.videoPlayer.addAriaControlsToTranscriptMenu = function (that) {
-        console.log("in fluid.videoPlayer.addAriaControlsToTranscriptMenu(): that = "+that);
-    };
-// NB: the transcriptMenuEventBinder is not binding events anymore - not sure if it's even being used at all?
-    fluid.demands("transcriptMenuEventBinder", ["fluid.videoPlayer.transcript", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.canBindTranscriptMenu": function () {
-                    console.log("in canBindTranscriptMenu handler");
-                }
-            }
-        }
-    });
-*/
-/*
-    fluid.demands("fluid.videoPlayer.transcript", "fluid.videoPlayer", {
-        options: {
-            events: {
-                boiledOnTranscriptsLoaded: "{transcript}.events.onTranscriptsLoaded"
-            },
-            listeners: {
-                "boiledOnTranscriptsLoaded": fluid.videoPlayer.addAriaControlsToTranscriptMenu
-            }
-        }
-    });
-    fluid.demands("boiledOnTranscriptsLoaded", ["fluid.videoPlayer.transcript", "fluid.videoPlayer"],  ["42"]);
-*/
-
-    /************
-     * 
-     ************/
-/*
-    fluid.defaults("fluid.videoPlayer.transcriptMenuBinder", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.transcriptMenuBinder.finalInit"
-    });
-    fluid.videoPlayer.transcriptMenuBinder.finalInit = function (that) {
-        console.log("in transcriptMenuBinder.finalInit")
-    };
-*/
 })(jQuery);

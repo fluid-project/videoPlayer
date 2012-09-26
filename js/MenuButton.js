@@ -40,8 +40,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             activated: null,
-            hiddenByKeyboard: null
+            hiddenByKeyboard: null,
+            onControlledElementReady: null
         },
+listeners: {
+    onControlledElementReady: function (theLangMenu, theTranscriptComp) {
+        console.log("in languageMenu onControlledElementReady handler: : theLangMenu = "+theLangMenu.typeName+", theTranscriptComp: "+theTranscriptComp.typeName);
+        fluid.videoPlayer.languageControls.updateAriaControls(theLangMenu, theTranscriptComp)
+    }
+},
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
             language: ".flc-videoPlayer-language",
@@ -222,11 +229,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             onRenderingComplete: null,
-            onControlledElementReady: null
+            onControlledElementReady: null,
+            boiledOnControlledElementReady: {
+                event: "onControlledElementReady",
+                args: ["{languageControls}.menu", "{arguments}.1"]
+            }
         },
 listeners: {
     onControlledElementReady: function (theLangCtrls, theTranscriptComp) {
-        console.log("in menuButton onControlledElementReady handler: : theLangCtrls = "+theLangCtrls.typeName+", theTranscriptComp: "+theTranscriptComp.typeName);
+        console.log("in languageControls onControlledElementReady handler: : theLangCtrls = "+theLangCtrls.typeName+", theTranscriptComp: "+theTranscriptComp.typeName);
         fluid.videoPlayer.languageControls.updateAriaControls(theLangCtrls, theTranscriptComp)
     }
 },
@@ -267,7 +278,10 @@ listeners: {
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
                     strings: "{languageControls}.options.strings",
-                    controlledEl: "{languageControls}.options.controlledEl"
+                    controlledEl: "{languageControls}.options.controlledEl",
+                    events: {
+                        onControlledElementReady: "{languageControls}.events.boiledOnControlledElementReady"
+                    }
                 }
             },
             eventBinder: {
@@ -348,7 +362,7 @@ listeners: {
 
 
     fluid.videoPlayer.languageControls.updateAriaControls = function (transcriptControls, transcriptComponent) {
-        debugger;
+//        debugger;
 //        that.menu.attr("aria-controls", transcriptEl.id);
     };
 })(jQuery);
