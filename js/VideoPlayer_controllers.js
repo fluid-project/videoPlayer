@@ -110,7 +110,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Transcripts"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onTranscriptsReady"
+                        onControlledElementReady: "{controllers}.events.boiledOnTranscriptReady"
                     }
                 }
             },
@@ -166,10 +166,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTimeChange: null,
             afterTimeChange: null,
 onTranscriptsReady: null,
+boiledOnTranscriptReady: {
+    event: "onTranscriptsReady",
+    args: ["{controllers}.transcriptControls", "{arguments}.1"]
+},
             onMarkupReady: null
         },
 listeners: {
-    onTranscriptsReady: function () {console.log("onTranscriptsReady fired");}
+    onTranscriptsReady: function (controllers, transcripts) {console.log("controllers onTranscriptsReady handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);},
+    boiledOnTranscriptReady: function (controllers, transcripts) {console.log("controllers boiledOnTranscriptReady handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);}
 },
         selectors: {
             play: ".flc-videoPlayer-play",

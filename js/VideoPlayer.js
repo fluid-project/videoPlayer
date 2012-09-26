@@ -189,7 +189,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                         onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                        onAttach: "{videoPlayer}.events.onTranscriptsReady"
+                        onAttach: "{videoPlayer}.events.onTranscriptsReady" // wholesale injection: when either event is fired, the other is fired, and listeners on both are called
                     }
                 }
             },
@@ -254,7 +254,6 @@ transcriptMenuBinder: {
             onCreateMediaReady: null,
             onHTML5BrowserDetected: null
 ,
-foo: null,
 onTranscriptsReady: null,
 canBindTranscriptMenu: {
     events: {
@@ -262,19 +261,23 @@ canBindTranscriptMenu: {
         transcripts: "onTranscriptsReady"
     },
     args: ["{arguments}.controllers.0", "{arguments}.transcripts.0"]
+/*
 },
-boiliedCanBindTranscriptMenu: {
+boiledCanBindTranscriptMenu: {
     event: "canBindTranscriptMenu"
+*/
 }
             },
+/*
 listeners: {
     canBindTranscriptMenu: function (controllers, transcripts) {
         console.log("canBindTranscriptMenu handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);
         },
-    boiliedCanBindTranscriptMenu: function (controllers, transcripts) {
+    boiledCanBindTranscriptMenu: function (controllers, transcripts) {
         console.log("boiliedCanBindTranscriptMenu handler: controllers = "+controllers.typeName+", transcripts: "+transcripts.typeName);
-        },
+        }
 },
+*/
         invokers: {
             resize: {
                 funcName: "fluid.videoPlayer.resize",
@@ -670,6 +673,16 @@ listeners: {
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
     
+    fluid.demands("transcriptMenuEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+        options: {
+            listeners: {
+                "{videoPlayer}.events.onScrub": "{media}.setTime",
+                "{videoPlayer}.events.onViewReady": "{media}.refresh",
+                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
+                "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
+            }
+        }
+    });
     fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
@@ -683,6 +696,7 @@ listeners: {
 
 
 
+/*
     fluid.videoPlayer.addAriaControlsToTranscriptMenu = function (that) {
         console.log("in fluid.videoPlayer.addAriaControlsToTranscriptMenu(): that = "+that);
     };
@@ -696,6 +710,8 @@ listeners: {
             }
         }
     });
+*/
+/*
     fluid.demands("fluid.videoPlayer.transcript", "fluid.videoPlayer", {
         options: {
             events: {
@@ -707,6 +723,7 @@ listeners: {
         }
     });
     fluid.demands("boiledOnTranscriptsLoaded", ["fluid.videoPlayer.transcript", "fluid.videoPlayer"],  ["42"]);
+*/
 
     /************
      * 

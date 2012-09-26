@@ -225,9 +225,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onControlledElementReady: null
         },
 listeners: {
-    onControlledElementReady: function (theLangCtrls, transcriptEl) {
-        console.log("in menuButton onControlledElementReady handler");
-        fluid.videoPlayer.languageControls.updateAriaControls(theLangCtrls, transcriptEl)
+    onControlledElementReady: function (theLangCtrls, theTranscriptComp) {
+        console.log("in menuButton onControlledElementReady handler: : theLangCtrls = "+theLangCtrls.typeName+", theTranscriptComp: "+theTranscriptComp.typeName);
+        fluid.videoPlayer.languageControls.updateAriaControls(theLangCtrls, theTranscriptComp)
     }
 },
         languages: [],
@@ -347,7 +347,8 @@ listeners: {
     });
 
 
-    fluid.videoPlayer.languageControls.updateAriaControls = function (that, transcriptEl) {
+    fluid.videoPlayer.languageControls.updateAriaControls = function (transcriptControls, transcriptComponent) {
+        debugger;
 //        that.menu.attr("aria-controls", transcriptEl.id);
     };
 })(jQuery);
