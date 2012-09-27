@@ -265,47 +265,5 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             initVideoPlayer($(".videoPlayer-transcript"), testOpts);
         });
 
-        fluid.videoPlayer.checkAriaControls = function (controlsToTest) {
-            fluid.each(controlsToTest, function (spec, index) {
-                jqUnit.assertEquals(spec.controlName + " should aria-controls " + spec.controlledName,
-                                    $(spec.controlled).attr("id"),
-                                    $(spec.control).attr("aria-controls"));
-            });
-        };
-
-        videoPlayerIntegrationTests.asyncTest("aria-controls on language menus", function () {
-
-            fluid.videoPlayer.testARIAControls = function (that) {
-                var controlsToTest = [{
-                    controlName: "Caption menu",
-                    control: ".flc-videoPlayer-captions-languageMenu",
-                    controlledName: "captions area",
-                    controlled: ".flc-videoPlayer-captionArea"
-                }];
-
-                var captionMenuLanguages = $(".flc-videoPlayer-captions-languageMenu .flc-videoPlayer-language");
-                for (var i = 0; i < captionMenuLanguages.length; i++) {
-                    controlsToTest.push({
-                        controlName: "Caption language " + i,
-                        control: captionMenuLanguages[i],
-                        controlledName: "captions area",
-                        controlled: ".flc-videoPlayer-captionArea"
-                    });
-                }
-                expect(controlsToTest.length);
-
-                fluid.videoPlayer.checkAriaControls(controlsToTest);
-                start();
-            };
-
-            var testOpts = {
-                listeners: {
-                    onReady: fluid.videoPlayer.testARIAControls
-                }
-            };
-
-            initVideoPlayer($(".videoPlayer-aria"), testOpts);
-        });
-
-   });
+    });
 })(jQuery);
