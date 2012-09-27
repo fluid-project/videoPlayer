@@ -253,7 +253,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     controllers: "onControllersReady",
                     transcripts: "onTranscriptsLoaded"
                 },
-                args: ["{arguments}.controllers.0", "{arguments}.transcripts.1"]
+                args: ["{arguments}.transcripts.1"]
             }
         },
         invokers: {
@@ -633,10 +633,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.model.videoWidth = videoWidth;
         that.model.videoHeight = videoHeight;
     };
-
-    fluid.demands("onControlledTranscriptReady", ["fluid.videoPlayer.controllers", "fluid.videoPlayer.transcript"],
-        ["{controllers}.transcriptControls", "{arguments}.1"]
-    );
 
     /*********************************************************************************
      * Event Binder:                                                                 *

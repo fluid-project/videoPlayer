@@ -110,7 +110,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Transcripts"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onControlledTranscriptReady"
+                        onControlledElementReady: "{controllers}.events.onTranscriptsReady"
                     }
                 }
             },
@@ -167,11 +167,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             afterTimeChange: null,
             onMarkupReady: null,
 
-            // private events used for associating transcript menu with transcript via ARIA
-            onTranscriptsReady: null,
-            onControlledTranscriptReady: {
-                event: "onTranscriptsReady"
-            }
+            // private event used for associating transcript menu with transcript via ARIA
+            onTranscriptsReady: null
         },
 
         selectors: {

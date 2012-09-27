@@ -46,7 +46,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         listeners: {
             onControlledElementReady: {
                 listener: "fluid.videoPlayer.languageMenu.setAriaControlsAttr",
-                args: ["{languageMenu}", "{arguments}.1"]
+                args: ["{languageMenu}", "{arguments}.0"]
             }
         },
         selectors: {
@@ -233,7 +233,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             onRenderingComplete: null,
-            onControlledElementReady: null//,
+            onControlledElementReady: null
         },
         languages: [],
         currentLanguagePath: "",
