@@ -168,9 +168,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.locate("showHide").text(that.options.strings[showHide? "hideLanguage": "showLanguage"]);
     };
 
-    fluid.videoPlayer.languageMenu.setAriaControlsAttr = function  (that, transcriptId) {
-        that.container.attr("aria-controls", transcriptId);
-        that.locate("menuItem").attr("aria-controls", transcriptId);
+    fluid.videoPlayer.languageMenu.setAriaControlsAttr = function  (that, controlledId) {
+        that.container.attr("aria-controls", controlledId);
+        that.locate("menuItem").attr("aria-controls", controlledId);
     };
 
     fluid.videoPlayer.languageMenu.preInit = function (that) {

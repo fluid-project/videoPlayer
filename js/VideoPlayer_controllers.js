@@ -110,7 +110,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Transcripts"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.boiledOnTranscriptReady"
+                        onControlledElementReady: "{controllers}.events.onControlledTranscriptReady"
                     }
                 }
             },
@@ -165,13 +165,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
+            onMarkupReady: null,
+
+            // private events used for associating transcript menu with transcript via ARIA
             onTranscriptsReady: null,
-            boiledOnTranscriptReady: {
-                event: "onTranscriptsReady",
-                // need to move this argument definition into a demands block?
-                args: ["{controllers}.transcriptControls", "{arguments}.1"]
-            },
-            onMarkupReady: null
+            onControlledTranscriptReady: {
+                event: "onTranscriptsReady"
+            }
         },
 
         selectors: {
