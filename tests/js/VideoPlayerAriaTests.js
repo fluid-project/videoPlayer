@@ -7,13 +7,13 @@ Licenses.
 
 You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
- 
- */
+
+*/
 
 // Declare dependencies
 /*global fluid, jqUnit, expect, jQuery, start*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
@@ -71,7 +71,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         };
-        
+
         var initVideoPlayer = function () {
             var opts = fluid.copy(baseOpts);
 
@@ -80,10 +80,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             for (var index = 1; index < arguments.length; index++) {
                 $.extend(true, opts, arguments[index]);
             }
-            
+
             return fluid.videoPlayer(container, opts);
         };
-        
 
         fluid.tests.videoPlayer.checkAriaControls = function (controlsToTest) {
             fluid.each(controlsToTest, function (spec, index) {

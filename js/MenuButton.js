@@ -96,7 +96,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             // add the 'turn off' option
             showHide: {
-                value: that.options.strings[that.readIndirect("showHidePath")? "hideLanguage" : "showLanguage"],
+                value: that.options.strings[that.readIndirect("showHidePath") ? "hideLanguage" : "showLanguage"],
                 decorators: {
                     type: "attrs",
                     attributes: {
@@ -146,7 +146,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.locate("showHide").click(function (evt) {
-            that.showHide()
+            that.showHide();
         });
 
         that.applier.modelChanged.addListener(that.options.showHidePath, that.updateShowHide);
@@ -163,12 +163,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         $(menuItems[langIndex]).attr("aria-checked", "true").attr("aria-selected", "true");
     };
     
-    fluid.videoPlayer.languageMenu.updateShowHide = function(that) {
+    fluid.videoPlayer.languageMenu.updateShowHide = function (that) {
         var showHide = that.readIndirect("showHidePath"); 
-        that.locate("showHide").text(that.options.strings[showHide? "hideLanguage": "showLanguage"]);
+        that.locate("showHide").text(that.options.strings[showHide ? "hideLanguage" : "showLanguage"]);
     };
 
-    fluid.videoPlayer.languageMenu.setAriaControlsAttr = function  (that, controlledId) {
+    fluid.videoPlayer.languageMenu.setAriaControlsAttr = function (that, controlledId) {
         that.container.attr("aria-controls", controlledId);
         that.locate("menuItem").attr("aria-controls", controlledId);
     };
@@ -259,7 +259,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     selectors: {
                         button: "{languageControls}.options.selectors.button"
                     },
-                    strings: "{languageControls}.options.strings",
+                    strings: "{languageControls}.options.strings"
                 }
             },
             menu: {
@@ -272,7 +272,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
                     strings: "{languageControls}.options.strings",
-                    controlledEl: "{languageControls}.options.controlledEl",
                     events: {
                         onControlledElementReady: "{languageControls}.events.onControlledElementReady"
                     }
@@ -336,7 +335,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         function refreshButtonClass() {
             var showHide = that.readIndirect("showHidePath");
             that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
-        };
+        }
 
         that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
         refreshButtonClass();
@@ -350,7 +349,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         listeners: {
-            "{button}.events.onPress": "{menu}.toggleView",
-        },
+            "{button}.events.onPress": "{menu}.toggleView"
+        }
     });
 })(jQuery);

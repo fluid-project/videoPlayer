@@ -82,8 +82,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Captions",
                         press: "Captions",
                         release: "Captions"
-                    },
-                    controlledEl: "{videoPlayer}.dom.caption"
+                    }
                 }
             },
             transcriptControls: {
@@ -290,7 +289,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     initiallyHidden: false,
                     minWidth: 0
                 }
-            },
+            }
         },
         events: {
             afterScrub: null,
@@ -409,7 +408,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.updateMuteStatus = function (that) {
-        return function(newModel, oldModel) {
+        return function (newModel, oldModel) {
             if (!that.applier.hasChangeSource("mute")) {
                 if (that.model.volume === 0) {
                     that.oldVolume = oldModel.volume;
@@ -443,8 +442,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (isMuting) {
                     // If this mute event was not already sourced from a volume change, fire volume to 0
                     fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
-                }
-                else {
+                } else {
                     fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
                 }
             }
@@ -485,7 +483,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     volumeControl.slider("value", volumeControl.slider("value") + 1);
                     return false;
                 }
-            },{
+            }, {
                 key: $.ui.keyCode.DOWN,
                 activateHandler: function () {
                     volumeControl.slider("value", volumeControl.slider("value") - 1);
@@ -541,7 +539,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     model: "{volumeControls}.model",
                     applier: "{volumeControls}.applier",
-                    modelPath: "muted",
+                    modelPath: "muted"
                 }
             }
         }

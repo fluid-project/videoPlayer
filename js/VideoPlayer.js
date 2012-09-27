@@ -348,8 +348,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, {
                 modifier: that.options.keyBindings.volumePlus.modifier,
                 key: that.options.keyBindings.volumePlus.key,
-                activateHandler: function() {
-                    that.applier.fireChangeRequest( {
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
                         path: "volume",
                         value: that.model.volume + 10
                     });
@@ -358,8 +358,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, {
                 modifier: that.options.keyBindings.volumeMinus.modifier,
                 key: that.options.keyBindings.volumeMinus.key,
-                activateHandler: function() {
-                    that.applier.fireChangeRequest( {
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
                         path: "volume",
                         value: that.model.volume - 10
                     });
@@ -448,7 +448,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
-        fluid.each(tracks, function(track) {
+        fluid.each(tracks, function (track) {
             if (!track.kind) {
                 track.kind = defaultKind;
             }
@@ -456,7 +456,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
-        fluid.each(that.options.defaultKinds, function(defaultKind, index) {
+        fluid.each(that.options.defaultKinds, function (defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
     
