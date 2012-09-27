@@ -1,4 +1,4 @@
-MyInfusion was built from Antranig's FLUID-4799 branch (de4a579d4382686d0611eb32622c07725a732a4f) using the following command:
+MyInfusion was built from an unreleased version of Infusion master branch (be0b2ff095fa3ea1b1cb4abd3e38e41462d333d1) using the following command:
 
 Build the minified Infusion:
 ant customBuild -Dinclude="uiOptions, uploader, tooltip" -lib lib/rhino

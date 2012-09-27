@@ -44,7 +44,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onControlledElementReady: null
         },
         listeners: {
-            onControlledElementReady: "{languageMenu}.setAriaControls"
+            onControlledElementReady: {
+                listener: "fluid.videoPlayer.languageMenu.setAriaControlsAttr",
+                args: ["{languageMenu}", "{arguments}.1"]
+            }
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
@@ -165,16 +168,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.locate("showHide").text(that.options.strings[showHide? "hideLanguage": "showLanguage"]);
     };
 
-    fluid.videoPlayer.languageMenu.preInit = function (that) {
+    fluid.videoPlayer.languageMenu.setAriaControlsAttr = function  (that, transcriptId) {
+        that.container.attr("aria-controls", transcriptId);
+        that.locate("menuItem").attr("aria-controls", transcriptId);
+    };
 
+    fluid.videoPlayer.languageMenu.preInit = function (that) {
         that.toggleView = function () {
             that.container.toggle();
             that.container.attr("aria-hidden", !that.container.is(':visible'));
-        };
-        that.setAriaControls = function  (langMenu, transcriptId) {
-            console.log("in that.setAriaControls: langMenu = "+langMenu.typeName+", transcriptId: "+transcriptId);
-            that.container.attr("aria-controls", transcriptId);
-            that.locate("menuItem").attr("aria-controls", transcriptId);
         };
     };
 
@@ -231,12 +233,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             onRenderingComplete: null,
-            onControlledElementReady: null,
-            boiledOnControlledElementReady: {
-                event: "onControlledElementReady",
-                // need to move argument defs into a demands block?
-                args: ["{languageControls}.menu", "{arguments}.1"]
-            }
+            onControlledElementReady: null//,
         },
         languages: [],
         currentLanguagePath: "",
@@ -277,7 +274,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     strings: "{languageControls}.options.strings",
                     controlledEl: "{languageControls}.options.controlledEl",
                     events: {
-                        onControlledElementReady: "{languageControls}.events.boiledOnControlledElementReady"
+                        onControlledElementReady: "{languageControls}.events.onControlledElementReady"
                     }
                 }
             },
