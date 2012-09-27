@@ -49,15 +49,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ],
                 transcripts: [
                     {
-                        // TODO: renamed to TestTranscript.en(fr).json once the pull request for transcript component
-                        // unit test (FLUID-4643) is merged into demo branch
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
+                        src: "TestTranscripts.en.json",
                         type: "JSONcc",
                         srclang: "en",
                         label: "English"
                     },
                     {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
+                        src: "TestTranscripts.fr.json",
                         type: "JSONcc",
                         srclang: "fr",
                         label: "French"

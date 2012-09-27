@@ -19,6 +19,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
 
+        fluid.registerNamespace("fluid.tests.videoPlayer");
+
         var videoPlayerARIATests = new jqUnit.TestCase("Video Player ARIA Tests");
 
         var baseOpts = {
@@ -49,15 +51,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ],
                 transcripts: [
                     {
-                        // TODO: renamed to TestTranscript.en(fr).json once the pull request for transcript component
-                        // unit test (FLUID-4643) is merged into demo branch
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
+                        src: "TestTranscripts.en.json",
                         type: "JSONcc",
                         srclang: "en",
                         label: "English"
                     },
                     {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
+                        src: "TestTranscripts.fr.json",
                         type: "JSONcc",
                         srclang: "fr",
                         label: "French"
@@ -74,44 +74,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         var initVideoPlayer = function () {
             var opts = fluid.copy(baseOpts);
-            
+
             // the 1st argument is the container and the following is component options
-            for (var index in arguments) {
-                if (index === "0") {
-                    var container = arguments[index];
-                } else {
-                    $.extend(true, opts, arguments[index]);
-                }
+            var container = arguments[0];
+            for (var index = 1; index < arguments.length; index++) {
+                $.extend(true, opts, arguments[index]);
             }
             
             return fluid.videoPlayer(container, opts);
         };
         
 
-        var testPlayPause = function (clickFunc) {
-            var video = $(".flc-videoPlayer-video");
-            
-            clickFunc();
-            var currentTimeBeforePlay = video[0].currentTime;
-            
-            setTimeout(function () {
-                var currentTimeAfterPlay = video[0].currentTime;
-                jqUnit.assertNotEquals("The video is playing", currentTimeBeforePlay, currentTimeAfterPlay);
-
-                // pause
-                clickFunc();
-                
-                var currentTimeBeforePause = video[0].currentTime;
-                setTimeout(function () {
-                    var currentTimeAfterPause = video[0].currentTime;
-                    jqUnit.assertEquals("The video is paused", currentTimeBeforePause, currentTimeAfterPause);
-                    start();
-                }, 500);
-            }, 1500);
-        };
-        
-        fluid.videoPlayer.checkAriaControls = function (controlsToTest) {
-console.log("in checkAriaControls");
+        fluid.tests.videoPlayer.checkAriaControls = function (controlsToTest) {
             fluid.each(controlsToTest, function (spec, index) {
                 expect(1);
                 jqUnit.assertEquals(spec.controlName + " should aria-controls " + spec.controlledName,
@@ -120,64 +94,57 @@ console.log("in checkAriaControls");
             });
         };
 
-        videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
+        fluid.tests.videoPlayer.triggerTranscript = function (that) {
+            // initial loading
+            $(".flc-videoPlayer-transcripts-languageMenu li:eq(0)").click();
+        };
+        fluid.tests.videoPlayer.testARIAControls = function (that) {
+            var controlsToTest = [{
+                controlName: "Caption menu",
+                control: ".flc-videoPlayer-captions-languageMenu",
+                controlledName: "captions area",
+                controlled: ".flc-videoPlayer-captionArea"
+            }, {
+                controlName: "Transcript menu",
+                control: ".flc-videoPlayer-transcripts-languageMenu",
+                controlledName: "transcript area",
+                controlled: ".flc-videoPlayer-transcript-text"
+            }];
 
-            fluid.videoPlayer.triggerTranscript = function (that) {
-                // initial loading
-                $(".flc-videoPlayer-transcripts-languageMenu li:eq(0)").click();
-            };
-            fluid.videoPlayer.testARIAControls = function (that) {
-                var controlsToTest = [{
-                    controlName: "Caption menu",
-                    control: ".flc-videoPlayer-captions-languageMenu",
+            var captionMenuLanguages = $(".flc-videoPlayer-captions-languageMenu .flc-videoPlayer-language");
+            for (var i = 0; i < captionMenuLanguages.length; i++) {
+                controlsToTest.push({
+                    controlName: "Caption language " + i,
+                    control: captionMenuLanguages[i],
                     controlledName: "captions area",
                     controlled: ".flc-videoPlayer-captionArea"
-                },{
-                    controlName: "Transcript menu",
-                    control: ".flc-videoPlayer-transcripts-languageMenu",
+                });
+            }
+            var transcriptMenuLanguages = $(".flc-videoPlayer-transcripts-languageMenu .flc-videoPlayer-language");
+            for (i = 0; i < transcriptMenuLanguages.length; i++) {
+                controlsToTest.push({
+                    controlName: "Transcript language " + i,
+                    control: transcriptMenuLanguages[i],
                     controlledName: "transcript area",
                     controlled: ".flc-videoPlayer-transcript-text"
-                }];
+                });
+            }
 
-                var captionMenuLanguages = $(".flc-videoPlayer-captions-languageMenu .flc-videoPlayer-language");
-                for (var i = 0; i < captionMenuLanguages.length; i++) {
-                    controlsToTest.push({
-                        controlName: "Caption language " + i,
-                        control: captionMenuLanguages[i],
-                        controlledName: "captions area",
-                        controlled: ".flc-videoPlayer-captionArea"
-                    });
-                }
-                var transcriptMenuLanguages = $(".flc-videoPlayer-transcripts-languageMenu .flc-videoPlayer-language");
-                for (var i = 0; i < transcriptMenuLanguages.length; i++) {
-                    controlsToTest.push({
-                        controlName: "Transcript language " + i,
-                        control: transcriptMenuLanguages[i],
-                        controlledName: "transcript area",
-                        controlled: ".flc-videoPlayer-transcript-text"
-                    });
-                }
+            fluid.tests.videoPlayer.checkAriaControls(controlsToTest);
+            start();
+        };
 
-                setTimeout(function () {
-console.log("in the timeout. controlsToTest.length =  "+controlsToTest.length);
-                    fluid.videoPlayer.checkAriaControls(controlsToTest);
-                    start();
-                }, 1500);
-            };
+        videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
 
             var testOpts = {
                 listeners: {
-                    onReady: fluid.videoPlayer.triggerTranscript
+                    onReady: "fluid.tests.videoPlayer.triggerTranscript"
                 },
                 components: {
                     transcript: {
                         options: {
                             listeners: {
-                                onReady: fluid.videoPlayer.testARIAControls
-                                // {
-                                    // listener: fluid.videoPlayer.testARIAControls,
-                                    // priority: "last"
-                                // }
+                                onTranscriptsLoaded: "fluid.tests.videoPlayer.testARIAControls"
                             }
                         }
                     }
@@ -187,5 +154,5 @@ console.log("in the timeout. controlsToTest.length =  "+controlsToTest.length);
             initVideoPlayer($(".videoPlayer-aria"), testOpts);
         });
 
-   });
+    });
 })(jQuery);
