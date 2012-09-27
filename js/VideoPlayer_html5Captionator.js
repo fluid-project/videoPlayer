@@ -21,8 +21,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     /********************************************************************
      * HTML5 Captionator                                                *
-     * A wrapper component of captionatorjs (http://captionatorjs.com/) *
-     * that makes it accessible in the infusion way.                    *
+     * An Infusion wrapper of captionatorjs (http://captionatorjs.com/) *
      ********************************************************************/
 
     fluid.defaults("fluid.videoPlayer.html5Captionator", {
@@ -32,6 +31,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         model: {},
         captions: [],
         events: {
+            afterTrackElCreated: null,
+            onTracksReady: null,
             onReady: null
         },
         elPaths: {
@@ -42,6 +43,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         selectors: {
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea"
+        },
+        listeners: {
+            afterTrackElCreated: "fluid.videoPlayer.html5Captionator.waitForTracks",
+            onTracksReady: "fluid.videoPlayer.html5Captionator.captionify"
         }
     });
     
@@ -83,12 +88,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     };
 
+    var tracksToCreate = 0;
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions;
         
         if (!captions || captions.length === 0) return;  // Exit if captions are not provided
         
+        tracksToCreate = captions.length;
+
         // Start adding tracks to the video tag
         fluid.each(captions, function (capOpt, key) {
             var trackTag = $("<track />");
@@ -108,21 +116,33 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
                     var dataUrl = "data:text/plain," + encodeURIComponent(vtt);
                     trackTag.attr("src", dataUrl);
+                    that.events.afterTrackElCreated.fire(that);
                 };
 
                 // Is this an issue? I'm fetching all the captions every time, whether or not anyone wants them. 
                 fluid.videoPlayer.fetchAmaraJson(capOpt.src, callback);
+            } else {
+                that.events.afterTrackElCreated.fire(that);
             }
 
             that.locate("video").append(trackTag);
         });
+    };
 
+    fluid.videoPlayer.html5Captionator.waitForTracks = function (that) {
+        tracksToCreate--;
+
+        if (tracksToCreate === 0) {
+            that.events.onTracksReady.fire(that);
+        }
+    };
+
+    fluid.videoPlayer.html5Captionator.captionify = function (that) {
         // Create captionator code which will add a captionator div to the HTML
         captionator.captionify(that.locate("video")[0], null, {
             appendCueCanvasTo: that.locate("caption")[0],
             sizeCuesByTextBoundingBox: true
         });
-        
         bindCaptionatorModel(that);
         that.events.onReady.fire(that);
     };
