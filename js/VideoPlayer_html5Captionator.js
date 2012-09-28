@@ -110,7 +110,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
         
         bindCaptionatorModel(that);
-        that.events.onReady.fire(that);
+        that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
 
 })(jQuery);

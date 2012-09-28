@@ -142,7 +142,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
-                        onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu"
+                        onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     }
                 }
             },
@@ -153,7 +154,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.options.video.captions"
+                    captions: "{videoPlayer}.options.video.captions",
+                    events: {
+                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                    }
                 }
             },
             transcript: {
@@ -244,15 +248,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCreateMediaReady: null,
             onHTML5BrowserDetected: null,
 
-            // private events used for associating transcript menu with transcript via ARIA
+            // private events used for associating menus with what they control via ARIA
             onTranscriptsReady: null,
             onTranscriptsLoaded: null,
+            onCaptionsReady: null,
             canBindTranscriptMenu: {
                 events: {
                     controllers: "onControllersReady",
                     transcripts: "onTranscriptsLoaded"
                 },
                 args: ["{arguments}.transcripts.1"]
+            },
+            canBindCaptionMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    captions: "onCaptionsReady"
+                },
+                args: ["{arguments}.captions.1"]
             }
         },
         invokers: {
