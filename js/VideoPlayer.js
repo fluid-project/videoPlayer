@@ -193,7 +193,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                         onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
                         onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
-
                     }
                 }
             },

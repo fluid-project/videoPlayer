@@ -74,17 +74,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var initVideoPlayer = function () {
             var opts = fluid.copy(baseOpts);
-
-            // the 1st argument is the container and the following is component options
             var container = arguments[0];
             for (var index = 1; index < arguments.length; index++) {
                 $.extend(true, opts, arguments[index]);
             }
-
             return fluid.videoPlayer(container, opts);
         };
 
-        fluid.tests.videoPlayer.checkAriaControls = function (controlsToTest) {
+        fluid.tests.videoPlayer.checkAriaControlsAttr = function (controlsToTest) {
             fluid.each(controlsToTest, function (spec, index) {
                 expect(2);
                 jqUnit.assertTrue(spec.controlName + " should have aria-controls attribute", !!$(spec.control).attr("aria-controls"));
@@ -95,10 +92,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         fluid.tests.videoPlayer.triggerTranscript = function (that) {
-            // initial loading
             $(".flc-videoPlayer-transcripts-languageMenu li:eq(0)").click();
         };
-        fluid.tests.videoPlayer.testARIAControls = function (that) {
+
+        fluid.tests.videoPlayer.testAriaControlsAttrs = function (that) {
             var controlsToTest = [{
                 controlName: "Caption menu",
                 control: ".flc-videoPlayer-captions-languageMenu",
@@ -129,13 +126,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     controlled: ".flc-videoPlayer-transcript-text"
                 });
             }
-
-            fluid.tests.videoPlayer.checkAriaControls(controlsToTest);
+            fluid.tests.videoPlayer.checkAriaControlsAttr(controlsToTest);
             start();
         };
 
         videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
-
             var testOpts = {
                 listeners: {
                     onReady: "fluid.tests.videoPlayer.triggerTranscript"
@@ -144,13 +139,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     transcript: {
                         options: {
                             listeners: {
-                                onTranscriptsLoaded: "fluid.tests.videoPlayer.testARIAControls"
+                                onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
                             }
                         }
                     }
                 }
             };
-
             initVideoPlayer($(".videoPlayer-aria"), testOpts);
         });
 

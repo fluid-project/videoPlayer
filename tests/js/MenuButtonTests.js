@@ -225,12 +225,15 @@ fluid.registerNamespace("fluid.tests");
                 listeners: {
                     onReady: {
                         listener: function (that) {
-                            jqUnit.assertTrue("Button should have aria-owns attribute", !!that.button.locate("button").attr("aria-owns"));
-                            jqUnit.assertEquals("Button should 'own' menu", that.menu.container.attr("id"), that.button.locate("button").attr("aria-owns"));
-                            jqUnit.assertTrue("Button should have aria-haspopup attribute", !!that.button.locate("button").attr("aria-haspopup"));
+                            var button = that.button.locate("button");
+                            var ariaOwns = button.attr("aria-owns");
+                            var ariaControls = button.attr("aria-controls");
+                            jqUnit.assertTrue("Button should have aria-owns attribute", !!ariaOwns);
+                            jqUnit.assertEquals("Button should 'own' menu", that.menu.container.attr("id"), ariaOwns);
+                            jqUnit.assertTrue("Button should have aria-haspopup attribute", !!button.attr("aria-haspopup"));
                             jqUnit.assertTrue("Menu should be aria-hidden", that.menu.container.attr("aria-hidden"));
-                            jqUnit.assertTrue("Button should have aria-controls attribute", !!that.button.locate("button").attr("aria-controls"));
-                            jqUnit.assertEquals("Button should aria-controls the menu", that.menu.container.attr("id"), that.button.locate("button").attr("aria-controls"))
+                            jqUnit.assertTrue("Button should have aria-controls attribute", !!ariaControls);
+                            jqUnit.assertEquals("Button should aria-controls the menu", that.menu.container.attr("id"), ariaControls);
 
                             that.menu.showMenu();
                             jqUnit.assertEquals("After show, menu should not be aria-hidden", "false", that.menu.container.attr("aria-hidden"));

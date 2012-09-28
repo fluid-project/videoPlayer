@@ -159,9 +159,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
         menuItems.attr("aria-checked", "false").attr("aria-selected", "false");
         var langIndex = that.readIndirect("currentLanguagePath")[0];
-        var selectedLangItem = $(menuItems[langIndex]);
-        selectedLangItem.addClass(that.options.styles.active);
-        selectedLangItem.attr("aria-checked", "true").attr("aria-selected", "true");
+        var selectedItem = $(menuItems[langIndex]);
+        selectedItem.addClass(that.options.styles.active);
+        selectedItem.attr("aria-checked", "true").attr("aria-selected", "true");
     };
     
     fluid.videoPlayer.languageMenu.updateShowHide = function (that) {
@@ -183,8 +183,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.languageMenu.postInit = function (that) {
         that.showMenu = function () {
-            that.container.attr("aria-hidden", "false");
             that.container.show();
+            that.container.attr("aria-hidden", "false");
         };
         that.hideMenu = function () {
             that.container.hide();
@@ -321,9 +321,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.languageControls.setUpAria = function (that) {
-        var button = that.button.locate("button");
         var containerID = fluid.allocateSimpleId(that.menu.container);
-        button.attr({
+        that.button.locate("button").attr({
             "aria-owns": containerID,
             "aria-controls": containerID,
             "aria-haspopup": "true"
@@ -331,16 +330,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {
-        fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         that.events.onRenderingComplete.fire(that);
-        
+
+        fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         fluid.videoPlayer.languageControls.setUpAria(that);
 
         function refreshButtonClass() {
             var showHide = that.readIndirect("showHidePath");
             that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
         }
-
         that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
         refreshButtonClass();
         that.events.onReady.fire(that);

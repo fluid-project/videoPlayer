@@ -174,13 +174,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var testOpts = {
                 listeners: {
                     onReady: function (that) {
-                        jqUnit.assertTrue("Drop-down should have aria-controls attribute", that.locate("languageDropdown").attr("aria-controls"));
-                        jqUnit.assertEquals("aria-controls should reference the text area", that.locate("transcriptText").attr("id"), that.locate("languageDropdown").attr("aria-controls"));
+                        var attr = that.locate("languageDropdown").attr("aria-controls");
+                        jqUnit.assertTrue("Drop-down should have aria-controls attribute", !!attr);
+                        jqUnit.assertEquals("aria-controls should reference the text area", that.locate("transcriptText").attr("id"), attr);
                         start();
                     }
                 }
             };
-
             var that = initTranscript(localTranscriptOpts, testOpts);
         });
 
@@ -193,7 +193,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-
             var that = initTranscript(localTranscriptOpts, testOpts);
         });
     });
