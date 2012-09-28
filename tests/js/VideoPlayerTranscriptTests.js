@@ -183,5 +183,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             var that = initTranscript(localTranscriptOpts, testOpts);
         });
+
+        videoPlayerTranscriptTests.asyncTest("transcriptTextId", function () {
+            var testOpts = {
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("should be able to retrieve transcript id", that.locate("transcriptText").attr("id"), that.transcriptTextId());
+                        start();
+                    }
+                }
+            };
+
+            var that = initTranscript(localTranscriptOpts, testOpts);
+        });
     });
 })(jQuery);

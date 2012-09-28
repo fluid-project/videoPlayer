@@ -132,7 +132,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.controllers",
                 container: "{videoPlayer}.dom.controllers",
                 createOnEvent: "onCreateControllersReady",
-                priority: "last",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",

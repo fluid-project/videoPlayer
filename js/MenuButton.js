@@ -159,8 +159,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
         menuItems.attr("aria-checked", "false").attr("aria-selected", "false");
         var langIndex = that.readIndirect("currentLanguagePath")[0];
-        $(menuItems[langIndex]).addClass(that.options.styles.active);
-        $(menuItems[langIndex]).attr("aria-checked", "true").attr("aria-selected", "true");
+        var selectedLangItem = $(menuItems[langIndex]);
+        selectedLangItem.addClass(that.options.styles.active);
+        selectedLangItem.attr("aria-checked", "true").attr("aria-selected", "true");
     };
     
     fluid.videoPlayer.languageMenu.updateShowHide = function (that) {
@@ -321,9 +322,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.languageControls.setUpAria = function (that) {
         var button = that.button.locate("button");
-        button.attr("aria-owns", fluid.allocateSimpleId(that.menu.container));
-        button.attr("aria-haspopup", "true");
-        button.attr("aria-controls", fluid.allocateSimpleId(that.menu.container));
+        var containerID = fluid.allocateSimpleId(that.menu.container);
+        button.attr({
+            "aria-owns": containerID,
+            "aria-controls": containerID,
+            "aria-haspopup": "true"
+        });
     };
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {

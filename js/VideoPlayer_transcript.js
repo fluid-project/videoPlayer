@@ -258,8 +258,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             };
         });
         
-        // The 2nd event parameter "that" is for writing unit test, no used at implementing transcript functionalities 
-        that.events.onTranscriptsLoaded.fire(intervalList, that.locate("transcriptText").attr("id"), that);
+        // The 3rd event parameter "that" is for writing unit test, no used at implementing transcript functionalities 
+        that.events.onTranscriptsLoaded.fire(intervalList, that.transcriptTextId(), that);
     };  
     
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
