@@ -88,12 +88,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     };
 
-    var tracksToCreate = 0;
+    var tracksToCreate;
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions;
         
-        if (!captions || captions.length === 0) return;  // Exit if captions are not provided
+        if (!captions || captions.length === 0) {
+            return;  // Exit if captions are not provided
+        }
         
         tracksToCreate = captions.length;
 
@@ -114,7 +116,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     }
 
                     var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
-                    var dataUrl = "data:text/plain," + encodeURIComponent(vtt);
+                    var dataUrl = "data:text/vtt," + encodeURIComponent(vtt);
                     trackTag.attr("src", dataUrl);
                     that.events.afterTrackElCreated.fire(that);
                 };
@@ -145,58 +147,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
         bindCaptionatorModel(that);
         that.events.onReady.fire(that);
-    };
-
-    /*******************************************************************
-     * Converts seconds into a WebVTT Timestamp:  HH:MM:SS.mmm
-     * @seconds:  time in seconds expressed as a floating point number
-     *******************************************************************/
-    fluid.videoPlayer.secondsToHmsm = function (seconds) {
-        seconds = parseFloat(seconds);
-        seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
-
-        var hours = parseInt(seconds / 3600);
-        var minutes = parseInt(seconds / 60) % 60;
-        var seconds = (seconds % 60).toFixed(3);
-
-        // Return result of type HH:MM:SS.mmm
-        return "" + (hours < 10 ? "0" + hours : hours) + ":"
-            + (minutes < 10 ? "0" + minutes : minutes) + ":"
-            + (seconds  < 10 ? "0" + seconds : seconds);
-    };
-
-    /******************************************************************************************************
-     * Converts JSON from Amara (http://www.universalsubtitles.org/api/1.0/subtitles/) into WebVTT format.
-     * Each caption in WebVTT looks like:
-     *  empty line
-     *  HH:MM:SS.mmm --> HH:MM:SS.mmm
-     *  Caption text
-     *
-     *****************************************************************************************************/
-    fluid.videoPlayer.amaraJsonToVTT = function (json) {
-        var vtt = "WEBVTT";
-
-        for (var i = 0; i < json.length; i++) {
-            var startTime = fluid.videoPlayer.secondsToHmsm(json[i].start_time);
-            var endTime = fluid.videoPlayer.secondsToHmsm(json[i].end_time);
-            vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
-        }
-
-        return vtt;
-    };
-
-    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, callback) {
-        // No point continuing because we can't get a useful JSONP response without the url and a callback 
-        if (!videoUrl || !callback) {
-            return;
-        }
-        
-        // Hard coded URL to amara here 
-        // IS THIS CRAZY? I'm thinking that we don't want to let this URL be configurable because then we open ourselves to cross site scripting
-        // But the trade off is that if the amara url changes, we need to change this code
-        var url = "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?";        
-        
-        $.getJSON(url, callback);
     };
 
 })(jQuery);
