@@ -571,7 +571,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
-            
+
+            // Ensure <object> element is not in tab order, for IE9
+            $("object", that.locate("video")).attr("tabindex", "-1")
+
             that.events.onReady.fire(that);
         });
         
