@@ -187,6 +187,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         $('span[id|="' + that.options.transcriptElementIdPrefix + '"]').click(function (evt) {
             fluid.videoPlayer.transcript.scrubToTranscriptElement(evt, that);
         });
+        fluid.videoPlayer.transcript.setUpKeyboardA11y(that);
     };
     
     fluid.videoPlayer.transcript.highlightTranscriptElement = function (that, currentTrackId) {
@@ -328,7 +329,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.transcript.setUpKeyboardA11y = function (intervalList, that) {
+    fluid.videoPlayer.transcript.setUpKeyboardA11y = function (that) {
         var transcriptElementSelector = "[id^=" + that.options.transcriptElementIdPrefix + "]";
         var transcriptList = $(transcriptElementSelector, that.container);
         var transcriptText = that.locate("transcriptText");
@@ -420,7 +421,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.transcript.finalInit = function (that) {
-        that.events.onTranscriptsLoaded.addListener(fluid.videoPlayer.transcript.setUpKeyboardA11y);
         fluid.videoPlayer.transcript.bindTranscriptDOMEvents(that);
         fluid.videoPlayer.transcript.bindTranscriptModel(that);
         
