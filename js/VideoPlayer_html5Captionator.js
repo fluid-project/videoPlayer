@@ -67,7 +67,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     // show captions depending on which one is on in the model
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
-            tracks[key].track.mode = captionator.TextTrack[$.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING"];
+            var currentState = $.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING";
+            tracks[key].track.mode = captionator.TextTrack[currentState];
         });
     };
 
