@@ -59,15 +59,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     // Hide all tracks
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
-        fluid.each(tracks, function (element) {
-            element.mode = captionator.TextTrack.OFF;
+        fluid.each(tracks, function (trackEl) {
+            trackEl.track.mode = captionator.TextTrack.OFF;
         });
     };
     
     // show captions depending on which one is on in the model
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
-            tracks[key].mode = captionator.TextTrack[$.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING"];
+            tracks[key].track.mode = captionator.TextTrack[$.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING"];
         });
     };
 
@@ -76,7 +76,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
   
         // listener for hiding/showing all captions
         that.refreshCaptions = function () {
-            var tracks = that.locate("video")[0].tracks;
+            var tracks = $("track", that.locate("video"));
             var display = that.readIndirect("elPaths.displayCaptions");
             if (display) {
                 fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
@@ -102,12 +102,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // Start adding tracks to the video tag
         fluid.each(captions, function (capOpt, key) {
             var trackTag = $("<track />");
-            var attributes = fluid.filterKeys(fluid.copy(capOpt), ["kind", "src", "srclang", "label"], false);
-            
+            var attributes = fluid.filterKeys(fluid.copy(capOpt), ["kind", "src", "type", "srclang", "label"], false);
+
             if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaption")) {
                 attributes["default"] = "true";
             }
             trackTag.attr(attributes);
+            that.locate("video").append(trackTag);
 
             if (capOpt.type === "text/amarajson") {
                 var callback = function (data) {
@@ -121,13 +122,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
                     that.events.afterTrackElCreated.fire(that);
                 };
 
-                // Is this an issue? I'm fetching all the captions every time, whether or not anyone wants them. 
                 fluid.videoPlayer.fetchAmaraJson(capOpt.src, callback);
             } else {
                 that.events.afterTrackElCreated.fire(that);
             }
 
-            that.locate("video").append(trackTag);
         });
     };
 
