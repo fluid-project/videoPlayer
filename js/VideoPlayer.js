@@ -689,9 +689,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
 
         // Hard coded URL to amara here 
-        // IS THIS CRAZY? I'm thinking that we don't want to let this URL be configurable because then we open ourselves to cross site scripting
-        // But the trade off is that if the amara url changes, we need to change this code
-        var url = "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?";
+        var url = "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl;
 
         $.getJSON(url, callback);
     };

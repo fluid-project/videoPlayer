@@ -88,8 +88,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     };
 
-    var tracksToCreate;
-
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions;
         
@@ -97,7 +95,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             return;  // Exit if captions are not provided
         }
         
-        tracksToCreate = captions.length;
+        // Need to know when all the tracks have been created so we can trigger captionator
+        that.tracksToCreate = captions.length;
 
         // Start adding tracks to the video tag
         fluid.each(captions, function (capOpt, key) {
@@ -131,9 +130,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     fluid.videoPlayer.html5Captionator.waitForTracks = function (that) {
-        tracksToCreate--;
+        that.tracksToCreate--;
 
-        if (tracksToCreate === 0) {
+        if (that.tracksToCreate === 0) {
             that.events.onTracksReady.fire(that);
         }
     };

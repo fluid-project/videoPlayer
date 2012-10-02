@@ -171,7 +171,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
                 
                 var html5Captionator = videoPlayer.html5Captionator;
-                var tracks = $("track", videoPlayer.html5Captionator.locate("video"));
+                var tracks = $("track", html5Captionator.locate("video"));
                 var englishTrack = tracks[0];
                 var frenchTrack = tracks[1];
                 
