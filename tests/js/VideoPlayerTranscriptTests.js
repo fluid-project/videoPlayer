@@ -149,14 +149,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var universalSubsOpts = {
                 transcripts: [
                     {
-                        src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
-                        type: "jsonp/vtt",
+                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                        type: "text/amarajson",
                         srclang: "en",
                         label: "English"
                     },
                     {
-                        src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
-                        type: "jsonp/vtt",
+                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
+                        type: "text/amarajson",
                         srclang: "fr",
                         label: "French"
                     }
