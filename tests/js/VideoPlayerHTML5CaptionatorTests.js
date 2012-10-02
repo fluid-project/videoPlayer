@@ -79,11 +79,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         var testTrackShowing = function (trackEl) {
-            jqUnit.assertEquals(trackEl.track.label + " are showing", captionator.TextTrack.SHOWING, trackEl.track.mode);
+            jqUnit.assertEquals(trackEl.track.label + " are showing", trackEl.track.SHOWING, trackEl.track.mode);
         };
         
         var testTrackNotShowing = function (trackEl) {
-            jqUnit.assertEquals(trackEl.track.label + " are not showing", captionator.TextTrack.OFF, trackEl.track.mode);
+            jqUnit.assertEquals(trackEl.track.label + " are not showing", trackEl.track.DISABLED, trackEl.track.mode);
         };
 
         // videoPlayer creation

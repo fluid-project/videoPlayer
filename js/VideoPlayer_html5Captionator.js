@@ -60,14 +60,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
     // Hide all tracks
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (trackEl) {
-            trackEl.track.mode = captionator.TextTrack.OFF;
+            trackEl.track.mode = trackEl.track.DISABLED;
         });
     };
     
     // show captions depending on which one is on in the model
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
-            tracks[key].track.mode = captionator.TextTrack[$.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING"];
+            var track = tracks[key].track;
+            track.mode = track[$.inArray(key, currentCaptions) === -1 ? "DISABLED" : "SHOWING"];
         });
     };
 
