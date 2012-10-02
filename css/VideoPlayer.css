@@ -636,8 +636,13 @@ ul.fl-videoPlayer-transcripts-languageList li {
     pointer-events:none;
     color: #FFFFFF;
     position: relative !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
 }
 
+.captionator-cue {
+    line-height: inherit !important;
+}
 
 /********************
  * UIO theme styling 
