@@ -283,7 +283,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     initiallyHidden: false,
                     minWidth: 0
                 }
-            },
+            }
         },
         events: {
             afterScrub: null,
@@ -315,8 +315,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bufferCompleted = false;
     
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
-        // "model.buffered" is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-        var lastBufferedTime = that.model.buffered.end(that.model.buffered.length - 1);
+        // "model.buffered" is a TimeRanges object set by the browser timeupdate event 
+        //    (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
+        var lastBufferedTime = that.model.buffered && that.model.buffered.length > 0 ? that.model.buffered.end(that.model.buffered.length - 1) : 0;
         var totalTime = that.model.totalTime;
         
         // Turn on buffer progress update if the re-buffering is triggered, for instance, 
@@ -402,7 +403,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.updateMuteStatus = function (that) {
-        return function(newModel, oldModel) {
+        return function (newModel, oldModel) {
             if (!that.applier.hasChangeSource("mute")) {
                 if (that.model.volume === 0) {
                     that.oldVolume = oldModel.volume;
@@ -436,8 +437,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (isMuting) {
                     // If this mute event was not already sourced from a volume change, fire volume to 0
                     fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
-                }
-                else {
+                } else {
                     fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
                 }
             }
@@ -478,7 +478,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     volumeControl.slider("value", volumeControl.slider("value") + 1);
                     return false;
                 }
-            },{
+            }, {
                 key: $.ui.keyCode.DOWN,
                 activateHandler: function () {
                     volumeControl.slider("value", volumeControl.slider("value") - 1);
@@ -534,7 +534,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     model: "{volumeControls}.model",
                     applier: "{volumeControls}.applier",
-                    modelPath: "muted",
+                    modelPath: "muted"
                 }
             }
         }
