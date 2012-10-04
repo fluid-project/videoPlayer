@@ -38,10 +38,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
     
+    fluid.browser.requestFullScreen = (function () {
+        var v = $("<video />")[0];
+        return v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
+    })();
+
     fluid.browser.supportsFullScreen = function () {
-        var v = $("<video />")[0],
-            supportsFullScreen = v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
-        return supportsFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
+        return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
     };
 
     var features = {
@@ -442,22 +445,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.preInit = function (that) {
         fluid.each(that.options.defaultKinds, function(defaultKind, index) {
-            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
+            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);
         });
     
         that.fullscreen = function () {
-            var video = that.locate("video");
-            var videoEl = video[0];
-            
             if (that.model.fullscreen === true) {
-                // FLUID-4661: Using browser'ss full screen video mode for now until we implement our own fullscreen mode
-                fluid.each(["moz", "webkit", "o"], function (value) {
-                    var functionName = value + "RequestFullScreen";
-                    if (videoEl[functionName]) {
-                        videoEl[functionName]();
-                        return false;
-                    }
-                });
+                fluid.browser.requestFullScreen.apply(that.locate("video")[0]);
             }
         };
         
