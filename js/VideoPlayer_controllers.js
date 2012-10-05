@@ -271,7 +271,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     initiallyHidden: false,
                     minWidth: 0
                 }
-            },
+            }
         },
         events: {
             afterScrub: null,
@@ -379,27 +379,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.videoPlayer.volumeControls.bindDOMEvents = function (that) {
         // Bind the volume Control slide event to change the video's volume and its image.
-        var applier = that.applier,
-            volumeControl = that.locate("volumeControl"),
-            muteButton = that.muteButton,
-            tooltip = muteButton.tooltip;
+        var volumeControl = that.locate("volumeControl");
+        var muteButton = that.muteButton;
+        var tooltip = muteButton.tooltip;
 
         fluid.each(["slide", "slidechange"], function (value) {
             volumeControl.bind(value, function (evt, ui) {
-                fluid.fireSourcedChange(applier, "volume", ui.value, "slider");
+                fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
             });
         });
 
-        volumeControl.mouseenter(function() {
+        volumeControl.mouseenter(function () {
             tooltip.updateContent(that.options.strings.volume);
         });
-        volumeControl.mouseleave(function() {
+
+        volumeControl.mouseleave(function () {
             tooltip.updateContent(muteButton.tooltipContentFunction);
         });
     };
     
     fluid.videoPlayer.updateMuteStatus = function (that) {
-        return function(newModel, oldModel) {
+        return function (newModel, oldModel) {
             if (!that.applier.hasChangeSource("mute")) {
                 if (that.model.volume === 0) {
                     that.oldVolume = oldModel.volume;
@@ -413,15 +413,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.volumeControls.bindModel = function (that) {
         // Relay non-slider based volume changes to slider, and all volume changes to mute status
-        fluid.addSourceGuardedListener(that.applier, 
-            "volume", "slider", that.updateSlider);
-        that.applier.modelChanged.addListener("volume", 
-            fluid.videoPlayer.updateMuteStatus(that));
-            
+        fluid.addSourceGuardedListener(that.applier, "volume", "slider", that.updateSlider);
+        that.applier.modelChanged.addListener("volume", fluid.videoPlayer.updateMuteStatus(that));
+
         that.applier.modelChanged.addListener("canPlay", function () {
             that.locate("mute").attr("disabled", !that.model.canPlay);
         });
-        
+
         that.applier.modelChanged.addListener("muted", function (newModel, oldModel) {
             // See updateVolume method for converse logic
             if (oldModel.volume > 0) {
@@ -433,8 +431,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (isMuting) {
                     // If this mute event was not already sourced from a volume change, fire volume to 0
                     fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
-                }
-                else {
+                } else {
                     fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
                 }
             }
@@ -475,7 +472,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     volumeControl.slider("value", volumeControl.slider("value") + 1);
                     return false;
                 }
-            },{
+            }, {
                 key: $.ui.keyCode.DOWN,
                 activateHandler: function () {
                     volumeControl.slider("value", volumeControl.slider("value") - 1);
