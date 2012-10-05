@@ -125,11 +125,38 @@ fluid.registerNamespace("fluid.tests");
                         toggleButton.click();
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
-
+                        toggleButton.blur();
                         start();
                     }
                 }
             });
+        });
+
+        var myCustomText = "My custom text to replace default toggleButton's tooltip content behaviour"; 
+        fluid.tests.tooltipContentFunction = function () {
+            return myCustomText;
+        };
+
+        toggleButtonTests.asyncTest("Changing tooltipContentFunction", function () {
+            var testStrings = {
+                    press: "press me",
+                    release: "release me"
+                },
+                testComponent = fluid.tests.initToggleButton({
+                    invokers: {
+                        tooltipContentFunction: {
+                            funcName: "fluid.tests.tooltipContentFunction"
+                        }
+                    },
+                    strings: testStrings,
+                    listeners: {
+                        onReady: function (that) {
+                            var toggleButton = that.locate("button"),
+                                tooltip = fluid.testUtils.getTooltipCheckString(toggleButton, myCustomText);
+                            start();
+                        }
+                    }
+                });
         });
 
     });
