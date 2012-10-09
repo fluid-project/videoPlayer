@@ -41,6 +41,7 @@
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 3px 5px;
+    z-index     : 1000; /* Tooltips should be always shown above any other videoPlayer html element */
 }
 .fl-theme-uio-yb .fl-videoPlayer-tooltip,
 .fl-theme-uio-by .fl-videoPlayer-tooltip,
@@ -90,7 +91,7 @@
 }
 
 .fl-videoPlayer-controller-buttons * {
-    display: inline;
+    display: inline-block;
 }
 
 .fl-videoPlayer-optional {
@@ -265,8 +266,8 @@ a.fl-videoPlayer-button-wrapper {
     border-style: solid;
     border-color: #c2c2c2;
     position: absolute;
-    bottom: 19px; /* 20px is right on FF */
-    right: 1px; /* 5px is right on FF */
+    bottom: 30px;
+    right: 0px;
     width: 25%;
     background-color: #F2F2F2;
 }
