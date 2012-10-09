@@ -259,8 +259,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             };
         });
         
-        // The 2nd event parameter "that" is for writing unit test, no used at implementing transcript functionalities 
-        that.events.onTranscriptsLoaded.fire(intervalList, that);
+        // The 3rd event parameter "that" is for writing unit test, no used at implementing transcript functionalities 
+        that.events.onTranscriptsLoaded.fire(intervalList, that.transcriptTextId(), that);
     };  
     
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
@@ -432,6 +432,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         fluid.videoPlayer.transcript.prepareTranscript(that);
         fluid.videoPlayer.transcript.switchTranscriptArea(that);
+
+        that.transcriptTextId = function () {
+            return fluid.allocateSimpleId(that.locate("transcriptText"));
+        };
+        that.locate("languageDropdown").attr("aria-controls", that.transcriptTextId());
 
         that.events.onReady.fire(that);
     };

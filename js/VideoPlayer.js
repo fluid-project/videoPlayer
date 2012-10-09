@@ -144,7 +144,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
-                        afterScrub: "{videoPlayer}.events.afterScrub"
+                        afterScrub: "{videoPlayer}.events.afterScrub",
+                        onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     }
                 }
             },
@@ -155,7 +157,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.options.video.captions"
+                    captions: "{videoPlayer}.options.video.captions",
+                    events: {
+                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                    }
                 }
             },
             transcript: {
@@ -189,7 +194,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
                         onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
-                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange"
+                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
+                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
                     }
                 }
             },
@@ -242,7 +248,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onHTML5BrowserDetected: null
+            onHTML5BrowserDetected: null,
+
+            // private events used for associating menus with what they control via ARIA
+            onTranscriptsReady: null,
+            onTranscriptsLoaded: null,
+            onCaptionsReady: null,
+            canBindTranscriptMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    transcripts: "onTranscriptsLoaded"
+                },
+                args: ["{arguments}.transcripts.1"]
+            },
+            canBindCaptionMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    captions: "onCaptionsReady"
+                },
+                args: ["{arguments}.captions.1"]
+            }
         },
         invokers: {
             resize: {
@@ -336,8 +361,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, {
                 modifier: that.options.keyBindings.volumePlus.modifier,
                 key: that.options.keyBindings.volumePlus.key,
-                activateHandler: function() {
-                    that.applier.fireChangeRequest( {
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
                         path: "volume",
                         value: that.model.volume + 10
                     });
@@ -346,8 +371,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, {
                 modifier: that.options.keyBindings.volumeMinus.modifier,
                 key: that.options.keyBindings.volumeMinus.key,
-                activateHandler: function() {
-                    that.applier.fireChangeRequest( {
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
                         path: "volume",
                         value: that.model.volume - 10
                     });
@@ -436,7 +461,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
-        fluid.each(tracks, function(track) {
+        fluid.each(tracks, function (track) {
             if (!track.kind) {
                 track.kind = defaultKind;
             }
@@ -444,10 +469,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.preInit = function (that) {
-        fluid.each(that.options.defaultKinds, function(defaultKind, index) {
-            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);
+        fluid.each(that.options.defaultKinds, function (defaultKind, index) {
+            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
-    
+        
         that.fullscreen = function () {
             if (that.model.fullscreen === true) {
                 fluid.browser.requestFullScreen.apply(that.locate("video")[0]);
@@ -566,7 +591,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("controllers").hide();
 
             // Ensure <object> element is not in tab order, for IE9
-            $("object", that.locate("video")).attr("tabindex", "-1")
+            $("object", that.locate("video")).attr("tabindex", "-1");
 
             that.events.onReady.fire(that);
         });
@@ -639,5 +664,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-
 })(jQuery);

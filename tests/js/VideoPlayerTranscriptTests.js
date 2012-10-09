@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         var initialTranscriptText;
         
-        fluid.videoPlayer.testTranscriptLoaded = function (intervalList, that) {
+        fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
             jqUnit.assertNotNull("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text());
             jqUnit.assertTrue("Each transcript element is wrapped in a properly-named span", 
                     ($(".flc-videoPlayer-transcript-text").find('[id|="' + that.options.transcriptElementIdPrefix + '"]').length > 0));
@@ -170,5 +170,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
         }, 500);
 
+        videoPlayerTranscriptTests.asyncTest("Drop-down aria-controls text area", function () {
+            var testOpts = {
+                listeners: {
+                    onReady: function (that) {
+                        var attr = that.locate("languageDropdown").attr("aria-controls");
+                        jqUnit.assertTrue("Drop-down should have aria-controls attribute", !!attr);
+                        jqUnit.assertEquals("aria-controls should reference the text area", that.locate("transcriptText").attr("id"), attr);
+                        start();
+                    }
+                }
+            };
+            var that = initTranscript(localTranscriptOpts, testOpts);
+        });
+
+        videoPlayerTranscriptTests.asyncTest("transcriptTextId", function () {
+            var testOpts = {
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("should be able to retrieve transcript id", that.locate("transcriptText").attr("id"), that.transcriptTextId());
+                        start();
+                    }
+                }
+            };
+            var that = initTranscript(localTranscriptOpts, testOpts);
+        });
     });
 })(jQuery);
