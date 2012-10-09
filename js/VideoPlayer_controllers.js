@@ -82,6 +82,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Captions",
                         press: "Captions",
                         release: "Captions"
+                    },
+                    events: {
+                        onControlledElementReady: "{controllers}.events.onCaptionsReady"
                     }
                 }
             },
@@ -107,6 +110,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         hideLanguage: "Hide Transcripts",
                         press: "Transcripts",
                         release: "Transcripts"
+                    },
+                    events: {
+                        onControlledElementReady: "{controllers}.events.onTranscriptsReady"
                     }
                 }
             },
@@ -161,7 +167,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
-            onMarkupReady: null
+            onMarkupReady: null,
+
+            // private event used for associating transcript menu with transcript via ARIA
+            onTranscriptsReady: null,
+            onCaptionsReady: null
         },
 
         selectors: {
