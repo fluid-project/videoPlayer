@@ -93,10 +93,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions;
         
-        if (!captions || captions.length === 0) {
-            return;  // Exit if captions are not provided
-        }
-        
         // Need to know when all the tracks have been created so we can trigger captionator
         that.tracksToCreate = captions.length;
 

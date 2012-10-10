@@ -710,7 +710,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
 
         // Hard coded URL to amara here 
-        var url = "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?";
+        var url = encodeURI("http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?");
 
         $.getJSON(url, callback);
     };
