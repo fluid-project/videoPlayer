@@ -49,6 +49,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var earlyVideoPlayerInstances = [ {
             container: ".mammals-video", 
             options: {
+                videoTitle: "Mammals",
                 video: {
                     sources: [
                         {
@@ -97,6 +98,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }, {
             container: ".polar-mammals-video", 
             options: {
+                videoTitle: "Polar Mammals",
                 video: {
                     sources: [
                         {
@@ -147,6 +149,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var lateVideoPlayerInstances = [{
             container: ".polar-adapt-video", 
             options: {
+                videoTitle: "Polar Mammal Adaptation",
                 video: {
                     sources: [
                         {
