@@ -104,9 +104,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var trackTag = $("<track />");
             var attributes = fluid.filterKeys(fluid.copy(capOpt), ["kind", "src", "type", "srclang", "label"], false);
 
-            if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaption")) {
+            if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaptions")) {
                 attributes["default"] = "true";
             }
+
             trackTag.attr(attributes);
             that.locate("video").append(trackTag);
 
@@ -145,7 +146,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             sizeCuesByTextBoundingBox: true
         });
         bindCaptionatorModel(that);
-        that.events.onReady.fire(that);
+        that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
 
 })(jQuery);
