@@ -47,6 +47,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
         listeners: {
             afterTrackElCreated: "fluid.videoPlayer.html5Captionator.waitForTracks",
             onTracksReady: "fluid.videoPlayer.html5Captionator.captionify"
+        },
+        createTrackFns: {
+            "text/amarajson": "fluid.videoPlayer.html5Captionator.createAmaraTrack",
+            "text/vtt": "fluid.videoPlayer.html5Captionator.createVttTrack"
         }
     });
     
@@ -57,14 +61,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.applier.modelChanged.addListener(elPaths.displayCaptions, that.refreshCaptions);
     };
     
-    // Hide all tracks
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (trackEl) {
             trackEl.track.mode = captionator.TextTrack.OFF;
         });
     };
     
-    // show captions depending on which one is on in the model
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
             var currentState = $.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING";
@@ -72,10 +74,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
     };
 
-    // hide all captions
     fluid.videoPlayer.html5Captionator.preInit = function (that) {
-  
-        // listener for hiding/showing all captions
+        that.createTrackFns = that.options.createTrackFns;
+
         that.refreshCaptions = function () {
             var tracks = $("track", that.locate("video"));
             var display = that.readIndirect("elPaths.displayCaptions");
@@ -101,34 +102,44 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         // Start adding tracks to the video tag
         fluid.each(captions, function (capOpt, key) {
-            var trackTag = $("<track />");
-            var attributes = fluid.filterKeys(fluid.copy(capOpt), ["kind", "src", "type", "srclang", "label"], false);
-
-            if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaptions")) {
-                attributes["default"] = "true";
-            }
-
-            trackTag.attr(attributes);
-            that.locate("video").append(trackTag);
-
-            if (capOpt.type === "text/amarajson") {
-                var callback = function (data) {
-                    if (!data) {
-                        return;
-                    }
-
-                    var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
-                    var dataUrl = "data:text/vtt," + encodeURIComponent(vtt);
-                    trackTag.attr("src", dataUrl);
-                    that.events.afterTrackElCreated.fire(that);
-                };
-
-                fluid.videoPlayer.fetchAmaraJson(capOpt.src, callback);
-            } else {
-                that.events.afterTrackElCreated.fire(that);
-            }
-
+            fluid.invokeGlobalFunction(that.createTrackFns[capOpt.type], [that, key, capOpt]);
         });
+    };
+
+    fluid.videoPlayer.html5Captionator.createTrack = function (that, key, opts) {
+        var trackEl = $("<track />");
+        var attrs = fluid.filterKeys(fluid.copy(opts), ["kind", "src", "type", "srclang", "label"], false);
+
+        if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaptions")) {
+            attrs["default"] = "true";
+        }
+
+        trackEl.attr(attrs);
+        that.locate("video").append(trackEl);
+        return trackEl;
+    };
+
+    fluid.videoPlayer.html5Captionator.createAmaraTrack = function (that, key, opts) {
+        var trackEl = fluid.videoPlayer.html5Captionator.createTrack(that, key, opts);
+
+        var afterFetch = function (data) {
+            if (!data) {
+                return;
+            }
+
+            var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
+            var dataUrl = "data:text/vtt," + encodeURIComponent(vtt);
+            trackEl.attr("src", dataUrl);
+            that.events.afterTrackElCreated.fire(that);
+        };
+
+        fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch);
+    };
+
+    fluid.videoPlayer.html5Captionator.createVttTrack = function (that, key, opts) {
+        fluid.videoPlayer.html5Captionator.createTrack(that, key, opts);
+
+        that.events.afterTrackElCreated.fire(that);
     };
 
     fluid.videoPlayer.html5Captionator.waitForTracks = function (that) {
