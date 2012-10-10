@@ -102,7 +102,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         // Start adding tracks to the video tag
         fluid.each(captions, function (capOpt, key) {
-            fluid.invokeGlobalFunction(that.createTrackFns[capOpt.type], [that, key, capOpt]);
+            fluid.invoke(that.createTrackFns[capOpt.type], [that, key, capOpt], that);
         });
     };
 
