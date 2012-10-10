@@ -112,7 +112,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         // A template function which checks captionator initalization depending on different provided options and config
         var testInit = function (config) {
-            expect(2);
+            jqUnit.expect(2);
             
             setupEnvironment(config.isHTML5);
             
@@ -164,7 +164,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerCaptionatorTests.asyncTest("Changing and hiding tracks", function () {
             var testIndex = 3;
             
-            expect(7);
+            jqUnit.expect(7);
             
             setupEnvironment(true);
             
@@ -198,7 +198,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerCaptionatorTests.asyncTest("html5Captionator displayCaptions test", function () {
             var testIndex = 4;
             
-            expect(1);
+            jqUnit.expect(1);
             
             setupEnvironment(true);
             
@@ -217,7 +217,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerCaptionatorTests.asyncTest("html5Captionator without currentTrack", function () {
             var testIndex = 5;
             
-            expect(5);
+            jqUnit.expect(5);
             
             setupEnvironment(true);
             
