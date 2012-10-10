@@ -123,7 +123,6 @@ fluid.registerNamespace("fluid.tests");
                         var tooltip = fluid.testUtils.getTooltipCheckString(toggleButton, testStrings.press);
 
                         toggleButton.click();
-                        toggleButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
                         toggleButton.blur();
                         start();
