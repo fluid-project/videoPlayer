@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         fluid.tests.videoPlayer.checkAriaControlsAttr = function (controlsToTest) {
             fluid.each(controlsToTest, function (spec, index) {
-                expect(2);
+                jqUnit.expect(2);
                 jqUnit.assertTrue(spec.controlName + " should have aria-controls attribute", !!$(spec.control).attr("aria-controls"));
                 jqUnit.assertEquals(spec.controlName + " should aria-controls " + spec.controlledName,
                                     $(spec.controlled).attr("id"),

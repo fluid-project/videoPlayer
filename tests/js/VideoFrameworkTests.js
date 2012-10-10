@@ -23,7 +23,7 @@ fluid.registerNamespace("fluid.tests");
         var videoFrameworkTests = new jqUnit.TestCase("Video Framework Tests");
 
         videoFrameworkTests.asyncTest("linearRangeGuard", function () {
-            expect(3);
+            jqUnit.expect(3);
 
             var model = {
                 volume: 60,
