@@ -31,7 +31,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             };
         
         var testConvertToMilli = function (inTime, expected, extraMsg) {
-            expect(1);
+            jqUnit.expect(1);
             var result = fluid.videoPlayer.transcript.convertToMilli(inTime);
             
             jqUnit.assertEquals("The result to convert " + inTime + " to milliseconds is expected" + (extraMsg ? " - " + extraMsg : ""), expected, result);
@@ -103,7 +103,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             initialTranscriptText = undefined;
             
             videoPlayerTranscriptTests.asyncTest(purpose + " - instantiation", function () {
-                expect(5);
+                jqUnit.expect(5);
                 
                 var testOpts = {
                         listeners: {
@@ -149,14 +149,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var universalSubsOpts = {
                 transcripts: [
                     {
-                        src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
-                        type: "jsonp/vtt",
+                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                        type: "text/amarajson",
                         srclang: "en",
                         label: "English"
                     },
                     {
-                        src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
-                        type: "jsonp/vtt",
+                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
+                        type: "text/amarajson",
                         srclang: "fr",
                         label: "French"
                     }

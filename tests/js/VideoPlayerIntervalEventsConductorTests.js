@@ -36,7 +36,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // End of the test data
         
         var testFindCurrentInterval = function (currentTime, previousInterval, expected) {
-            expect(1);
+            jqUnit.expect(1);
             var result = fluid.videoPlayer.intervalEventsConductor.findCurrentInterval(currentTime, testIntervalList, previousInterval);
             
             jqUnit.assertDeepEq("The result from finding interval for the current time " + currentTime + " is expected", expected, result);
@@ -52,7 +52,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         videoPlayerIntervalEventsConductorTests.test("Test onTimeChange event", function () {
-            expect(1);
+            jqUnit.expect(1);
             var timeToSet = 20;
             
             var that = fluid.videoPlayer.intervalEventsConductor({
@@ -67,7 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var testIntervalChangeFired = function (timeToSet, expectedCurrentInterval, expectedPreviousInterval, desc) {
             videoPlayerIntervalEventsConductorTests.test("onIntervalChange event gets fired: " + desc, function () {
-                expect(2);
+                jqUnit.expect(2);
                 var that = fluid.videoPlayer.intervalEventsConductor({
                     intervalList: testIntervalList,
                     model: {
@@ -90,7 +90,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var testIntervalChangeNotFired = function (timeToSet, previousInterval, desc) {
             videoPlayerIntervalEventsConductorTests.test("onIntervalChange event does NOT get fired: " + desc, function () {
-                expect(1);
+                jqUnit.expect(1);
                 
                 var onIntervalChangeFired = false;
 
@@ -134,7 +134,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         videoPlayerIntervalEventsConductorTests.asyncTest("intervalEventsConductor with a synthetic timer", function () {
-            expect(3);
+            jqUnit.expect(3);
             
             var timeToSet = 1;
             var previousInterval = null;

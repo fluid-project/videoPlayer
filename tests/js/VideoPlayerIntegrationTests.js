@@ -109,7 +109,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         
         videoPlayerIntegrationTests.asyncTest("Play button - Play/Pause", function () {
-            expect(2);
+            jqUnit.expect(2);
             
             fluid.videoPlayer.testPlayButton = function (that) {
                 // Play button plays and pauses video
@@ -129,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Container click - Play/Pause", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testContainerClick = function (that) {
                 // Clicking on video container plays and pauses video
@@ -149,7 +149,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Mute button", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testMuteButton = function (that) {
                 var video = $(".flc-videoPlayer-video");
@@ -172,7 +172,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testTranscript = function (that) {
                 var video = $(".flc-videoPlayer-video");
@@ -197,7 +197,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
-            expect(3);
+            jqUnit.expect(3);
 
             var initialTranscriptText;
             var testedTranscriptSpanClick = false;
