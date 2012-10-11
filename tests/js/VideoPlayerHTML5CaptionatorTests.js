@@ -208,7 +208,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     initVideoPlayer(optionsFull, function (videoPlayer) {
                         // VERY BAD. There is no callback for a captionator to fire when it loaded its captions, so we have to wait 1 second before do the test check
                         setTimeout(function() {
-                            var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks,
+                            var tracks = $("track", videoPlayer.html5Captionator.locate("video")),
                                 html5Captionator = videoPlayer.html5Captionator;
 
                             jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
