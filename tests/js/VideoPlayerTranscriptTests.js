@@ -31,7 +31,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             };
         
         var testConvertToMilli = function (inTime, expected, extraMsg) {
-            expect(1);
+            jqUnit.expect(1);
             var result = fluid.videoPlayer.transcript.convertToMilli(inTime);
             
             jqUnit.assertEquals("The result to convert " + inTime + " to milliseconds is expected" + (extraMsg ? " - " + extraMsg : ""), expected, result);
@@ -103,7 +103,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             initialTranscriptText = undefined;
             
             videoPlayerTranscriptTests.asyncTest(purpose + " - instantiation", function () {
-                expect(5);
+                jqUnit.expect(5);
                 
                 var testOpts = {
                         listeners: {

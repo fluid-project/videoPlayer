@@ -46,7 +46,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): valid path", function () {
-            expect(1);
+            jqUnit.expect(1);
             var vidPlayer = initVideoPlayer({
                 listeners: {
                     onTemplateReady: function () {
@@ -62,7 +62,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): invalid path", function () {
-            expect(1);
+            jqUnit.expect(1);
             var vidPlayer = initVideoPlayer({
                 templates: {
                     videoPlayer: {
@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         videoPlayerTests.asyncTest("HTML5: video player instantiation with customized controller", function () {
-            expect(6);
+            jqUnit.expect(6);
             
             fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
             
@@ -105,7 +105,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("HTML5: video player instantiation with native controller", function () {
-            expect(6);
+            jqUnit.expect(6);
             
             fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
             
@@ -127,7 +127,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("HTML5: Controllers instantiation", function () {
-            expect(5);
+            jqUnit.expect(5);
             
             fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
             
@@ -148,7 +148,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("NON-HTML5: video player instantiation", function () {
-            expect(5);
+            jqUnit.expect(5);
             
             fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", false);
             

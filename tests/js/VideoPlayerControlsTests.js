@@ -72,7 +72,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            expect(5);
+            jqUnit.expect(5);
             var checkSlider = function(ariavaluenow, expectedValue) {
                     jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
                 },
@@ -106,7 +106,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
-            expect(4);
+            jqUnit.expect(4);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -129,7 +129,7 @@ fluid.registerNamespace("fluid.tests");
         });
         
         videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
-            expect(2);
+            jqUnit.expect(2);
             
             fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", true);
             var testPlayer = fluid.tests.initVideoPlayer({
@@ -144,7 +144,7 @@ fluid.registerNamespace("fluid.tests");
         });
         
         videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present since component should be null", function () {
-            expect(1);
+            jqUnit.expect(1);
             
             fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", false);
             var testPlayer = fluid.tests.initVideoPlayer({
@@ -164,7 +164,7 @@ fluid.registerNamespace("fluid.tests");
         };
         
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
-            expect(9);
+            jqUnit.expect(9);
             fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", true);
             
             var testPlayer = fluid.tests.initVideoPlayer({
@@ -229,7 +229,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.test("Buffer progress update", function () {
-            expect(3);
+            jqUnit.expect(3);
             var scrubber = fluid.tests.initScrubber();
             
             fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);

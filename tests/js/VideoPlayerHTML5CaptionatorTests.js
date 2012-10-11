@@ -37,7 +37,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         //
         var testTrackMode = function(html5Captionator, expectedMode) {
             expectedMode || (expectedMode = []);
-            expect(expectedMode.length);
+            jqUnit.expect(expectedMode.length);
             var addedMessage,
                 tracks = html5Captionator.locate("video")[0].tracks;
             $.each(expectedMode, function(index, showing) {
@@ -61,7 +61,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         // IMPORTANT. RUNS FROM A WEB SERVER: Captionator code does not handle reading files from file system.
         var testCaptionPresence = function (html5Captionator, captionText) {
-            expect(1);
+            jqUnit.expect(1);
             var warningMessage = "WARNING, this test will run only from a web server. ";
             jqUnit.assertEquals(warningMessage + "Caption should be " + captionText, captionText, html5Captionator.locate("caption").find(".captionator-cue").text());
         };
@@ -72,7 +72,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         //      hasDOMElement - boolean for a check if html5Captionator component's markup is present in the DOM
         //
         var testInit = function (config) {
-            expect(2);
+            jqUnit.expect(2);
 
             config.testComponentFunc = config.hasComponent ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
             config.componentStr = config.hasComponent ? "html5Captionator has been instantiated"
@@ -223,7 +223,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
                                 testTrackMode(html5Captionator, [false, false]);
                                 testCaptionPresence(html5Captionator, "");
-                                expect(1);
+                                jqUnit.expect(1);
                                 start();
                             }, 1000);
                         }, 1000);
@@ -244,7 +244,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             html5Captionator.refreshCaptions();
                             jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
                             testCaptionPresence(html5Captionator, firstEnglishCaption);
-                            expect(1);
+                            jqUnit.expect(1);
                             start();
                         }, 1000);
                     });
@@ -276,7 +276,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
                             // Check that captions are not present in the DOM
                             testCaptionPresence(html5Captionator, "");
-                            expect(3);
+                            jqUnit.expect(3);
                             start();
                         });
                     });

@@ -21,7 +21,7 @@ fluid.registerNamespace("fluid.testUtils");
 
 (function ($) {
     fluid.testUtils.getTooltipCheckString = function (jEl, expectedText) {
-        expect(1);
+        jqUnit.expect(1);
         jEl.mouseover();
         var tooltip = $("#" + jEl.attr("aria-describedby"));
         jqUnit.assertEquals("Tooltip should contain " + expectedText + " initially", expectedText, tooltip.text());
@@ -29,7 +29,7 @@ fluid.registerNamespace("fluid.testUtils");
     };
 
     fluid.testUtils.verifyBasicButtonFunctions = function (buttonEl, name, tooltipReleased, tooltipPressed, stylePressed) {
-        expect(12);
+        jqUnit.expect(12);
         jqUnit.assertEquals("There should be exactly one " + name + " button", 1, buttonEl.length);
         jqUnit.assertEquals(name + " button should have role of 'button'", "button", buttonEl.attr("role"));
         jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", false, buttonEl.prop("aria-pressed"));
