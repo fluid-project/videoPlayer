@@ -62,7 +62,7 @@ fluid.registerNamespace("fluid.testUtils");
             fluid.testUtils.cleanupEnvironment();
         });
     };
-    
+
     fluid.testUtils.setStaticEnvironment = function(integration) {
         fluid.staticEnvironment.supportsHtml5 = (integration.supportsHtml5) ? fluid.typeTag(integration.supportsHtml5.typeName) : undefined;
         fluid.staticEnvironment.supportsFullScreen = (integration.supportsFullScreen) ? fluid.typeTag(integration.supportsFullScreen.typeName) : undefined;
