@@ -70,17 +70,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
         
-        var initVideoPlayer = function () {
+        var initVideoPlayer = function (container, options) {
             var opts = fluid.copy(baseOpts);
-            
-            // the 1st argument is the container and the following is component options
-            for (var index in arguments) {
-                if (index === "0") {
-                    var container = arguments[index];
-                } else {
-                    $.extend(true, opts, arguments[index]);
-                }
-            }
+            $.extend(true, opts, options);
             
             return fluid.videoPlayer(container, opts);
         };
@@ -114,7 +106,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.testPlayButton = function (that) {
                 // Play button plays and pauses video
                 var playButton = $(".flc-videoPlayer-play");
-                var clickFunc = function () { playButton.click() };
+                var clickFunc = function () { playButton.click(); };
                 
                 testPlayPause(clickFunc);
             };
@@ -125,7 +117,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Container click - Play/Pause", function () {
@@ -134,7 +126,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.testContainerClick = function (that) {
                 // Clicking on video container plays and pauses video
                 var videoPlayerContainer = $(".flc-videoPlayer-video");
-                var clickFunc = function () { videoPlayerContainer.click() };
+                var clickFunc = function () { videoPlayerContainer.click(); };
                 
                 testPlayPause(clickFunc);
             };
@@ -145,7 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-containerClick"), testOpts);
+            initVideoPlayer(".videoPlayer-containerClick", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Mute button", function () {
@@ -168,7 +160,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
@@ -193,7 +185,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
@@ -260,7 +252,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
     });
