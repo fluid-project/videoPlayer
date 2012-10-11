@@ -49,13 +49,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ],
                 transcripts: [
                     {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
+                        src: "TestTranscripts.en.json",
                         type: "JSONcc",
                         srclang: "en",
                         label: "English"
                     },
                     {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
+                        src: "TestTranscripts.fr.json",
                         type: "JSONcc",
                         srclang: "fr",
                         label: "French"
@@ -101,7 +101,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         
         videoPlayerIntegrationTests.asyncTest("Play button - Play/Pause", function () {
-            expect(2);
+            jqUnit.expect(2);
             
             fluid.videoPlayer.testPlayButton = function (that) {
                 // Play button plays and pauses video
@@ -121,7 +121,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Container click - Play/Pause", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testContainerClick = function (that) {
                 // Clicking on video container plays and pauses video
@@ -141,7 +141,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Mute button", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testMuteButton = function (that) {
                 var video = $(".flc-videoPlayer-video");
@@ -164,7 +164,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testTranscript = function (that) {
                 var video = $(".flc-videoPlayer-video");
@@ -189,7 +189,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
-            expect(3);
+            jqUnit.expect(3);
 
             var initialTranscriptText;
             var testedTranscriptSpanClick = false;
@@ -202,7 +202,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             };
             
-            fluid.videoPlayer.testTranscriptLoaded = function (intervalList, that) {
+            fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
                 var transcriptTextArea = $(".flc-videoPlayer-transcript-text");
 
                 // make sure the transcript text is switched when another option is selected from the language combo box

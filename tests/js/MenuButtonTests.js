@@ -55,7 +55,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         var verifyActivation = function (actionString, that, activatedIndex) {
-            expect(5);
+            jqUnit.expect(5);
             var menuItems = that.locate("menuItem");
             jqUnit.assertEquals(actionString + " updates the active language", activatedIndex, that.readIndirect("currentLanguagePath")[0]);
             jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
@@ -65,7 +65,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         var verifySelection = function (actionString, that, selectedIndex, activeIndex) {
-            expect(3);
+            jqUnit.expect(3);
             var langList = that.locate("menuItem");
             jqUnit.assertTrue(actionString + " adds 'selected' style to the language", $(langList[selectedIndex]).hasClass(that.options.styles.selected));
             jqUnit.assertEquals("Only one item is selected at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.selected).length);
@@ -74,7 +74,7 @@ fluid.registerNamespace("fluid.tests");
 
         menuButtonTests.asyncTest("Language Menu: Default configuration", function () {
             var numLangs = baseMenuOpts.languages.length;
-            expect(9);
+            jqUnit.expect(9);
             var testMenu = fluid.tests.initMenu({
                 listeners: {
                     onReady: function (that) {
@@ -86,10 +86,10 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("Initially, 'show/hide' option should have the correct text", that.options.strings.showLanguage, that.locate("showHide").text());
 
                         jqUnit.notVisible("The menu should be hidden by default", that.container);
-                        that.show();
-                        jqUnit.isVisible("show() shows the menu", that.container);
-                        that.hide();
-                        jqUnit.notVisible("hide() hides the menu", that.container);
+                        that.showMenu();
+                        jqUnit.isVisible("showMenu() shows the menu", that.container);
+                        that.hideMenu();
+                        jqUnit.notVisible("hideMenu() hides the menu", that.container);
 
                         that.container.fluid("selectable.select", that.locate("showHide"));
                         verifySelection("Selecting the 'show/hide' option", that, numLangs, 0);
@@ -104,7 +104,7 @@ fluid.registerNamespace("fluid.tests");
                         that.activate(1);
                         verifyActivation("Activating a new language", that, 1);
 
-                        that.show();
+                        that.showMenu();
                         $(that.locate("language")[2]).click();
                         verifyActivation("Clicking a language", that, 2);
 
@@ -117,7 +117,7 @@ fluid.registerNamespace("fluid.tests");
 
         menuButtonTests.asyncTest("Language Menu: Custom 'show/hide' option strings", function () {
             var numLangs = baseMenuOpts.languages.length;
-            expect(2);
+            jqUnit.expect(2);
             var testStrings = {
                 showLanguage: "No one is talking",
                 hideLanguage: "Please stop all the talking!"
@@ -177,11 +177,11 @@ fluid.registerNamespace("fluid.tests");
                 listeners: {
                     onReady: {
                         listener: function (that) {
-                            expect(8);
+                            jqUnit.expect(8);
                             var langList = that.menu.locate("language");
                             var showHide = $(that.menu.locate("showHide")[0]);
                             var verifyLanguageState = function (expectedShowText, expectedShowHideFlag) {
-                                expect(2);
+                                jqUnit.expect(2);
                                 jqUnit.assertEquals("The 'show language' model flag should be " + expectedShowHideFlag, expectedShowHideFlag, fluid.get(that.model, that.options.showHidePath));
                                 jqUnit.assertEquals("The 'show language' text should be updated", expectedShowText, showHide.text());
                             };
@@ -213,6 +213,35 @@ fluid.registerNamespace("fluid.tests");
                             verifyLanguageState(that.options.strings.hideLanguage, true);
 
                             start();
+                        }
+                    }
+                }
+            });
+        });
+
+        menuButtonTests.asyncTest("Language Controls: ARIA", function () {
+            jqUnit.expect(8);
+            var testControls = fluid.tests.initLangControls({
+                listeners: {
+                    onReady: {
+                        listener: function (that) {
+                            var button = that.button.locate("button");
+                            var ariaOwns = button.attr("aria-owns");
+                            var ariaControls = button.attr("aria-controls");
+                            jqUnit.assertTrue("Button should have aria-owns attribute", !!ariaOwns);
+                            jqUnit.assertEquals("Button should 'own' menu", that.menu.container.attr("id"), ariaOwns);
+                            jqUnit.assertTrue("Button should have aria-haspopup attribute", !!button.attr("aria-haspopup"));
+                            jqUnit.assertTrue("Menu should be aria-hidden", that.menu.container.attr("aria-hidden"));
+                            jqUnit.assertTrue("Button should have aria-controls attribute", !!ariaControls);
+                            jqUnit.assertEquals("Button should aria-controls the menu", that.menu.container.attr("id"), ariaControls);
+
+                            that.menu.showMenu();
+                            jqUnit.assertEquals("After show, menu should not be aria-hidden", "false", that.menu.container.attr("aria-hidden"));
+
+                            that.menu.hideMenu();
+                            jqUnit.assertEquals("After hide, menu should be aria-hidden", "true", that.menu.container.attr("aria-hidden"));
+                            start();                            
+
                         }
                     }
                 }
