@@ -53,22 +53,28 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.assertEquals("Tooltip should contain " + tooltipReleased + " again", tooltipReleased, tooltip.text());
     };
 
-    fluid.testUtils.runTestScenarios = function(testScenarios) {
-        $.each(testScenarios, function(message, testScenario) {
-            testScenario.testEnviornment.asyncTest(message, function() {
-                fluid.testUtils.setStaticEnvironment(testScenario.integration);
-                testScenario.testFunction();
+    /*  @testCaseInfo:  an array of objects containing:
+                    desc: description of a test
+                    env:  test environment
+                    testFn: the test function to run
+    */
+    fluid.testUtils.runTests = function (name, testCaseInfo) {    // TODO:  Should we take in a setup and teardown function? 
+        var testCase = new jqUnit.TestCase(name, null, fluid.testUtils.cleanupEnv);
+
+        $.each(testCaseInfo, function (index, testInfo) {
+            testCase.asyncTest(testInfo.desc, function () {
+                fluid.testUtils.setStaticEnv(testInfo.env);
+                testInfo.testFn();
             });
-            fluid.testUtils.cleanupEnvironment();
         });
     };
 
-    fluid.testUtils.setStaticEnvironment = function(integration) {
+    fluid.testUtils.setStaticEnv = function (integration) {
         fluid.staticEnvironment.supportsHtml5 = (integration.supportsHtml5) ? fluid.typeTag(integration.supportsHtml5.typeName) : undefined;
         fluid.staticEnvironment.supportsFullScreen = (integration.supportsFullScreen) ? fluid.typeTag(integration.supportsFullScreen.typeName) : undefined;
     };
     
-    fluid.testUtils.cleanupEnvironment = function() {
+    fluid.testUtils.cleanupEnv = function () {
         delete fluid.staticEnvironment.supportsHtml5;
         delete fluid.staticEnvironment.supportsFullScreen;
     };
