@@ -327,7 +327,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
         // "model.buffered" is a TimeRanges object set by the browser timeupdate event 
         //    (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-        var lastBufferedTime = that.model.buffered && that.model.buffered.length > 0 ? that.model.buffered.end(that.model.buffered.length - 1) : 0;
+        var bufferedExists = that.model.buffered && (that.model.buffered.length > 0);
+        var lastBufferedTime = bufferedExists ? that.model.buffered.end(that.model.buffered.length - 1) : 0;
         var totalTime = that.model.totalTime;
         
         // Turn on buffer progress update if the re-buffering is triggered, for instance, 
