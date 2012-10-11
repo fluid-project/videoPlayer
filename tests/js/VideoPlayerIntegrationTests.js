@@ -31,36 +31,34 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     {
                         src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
                         type: "video/webm"
-                    },
+                    }
                 ],
                 captions: [
                     {
                         src: "TestCaptions.en.vtt",
                         type: "text/vtt",
                         srclang: "en",
-                        label: "English",
+                        label: "English"
                     },
                     {
                         src: "TestCaptions.fr.vtt",
                         type: "text/vtt",
                         srclang: "fr",
-                        label: "French",
+                        label: "French"
                     }
                 ],
                 transcripts: [
                     {
-                        // TODO: renamed to TestTranscript.en(fr).json once the pull request for transcript component
-                        // unit test (FLUID-4643) is merged into demo branch
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.en.json",
+                        src: "TestTranscripts.en.json",
                         type: "JSONcc",
                         srclang: "en",
-                        label: "English",
+                        label: "English"
                     },
                     {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
+                        src: "TestTranscripts.fr.json",
                         type: "JSONcc",
                         srclang: "fr",
-                        label: "French",
+                        label: "French"
                     }
                 ]
             },
@@ -212,7 +210,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             };
             
-            fluid.videoPlayer.testTranscriptLoaded = function (intervalList, that) {
+            fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
                 var transcriptTextArea = $(".flc-videoPlayer-transcript-text");
 
                 // make sure the transcript text is switched when another option is selected from the language combo box

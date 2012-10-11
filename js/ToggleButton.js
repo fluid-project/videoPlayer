@@ -40,6 +40,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         strings: {  // Integrators will likely override these strings
             press: "Press",
             release: "Release"
+        },
+        invokers: {
+            tooltipContentFunction: {
+                funcName: "fluid.toggleButton.tooltipContentFunction",
+                args: "{toggleButton}"
+            }
+        },
+        components: {
+            tooltip: {
+                type: "fluid.tooltip",
+                container: "{toggleButton}.dom.button",
+                options: {
+                    styles: {
+                        tooltip: "{toggleButton}.options.styles.tooltip"
+                    }
+                }
+            }
         }
     });
 
@@ -62,6 +79,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 button.toggleClass(styles.pressed, pressed);
             }
             button.prop("aria-pressed", pressed);
+
+            that.tooltip.updateContent(that.tooltipContentFunction(that));
         };
 
         that.press = function () {
@@ -71,19 +90,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
+    fluid.toggleButton.tooltipContentFunction = function (that) {
+          return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
+    };
+
     fluid.toggleButton.setUpToggleButton = function (that) {
-        var toggleButton = that.locate("button");
-        toggleButton.attr("role", "button");
-
-        that.tooltip = fluid.tooltip(toggleButton, {
-            styles: {
-                tooltip: that.options.styles.tooltip
-            },
-            content: function () {
-                return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
-            }
-        });
-
+        that.locate("button").attr("role", "button");
         that.refreshView();
     };
 

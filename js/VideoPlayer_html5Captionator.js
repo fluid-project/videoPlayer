@@ -21,8 +21,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     /********************************************************************
      * HTML5 Captionator                                                *
-     * A wrapper component of captionatorjs (http://captionatorjs.com/) *
-     * that makes it accessible in the infusion way.                    *
+     * An Infusion wrapper of captionatorjs (http://captionatorjs.com/) *
      ********************************************************************/
 
     fluid.defaults("fluid.videoPlayer.html5Captionator", {
@@ -32,6 +31,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         model: {},
         captions: [],
         events: {
+            afterTrackElCreated: null,
+            onTracksReady: null,
             onReady: null
         },
         elPaths: {
@@ -42,6 +43,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
         selectors: {
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea"
+        },
+        listeners: {
+            afterTrackElCreated: "fluid.videoPlayer.html5Captionator.waitForTracks",
+            onTracksReady: "fluid.videoPlayer.html5Captionator.captionify"
+        },
+        createTrackFns: {
+            "text/amarajson": "fluid.videoPlayer.html5Captionator.createAmaraTrack",
+            "text/vtt": "fluid.videoPlayer.html5Captionator.createVttTrack"
         }
     });
     
@@ -52,26 +61,24 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.applier.modelChanged.addListener(elPaths.displayCaptions, that.refreshCaptions);
     };
     
-    // Hide all tracks
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
-        fluid.each(tracks, function (element) {
-            element.mode = captionator.TextTrack.OFF;
+        fluid.each(tracks, function (trackEl) {
+            trackEl.mode = captionator.TextTrack.OFF;
         });
     };
     
-    // show captions depending on which one is on in the model
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
-            tracks[key].mode = captionator.TextTrack[$.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING"];
+            var currentState = $.inArray(key, currentCaptions) === -1 ? "OFF" : "SHOWING";
+            tracks[key].mode = captionator.TextTrack[currentState];
         });
     };
 
-    // hide all captions
     fluid.videoPlayer.html5Captionator.preInit = function (that) {
-  
-        // listener for hiding/showing all captions
+        that.createTrackFns = that.options.createTrackFns;
+
         that.refreshCaptions = function () {
-            var tracks = that.locate("video")[0].tracks;
+            var tracks = $("track", that.locate("video"));
             var display = that.readIndirect("elPaths.displayCaptions");
             if (display) {
                 fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
@@ -83,34 +90,70 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     };
 
-
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var captions = that.options.captions || [];
+        var captions = that.options.captions;
         
-        if (captions.length === 0) return;  // Exit if captions are not provided
-        
+        // Need to know when all the tracks have been created so we can trigger captionator
+        that.tracksToCreate = captions.length;
+
         // Start adding tracks to the video tag
-        fluid.each(captions, function (element, key) {
-            
-            var trackTag = $("<track />");
-            var attributes = fluid.filterKeys(fluid.copy(element), ["kind", "src", "type", "srclang", "label"], false);
-            if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaptions")) {
-                attributes["default"] = "true";
+        fluid.each(captions, function (capOpt, key) {
+            fluid.invoke(that.createTrackFns[capOpt.type], [that, key, capOpt], that);
+        });
+    };
+
+    fluid.videoPlayer.html5Captionator.createTrack = function (that, key, opts) {
+        var trackEl = $("<track />");
+        var attrs = fluid.filterKeys(fluid.copy(opts), ["kind", "src", "type", "srclang", "label"], false);
+
+        if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaptions")) {
+            attrs["default"] = "true";
+        }
+
+        trackEl.attr(attrs);
+        that.locate("video").append(trackEl);
+        return trackEl;
+    };
+
+    fluid.videoPlayer.html5Captionator.createAmaraTrack = function (that, key, opts) {
+        var trackEl = fluid.videoPlayer.html5Captionator.createTrack(that, key, opts);
+
+        var afterFetch = function (data) {
+            if (!data) {
+                return;
             }
 
-            trackTag.attr(attributes);
+            var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
+            var dataUrl = "data:text/vtt," + encodeURIComponent(vtt);
+            trackEl.attr("src", dataUrl);
+            that.events.afterTrackElCreated.fire(that);
+        };
 
-            that.locate("video").append(trackTag);
-        });
+        fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch);
+    };
 
+    fluid.videoPlayer.html5Captionator.createVttTrack = function (that, key, opts) {
+        fluid.videoPlayer.html5Captionator.createTrack(that, key, opts);
+
+        that.events.afterTrackElCreated.fire(that);
+    };
+
+    fluid.videoPlayer.html5Captionator.waitForTracks = function (that) {
+        that.tracksToCreate--;
+
+        if (that.tracksToCreate === 0) {
+            that.events.onTracksReady.fire(that);
+        }
+    };
+
+    fluid.videoPlayer.html5Captionator.captionify = function (that) {
         // Create captionator code which will add a captionator div to the HTML
         captionator.captionify(that.locate("video")[0], null, {
             appendCueCanvasTo: that.locate("caption")[0],
             sizeCuesByTextBoundingBox: true
         });
-        
         bindCaptionatorModel(that);
-        that.events.onReady.fire(that);
+        that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
 
 })(jQuery);
