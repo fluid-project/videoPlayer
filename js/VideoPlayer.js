@@ -287,7 +287,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionsOff: "Captions OFF",
             turnCaptionsOff: "Turn Captions OFF",
             transcriptsOff: "Transcripts OFF",
-            turnTranscriptsOff: "Turn Transcripts OFF"
+            turnTranscriptsOff: "Turn Transcripts OFF",
+            videoTitlePreface: "Video"
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript"],
         keyBindings: fluid.videoPlayer.defaultKeys,
@@ -322,7 +323,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 forceCache: true,
                 href: "../html/videoPlayer_template.html"
             }
-        }
+        },
+        videoTitle: "unnamed video"
     });
 
     var bindKeyboardControl = function (that) {
@@ -562,6 +564,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                     that.container.append(res[key].resourceText);
                     that.refreshView();
+                    that.locate("video").attr("aria-label", that.options.strings.videoTitlePreface + ": " + that.options.videoTitle);
                     //if we're on an old browser there's no point in linking all the evets as they won't exist...
                     if (fluid.hasFeature("fluid.browser.html5")) {
                         bindVideoPlayerDOMEvents(that);
