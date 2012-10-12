@@ -27,32 +27,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var container = ".videoPlayer";
         var firstEnglishCaption = "English caption here";
         var firstFrenchCaption = "French caption here";
-            // selector to find if the captionator div is present on the webpage
         var captionatorSelector = ".captionator-cue-canvas";
-        // summary:
-        //          Function to test if the videoPlayer tracks have proper mode set to them
-        // expectedMode:
-        //          Array which consist of two booleans which tell if the mode should be SHOWING or OFF. First boolean is for English and second is for French
-        //
-        var testTrackMode = function (html5Captionator, expectedMode) {
-            expectedMode = expectedMode || [];
-            jqUnit.expect(expectedMode.length);
-            var addedMessage,
-                tracks = html5Captionator.locate("video")[0].tracks;
-            $.each(expectedMode, function (index, showing) {
-                addedMessage = (showing) ? " set to SHOWING" : " set to OFF";
-                jqUnit.assertEquals(html5Captionator.options.captions[index].label + addedMessage, 
-                                    (showing) ? captionator.TextTrack.SHOWING : captionator.TextTrack.OFF, tracks[index].mode);
+
+        var testTrackMode = function (html5Captionator, tracksShowing) {  // tracksShowing is an Array of booleans
+            tracksShowing = tracksShowing || [];
+            jqUnit.expect(tracksShowing.length);
+            var tracks = $("track", html5Captionator.locate("video"));
+
+            $.each(tracksShowing, function (index, showing) {
+                var msg = showing ? " set to SHOWING" : " set to OFF";
+                jqUnit.assertEquals(html5Captionator.options.captions[index].label + msg, 
+                    showing ? captionator.TextTrack.SHOWING : captionator.TextTrack.OFF, tracks[index].track.mode);
             });
         };
-        var initVideoPlayer = function (options, callback) {
+
+        var initVideoPlayer = function (options, onReadyCallback) {
             options = options || {};
 
             fluid.merge(null, options, {
                 listeners: {
-                    onReady: function (videoPlayer) {
-                        callback(videoPlayer);
-                    }
+                    onReady: onReadyCallback
                 }
             });
 
@@ -152,7 +146,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Define tests declaratively
         var testCaseInfo = [{
                 desc: "NO HTML5: html5Captionator was not initialized",
-                env: {
+                envFeatures: {
                     supportsHtml5: null
                 },
                 testFn: function () {
@@ -164,7 +158,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized but without tracks",
-                env: {
+                envFeatures: {
                     supportsHtml5: supportsHtml5
                 },
                 testFn: function () {
@@ -176,7 +170,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized",
-                env: {
+                envFeatures: {
                     supportsHtml5: supportsHtml5
                 },
                 testFn: function () {
@@ -188,7 +182,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "html5Captionator changing tracks and more",
-                env: {
+                envFeatures: {
                     supportsHtml5: supportsHtml5
                 },
                 testFn: function () {
@@ -218,7 +212,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {     // TEST FLUID-4618. Writing a test to verify that functions in preInit work properly
                 desc: "html5Captionator displayCaptions test",
-                env: {
+                envFeatures: {
                     supportsHtml5: supportsHtml5
                 },
                 testFn: function () {
@@ -236,7 +230,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "html5Captionator without currentTrack",
-                env: {
+                envFeatures: {
                     supportsHtml5: supportsHtml5
                 },
                 testFn: function () {
@@ -267,7 +261,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "displayCaptions is set to false so no captions should be present at all in the DOM",
-                env: {
+                envFeatures: {
                     supportsHtml5: supportsHtml5
                 },
                 testFn: function () {
@@ -283,7 +277,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }];
 
-        fluid.testUtils.runTests("Video Player HTML5 Captionator Test Suite", testCaseInfo);
+        fluid.testUtils.testCaseWithEnv("Video Player HTML5 Captionator Test Suite", testCaseInfo);
 
     });
 })(jQuery);

@@ -55,28 +55,44 @@ fluid.registerNamespace("fluid.testUtils");
 
     /*  @testCaseInfo:  an array of objects containing:
                     desc: description of a test
-                    env:  test environment
+                    envFeatures:  features in the test environment
                     testFn: the test function to run
     */
-    fluid.testUtils.runTests = function (name, testCaseInfo) {    // TODO:  Should we take in a setup and teardown function? 
-        var testCase = new jqUnit.TestCase(name, null, fluid.testUtils.cleanupEnv);
+    fluid.testUtils.testCaseWithEnv = function (name, testCaseInfo, setupFn, teardownFn) {
+        var allFeatures = {};
+
+        var teardown = function () {
+            fluid.testUtils.cleanupEnv(allFeatures);
+            if (teardownFn) {
+                teardownFn();
+            }
+        };
+
+        var testCase = new jqUnit.TestCase(name, setupFn, teardown);
 
         $.each(testCaseInfo, function (index, testInfo) {
             testCase.asyncTest(testInfo.desc, function () {
-                fluid.testUtils.setStaticEnv(testInfo.env);
+                fluid.testUtils.setStaticEnv(testInfo.envFeatures);
                 testInfo.testFn();
             });
+
+            // Collect all the features we've added to the environment that need to be cleaned up
+            $.extend(true, allFeatures, testInfo.envFeatures);
+        });
+
+        return testCase;
+    };
+
+    fluid.testUtils.setStaticEnv = function (features) {
+        fluid.each(features, function (val, key) {
+            fluid.staticEnvironment[key] = val ? fluid.typeTag(val.typeName) : undefined;
         });
     };
 
-    fluid.testUtils.setStaticEnv = function (integration) {
-        fluid.staticEnvironment.supportsHtml5 = (integration.supportsHtml5) ? fluid.typeTag(integration.supportsHtml5.typeName) : undefined;
-        fluid.staticEnvironment.supportsFullScreen = (integration.supportsFullScreen) ? fluid.typeTag(integration.supportsFullScreen.typeName) : undefined;
-    };
-    
-    fluid.testUtils.cleanupEnv = function () {
-        delete fluid.staticEnvironment.supportsHtml5;
-        delete fluid.staticEnvironment.supportsFullScreen;
+    fluid.testUtils.cleanupEnv = function (features) {
+        fluid.each(features, function (val, key) {
+            delete fluid.staticEnvironment[key];
+        });
     };
 
     fluid.testUtils.setupTestEnvironmentFeature = function (environmentFeature, flag) {
