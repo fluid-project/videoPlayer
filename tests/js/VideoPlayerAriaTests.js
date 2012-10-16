@@ -133,16 +133,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
             var testOpts = {
                 listeners: {
-                    onReady: "fluid.tests.videoPlayer.triggerTranscript"
-                },
-                components: {
-                    transcript: {
-                        options: {
-                            listeners: {
-                                onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
-                            }
-                        }
-                    }
+                    onReady: "fluid.tests.videoPlayer.triggerTranscript",
+                    onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
                 }
             };
             initVideoPlayer($(".videoPlayer-aria"), testOpts);

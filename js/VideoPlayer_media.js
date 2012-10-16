@@ -99,11 +99,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindMediaDOMEvents = function (that) {      
         MediaElement(that.container[0], {success: function (mediaElementVideo) {
             that.model.mediaElementVideo = mediaElementVideo;
-            
+
             // IE8 workaround to trigger the video initial loading. Otherwise, a blank is displayed at the video area
             // Html5 browsers tolerate this workaround without initiatively playing the video
             mediaElementVideo.play();
-            
+
             mediaElementVideo.addEventListener("volumechange", function () {
                 var mediaVolume = mediaElementVideo.volume * 100;
                 // Don't fire self-generated volume changes on zero when muted, to avoid cycles

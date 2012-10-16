@@ -157,7 +157,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
                                     onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                                     onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
-                                    onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange"
+                                    onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
+                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
                                 }
                             }
                         }
@@ -200,64 +201,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onReady: "{videoPlayer}.events.onCaptionsReady"
                     }
                 }
-            },
-            transcript: {
-                type: "fluid.videoPlayer.transcript",
-                container: "{videoPlayer}.dom.transcript",
-                createOnEvent: "onHTML5BrowserDetected",
-                options: {
-                    // TODO (long term) - should not share entire model and applier with transcripts
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
-                    transcripts: "{videoPlayer}.options.video.transcripts",
-                    components: {
-                        transcriptInterval: {
-                            type: "fluid.videoPlayer.intervalEventsConductor",
-                            options: {
-                                components: {
-                                    html5MediaTimer: {
-                                        type: "fluid.videoPlayer.html5MediaTimer",
-                                        options: {
-                                            mediaElement: "{media}.container"
-                                        }
-                                    }
-                                },
-                                events: {
-                                    onIntervalChange: "{transcript}.events.onIntervalChange"
-                                }
-                            }
-                        }
-                    },
-                    events: {
-                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
-                        onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
-                        onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
-                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
-                    }
-                }
-            },
-            browserCompatibility: {
-                type: "demo.html5BackwardsCompatability",
-                createOnEvent: "onOldBrowserDetected"
-            },
-            intervalEventsConductor: {
-                type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onCreateMediaReady",
-                options: {
-                    components: {
-                        html5MediaTimer: {
-                            type: "fluid.videoPlayer.html5MediaTimer",
-                            options: {
-                                mediaElement: "{media}.container"
-                            }
-                        }
-                    },
-                    events: {
-                        onTimeChange: "{videoPlayer}.events.onTimeChange",
-                        onIntervalChange: "{videoPlayer}.events.onIntervalChange"
-                    }
-                }
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -272,7 +215,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onControllersReady: null,
             afterScrub: null,
             onStartScrub: null,
-            onOldBrowserDetected: null,
             onTemplateLoadError: null,
             onCurrentTranscriptChanged: null,
             onTranscriptHide: null,
