@@ -17,6 +17,17 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 (function ($) {
 
+    /*************************************************************************************
+     * The wiring up of the onTick event btw timer component and intervalEventsConductor *
+     *************************************************************************************/
+    fluid.demands("fluid.videoPlayer.html5MediaTimer", ["fluid.videoPlayer.intervalEventsConductor"], {
+        options: {
+            events: {
+                onTick: "{intervalEventsConductor}.events.onTick"
+            }
+        }
+    });
+
     /*********************************************************************************
      * fluid.videoPlayer.intervalEventsConductor                                     *
      *                                                                               *
@@ -103,6 +114,35 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 that.events.onIntervalChange.fire(currentInterval, previousInterval);
             }
         }
+    };
+
+    /*********************************************************************************
+     * Timer component for HTML5 media element                                       *
+     *                                                                               *
+     * The timer component fires the onTick event with the argument of "currentTime" *
+     * when the time change occurs.                                                  *
+     *********************************************************************************/
+
+    fluid.defaults("fluid.videoPlayer.html5MediaTimer", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.html5MediaTimer.finalInit",
+        mediaElement: null,
+        events: {
+            onTick: null
+        }
+    });
+
+    fluid.videoPlayer.html5MediaTimer.finalInit = function (that) {
+        var media = that.options.mediaElement;
+
+        if (!media) {
+            fluid.fail("Undefined mediaElement option in " + that.typeName + ".");
+        }
+        media.bind("timeupdate", function (ev) {
+            var currentTime = ev.currentTarget.currentTime;
+
+            that.events.onTick.fire(currentTime);
+        });
     };
 
 })(jQuery);

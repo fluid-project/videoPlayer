@@ -272,6 +272,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onControllersReady: null,
             afterScrub: null,
             onStartScrub: null,
+            onOldBrowserDetected: null,
             onTemplateLoadError: null,
             onCurrentTranscriptChanged: null,
             onTranscriptHide: null,

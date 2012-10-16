@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, expect, jQuery, start*/
+/*global fluid, jqUnit, jQuery, start*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -91,7 +91,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         
         videoPlayerTests.asyncTest("HTML5: video player instantiation with customized controller", function () {
-            jqUnit.expect(6);
+            jqUnit.expect(3);
             
             setupEnvironment(true);
             
@@ -110,7 +110,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("HTML5: video player instantiation with native controller", function () {
-            jqUnit.expect(6);
+            jqUnit.expect(3);
             
             setupEnvironment(true);
             
@@ -150,7 +150,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("NON-HTML5: video player instantiation", function () {
-            jqUnit.expect(5);
+            jqUnit.expect(3);
             
             setupEnvironment(false);
             
@@ -177,7 +177,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         videoPlayerTests.test("secondsToHmsm", function () {
-            expect(15);
+            jqUnit.expect(15);
             jqUnit.assertEquals("0 seconds", "00:00:00.000", fluid.videoPlayer.secondsToHmsm(0));
             jqUnit.assertEquals("1 milli seconds", "00:00:00.100", fluid.videoPlayer.secondsToHmsm(0.1));
             jqUnit.assertEquals("1111 milli seconds", "00:00:00.111", fluid.videoPlayer.secondsToHmsm(0.1111));
@@ -219,7 +219,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "start_of_paragraph": false
             }];
 
-            expect(2 + 3 * testJson.length);
+            jqUnit.expect(2 + 3 * testJson.length);
 
             var result = fluid.videoPlayer.amaraJsonToVTT(testJson);
             var resultArray = result.split("\n");
@@ -232,7 +232,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("fetchAmaraJson", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.fetchAmaraJsonCallback = function (data) {
                 jqUnit.assertTrue("Json was fetched", data.length > 0);
