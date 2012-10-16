@@ -20,10 +20,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     $(document).ready(function () {
         fluid.setLogging(false);    // disable it not to mess up with FireBug in FF
         
-        var supportsHtml5 = {
-            typeName: "fluid.browser.supportsHtml5"
+        var envFeatures = {
+            "supportsHtml5": "fluid.browser.supportsHtml5"
         };
-        
+
         var container = ".videoPlayer";
         var firstEnglishCaption = "English caption here";
         var firstFrenchCaption = "French caption here";
@@ -158,9 +158,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized but without tracks",
-                envFeatures: {
-                    supportsHtml5: supportsHtml5
-                },
+                envFeatures: envFeatures,
                 testFn: function () {
                     testInit({
                         options: defaultOptionsNoCaptions,
@@ -170,9 +168,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized",
-                envFeatures: {
-                    supportsHtml5: supportsHtml5
-                },
+                envFeatures: envFeatures,
                 testFn: function () {
                     testInit({
                         options: optionsFull,
@@ -182,9 +178,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "html5Captionator changing tracks and more",
-                envFeatures: {
-                    supportsHtml5: supportsHtml5
-                },
+                envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsFull, function (videoPlayer) {
                         // VERY BAD. There is no callback for a captionator to fire when it loaded its captions, so we have to wait 1 second before do the test check
@@ -212,9 +206,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {     // TEST FLUID-4618. Writing a test to verify that functions in preInit work properly
                 desc: "html5Captionator displayCaptions test",
-                envFeatures: {
-                    supportsHtml5: supportsHtml5
-                },
+                envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsFull, function (videoPlayer) {
                         // VERY BAD. There is no callback for a captionator to fire when it loaded its captions, so we have to wait 1 second before do the test check
@@ -230,9 +222,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "html5Captionator without currentTrack",
-                envFeatures: {
-                    supportsHtml5: supportsHtml5
-                },
+                envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsWithoutCurrentTrack, function (videoPlayer) {
                         setTimeout(function () {
@@ -261,9 +251,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "displayCaptions is set to false so no captions should be present at all in the DOM",
-                envFeatures: {
-                    supportsHtml5: supportsHtml5
-                },
+                envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsFullWithDisplayCaptionsOff, function (videoPlayer) {
                         setTimeout(function () {

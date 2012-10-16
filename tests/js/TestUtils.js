@@ -85,7 +85,7 @@ fluid.registerNamespace("fluid.testUtils");
 
     fluid.testUtils.setStaticEnv = function (features) {
         fluid.each(features, function (val, key) {
-            fluid.staticEnvironment[key] = val ? fluid.typeTag(val.typeName) : undefined;
+            fluid.staticEnvironment[key] = val ? fluid.typeTag(val) : undefined;
         });
     };
 
@@ -93,11 +93,6 @@ fluid.registerNamespace("fluid.testUtils");
         fluid.each(features, function (val, key) {
             delete fluid.staticEnvironment[key];
         });
-    };
-
-    fluid.testUtils.setupTestEnvironmentFeature = function (environmentFeature, flag) {
-        delete fluid.staticEnvironment[environmentFeature];
-        fluid.staticEnvironment[environmentFeature] = (flag) ? fluid.typeTag("fluid.browser." + environmentFeature) : undefined;
     };
 
 })(jQuery);

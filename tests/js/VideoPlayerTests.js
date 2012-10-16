@@ -18,8 +18,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
     $(document).ready(function () {
+        var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5"};
 
-        var videoPlayerTests = new jqUnit.TestCase("Video Player Tests");
+        var teardown = function () {
+            fluid.testUtils.cleanupEnv(envFeatures);
+        };
+
+        var videoPlayerTests = new jqUnit.TestCase("Video Player Tests", null, teardown);
 
         var initVideoPlayer = function (testOptions) {
             var opts = {
@@ -85,7 +90,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("HTML5: video player instantiation with customized controller", function () {
             jqUnit.expect(6);
             
-            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
+            fluid.testUtils.setStaticEnv(envFeatures);
             
             initVideoPlayer({
                 controls: "custom",
@@ -107,7 +112,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("HTML5: video player instantiation with native controller", function () {
             jqUnit.expect(6);
             
-            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
+            fluid.testUtils.setStaticEnv(envFeatures);
             
             initVideoPlayer({
                 controls: "native",
@@ -129,7 +134,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("HTML5: Controllers instantiation", function () {
             jqUnit.expect(5);
             
-            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", true);
+            fluid.testUtils.setStaticEnv(envFeatures);
             
             initVideoPlayer({
                 controls: "custom",
@@ -150,7 +155,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerTests.asyncTest("NON-HTML5: video player instantiation", function () {
             jqUnit.expect(5);
             
-            fluid.testUtils.setupTestEnvironmentFeature("supportsHtml5", false);
+            fluid.testUtils.setStaticEnv({"supportsHtml5": false});
             
             initVideoPlayer({
                 listeners: {

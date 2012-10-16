@@ -23,7 +23,13 @@ fluid.registerNamespace("fluid.tests");
 
         // TODO: The various "fluid.tests.initXXX" functions could probably be refactored to reduce duplication
 
-        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
+        var envFeatures = {"supportsFullScreen": "fluid.browser.supportsFullScreen"};
+
+        var teardown = function () {
+            fluid.testUtils.cleanupEnv(envFeatures);
+        };
+
+        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests", null, teardown);
 
         var baseVideoPlayerOpts = {
             video: {
@@ -73,7 +79,7 @@ fluid.registerNamespace("fluid.tests");
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
             jqUnit.expect(5);
-            var checkSlider = function(ariavaluenow, expectedValue) {
+            var checkSlider = function (ariavaluenow, expectedValue) {
                     jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
                 },
                 checkTooltipOnHover = function (element, expectedText) {
@@ -131,7 +137,7 @@ fluid.registerNamespace("fluid.tests");
         videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
             jqUnit.expect(2);
             
-            fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", true);
+            fluid.testUtils.setStaticEnv(envFeatures);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -145,8 +151,8 @@ fluid.registerNamespace("fluid.tests");
         
         videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present since component should be null", function () {
             jqUnit.expect(1);
+            fluid.testUtils.setStaticEnv({"supportsFullScreen": false});
             
-            fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", false);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -158,14 +164,14 @@ fluid.registerNamespace("fluid.tests");
         });
 
         fluid.tests.checkFullScreenButtonStyle = function (options) {
-            jqUnit[options.expectedFullScreen ? "assertTrue": "assertFalse"](options.message, options.modelFullScreen);
+            jqUnit[options.expectedFullScreen ? "assertTrue" : "assertFalse"](options.message, options.modelFullScreen);
             jqUnit.assertEquals("After click, full screen button should have a proper styling", !options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.init));
             jqUnit.assertEquals("After click, full screen button should have a proper styling", options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.pressed));
         };
         
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
             jqUnit.expect(9);
-            fluid.testUtils.setupTestEnvironmentFeature("supportsFullScreen", true);
+            fluid.testUtils.setStaticEnv(envFeatures);
             
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
@@ -211,15 +217,15 @@ fluid.registerNamespace("fluid.tests");
         var testBufferEndTime;
         
         var baseScrubberOpts = {
-                model: {
-                    buffered: {
-                        length: 1,
-                        end: function (index) {
-                            return testBufferEndTime;
-                        }
-                    },
-                    totalTime: 200
-                }
+            model: {
+                buffered: {
+                    length: 1,
+                    end: function (index) {
+                        return testBufferEndTime;
+                    }
+                },
+                totalTime: 200
+            }
         };
 
         fluid.tests.initScrubber = function (testOpts) {
