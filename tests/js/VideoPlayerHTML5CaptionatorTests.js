@@ -58,27 +58,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var warningMessage = "WARNING, this test will run only from a web server. ";
             jqUnit.assertEquals(warningMessage + "Caption should be " + captionText, captionText, html5Captionator.locate("caption").find(".captionator-cue").text());
         };
-        // config:
-        //      options - options to pass in a videoPlayer
-        //      isHTML5 - boolean flag to set presence of HTML5 in our test environment
-        //      hasComponent - boolean for a check if html5Captionator component is present in the videoPlayer
-        //      hasDOMElement - boolean for a check if html5Captionator component's markup is present in the DOM
-        //
-        var testInit = function (config) {
+
+        var testInit = function (options, hasCaptionator, hasCaptionatorMarkup) {
             jqUnit.expect(2);
 
-            config.testComponentFunc = config.hasComponent ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
-            config.componentStr = config.hasComponent ? "html5Captionator has been instantiated"
-                                                        : "html5Captionator has NOT been instantiated";
-            config.domStr = config.hasDOMElement ? "Captionator DIV is present in the DOM"
-                                                        : "Captionator DIV is NOT present in the DOM";
+            var assertFn = hasCaptionator ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
+            var testStr = hasCaptionator ? "html5Captionator has been instantiated"
+                                         : "html5Captionator has NOT been instantiated";
+            var domStr = hasCaptionatorMarkup ? "Captionator DIV is present in the DOM"
+                                              : "Captionator DIV is NOT present in the DOM";
 
-            initVideoPlayer(config.options, function (videoPlayer) {
-                config.testComponentFunc(config.componentStr, videoPlayer.html5Captionator);
-                jqUnit.assertEquals(config.domStr, (config.hasDOMElement) ? 1 : 0, $(captionatorSelector).length);
+            initVideoPlayer(options, function (videoPlayer) {
+                assertFn(testStr, videoPlayer.html5Captionator);
+                jqUnit.assertEquals(domStr, hasCaptionatorMarkup ? 1 : 0, $(captionatorSelector).length);
                 start();
             });
         };
+
         var defaultOptionsNoCaptions = {
             video: {
                 sources: [
@@ -143,38 +139,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        // Define tests declaratively
         var testCaseInfo = [{
                 desc: "NO HTML5: html5Captionator was not initialized",
                 envFeatures: {
                     supportsHtml5: null
                 },
                 testFn: function () {
-                    testInit({
-                        options: optionsFull,
-                        hasComponent: false,
-                        hasDOMElement: false
-                    });
+                    testInit(optionsFull);
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized but without tracks",
                 envFeatures: envFeatures,
                 testFn: function () {
-                    testInit({
-                        options: defaultOptionsNoCaptions,
-                        hasComponent: true,
-                        hasDOMElement: false
-                    });
+                    testInit(defaultOptionsNoCaptions, true);
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized",
                 envFeatures: envFeatures,
                 testFn: function () {
-                    testInit({
-                        options: optionsFull,
-                        hasComponent: true,
-                        hasDOMElement: true
-                    });
+                    testInit(optionsFull, true, true);
                 }
             }, {
                 desc: "html5Captionator changing tracks and more",
