@@ -25,7 +25,8 @@
     width: 100%;
     height: 100%;
 }
-.fl-videoPlayer-video-element:focus {
+.fl-videoPlayer-video-element:focus,
+.fl-videoPlayer-transcript-element-selected {
     outline: solid 3px #3195C7;
 }
 .fl-theme-uio-yb .fl-videoPlayer-video-element:focus { outline-color: #FFFF00; }
@@ -40,6 +41,7 @@
 .fl-videoPlayer-tooltip {
     position    : absolute;
     padding     : 3px 5px;
+    z-index     : 1000; /* Tooltips should be always shown above any other videoPlayer html element */
 }
 .fl-theme-uio-yb .fl-videoPlayer-tooltip,
 .fl-theme-uio-by .fl-videoPlayer-tooltip,
@@ -55,7 +57,7 @@
 /***********
  * Buttons *
  ***********/
- 
+
 .fl-videoPlayer-button {
     width: 30px;
     height: 30px;
@@ -89,6 +91,14 @@
 }
 
 .fl-videoPlayer-controller-buttons * {
+    display: inline-block;
+}
+
+.fl-videoPlayer-optional {
+    display: none;
+}
+.fl-videoPlayer-fullscreen.fl-videoPlayer-optional,
+.fl-videoPlayer-fullscreen-on.fl-videoPlayer-optional {
     display: inline;
 }
 
@@ -256,8 +266,8 @@ a.fl-videoPlayer-button-wrapper {
     border-style: solid;
     border-color: #c2c2c2;
     position: absolute;
-    bottom: 19px; /* 20px is right on FF */
-    right: 1px; /* 5px is right on FF */
+    bottom: 30px;
+    right: 0px;
     width: 25%;
     background-color: #F2F2F2;
 }
@@ -536,10 +546,10 @@ ul.fl-videoPlayer-transcripts-languageList li {
     position: absolute;
     width: 100%;
 }
-.fl-theme-uio-yb .fl-videoPlayer-overlay,
-.fl-theme-uio-wb .fl-videoPlayer-overlay,
-.fl-theme-uio-by .fl-videoPlayer-overlay,
-.fl-theme-uio-bw .fl-videoPlayer-overlay {
+.fl-theme-uio-yb .fl-videoPlayer-overlay, .fl-theme-uio-yb .fl-videoPlayer-captionArea, .fl-theme-uio-yb .captionator-cue-canvas,
+.fl-theme-uio-wb .fl-videoPlayer-overlay, .fl-theme-uio-wb .fl-videoPlayer-captionArea, .fl-theme-uio-wb .captionator-cue-canvas,
+.fl-theme-uio-by .fl-videoPlayer-overlay, .fl-theme-uio-by .fl-videoPlayer-captionArea, .fl-theme-uio-by .captionator-cue-canvas,
+.fl-theme-uio-bw .fl-videoPlayer-overlay, .fl-theme-uio-bw .fl-videoPlayer-captionArea, .fl-theme-uio-bw .captionator-cue-canvas {
     background-color: transparent !important;
 }
 .fl-videoPlayer-caption-captionText {
@@ -634,8 +644,14 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .captionator-cue-canvas {
     pointer-events:none;
     color: #FFFFFF;
+    position: relative !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
 }
 
+.captionator-cue {
+    line-height: inherit !important;
+}
 
 /********************
  * UIO theme styling 

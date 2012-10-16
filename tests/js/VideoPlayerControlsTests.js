@@ -76,29 +76,41 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            expect(4);
-            var testVolumeControls = fluid.tests.initVolumeControls({
-                listeners: {
-                    onReady: function (that) {
-                        var muteButton = that.locate("mute");
-                        var volumeSlider = that.locate("volumeControl");
+            jqUnit.expect(5);
+            var checkSlider = function(ariavaluenow, expectedValue) {
+                    jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
+                },
+                checkTooltipOnHover = function (element, expectedText) {
+                    fluid.testUtils.getTooltipCheckString(element, expectedText);
+                    element.mouseleave();
+                },
+                testVolumeControls = fluid.tests.initVolumeControls({
+                    listeners: {
+                        onReady: function (that) {
+                            var muteButton = that.locate("mute"),
+                                volumeSlider = that.locate("volumeControl"),
+                                sliderHandle = that.locate("handle");
 
-                        fluid.testUtils.verifyBasicButtonFunctions(muteButton, "Mute", "Mute", "Un-mute", "fl-videoPlayer-muted");
+                            checkTooltipOnHover(volumeSlider, "Volume");
+                            checkTooltipOnHover(muteButton, "Mute");
+                            muteButton.click();
+                            checkSlider(sliderHandle.attr("aria-valuenow"), "0");
+                            checkTooltipOnHover(muteButton, "Un-mute");
+                            muteButton.click();
 
-                        jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
-                        var sliderHandle = that.locate("handle");
-                        jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
-                        jqUnit.assertEquals("The slider button should have valuenow of '50'", "50", sliderHandle.attr("aria-valuenow"));
-                        jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
+                            jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
+                            jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
+                            checkSlider(sliderHandle.attr("aria-valuenow"), "50");
+                            jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
 
-                        start();
+                            start();
+                        }
                     }
-                }
-            });
+                });
         });
 
         videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
-            expect(4);
+            jqUnit.expect(4);
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -119,6 +131,43 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
+        
+        function setupEnvironment(supportsFullScreen) {
+            delete fluid.staticEnvironment.supportsFullScreen;
+            
+            if (supportsFullScreen) {
+                fluid.staticEnvironment.supportsFullScreen = fluid.typeTag("fluid.browser.supportsFullScreen");
+            }
+        }
+        
+        videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
+            jqUnit.expect(2);
+            
+            setupEnvironment(true);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        jqUnit.assertNotEquals("Full screen button component is not an empty one", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                        jqUnit.assertNotEquals("Full screen button should be present", that.locate("fullscreen").css("display"), "none");
+                        start();
+                    }
+                }
+            });
+        });
+        
+        videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present since component should be null", function () {
+            jqUnit.expect(1);
+            
+            setupEnvironment(false);
+            var testPlayer = fluid.tests.initVideoPlayer({
+                listeners: {
+                    onControllersReady: function (that) {
+                        jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                        start();
+                    }
+                }
+            });
+        });
 
         fluid.tests.checkFullScreenButtonStyle = function (options) {
             jqUnit[options.expectedFullScreen ? "assertTrue": "assertFalse"](options.message, options.modelFullScreen);
@@ -127,7 +176,9 @@ fluid.registerNamespace("fluid.tests");
         };
         
         videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
-            expect(9);
+            jqUnit.expect(9);
+            setupEnvironment(true);
+            
             var testPlayer = fluid.tests.initVideoPlayer({
                 listeners: {
                     onControllersReady: function (that) {
@@ -190,7 +241,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         videoPlayerControlsTests.test("Buffer progress update", function () {
-            expect(3);
+            jqUnit.expect(3);
             var scrubber = fluid.tests.initScrubber();
             
             fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);

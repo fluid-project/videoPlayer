@@ -82,18 +82,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
         
-        var testTrackShowing = function (html5Captionator, index) {
-            var tracks = html5Captionator.locate("video")[0].tracks;
-                
-            jqUnit.assertEquals(html5Captionator.options.captions[index].label + " are showing", captionator.TextTrack.SHOWING, tracks[index].mode);
+        var testTrackShowing = function (trackEl) {
+            jqUnit.assertEquals(trackEl.track.label + " are showing", captionator.TextTrack.SHOWING, trackEl.track.mode);
         };
         
-        var testTrackNotShowing = function (html5Captionator, index) {
-            var tracks = html5Captionator.locate("video")[0].tracks;
-                
-            jqUnit.assertEquals(html5Captionator.options.captions[index].label + " are not showing", captionator.TextTrack.OFF, tracks[index].mode);
+        var testTrackNotShowing = function (trackEl) {
+            jqUnit.assertEquals(trackEl.track.label + " are not showing", captionator.TextTrack.OFF, trackEl.track.mode);
         };
-              
+
         // videoPlayer creation
         var initVideoPlayer = function (container, options, callback) {
             options = options || {};
@@ -107,7 +103,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
             
             return fluid.videoPlayer(container, options);
-        }
+        };
 
         // Function to set or unset HTML5 test environment
         var setupEnvironment = function (withHtml5) {
@@ -116,11 +112,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             } else {
                 fluid.staticEnvironment.browserHtml5 = undefined;
             }
-        }
+        };
         
         // A template function which checks captionator initalization depending on different provided options and config
         var testInit = function (config) {
-            expect(2);
+            jqUnit.expect(2);
             
             setupEnvironment(config.isHTML5);
             
@@ -135,8 +131,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 jqUnit.assertEquals(config.domStr, (config.hasDOMElement)?1:0, $(captionatorSelector).length);
                 start();
             });
-        }
-        
+        };
         
         videoPlayerCaptionatorTests.asyncTest("NO HTML5: html5Captionator was not initialized", function () {
             testInit({
@@ -169,45 +164,45 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 hasDOMElement: true
             });
         });
-
-                
-        videoPlayerCaptionatorTests.asyncTest("html5Captionator changing tracks and more", function () {
+        
+        videoPlayerCaptionatorTests.asyncTest("Changing and hiding tracks", function () {
             var testIndex = 3;
             
-            expect(7);
+            jqUnit.expect(7);
             
             setupEnvironment(true);
             
             initVideoPlayer(container[testIndex], testOptionsFull, function (videoPlayer) {
                 
-                var tracks = videoPlayer.html5Captionator.locate("video")[0].tracks;
                 var html5Captionator = videoPlayer.html5Captionator;
+                var tracks = $("track", html5Captionator.locate("video"));
+                var englishTrack = tracks[0];
+                var frenchTrack = tracks[1];
                 
                 jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
                 
-                testTrackShowing(html5Captionator, 0);
-                testTrackNotShowing(html5Captionator, 1);
+                testTrackShowing(englishTrack);
+                testTrackNotShowing(frenchTrack);
                 
                 fluid.videoPlayer.html5Captionator.showCurrentTrack([1], tracks, html5Captionator.options.captions);
                 
-                testTrackNotShowing(html5Captionator, 0);
-                testTrackShowing(html5Captionator, 1);
+                testTrackNotShowing(englishTrack);
+                testTrackShowing(frenchTrack);
                 
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
                 
-                testTrackNotShowing(html5Captionator, 0);
-                testTrackNotShowing(html5Captionator, 1);
+                testTrackNotShowing(englishTrack);
+                testTrackNotShowing(frenchTrack);
                 
                 start();
             });
         });
         
-        
         // TEST FLUID-4618. Writing a test to verify that functions in preInit work properly
         videoPlayerCaptionatorTests.asyncTest("html5Captionator displayCaptions test", function () {
             var testIndex = 4;
             
-            expect(1);
+            jqUnit.expect(1);
             
             setupEnvironment(true);
             
@@ -226,7 +221,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerCaptionatorTests.asyncTest("html5Captionator without currentTrack", function () {
             var testIndex = 5;
             
-            expect(5);
+            jqUnit.expect(5);
             
             setupEnvironment(true);
             
@@ -246,13 +241,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 //jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
                 //        0, currentTracks.captions[0]);
                 
-                testTrackNotShowing(html5Captionator, 0);
-                testTrackNotShowing(html5Captionator, 1);
+                var tracks = $("track", html5Captionator.locate("video"));
+                testTrackNotShowing(tracks[0]);
+                testTrackNotShowing(tracks[1]);
                 
                 start();
             });
         });
-
 
     });
 })(jQuery);

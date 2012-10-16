@@ -27,15 +27,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *******************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
+    // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
+    // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
+    // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
+
     fluid.browser.html5 = function () {
         // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
         // Needs re-work at the integration of mediaElement.
         var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
+    
+    fluid.browser.requestFullScreen = (function () {
+        var v = $("<video />")[0];
+        return v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
+    })();
+
+    fluid.browser.supportsFullScreen = function () {
+        return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
+    };
 
     var features = {
-        browserHtml5: fluid.browser.html5()
+        browserHtml5: fluid.browser.html5(),
+        supportsFullScreen: fluid.browser.supportsFullScreen()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -168,7 +182,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
-                        afterScrub: "{videoPlayer}.events.afterScrub"
+                        afterScrub: "{videoPlayer}.events.afterScrub",
+                        onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     }
                 }
             },
@@ -179,7 +195,68 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.options.video.captions"
+                    captions: "{videoPlayer}.options.video.captions",
+                    events: {
+                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                    }
+                }
+            },
+            transcript: {
+                type: "fluid.videoPlayer.transcript",
+                container: "{videoPlayer}.dom.transcript",
+                createOnEvent: "onHTML5BrowserDetected",
+                options: {
+                    // TODO (long term) - should not share entire model and applier with transcripts
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    transcripts: "{videoPlayer}.options.video.transcripts",
+                    components: {
+                        transcriptInterval: {
+                            type: "fluid.videoPlayer.intervalEventsConductor",
+                            options: {
+                                components: {
+                                    html5MediaTimer: {
+                                        type: "fluid.videoPlayer.html5MediaTimer",
+                                        options: {
+                                            mediaElement: "{media}.container"
+                                        }
+                                    }
+                                },
+                                events: {
+                                    onIntervalChange: "{transcript}.events.onIntervalChange"
+                                }
+                            }
+                        }
+                    },
+                    events: {
+                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                        onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
+                        onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
+                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
+                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
+                    }
+                }
+            },
+            browserCompatibility: {
+                type: "demo.html5BackwardsCompatability",
+                createOnEvent: "onOldBrowserDetected"
+            },
+            intervalEventsConductor: {
+                type: "fluid.videoPlayer.intervalEventsConductor",
+                createOnEvent: "onCreateMediaReady",
+                options: {
+                    components: {
+                        html5MediaTimer: {
+                            type: "fluid.videoPlayer.html5MediaTimer",
+                            options: {
+                                mediaElement: "{media}.container"
+                            }
+                        }
+                    },
+                    events: {
+                        onTimeChange: "{videoPlayer}.events.onTimeChange",
+                        onIntervalChange: "{videoPlayer}.events.onIntervalChange"
+                    }
                 }
             }
         },
@@ -209,7 +286,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onHTML5BrowserDetected: null
+            onHTML5BrowserDetected: null,
+
+            // private events used for associating menus with what they control via ARIA
+            onTranscriptsReady: null,
+            onTranscriptsLoaded: null,
+            onCaptionsReady: null,
+            canBindTranscriptMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    transcripts: "onTranscriptsLoaded"
+                },
+                args: ["{arguments}.transcripts.1"]
+            },
+            canBindCaptionMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    captions: "onCaptionsReady"
+                },
+                args: ["{arguments}.captions.1"]
+            }
         },
         invokers: {
             resize: {
@@ -417,20 +513,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.each(that.options.defaultKinds, function (defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
-    
+        
         that.fullscreen = function () {
-            var video = that.locate("video");
-            var videoEl = video[0];
-            
             if (that.model.fullscreen === true) {
-                // FLUID-4661: Using browser'ss full screen video mode for now until we implement our own fullscreen mode
-                fluid.each(["moz", "webkit", "o"], function (value) {
-                    var functionName = value + "RequestFullScreen";
-                    if (videoEl[functionName]) {
-                        videoEl[functionName]();
-                        return false;
-                    }
-                });
+                fluid.browser.requestFullScreen.apply(that.locate("video")[0]);
             }
         };
         
@@ -544,7 +630,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
-            
+
+            // Ensure <object> element is not in tab order, for IE9
+            $("object", that.locate("video")).attr("tabindex", "-1");
+
             that.events.onReady.fire(that);
         });
         
@@ -616,5 +705,55 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
+
+    /*******************************************************************
+     * Converts seconds into a WebVTT Timestamp:  HH:MM:SS.mmm
+     * @seconds:  time in seconds expressed as a floating point number
+     *******************************************************************/
+    fluid.videoPlayer.secondsToHmsm = function (seconds) {
+        seconds = parseFloat(seconds);
+        seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
+
+        var hours = parseInt(seconds / 3600);
+        var minutes = parseInt(seconds / 60) % 60;
+        seconds = (seconds % 60).toFixed(3);
+
+        // Return result of type HH:MM:SS.mmm
+        return "" + (hours < 10 ? "0" + hours : hours) + ":"
+            + (minutes < 10 ? "0" + minutes : minutes) + ":"
+            + (seconds  < 10 ? "0" + seconds : seconds);
+    };
+
+    /******************************************************************************************************
+     * Converts JSON from Amara (http://www.universalsubtitles.org/api/1.0/subtitles/) into WebVTT format.
+     * Each caption in WebVTT looks like:
+     *  empty line
+     *  HH:MM:SS.mmm --> HH:MM:SS.mmm
+     *  Caption text
+     *
+     *****************************************************************************************************/
+    fluid.videoPlayer.amaraJsonToVTT = function (json) {
+        var vtt = "WEBVTT";
+
+        for (var i = 0; i < json.length; i++) {
+            var startTime = fluid.videoPlayer.secondsToHmsm(json[i].start_time);
+            var endTime = fluid.videoPlayer.secondsToHmsm(json[i].end_time);
+            vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
+        }
+
+        return vtt;
+    };
+
+    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, callback) {
+        // No point continuing because we can't get a useful JSONP response without the url and a callback
+        if (!videoUrl || !callback) {
+            return;
+        }
+
+        // Hard coded URL to amara here 
+        var url = encodeURI("http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?");
+
+        $.getJSON(url, callback);
+    };
 
 })(jQuery);

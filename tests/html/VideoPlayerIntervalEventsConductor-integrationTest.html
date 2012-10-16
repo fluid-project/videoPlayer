@@ -11,20 +11,25 @@
 
         <!--  jqUnit test framework js files -->
         <script type="text/javascript" src="../lib/qunit/js/qunit.js"></script>
-        <script type="text/javascript" src="../lib/jqUnit/js/jqUnit.js"></script>   
+        <script type="text/javascript" src="../lib/jqUnit/js/jqUnit.js"></script>
 
         <!--  These are tests that have been written using this page as data and test supports -->
-        <script type="text/javascript" src="../js/VideoPlayerIntervalEventsConductorTests.js"></script>
+        <script type="text/javascript" src="../js/IntervalEventsConductor-IntegrationTests.js"></script>
 
     </head>
     <body id="body">
         <!-- This is the markup that jqUnit will look for when running tests and displaying the results -->
-        <h1 id="qunit-header">Video Player Interval Events Conductor Test Suite</h1>
+        <h1 id="qunit-header">Video Player Interval Events Conductor Integration Test Suite</h1>
         <h2 id="qunit-banner"></h2>
         <div id="qunit-testrunner-toolbar"></div>
         <h2 id="qunit-userAgent"></h2>
         <ol id="qunit-tests"></ol>
         <div id="qunit-fixture">
+
+        <video class="flc-video fl-videoPlayer-video" alt="A video for the intervalEventsConductor integration tests" style="display:none">
+            <source src="TestVideo.mp4" type="video/mp4"></source>
+            <source src="../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm" type="video/webm"></source>
+        </video>
 
         </div> <!-- /main -->
 

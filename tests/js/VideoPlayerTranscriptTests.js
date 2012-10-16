@@ -31,7 +31,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             };
         
         var testConvertToMilli = function (inTime, expected, extraMsg) {
-            expect(1);
+            jqUnit.expect(1);
             var result = fluid.videoPlayer.transcript.convertToMilli(inTime);
             
             jqUnit.assertEquals("The result to convert " + inTime + " to milliseconds is expected" + (extraMsg ? " - " + extraMsg : ""), expected, result);
@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         var initialTranscriptText;
         
-        fluid.videoPlayer.testTranscriptLoaded = function (intervalList, that) {
+        fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
             jqUnit.assertNotNull("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text());
             jqUnit.assertTrue("Each transcript element is wrapped in a properly-named span", 
                     ($(".flc-videoPlayer-transcript-text").find('[id|="' + that.options.transcriptElementIdPrefix + '"]').length > 0));
@@ -103,7 +103,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             initialTranscriptText = undefined;
             
             videoPlayerTranscriptTests.asyncTest(purpose + " - instantiation", function () {
-                expect(5);
+                jqUnit.expect(5);
                 
                 var testOpts = {
                         listeners: {
@@ -149,14 +149,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var universalSubsOpts = {
                 transcripts: [
                     {
-                        src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
-                        type: "jsonp/vtt",
+                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                        type: "text/amarajson",
                         srclang: "en",
                         label: "English"
                     },
                     {
-                        src: "http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
-                        type: "jsonp/vtt",
+                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
+                        type: "text/amarajson",
                         srclang: "fr",
                         label: "French"
                     }
@@ -170,5 +170,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
         }, 500);
 
+        videoPlayerTranscriptTests.asyncTest("Drop-down aria-controls text area", function () {
+            var testOpts = {
+                listeners: {
+                    onReady: function (that) {
+                        var attr = that.locate("languageDropdown").attr("aria-controls");
+                        jqUnit.assertTrue("Drop-down should have aria-controls attribute", !!attr);
+                        jqUnit.assertEquals("aria-controls should reference the text area", that.locate("transcriptText").attr("id"), attr);
+                        start();
+                    }
+                }
+            };
+            var that = initTranscript(localTranscriptOpts, testOpts);
+        });
+
+        videoPlayerTranscriptTests.asyncTest("transcriptTextId", function () {
+            var testOpts = {
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("should be able to retrieve transcript id", that.locate("transcriptText").attr("id"), that.transcriptTextId());
+                        start();
+                    }
+                }
+            };
+            var that = initTranscript(localTranscriptOpts, testOpts);
+        });
     });
 })(jQuery);

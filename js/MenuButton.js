@@ -40,7 +40,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             activated: null,
-            hiddenByKeyboard: null
+            hiddenByKeyboard: null,
+            onControlledElementReady: null
+        },
+        listeners: {
+            onControlledElementReady: {
+                listener: "fluid.videoPlayer.languageMenu.setAriaControlsAttr",
+                args: ["{languageMenu}", "{arguments}.0"]
+            }
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
@@ -76,12 +83,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 controlledBy: "languages",
                 pathAs: "lang",
                 tree: {
-                    value: "${{lang}.label}"
+                    value: "${{lang}.label}",
+                    decorators: {
+                        type: "attrs",
+                        attributes: {
+                            "role": "menuitemradio",
+                            "aria-checked": "false",
+                            "aria-selected": "false"
+                        }
+                    }
                 }
             },
             // add the 'turn off' option
             showHide: {
-                value: that.options.strings[that.readIndirect("showHide")? "hideLanguage" : "showLanguage"]
+                value: that.options.strings[that.readIndirect("showHidePath") ? "hideLanguage" : "showLanguage"],
+                decorators: {
+                    type: "attrs",
+                    attributes: {
+                        "role": "menuitemcheckbox",
+                        "aria-checked": "false",
+                        "aria-selected": "false"
+                    }
+                }
             }
         };
         return tree;
@@ -123,7 +146,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.locate("showHide").click(function (evt) {
-            that.showHide()
+            that.showHide();
         });
 
         that.applier.modelChanged.addListener(that.options.showHidePath, that.updateShowHide);
@@ -134,48 +157,60 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.languageMenu.updateTracks = function (that) {
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
+        menuItems.attr("aria-checked", "false").attr("aria-selected", "false");
         var langIndex = that.readIndirect("currentLanguagePath")[0];
-        $(menuItems[langIndex]).addClass(that.options.styles.active);
+        var selectedItem = $(menuItems[langIndex]);
+        selectedItem.addClass(that.options.styles.active);
+        selectedItem.attr("aria-checked", "true").attr("aria-selected", "true");
     };
     
-    fluid.videoPlayer.languageMenu.updateShowHide = function(that) {
+    fluid.videoPlayer.languageMenu.updateShowHide = function (that) {
         var showHide = that.readIndirect("showHidePath"); 
-        that.locate("showHide").text(that.options.strings[showHide? "hideLanguage": "showLanguage"]);
+        that.locate("showHide").text(that.options.strings[showHide ? "hideLanguage" : "showLanguage"]);
+    };
+
+    fluid.videoPlayer.languageMenu.setAriaControlsAttr = function (that, controlledId) {
+        that.container.attr("aria-controls", controlledId);
+        that.locate("menuItem").attr("aria-controls", controlledId);
     };
 
     fluid.videoPlayer.languageMenu.preInit = function (that) {
-
         that.toggleView = function () {
             that.container.toggle();
+            that.container.attr("aria-hidden", !that.container.is(':visible'));
         };
     };
 
     fluid.videoPlayer.languageMenu.postInit = function (that) {
-        that.show = function () {
+        that.showMenu = function () {
             that.container.show();
+            that.container.attr("aria-hidden", "false");
         };
-        that.hide = function () {
+        that.hideMenu = function () {
             that.container.hide();
+            that.container.attr("aria-hidden", "true");
         };
         that.showAndSelect = function () {
-            that.show();
+            that.showMenu();
             that.container.fluid("selectable.select", that.locate("menuItem").last());
         };
         that.activate = function (index) {
             that.writeIndirect("currentLanguagePath", [index]);
             that.writeIndirect("showHidePath", true);
-            that.hide();
+            that.hideMenu();
         };
         that.showHide = function () {
             that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
-            that.hide();
+            that.hideMenu();
         };
     };
 
     fluid.videoPlayer.languageMenu.finalInit = function (that) {
         fluid.videoPlayer.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
-        that.hide();
+
+        that.container.attr("role", "menu");
+        that.hideMenu();
         that.updateTracks();
         that.updateShowHide();
         that.events.onReady.fire(that);
@@ -198,7 +233,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onReady: null,
-            onRenderingComplete: null
+            onRenderingComplete: null,
+            onControlledElementReady: null
         },
         languages: [],
         currentLanguagePath: "",
@@ -224,7 +260,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     selectors: {
                         button: "{languageControls}.options.selectors.button"
                     },
-                    strings: "{languageControls}.options.strings",
+                    strings: "{languageControls}.options.strings"
                 }
             },
             menu: {
@@ -236,7 +272,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{languageControls}.applier",
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
-                    strings: "{languageControls}.options.strings"
+                    strings: "{languageControls}.options.strings",
+                    events: {
+                        onControlledElementReady: "{languageControls}.events.onControlledElementReady"
+                    }
                 }
             },
             eventBinder: {
@@ -265,7 +304,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             additionalBindings: [{
                 key: $.ui.keyCode.ESCAPE,
                 activateHandler: function () {
-                    that.menu.hide();
+                    that.menu.hideMenu();
                     button.focus();
                 }
             }]
@@ -273,26 +312,33 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.menu.events.hiddenByKeyboard.addListener(function () {
             button.focus();
         });
-        
-        // TODO: Causing IE8 failure at clicking caption or transcript button due to FLUID-4762.
-        // Uncommented the lines below once FLUID-4762 is fixed.
-//        fluid.deadMansBlur(that.container, {
-//            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
-//            handler: function () {
-//                that.menu.hide();
-//            }
-//        });
+        fluid.deadMansBlur(that.container, {
+            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
+            handler: function () {
+                that.menu.hideMenu();
+            }
+        });
+    };
+
+    fluid.videoPlayer.languageControls.setUpAria = function (that) {
+        var containerID = fluid.allocateSimpleId(that.menu.container);
+        that.button.locate("button").attr({
+            "aria-owns": containerID,
+            "aria-controls": containerID,
+            "aria-haspopup": "true"
+        });
     };
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {
-        fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         that.events.onRenderingComplete.fire(that);
-        
+
+        fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
+        fluid.videoPlayer.languageControls.setUpAria(that);
+
         function refreshButtonClass() {
             var showHide = that.readIndirect("showHidePath");
             that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
-        };
-
+        }
         that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
         refreshButtonClass();
         that.events.onReady.fire(that);
@@ -305,8 +351,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         listeners: {
-            "{button}.events.onPress": "{menu}.toggleView",
-        },
+            "{button}.events.onPress": "{menu}.toggleView"
+        }
     });
 })(jQuery);
-    
