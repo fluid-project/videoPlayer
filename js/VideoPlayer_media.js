@@ -175,6 +175,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // scrubber does not reposition the progress handler at the first click, but 
                 // happens at the second click. The issue is easier to produce when the video is 
                 // at pause.
+
+                // this problem is probably related to a known issue in mediaelement.js:
+                // https://github.com/johndyer/mediaelement/issues/489
+                // https://github.com/johndyer/mediaelement/issues/516
                 setTimeout(function () {
                     var currentTime = mediaElementVideo.currentTime || 0;
                     var buffered = mediaElementVideo.buffered || 0;
