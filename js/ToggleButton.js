@@ -78,7 +78,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 button.toggleClass(styles.init, !pressed);
                 button.toggleClass(styles.pressed, pressed);
             }
-            button.prop("aria-pressed", pressed);
+            button.attr("aria-pressed", pressed);
 
             that.tooltip.updateContent(that.tooltipContentFunction(that));
         };
