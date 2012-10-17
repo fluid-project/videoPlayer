@@ -1,0 +1,60 @@
+li.fl-media-column {
+    float: left;
+    }
+
+.fl-media-column li {
+    clear: both;
+}
+
+ul.fl-uiOptions-nestedList {
+    padding-top: 0em;
+    margin: 0em;
+}
+
+li.fl-uiOptions-volume {
+    padding-right: 7em;
+}
+
+.fl-uiOptions-volume .fl-slider {
+    top: 0.36em;
+}
+
+/* Tab images */
+.fl-uiOptions-fatPanel .fl-tab-media {
+    background-repeat: no-repeat;
+    background-position: 8% 50%;
+}
+
+.fl-theme-wb .fl-uiOptions-fatPanel .ui-tabs-selected .fl-tab-media, /* override for wb theme */
+    .fl-theme-wb .fl-uiOptions-fatPanel .ui-state-hover .fl-tab-media, /* override for wb theme */
+    .fl-uiOptions-fatPanel .fl-tab-media { background-image: url('../images/white/uio_icon_audioandvideo_white_18x18.png'); }
+    
+.fl-uiOptions-fatPanel .ui-tabs-selected .fl-tab-media,
+    .fl-theme-bw .fl-uiOptions-fatPanel .ui-state-hover .fl-tab-media, /* override for bw theme */
+    .fl-theme-wb .fl-uiOptions-fatPanel .fl-tab-media, /* override for wb theme */
+    .fl-theme-yb .fl-uiOptions-fatPanel .fl-tab-media, /* override for yb theme */
+    .fl-theme-by .fl-uiOptions-fatPanel .ui-state-hover .fl-tab-media, /* override for by theme */ 
+    .fl-theme-by .fl-uiOptions-fatPanel .ui-tabs-selected .fl-tab-media /* override for by theme */ 
+     { background-image: url('../images/black/uio_icon_audioandvideo_black_18x18.png'); }
+     
+.fl-theme-by .fl-uiOptions-fatPanel .fl-tab-media,
+    .fl-theme-yb .fl-uiOptions-fatPanel .ui-state-hover .fl-tab-media,
+    .fl-theme-yb .fl-uiOptions-fatPanel .ui-tabs-selected .fl-tab-media
+     { background-image: url('../images/yellow/uio_icon_audioandvideo_yellow_18x18.png'); }
+     
+         
+.fl-uiOptions .fl-volume-slider-left { 
+    background-image: url("../images/black/uio_icon_volumeOff_black_12x21.png");
+}
+
+.fl-uiOptions .fl-volume-slider-right { 
+    background-image: url("../images/black/uio_icon_volumeOn_black_23x21.png");
+}
+
+
+.fl-theme-wb .fl-uiOptions .fl-volume-slider-left { background-image: url("../images/white/uio_icon_volumeOff_white_12x21.png"); }
+.fl-theme-wb .fl-uiOptions .fl-volume-slider-right { background-image: url("../images/white/uio_icon_volumeOn_white_23x21.png"); }
+
+
+.fl-theme-yb .fl-uiOptions .fl-volume-slider-left { background-image: url("../images/yellow/uio_icon_volumeOff_yellow_12x21.png"); }
+.fl-theme-yb .fl-uiOptions .fl-volume-slider-right { background-image: url("../images/yellow/uio_icon_volumeOn_yellow_23x21.png"); }

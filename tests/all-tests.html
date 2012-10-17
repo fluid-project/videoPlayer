@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Video Player complete tests runner</title>
+
+    <link rel="stylesheet" href="lib/qunit/css/qunit.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="lib/qunit/addons/composite/qunit-composite.css">
+    <script src="lib/qunit/js/qunit.js"></script>
+    <script src="lib/qunit/addons/composite/qunit-composite.js"></script>
+    <script>
+    QUnit.testSuites([
+		"./html/MenuButton-test.html",
+        "./html/ToggleButton-test.html",
+        "./html/VideoFramework-test.html",
+        "./html/VideoPlayerAria-test.html",
+        "./html/VideoPlayerControls-test.html",
+        "./html/VideoPlayerHTML5Captionator-test.html",
+        "./html/VideoPlayer-IntegrationTest.html",
+        "./html/VideoPlayerIntervalEventsConductor-integrationTest.html",
+        "./html/VideoPlayerIntervalEventsConductor-test.html",
+        "./html/VideoPlayer-test.html",
+        "./html/VideoPlayerTranscript-test.html"
+    ]);
+    </script>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+</div>
+</body>
+</html>
