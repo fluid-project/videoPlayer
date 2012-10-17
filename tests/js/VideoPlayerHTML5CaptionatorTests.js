@@ -141,6 +141,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var testCaseInfo = [{
                 desc: "NO HTML5: html5Captionator was not initialized",
+                async: true,
                 envFeatures: {
                     supportsHtml5: null
                 },
@@ -149,18 +150,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized but without tracks",
+                async: true,
                 envFeatures: envFeatures,
                 testFn: function () {
                     testInit(defaultOptionsNoCaptions, true);
                 }
             }, {
                 desc: "HTML5: html5Captionator was initialized",
+                async: true,
                 envFeatures: envFeatures,
                 testFn: function () {
                     testInit(optionsFull, true, true);
                 }
             }, {
                 desc: "html5Captionator changing tracks and more",
+                async: true,
                 envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsFull, function (videoPlayer) {
@@ -189,6 +193,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {     // TEST FLUID-4618. Writing a test to verify that functions in preInit work properly
                 desc: "html5Captionator displayCaptions test",
+                async: true,
                 envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsFull, function (videoPlayer) {
@@ -205,6 +210,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "html5Captionator without currentTrack",
+                async: true,
                 envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsWithoutCurrentTrack, function (videoPlayer) {
@@ -234,6 +240,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }, {
                 desc: "displayCaptions is set to false so no captions should be present at all in the DOM",
+                async: true,
                 envFeatures: envFeatures,
                 testFn: function () {
                     initVideoPlayer(optionsFullWithDisplayCaptionsOff, function (videoPlayer) {

@@ -21,7 +21,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5"};
 
         var teardown = function () {
-            fluid.testUtils.cleanupEnv(envFeatures);
+            fluid.testUtils.clearStaticEnv(envFeatures);
         };
 
         var videoPlayerTests = new jqUnit.TestCase("Video Player Tests", null, teardown);

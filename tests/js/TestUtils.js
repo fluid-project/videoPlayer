@@ -62,16 +62,18 @@ fluid.registerNamespace("fluid.testUtils");
         var allFeatures = {};
 
         var teardown = function () {
-            fluid.testUtils.cleanupEnv(allFeatures);
+            fluid.testUtils.clearStaticEnv(allFeatures);
             if (teardownFn) {
                 teardownFn();
             }
         };
 
-        var testCase = new jqUnit.TestCase(name, setupFn, teardown);
+        var testCase = jqUnit.testCase(name, setupFn, teardown);
 
         $.each(testCaseInfo, function (index, testInfo) {
-            testCase.asyncTest(testInfo.desc, function () {
+            var test = testInfo.async ? testCase.asyncTest : testCase.test;
+
+            test(testInfo.desc, function () {
                 fluid.testUtils.setStaticEnv(testInfo.envFeatures);
                 testInfo.testFn();
             });
@@ -89,7 +91,7 @@ fluid.registerNamespace("fluid.testUtils");
         });
     };
 
-    fluid.testUtils.cleanupEnv = function (features) {
+    fluid.testUtils.clearStaticEnv = function (features) {
         fluid.each(features, function (val, key) {
             delete fluid.staticEnvironment[key];
         });
