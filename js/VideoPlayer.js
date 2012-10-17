@@ -27,19 +27,34 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *******************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
+    // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
+    // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
+    // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
+
     fluid.browser.html5 = function () {
         // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
         // Needs re-work at the integration of mediaElement.
         var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
         return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
     };
+    
+    fluid.browser.requestFullScreen = (function () {
+        var v = $("<video />")[0];
+        return v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
+    })();
+
+    fluid.browser.supportsFullScreen = function () {
+        return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
+    };
 
     var features = {
-        browserHtml5: fluid.browser.html5()
+        browserHtml5: fluid.browser.html5(),
+        supportsFullScreen: fluid.browser.supportsFullScreen()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
     
+    // TODO: This method cut and pasted from UIEnhancer.js 
     fluid.hasFeature = function (tagName) {
         return fluid.find(fluid.staticEnvironment, function (value) {
             return value && value.typeName === tagName ? true : undefined;
@@ -55,8 +70,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * support HTML5.                                                              * 
      *******************************************************************************/
     
+    fluid.registerNamespace("fluid.videoPlayer");
+    
     //This is the default key bindings
-    var defaultKeys = {
+    fluid.videoPlayer.defaultKeys = {
         play: {
             modifier: $.ui.keyCode.SHIFT,
             key: 80
@@ -65,25 +82,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             modifier: $.ui.keyCode.SHIFT,
             key: 67
         },
+        transcripts: {
+            modifier: $.ui.keyCode.SHIFT,
+            key: 84
+        },
         fullscreen: {
             modifier: $.ui.keyCode.SHIFT,
             key: 70
         },
         volumePlus: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.UP
         },
         volumeMinus: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.DOWN
         },
         forward: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.RIGHT
         },
         rewind: {
-            modifier: $.ui.keyCode.SHIFT,
             key: $.ui.keyCode.LEFT
+        },
+        escape: {
+            key: $.ui.keyCode.ESCAPE
         }
     };
 
@@ -107,7 +127,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{videoPlayer}.applier",
                     events: {
                         onMediaReady: "{videoPlayer}.events.onMediaReady"
-                    }
+                    },
+                    sources: "{videoPlayer}.options.video.sources"
                 }
             },
             controllers: {
@@ -117,34 +138,64 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
+                    captions: "{videoPlayer}.options.video.captions",
+                    transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
                         onControllersReady: "{videoPlayer}.events.onControllersReady",
-                        onVolumeChange: "{videoPlayer}.events.onVolumeChange",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
-                        afterScrub: "{videoPlayer}.events.afterScrub"
+                        afterScrub: "{videoPlayer}.events.afterScrub",
+                        onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     }
                 }
             },
-            captionner: {
-                type: "fluid.videoPlayer.captionner",
-                container: "{videoPlayer}.dom.caption",
-                createOnEvent: "onCreateCaptionnerReady",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier"
-                }
-            },
-            captionLoader: {
-                type: "fluid.videoPlayer.captionLoader",
-                container: "{videoPlayer}.container",
-                createOnEvent: "onReadyToLoadCaptions",
+            html5Captionator: {
+                type: "fluid.videoPlayer.html5Captionator",
+                container: "{videoPlayer}.dom.videoPlayer",
+                createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
+                    captions: "{videoPlayer}.options.video.captions",
                     events: {
-                        onReady: "{videoPlayer}.events.onCreateCaptionnerReady",
-                        onCaptionsLoaded: "{videoPlayer}.events.onCaptionsLoaded"
+                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                    }
+                }
+            },
+            transcript: {
+                type: "fluid.videoPlayer.transcript",
+                container: "{videoPlayer}.dom.transcript",
+                createOnEvent: "onHTML5BrowserDetected",
+                options: {
+                    // TODO (long term) - should not share entire model and applier with transcripts
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    transcripts: "{videoPlayer}.options.video.transcripts",
+                    components: {
+                        transcriptInterval: {
+                            type: "fluid.videoPlayer.intervalEventsConductor",
+                            options: {
+                                components: {
+                                    html5MediaTimer: {
+                                        type: "fluid.videoPlayer.html5MediaTimer",
+                                        options: {
+                                            mediaElement: "{media}.container"
+                                        }
+                                    }
+                                },
+                                events: {
+                                    onIntervalChange: "{transcript}.events.onIntervalChange"
+                                }
+                            }
+                        }
+                    },
+                    events: {
+                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                        onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
+                        onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
+                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
+                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
                     }
                 }
             },
@@ -154,7 +205,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             intervalEventsConductor: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onCaptionsLoaded",
+                createOnEvent: "onCreateMediaReady",
                 options: {
                     components: {
                         html5MediaTimer: {
@@ -164,7 +215,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             }
                         }
                     },
-                    intervalList: "{captionLoader}.options.intervalList",
                     events: {
                         onTimeChange: "{videoPlayer}.events.onTimeChange",
                         onIntervalChange: "{videoPlayer}.events.onIntervalChange"
@@ -176,19 +226,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.postInit",
         finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
-            onReadyToLoadCaptions: null,
-            onCaptionsLoaded: null,
-            onVolumeChange: null,
             onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
             onMediaReady: null,
             onControllersReady: null,
-            onCaptionnerReady: null,
             afterScrub: null,
             onStartScrub: null,
             onOldBrowserDetected: null,
             onTemplateLoadError: null,
+            onCurrentTranscriptChanged: null,
+            onTranscriptHide: null,
+            onTranscriptShow: null,
+            onTranscriptElementChange: null,
             onReady: null,
             
             // public, time events
@@ -198,48 +248,74 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onCreateCaptionnerReady: null
+            onHTML5BrowserDetected: null,
+
+            // private events used for associating menus with what they control via ARIA
+            onTranscriptsReady: null,
+            onTranscriptsLoaded: null,
+            onCaptionsReady: null,
+            canBindTranscriptMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    transcripts: "onTranscriptsLoaded"
+                },
+                args: ["{arguments}.transcripts.1"]
+            },
+            canBindCaptionMenu: {
+                events: {
+                    controllers: "onControllersReady",
+                    captions: "onCaptionsReady"
+                },
+                args: ["{arguments}.captions.1"]
+            }
         },
-        listeners: {
-            onViewReady: "{videoPlayer}.fullscreen"
+        invokers: {
+            resize: {
+                funcName: "fluid.videoPlayer.resize",
+                args: "{videoPlayer}"
+            }  
         },
         selectors: {
-            videoContainer: ".flc-videoPlayer-videoContainer",
+            videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea",
-            controllers: ".flc-videoPlayer-controller"
+            controllers: ".flc-videoPlayer-controller",
+            transcript: ".flc-videoPlayer-transcriptArea",
+            overlay: ".flc-videoPlayer-overlay"
         },
         strings: {
             captionsOff: "Captions OFF",
-            turnCaptionsOff: "Turn Captions OFF"
+            turnCaptionsOff: "Turn Captions OFF",
+            transcriptsOff: "Transcripts OFF",
+            turnTranscriptsOff: "Turn Transcripts OFF"
         },
-        selectorsToIgnore: ["videoContainer", "caption"],
-        keyBindings: defaultKeys,
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript"],
+        keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
+        video: {
+            sources: [],
+            captions: [],
+            transcripts: []
+        },
+        defaultKinds: {
+            captions: "subtitles",
+            transcripts: "transcripts"
+        },
         model: {
-            states: {
-                play: false,
-                currentTime: 0,
-                totalTime: 0,
-                displayCaptions: true,
-                fullscreen: false,
-                volume: 60,
-                muted: false,
-                canPlay: false
+            currentTracks: {
+                captions: [],
+                transcripts: []
             },
-            video: {
-                sources: null
-            },
-            captions: {
-                selection: "none",
-                choices: [],
-                names: [],
-                show: false,
-                sources: null,
-                conversionServiceUrl: "/videoPlayer/conversion_service/index.php",
-                track: undefined
-            }
+            currentTime: 0,
+            totalTime: 0,
+            buffered: 0,
+            displayCaptions: false,
+            displayTranscripts: false,
+            fullscreen: false,
+            volume: 60,
+            muted: false,
+            canPlay: false
         },
         templates: {
             videoPlayer: {
@@ -260,8 +336,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 key: that.options.keyBindings.fullscreen.key,
                 activateHandler: function () {
                     that.applier.fireChangeRequest({
-                        path: "states.fullscreen",
-                        value: !that.model.states.fullscreen
+                        path: "fullscreen",
+                        value: !that.model.fullscreen
                     });
                 }
             }, {
@@ -269,18 +345,39 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 key: that.options.keyBindings.captions.key,
                 activateHandler: function () {
                     that.applier.fireChangeRequest({
-                        path: "states.displayCaptions",
-                        value: !that.model.states.displayCaptions
+                        path: "displayCaptions",
+                        value: !that.model.displayCaptions
+                    });
+                }
+            }, {
+                modifier: that.options.keyBindings.transcripts.modifier,
+                key: that.options.keyBindings.transcripts.key,
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "displayTranscripts",
+                        value: !that.model.states.displayTranscripts
                     });
                 }
             }, {
                 modifier: that.options.keyBindings.volumePlus.modifier,
                 key: that.options.keyBindings.volumePlus.key,
-                activateHandler: that.incrVolume
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "volume",
+                        value: that.model.volume + 10
+                    });
+                    return false;
+                }
             }, {
                 modifier: that.options.keyBindings.volumeMinus.modifier,
                 key: that.options.keyBindings.volumeMinus.key,
-                activateHandler: that.decrVolume
+                activateHandler: function () {
+                    that.applier.fireChangeRequest({
+                        path: "volume",
+                        value: that.model.volume - 10
+                    });
+                    return false;
+                }
             }, {
                 modifier: that.options.keyBindings.forward.modifier,
                 key: that.options.keyBindings.forward.key,
@@ -294,8 +391,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var video = that.locate("video");
         video.fluid("tabbable");
         video.fluid("activatable", [that.play, opts]);
-        //Only problem now when navigating in the controller the keyboard shortcuts are not available anymore
-        video.focus();
+    };
+
+    var showControllers = function (that) {
+        that.locate("controllers").stop(false, true).slideDown();
+    };
+
+    var hideControllers = function (that) {
+        that.locate("controllers").stop(false, true).delay(500).slideUp();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -304,16 +407,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
+
+        that.locate("videoPlayer").mouseenter(function () {
+            showControllers(that);
+        });
+
+        that.container.mouseleave(function () {
+            hideControllers(that);
+        });
+
+        video.focus(function () {
+            showControllers(that);
+        });
+
         video.bind("loadedmetadata", function () {
-            //that shouldn't be usefull but the video is too big if it's not used
-            that.container.css("width", video[0].videoWidth);
+            that.resize();
+            
             bindKeyboardControl(that);
         });
     };
 
     var bindVideoPlayerModel = function (that) {
-        that.applier.modelChanged.addListener("states.fullscreen", that.fullscreen);
-        that.applier.modelChanged.addListener("states.canPlay", function () {
+        that.applier.modelChanged.addListener("fullscreen", that.fullscreen);
+        that.applier.modelChanged.addListener("canPlay", function () {
             that.events.onViewReady.fire();
         });
     };
@@ -331,7 +447,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }]
             };
-        } else if (that.canRenderMedia(that.model.video.sources)) {
+        } else if (that.canRenderMedia(that.options.video.sources)) {
             // Keep the selector to render "fluid.videoPlayer.media"
             that.options.selectorsToIgnore.push("video");
         }
@@ -343,75 +459,72 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         return tree;
     };
+    
+    fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
+        fluid.each(tracks, function (track) {
+            if (!track.kind) {
+                track.kind = defaultKind;
+            }
+        });
+    };
 
     fluid.videoPlayer.preInit = function (that) {
-        // build the 'choices' from the caption list provided
-        fluid.each(that.options.model.captions.sources, function (value, key) {
-            that.options.model.captions.choices.push(key);
-            that.options.model.captions.names.push(key);
+        fluid.each(that.options.defaultKinds, function (defaultKind, index) {
+            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
-        // add the 'turn captions off' option
-        that.options.model.captions.choices.push("none");
-        that.options.model.captions.names.push(that.options.strings.captionsOff);
-
+        
         that.fullscreen = function () {
-            var videoContainer = that.locate("videoContainer");
-            var video = that.locate("video");
-            if (that.model.states.fullscreen === true) {
-                var windowWidth = window.innerWidth + "px";
-                
-                videoContainer.css({
-                    // TODO: This doesn't actually do full-screen, it simply tries to maximise
-                    // to the current window size. (FLUID-4570)
-                    width: windowWidth,
-                    height: window.innerHeight - 20 + "px"
-                });
-                that.container.css("width", windowWidth);
-            } else {
-                videoContainer.css({
-                    width: video[0].videoWidth,
-                    height: video[0].videoHeight
-                });
-                that.container.css("width", video[0].videoWidth);
+            if (that.model.fullscreen === true) {
+                fluid.browser.requestFullScreen.apply(that.locate("video")[0]);
             }
         };
+        
+        // FLUID-4661: Change the fullscreen model flag back to false when browser exits its HTML5 fullscreen mode
+        // Once our own custome fullscreen mode is implemented we want to call this fireChangeRequest in another function
+        // which will be called by pressing a full screen toggle Button or when a key shortcut for exiting a fullscreen is pressed
+        fluid.each({
+            "fullscreenchange": "fullscreen",
+            "mozfullscreenchange": "mozFullScreen",
+            "webkitfullscreenchange": "webkitIsFullScreen",
+            "ofullscreenchange": "oFullScreen"
+        }, function (value, key) {
+            document.addEventListener(key, function () {
+                if (!document[value]) {
+                    that.applier.fireChangeRequest({
+                        path: "fullscreen",
+                        value: false
+                    });
+                }
+            });
+        });
     };
 
     fluid.videoPlayer.postInit = function (that) {
+        // TODO: declarative syntax for this in framework
+        // note that the "mega-model" is shared throughout all components - morally, this should go into the 
+        // volume control component, but it is best to get at the single model + applier as early as possible
+        that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
+   
         that.canRenderControllers = function (controlsType) {
-            return (fluid.hasFeature("fluid.browser.html5") && controlsType === "custom") ? true : false;
+            return fluid.hasFeature("fluid.browser.html5") && controlsType === "custom";
         };
         
         that.canRenderMedia = function (videoSource) {
-            return videoSource ? true : false;
+            return videoSource;
         };
         
         that.play = function (ev) {
             that.applier.fireChangeRequest({
-                "path": "states.play",
-                "value": !that.model.states.play
+                "path": "play",
+                "value": !that.model.play
             });
-        };
-
-        that.incrVolume = function () {
-            if (that.model.states.volume < 100) {
-                var newVol = (that.model.states.volume + 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol <= 1 ? newVol : 1);
-            }
-        };
-
-        that.decrVolume = function () {
-            if (that.model.states.volume > 0) {
-                var newVol = (that.model.states.volume - 10) / 100.0;
-                that.events.onVolumeChange.fire(newVol >= 0 ? newVol : 0);
-            }
         };
 
         that.incrTime = function () {
             that.events.onStartScrub.fire();
-            if (that.model.states.currentTime < that.model.states.totalTime) {
-                var newVol = that.model.states.currentTime + that.model.states.totalTime * 0.05;
-                that.events.onScrub.fire(newVol <= that.model.states.totalTime ? newVol : that.model.states.totalTime);
+            if (that.model.currentTime < that.model.totalTime) {
+                var newVol = that.model.currentTime + that.model.totalTime * 0.05;
+                that.events.onScrub.fire(newVol <= that.model.totalTime ? newVol : that.model.totalTime);
             }
             that.events.afterScrub.fire();
         };
@@ -419,8 +532,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.decrTime = function () {
             that.events.onStartScrub.fire();
             
-            if (that.model.states.currentTime > 0) {
-                var newVol = that.model.states.currentTime - that.model.states.totalTime * 0.05;
+            if (that.model.currentTime > 0) {
+                var newVol = that.model.currentTime - that.model.totalTime * 0.05;
                 that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
             }
             that.events.afterScrub.fire();
@@ -431,7 +544,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.container.attr("role", "application");
 
         // Render each media source with its custom renderer, registered by type.
-        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller or captions.
+        // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller, captions or transcripts.
 
         fluid.fetchResources(that.options.templates, function (res) {
             var fetchFailed = false;
@@ -461,7 +574,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             if (!fetchFailed) {
                 that.events.onTemplateReady.fire();
 
-                if (that.canRenderMedia(that.model.video.sources)) {
+                if (that.canRenderMedia(that.options.video.sources)) {
                     that.events.onCreateMediaReady.fire();
                 }
                 if (that.canRenderControllers(that.options.controls)) {
@@ -471,9 +584,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 //    (i.e. captionator and/or mediaelement.js), we will
                 //    not need to do this.
                 if (fluid.hasFeature("fluid.browser.html5")) {
-                    that.events.onReadyToLoadCaptions.fire();
+                    that.events.onHTML5BrowserDetected.fire();
                 }
             }
+
+            that.locate("controllers").hide();
+
+            // Ensure <object> element is not in tab order, for IE9
+            $("object", that.locate("video")).attr("tabindex", "-1");
 
             that.events.onReady.fire(that);
         });
@@ -495,31 +613,106 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         return ret + min + ":" + sec;
     };
+    
+    // Function which modifies containers and their sizes
+    fluid.videoPlayer.resize = function (that) {
+        var video = that.locate("video");
+        var videoPlayer = that.locate("videoPlayer");
+        var overlay = that.locate("overlay");
+        
+        // Get the video sizes first
+        // ToDo: A video wrapper container is used for video scaling. The video width/height are determined by the wrapper container
+        // rather then the video itself. This solution needs a re-consideration once we decide on scaling the video through css or
+        // API.
+//        var videoWidth = video[0].videoWidth;
+//        var videoHeight = video[0].videoHeight;
+        var videoWidth = video.width();
+        var videoHeight = video.height();
+
+        // Set height on the controller area. To make overlay to show up exactly at the bottom of the video regardless to UIO settings
+        videoPlayer.css({height: videoHeight});
+        
+        // Set the width of the overlay to be the width of the video, otherwise, the controller bar spreads into transcript area
+        overlay.css({width: videoWidth});
+        
+        // Save the video width/height in the model so they are accessible by the sub-components
+        that.model.videoWidth = videoWidth;
+        that.model.videoHeight = videoHeight;
+    };
+
+    /*********************************************************************************
+     * Event Binder:                                                                 *
+     * Shared by all video player component whenever an event binder component is    *
+     * needed                                                                        *
+     *********************************************************************************/
+        
+    fluid.defaults("fluid.videoPlayer.eventBinder", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"]
+    });
 
     /*********************************************************************************
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
     
-    fluid.demands("fluid.videoPlayer.media.eventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
+    fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
-                "{videoPlayer}.events.onVolumeChange": "{media}.setVolume",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
-                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime"
+                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
+                "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
             }
         }
     });
 
-    fluid.demands("fluid.videoPlayer.captionner.eventBinder", ["fluid.videoPlayer.captionner", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onCaptionsLoaded": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.afterScrub": "{captionner}.resyncCaptions",
-                "{videoPlayer}.events.onStartScrub": "{captionner}.hideCaptions",
-                "{videoPlayer}.events.onIntervalChange": "{captionner}.displayCaptionForInterval"
-            }
+    /*******************************************************************
+     * Converts seconds into a WebVTT Timestamp:  HH:MM:SS.mmm
+     * @seconds:  time in seconds expressed as a floating point number
+     *******************************************************************/
+    fluid.videoPlayer.secondsToHmsm = function (seconds) {
+        seconds = parseFloat(seconds);
+        seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
+
+        var hours = parseInt(seconds / 3600);
+        var minutes = parseInt(seconds / 60) % 60;
+        seconds = (seconds % 60).toFixed(3);
+
+        // Return result of type HH:MM:SS.mmm
+        return "" + (hours < 10 ? "0" + hours : hours) + ":"
+            + (minutes < 10 ? "0" + minutes : minutes) + ":"
+            + (seconds  < 10 ? "0" + seconds : seconds);
+    };
+
+    /******************************************************************************************************
+     * Converts JSON from Amara (http://www.universalsubtitles.org/api/1.0/subtitles/) into WebVTT format.
+     * Each caption in WebVTT looks like:
+     *  empty line
+     *  HH:MM:SS.mmm --> HH:MM:SS.mmm
+     *  Caption text
+     *
+     *****************************************************************************************************/
+    fluid.videoPlayer.amaraJsonToVTT = function (json) {
+        var vtt = "WEBVTT";
+
+        for (var i = 0; i < json.length; i++) {
+            var startTime = fluid.videoPlayer.secondsToHmsm(json[i].start_time);
+            var endTime = fluid.videoPlayer.secondsToHmsm(json[i].end_time);
+            vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
         }
-    });
+
+        return vtt;
+    };
+
+    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, callback) {
+        // No point continuing because we can't get a useful JSONP response without the url and a callback
+        if (!videoUrl || !callback) {
+            return;
+        }
+
+        // Hard coded URL to amara here 
+        var url = encodeURI("http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?");
+
+        $.getJSON(url, callback);
+    };
 
 })(jQuery);
