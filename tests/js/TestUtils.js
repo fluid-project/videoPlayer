@@ -55,31 +55,29 @@ fluid.registerNamespace("fluid.testUtils");
 
     /*  @testCaseInfo:  an array of objects containing:
                     desc: description of a test
-                    envFeatures:  features in the test environment
+                    async: boolean for whether or not the test should be run asyncronously
                     testFn: the test function to run
     */
-    fluid.testUtils.testCaseWithEnv = function (name, testCaseInfo, setupFn, teardownFn) {
-        var allFeatures = {};
+    fluid.testUtils.testCaseWithEnv = function (name, testCaseInfo, envFeatures, setupFn, teardownFn) {
+        var setup = function () {
+            fluid.testUtils.setStaticEnv(envFeatures);
+            if (setupFn) {
+                setupFn();
+            }
+        };
 
         var teardown = function () {
-            fluid.testUtils.clearStaticEnv(allFeatures);
+            fluid.testUtils.clearStaticEnv(envFeatures);
             if (teardownFn) {
                 teardownFn();
             }
         };
 
-        var testCase = jqUnit.testCase(name, setupFn, teardown);
+        var testCase = jqUnit.testCase(name, setup, teardown);
 
         $.each(testCaseInfo, function (index, testInfo) {
             var test = testInfo.async ? testCase.asyncTest : testCase.test;
-
-            test(testInfo.desc, function () {
-                fluid.testUtils.setStaticEnv(testInfo.envFeatures);
-                testInfo.testFn();
-            });
-
-            // Collect all the features we've added to the environment that need to be cleaned up
-            $.extend(true, allFeatures, testInfo.envFeatures);
+            test(testInfo.desc, testInfo.testFn);
         });
 
         return testCase;
