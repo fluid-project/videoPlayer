@@ -385,9 +385,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
-        
+
         fluid.tabindex(videoContainer, 0);
-        
+
         // Using "mousedown" event rather than "click", which does not work
         // with the flash fallback in IE8
         videoContainer.mousedown(function (ev) {
@@ -546,7 +546,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 } else if (key === "videoPlayer") {
                     that.container.append(res[key].resourceText);
                     that.refreshView();
-                    
+
                     //if we're on an old browser there's no point in linking all the evets as they won't exist...
                     bindVideoPlayerDOMEvents(that);
                     //create all the listeners to the model
@@ -563,8 +563,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
                 }
-                
-                // TODO: Once we have a non-html5 fall-back for captions to replace captionator, 
+
+                // TODO: Once we have a non-html5 fall-back for captions to replace captionator,
                 // the "if" check on html5 browser can be removed. For now, caption component is
                 // only instantiated in html5 browsers.
                 if (fluid.hasFeature("fluid.browser.html5")) {

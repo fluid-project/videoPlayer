@@ -327,7 +327,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
         // "model.buffered" is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
         if (!that.model.buffered || !that.model.buffered.length) return;
-        
+
         var lastBufferedTime = that.model.buffered.end(that.model.buffered.length - 1);
         var totalTime = that.model.totalTime;
         
