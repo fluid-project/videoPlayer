@@ -32,7 +32,7 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.expect(12);
         jqUnit.assertEquals("There should be exactly one " + name + " button", 1, buttonEl.length);
         jqUnit.assertEquals(name + " button should have role of 'button'", "button", buttonEl.attr("role"));
-        jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", false, buttonEl.prop("aria-pressed"));
+        jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", "false", buttonEl.attr("aria-pressed"));
         jqUnit.assertFalse(name + " button should not have the 'pressed' style", buttonEl.hasClass(stylePressed));
 
         var tooltip = fluid.testUtils.getTooltipCheckString(buttonEl, tooltipReleased);
@@ -41,13 +41,13 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.assertFalse("After mouseover, " + name + " button should still not have the 'pressed' style", buttonEl.hasClass(stylePressed));
 
         buttonEl.click();
-        jqUnit.assertEquals("After click, " + name + " button should have aria-pressed of 'true'", true, buttonEl.prop("aria-pressed"));
+        jqUnit.assertEquals("After click, " + name + " button should have aria-pressed of 'true'", "true", buttonEl.attr("aria-pressed"));
         jqUnit.assertTrue("While pressed, " + name + " button should have the 'pressed' style", buttonEl.hasClass(stylePressed));
         buttonEl.blur().focus(); // tooltip not updated until 'requested' again
         jqUnit.assertEquals("Tooltip should contain " + tooltipPressed, tooltipPressed, tooltip.text());
 
         buttonEl.click();
-        jqUnit.assertEquals("After another click, " + name + " button should have aria-pressed of 'false' again", false, buttonEl.prop("aria-pressed"));
+        jqUnit.assertEquals("After another click, " + name + " button should have aria-pressed of 'false' again", "false", buttonEl.attr("aria-pressed"));
         jqUnit.assertFalse(name + " button should not have the 'pressed' style", buttonEl.hasClass(stylePressed));
         buttonEl.blur().focus();
         jqUnit.assertEquals("Tooltip should contain " + tooltipReleased + " again", tooltipReleased, tooltip.text());
