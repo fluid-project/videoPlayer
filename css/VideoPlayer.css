@@ -625,6 +625,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/default/transcriptclose.png');
     background-repeat: no-repeat;
     background-position: center center;
+    width: auto;
 }
 .fl-videoPlayer-transcripts-close-button:hover {
     background-image: url('../images/default/transcriptclose_hover.png');
