@@ -73,9 +73,10 @@ fluid.registerNamespace("fluid.testUtils");
         var opts = fluid.copy(baseOpts);
 
         // the 1st argument is the container and the following is component options
+        var container;
         for (var index in arguments) {
             if (index === "0") {
-                var container = arguments[index];
+                container = arguments[index];
             } else {
                 $.extend(true, opts, arguments[index]);
             }
