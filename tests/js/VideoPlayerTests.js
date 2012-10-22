@@ -251,5 +251,36 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.fetchAmaraJson("http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en", fluid.fetchAmaraJsonCallback);
         });
 
+        var testVideoLabel = function (vp, expectedLabel) {
+            expect(1);
+            jqUnit.assertEquals("aria-label should be set properly", vp.options.strings.videoTitlePreface + ": " + expectedLabel, vp.locate("video").attr("aria-label"));
+        };
+
+        videoPlayerTests.asyncTest("Video label: default", function () {
+            setupEnvironment(true);
+            initVideoPlayer({
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        testVideoLabel(videoPlayer, videoPlayer.options.videoTitle);
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerTests.asyncTest("Video label: custom", function () {
+            setupEnvironment(true);
+            var testTitle = "My Test Video Title";
+            initVideoPlayer({
+                videoTitle: testTitle,
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        testVideoLabel(videoPlayer, testTitle);
+                        start();
+                    }
+                }
+            });
+        });
+
     });
 })(jQuery);
