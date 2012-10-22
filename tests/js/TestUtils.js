@@ -20,6 +20,68 @@ fluid.registerNamespace("fluid.testUtils");
 /* A number of utility functions for testing things common among many controls */
 
 (function ($) {
+    var baseOpts = {
+        video: {
+            sources: [
+                {
+                    src: "TestVideo.mp4",
+                    type: "video/mp4"
+                },
+                {
+                    src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
+                    type: "video/webm"
+                }
+            ],
+            captions: [
+                {
+                    src: "TestCaptions.en.vtt",
+                    type: "text/vtt",
+                    srclang: "en",
+                    label: "English"
+                },
+                {
+                    src: "TestCaptions.fr.vtt",
+                    type: "text/vtt",
+                    srclang: "fr",
+                    label: "French"
+                }
+            ],
+            transcripts: [
+                {
+                    src: "TestTranscripts.en.json",
+                    type: "JSONcc",
+                    srclang: "en",
+                    label: "English"
+                },
+                {
+                    src: "TestTranscripts.fr.json",
+                    type: "JSONcc",
+                    srclang: "fr",
+                    label: "French"
+                }
+            ]
+        },
+        templates: {
+            videoPlayer: {
+                forceCache: true,
+                href: "../../html/videoPlayer_template.html"
+            }
+        }
+    };
+
+    fluid.testUtils.initVideoPlayer = function (container, options) {
+        var opts = fluid.copy(baseOpts);
+        $.extend(true, opts, options);
+
+        return fluid.videoPlayer(container, opts);
+    };
+
+    fluid.testUtils.initEnhancedVideoPlayer = function (instance, relay) {
+        var opts = fluid.copy(baseOpts);
+        $.extend(true, instance.options, opts);
+        return fluid.videoPlayer.makeEnhancedInstances(instance, relay);
+    };
+
     fluid.testUtils.getTooltipCheckString = function (jEl, expectedText) {
         jqUnit.expect(1);
         jEl.mouseover();
