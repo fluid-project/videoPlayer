@@ -61,7 +61,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            fluid.testUtils.initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Container click - Play/Pause", function () {
@@ -81,7 +81,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            fluid.testUtils.initVideoPlayer($(".videoPlayer-containerClick"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-containerClick", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Mute button", function () {
@@ -104,7 +104,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            fluid.testUtils.initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
@@ -129,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            fluid.testUtils.initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
@@ -196,7 +196,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            fluid.testUtils.initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
     });
