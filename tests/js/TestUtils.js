@@ -69,18 +69,9 @@ fluid.registerNamespace("fluid.testUtils");
         }
     };
 
-    fluid.testUtils.initVideoPlayer = function () {
+    fluid.testUtils.initVideoPlayer = function (container, options) {
         var opts = fluid.copy(baseOpts);
-
-        // the 1st argument is the container and the following is component options
-        var container;
-        for (var index in arguments) {
-            if (index === "0") {
-                container = arguments[index];
-            } else {
-                $.extend(true, opts, arguments[index]);
-            }
-        }
+        $.extend(true, opts, options);
 
         return fluid.videoPlayer(container, opts);
     };
