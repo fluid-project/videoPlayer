@@ -21,70 +21,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var videoPlayerIntegrationTests = new jqUnit.TestCase("Video Player Integration Tests");
 
-        var baseOpts = {
-            video: {
-                sources: [
-                    {
-                        src: "TestVideo.mp4",
-                        type: "video/mp4"
-                    },
-                    {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
-                        type: "video/webm"
-                    }
-                ],
-                captions: [
-                    {
-                        src: "TestCaptions.en.vtt",
-                        type: "text/vtt",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "TestCaptions.fr.vtt",
-                        type: "text/vtt",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ],
-                transcripts: [
-                    {
-                        src: "TestTranscripts.en.json",
-                        type: "JSONcc",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "TestTranscripts.fr.json",
-                        type: "JSONcc",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ]
-            },
-            templates: {
-                videoPlayer: {
-                    forceCache: true,
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }
-        };
-        
-        var initVideoPlayer = function () {
-            var opts = fluid.copy(baseOpts);
-            
-            // the 1st argument is the container and the following is component options
-            for (var index in arguments) {
-                if (index === "0") {
-                    var container = arguments[index];
-                } else {
-                    $.extend(true, opts, arguments[index]);
-                }
-            }
-            
-            return fluid.videoPlayer(container, opts);
-        };
-        
 
         var testPlayPause = function (clickFunc) {
             var video = $(".flc-videoPlayer-video");
@@ -125,7 +61,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Container click - Play/Pause", function () {
@@ -145,7 +81,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-containerClick"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-containerClick", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Mute button", function () {
@@ -168,7 +104,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
@@ -193,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
@@ -266,7 +202,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
     });
