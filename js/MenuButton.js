@@ -314,14 +314,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         // TODO: Causing IE8 failure at clicking caption or transcript button due to FLUID-4762.
-        // Uncommented the lines below once FLUID-4762 is fixed.
-        // Side Note: this also seems to not actually do anything useful in other browsers
-        // fluid.deadMansBlur(that.container, {
-            // exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
-            // handler: function () {
-                // that.menu.hideMenu();
-            // }
-        // });
+        // Unfortunately, removing it introduces a bug in keyboard interactions in all browsers,
+        // preventing the menu from hiding when keyboard focus moves away.
+        fluid.deadMansBlur(that.container, {
+            exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
+            handler: function () {
+                that.menu.hideMenu();
+            }
+        });
     };
 
     fluid.videoPlayer.languageControls.setUpAria = function (that) {
