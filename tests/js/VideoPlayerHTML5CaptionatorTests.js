@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, expect, jQuery, start*/
+/*global fluid, jqUnit, jQuery, start*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -31,6 +31,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var testOptionsNoCaptions = {            
             video: {
                 sources: [
+                    {
+                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
+                        type: "video/webm"
+                    },
                     {
                         src: "TestVideo.mp4",
                         type: "video/mp4"
