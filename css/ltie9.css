@@ -1,0 +1,31 @@
+/***********
+ * Buttons *
+ ***********/
+ 
+.fl-videoPlayer-button {
+    background-color: transparent;
+}
+
+.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
+    background-color: rgb(153, 153, 153);
+}
+
+.fl-videoPlayer-controller-buttons { 
+    background-color: rgb(242, 242, 242);
+}
+
+/************
+ * Scrubber *
+ ************/
+ 
+.fl-videoPlayer-scrubber.ui-widget-content {
+    background: rgb(0, 0, 0);
+}
+
+.fl-videoPlayer-scrubber .ui-slider-handle {
+    background: rgb(0, 0, 0);
+}
+
+.fl-videoPlayer-buffered-progress {
+    z-index: -1;
+}

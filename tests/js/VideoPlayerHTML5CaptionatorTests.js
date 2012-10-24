@@ -75,6 +75,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             video: {
                 sources: [
                     {
+                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
+                        type: "video/webm"
+                    },
+                    {
                         src: "TestVideo.mp4",
                         type: "video/mp4"
                     }
