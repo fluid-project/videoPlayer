@@ -51,6 +51,7 @@
 .fl-videoPlayer-controller {
     width:100%;
     position: relative;
+    pointer-events: all;
 }
 
 
@@ -59,8 +60,8 @@
  ***********/
 
 .fl-videoPlayer-button {
-    width: 30px;
-    height: 30px;
+    width: 100%;
+    height: 100%;
     border: 0;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0);
@@ -104,15 +105,23 @@
 
 .fl-videoPlayer-controller-buttons-main,
 .fl-videoPlayer-controller-buttons-secondary {
-    height: 100%;
-    position: absolute;
-    bottom: 0;
+    height: inherit;
 }
 .fl-videoPlayer-controller-buttons-main {
-    left: 0;
+    float: left;
+    width: 4.5em;
+}
+.fl-videoPlayer-controller-buttons-main > * {
+    height: 100%;
+    width: 45%;
 }
 .fl-videoPlayer-controller-buttons-secondary {
-    right: 0;
+    float: right;
+    width: 7em;
+}
+.fl-videoPlayer-controller-buttons-secondary > * {
+    height: 100%;
+    width: 30%;
 }
 
 a.fl-videoPlayer-button-wrapper {
@@ -256,7 +265,6 @@ a.fl-videoPlayer-button-wrapper {
  
 .fl-videoPlayer-volumeContainer {
     position: relative;
-    top: 2px;
 }
 
 .fl-videoPlayer-volumeControl {
@@ -266,9 +274,11 @@ a.fl-videoPlayer-button-wrapper {
     border-style: solid;
     border-color: #c2c2c2;
     position: absolute;
-    bottom: 30px;
-    right: 0px;
+    bottom: 1.8em;
+    left: 20%;
     width: 25%;
+    height: 6em;
+    background: none;
     background-color: #F2F2F2;
 }
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
@@ -321,14 +331,14 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-videoPlayer-volumeControl .ui-slider-handle {
     height: 10%;
-    left: -8px;
+    left: -75%;
+    margin-bottom: 0;
 }
 
 .fl-videoPlayer-volumeContainer:hover .fl-videoPlayer-volumeControl,
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
     display: inline;
 }
-
 
 /**********************************
  * Captions and Transcripts Menus *
@@ -545,6 +555,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     bottom: 0em;
     position: absolute;
     width: 100%;
+    pointer-events: none;
 }
 .fl-theme-uio-yb .fl-videoPlayer-overlay, .fl-theme-uio-yb .fl-videoPlayer-captionArea, .fl-theme-uio-yb .captionator-cue-canvas,
 .fl-theme-uio-wb .fl-videoPlayer-overlay, .fl-theme-uio-wb .fl-videoPlayer-captionArea, .fl-theme-uio-wb .captionator-cue-canvas,
@@ -614,6 +625,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/default/transcriptclose.png');
     background-repeat: no-repeat;
     background-position: center center;
+    width: auto;
 }
 .fl-videoPlayer-transcripts-close-button:hover {
     background-image: url('../images/default/transcriptclose_hover.png');

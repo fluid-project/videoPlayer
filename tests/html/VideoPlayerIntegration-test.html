@@ -2,10 +2,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Video Player Controls Test Suite</title>
+        <title>Video Player Integration Test Suite</title>
 
         <link rel="stylesheet" type="text/css" media="screen" href="../lib/qunit/css/qunit.css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="../../css/VideoPlayer.css" />
 
         <script type="text/javascript" src="../../lib/infusion/MyInfusion.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_framework.js"></script>
@@ -16,16 +15,16 @@
         <script type="text/javascript" src="../../js/ToggleButton.js"></script>
         <script type="text/javascript" src="../../js/MenuButton.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_media.js"></script>
-        <script type="text/javascript" src="../../js/VideoPlayer_intervalEventsConductor.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_transcript.js"></script>
-
+        <script type="text/javascript" src="../../js/VideoPlayer_intervalEventsConductor.js"></script>
+        
         <!--  jqUnit test framework js files -->
         <script type="text/javascript" src="../lib/qunit/js/qunit.js"></script>
         <script type="text/javascript" src="../lib/jqUnit/js/jqUnit.js"></script>
 
         <!--  These are tests that have been written using this page as data and test supports -->
         <script type="text/javascript" src="../js/TestUtils.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayerControlsTests.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayerIntegrationTests.js"></script>
         
         <!-- Utils -->
         <script type="text/javascript" src="../../lib/captionator/js/captionator.js"></script>
@@ -34,46 +33,17 @@
     </head>
     <body id="body">
       <!-- This is the markup that jqUnit will look for when running tests and displaying the results -->
-      <h1 id="qunit-header">Video Player Test Suite</h1>
+      <h1 id="qunit-header">Video Player Integration Test Suite</h1>
       <h2 id="qunit-banner"></h2>
       <div id="qunit-testrunner-toolbar"></div>
       <h2 id="qunit-userAgent"></h2>
       <ol id="qunit-tests"></ol>
       <div id="qunit-fixture">
 
-        <div id="basic-volume-controls-test">
-            <button type="button" class="flc-videoPlayer-mute"></button>
-            <div class="flc-videoPlayer-volumeControl"></div>
-        </div>
+        <div class="videoPlayer-playButton fl-videoPlayer"></div>
+        <div class="videoPlayer-containerClick fl-videoPlayer"></div>
+        <div class="videoPlayer-transcript fl-videoPlayer"></div>
 
-        <ul id="basic-menu-test" class="fl-videoPlayer-menu">
-            <li class="flc-videoPlayer-language flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
-            <li class="flc-videoPlayer-languageNone flc-videoPlayer-menuItem fl-videoPlayer-menuItem"></li>
-        </ul>
-
-        <div id="videoPlayer" class="fl-videoPlayer">
-        </div>
-
-        <div id="scrubber-test" class="flc-videoPlayer-scrubberContainer fl-videoPlayer-scrubberContainer">
-            <div class="flc-videoPlayer-scrubber fl-videoPlayer-scrubber">
-                <a class="ui-slider-handle" href="#">
-                    <span>
-                        <span class="flc-videoPlayer-current fl-videoPlayer-time fl-videoPlayer-current"></span>/<span class="flc-videoPlayer-total fl-videoPlayer-time fl-videoPlayer-total"></span>
-                    </span>
-                </a>
-            </div>
-
-            <div class="flc-videoPlayer-buffered-progress fl-videoPlayer-buffered-progress">
-                <div class="flc-progress fl-progress-popUp">
-                    <div class="flc-progress-bar fl-progress-theBar">
-                        <div class="flc-progress-indicator fl-progress-indicator">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-        </div>
-        
       </div> <!-- /main -->
 
     </body>
