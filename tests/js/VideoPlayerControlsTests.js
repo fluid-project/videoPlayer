@@ -23,13 +23,7 @@ fluid.registerNamespace("fluid.tests");
 
         // TODO: The various "fluid.tests.initXXX" functions could probably be refactored to reduce duplication
 
-        var envFeatures = {"supportsFullScreen": "fluid.browser.supportsFullScreen"};
-
-        var teardown = function () {
-            fluid.testUtils.clearStaticEnv(envFeatures);
-        };
-
-        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests", null, teardown);
+        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
         var baseVideoPlayerOpts = {
             video: {
@@ -137,86 +131,6 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
-        
-        videoPlayerControlsTests.asyncTest("Fullscreen button should be present in the browsers which support fullscreen mode", function () {
-            jqUnit.expect(2);
-            
-            fluid.testUtils.setStaticEnv(envFeatures);
-            var testPlayer = fluid.tests.initVideoPlayer({
-                listeners: {
-                    onControllersReady: function (that) {
-                        jqUnit.assertNotEquals("Full screen button component is not an empty one", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
-                        jqUnit.assertNotEquals("Full screen button should be present", that.locate("fullscreen").css("display"), "none");
-                        start();
-                    }
-                }
-            });
-        });
-        
-        videoPlayerControlsTests.asyncTest("Fullscreen button should NOT be present since component should be null", function () {
-            jqUnit.expect(1);
-            fluid.testUtils.setStaticEnv({"supportsFullScreen": false});
-            
-            var testPlayer = fluid.tests.initVideoPlayer({
-                listeners: {
-                    onControllersReady: function (that) {
-                        jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
-                        start();
-                    }
-                }
-            });
-        });
-
-        fluid.tests.checkFullScreenButtonStyle = function (options) {
-            jqUnit[options.expectedFullScreen ? "assertTrue" : "assertFalse"](options.message, options.modelFullScreen);
-            jqUnit.assertEquals("After click, full screen button should have a proper styling", !options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.init));
-            jqUnit.assertEquals("After click, full screen button should have a proper styling", options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.pressed));
-        };
-        
-        videoPlayerControlsTests.asyncTest("Fullscreen button", function () {
-            jqUnit.expect(9);
-            fluid.testUtils.setStaticEnv(envFeatures);
-            
-            var testPlayer = fluid.tests.initVideoPlayer({
-                listeners: {
-                    onControllersReady: function (that) {
-                        that.applier.modelChanged.removeListener("fullscreen", that.full);
-                        
-                        var fullScreenButton = that.locate("fullscreen"),
-                            fullScreenButtonStyles = that.options.components.fullScreenButton.options.styles;
-
-                        fluid.testUtils.verifyBasicButtonFunctions(fullScreenButton, "Fullscreen", "Full screen", "Exit full screen mode", "fl-videoPlayer-fullscreen-on");
-
-                        fluid.tests.checkFullScreenButtonStyle({
-                            message: "Initally, video should not be in full screen mode",
-                            expectedFullScreen: false,
-                            modelFullScreen: that.model.fullscreen,
-                            fullScreenButtonStyles: fullScreenButtonStyles,
-                            fullScreenButton: fullScreenButton
-                        });
-                        
-                        fullScreenButton.click();
-                        fluid.tests.checkFullScreenButtonStyle({
-                            message: "After click, video should be in full screen mode",
-                            expectedFullScreen: true, 
-                            modelFullScreen: that.model.fullscreen, 
-                            fullScreenButtonStyles: fullScreenButtonStyles,
-                            fullScreenButton: fullScreenButton
-                        });
-                        
-                        fullScreenButton.click();
-                        fluid.tests.checkFullScreenButtonStyle({
-                            message: "After clicking again, video should not be in full screen mode",
-                            expectedFullScreen: false, 
-                            modelFullScreen: that.model.fullscreen, 
-                            fullScreenButtonStyles: fullScreenButtonStyles, 
-                            fullScreenButton: fullScreenButton
-                        });
-                        start();
-                    }
-                }
-            });
-        });
 
         var testBufferEndTime;
         
@@ -254,6 +168,98 @@ fluid.registerNamespace("fluid.tests");
             jqUnit.assertEquals("The buffer progress bar should have valuenow of '100'", "100", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
 
         });
+
+        fluid.tests.checkFullScreenButtonStyle = function (options) {
+            jqUnit[options.expectedFullScreen ? "assertTrue" : "assertFalse"](options.message, options.modelFullScreen);
+            jqUnit.assertEquals("After click, full screen button should have a proper styling", !options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.init));
+            jqUnit.assertEquals("After click, full screen button should have a proper styling", options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.pressed));
+        };
+
+        var envFeatures = {"supportsFullScreen": "fluid.browser.supportsFullScreen"};
+
+        var fullScreenTests = [{
+            desc: "Fullscreen button should be present in the browsers which support fullscreen mode",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(2);
+
+                var testPlayer = fluid.tests.initVideoPlayer({
+                    listeners: {
+                        onControllersReady: function (that) {
+                            jqUnit.assertNotEquals("Full screen button component is not an empty one", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                            jqUnit.assertNotEquals("Full screen button should be present", that.locate("fullscreen").css("display"), "none");
+                            start();
+                        }
+                    }
+                });
+            }
+        }, {
+            desc: "Fullscreen button",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(9);
+                var testPlayer = fluid.tests.initVideoPlayer({
+                    listeners: {
+                        onControllersReady: function (that) {
+                            that.applier.modelChanged.removeListener("fullscreen", that.full);
+
+                            var fullScreenButton = that.locate("fullscreen"),
+                                fullScreenButtonStyles = that.options.components.fullScreenButton.options.styles;
+
+                            fluid.testUtils.verifyBasicButtonFunctions(fullScreenButton, "Fullscreen", "Full screen", "Exit full screen mode", "fl-videoPlayer-fullscreen-on");
+
+                            fluid.tests.checkFullScreenButtonStyle({
+                                message: "Initally, video should not be in full screen mode",
+                                expectedFullScreen: false,
+                                modelFullScreen: that.model.fullscreen,
+                                fullScreenButtonStyles: fullScreenButtonStyles,
+                                fullScreenButton: fullScreenButton
+                            });
+
+                            fullScreenButton.click();
+                            fluid.tests.checkFullScreenButtonStyle({
+                                message: "After click, video should be in full screen mode",
+                                expectedFullScreen: true,
+                                modelFullScreen: that.model.fullscreen,
+                                fullScreenButtonStyles: fullScreenButtonStyles,
+                                fullScreenButton: fullScreenButton
+                            });
+
+                            fullScreenButton.click();
+                            fluid.tests.checkFullScreenButtonStyle({
+                                message: "After clicking again, video should not be in full screen mode",
+                                expectedFullScreen: false,
+                                modelFullScreen: that.model.fullscreen,
+                                fullScreenButtonStyles: fullScreenButtonStyles,
+                                fullScreenButton: fullScreenButton
+                            });
+                            start();
+                        }
+                    }
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player Controls Tests: Full-screen", fullScreenTests, envFeatures);
+
+        envFeatures = {"supportsFullScreen": false};
+
+        var nonFullScreenTests = [{
+            desc: "Fullscreen button should NOT be present",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(1);
+
+                var testPlayer = fluid.tests.initVideoPlayer({
+                    listeners: {
+                        onControllersReady: function (that) {
+                            jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                            start();
+                        }
+                    }
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player Controls Tests: Non-Full-screen", nonFullScreenTests, envFeatures);
 
     });
 })(jQuery);
