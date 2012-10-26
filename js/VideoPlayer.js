@@ -705,7 +705,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             success: callback,
             timeout: 1500, // only this timeout will force the error function to be called
             error: function () {
-                console.log("Error loading transcript from Amara: " + videoUrl);
+                console.log("Error loading file from Amara: " + videoUrl);
             }
         });
 
