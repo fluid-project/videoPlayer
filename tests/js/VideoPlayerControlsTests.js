@@ -21,41 +21,10 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        // TODO: The various "fluid.tests.initXXX" functions could probably be refactored to reduce duplication
-
         var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
 
-        var baseVideoPlayerOpts = {
-            video: {
-                sources: [
-                    {
-                        src: "TestVideo.mp4",
-                        type: "video/mp4"
-                    },
-                    {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
-                        type: "video/webm"
-                    }
-                ]
-            },
-            model: {},
-            templates: {
-                videoPlayer: {
-                    // override the default template path
-                    // TODO: We need to refactor the VideoPlayer to better support
-                    //       overriding the path without needing to know file names
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }
-        };
-        fluid.tests.initVideoPlayer = function (testOpts) {
-            var opts = fluid.copy(baseVideoPlayerOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer("#videoPlayer", opts);
-        };
-
         videoPlayerControlsTests.asyncTest("Play button", function () {
-            var testPlayer = fluid.tests.initVideoPlayer({
+            var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                 listeners: {
                     onControllersReady: function (that) {
                         var playButton = that.locate("play");
@@ -67,14 +36,6 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        var baseVolumeOpts = {};
-
-        fluid.tests.initVolumeControls = function (testOpts) {
-            var opts = fluid.copy(baseVolumeOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.volumeControls("#basic-volume-controls-test", opts);
-        };
-
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
             jqUnit.expect(5);
             var checkSlider = function (ariavaluenow, expectedValue) {
@@ -84,7 +45,7 @@ fluid.registerNamespace("fluid.tests");
                     fluid.testUtils.getTooltipCheckString(element, expectedText);
                     element.mouseleave();
                 },
-                testVolumeControls = fluid.tests.initVolumeControls({
+                testVolumeControls = fluid.videoPlayer.volumeControls("#basic-volume-controls-test", {
                     listeners: {
                         onReady: function (that) {
                             var muteButton = that.locate("mute"),
@@ -111,7 +72,7 @@ fluid.registerNamespace("fluid.tests");
 
         videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
             jqUnit.expect(4);
-            var testPlayer = fluid.tests.initVideoPlayer({
+            var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                 listeners: {
                     onControllersReady: function (that) {
                         var video = $("video")[0];
@@ -183,7 +144,7 @@ fluid.registerNamespace("fluid.tests");
             testFn: function () {
                 jqUnit.expect(2);
 
-                var testPlayer = fluid.tests.initVideoPlayer({
+                var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                     listeners: {
                         onControllersReady: function (that) {
                             jqUnit.assertNotEquals("Full screen button component is not an empty one", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
@@ -198,7 +159,7 @@ fluid.registerNamespace("fluid.tests");
             async: true,
             testFn: function () {
                 jqUnit.expect(9);
-                var testPlayer = fluid.tests.initVideoPlayer({
+                var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                     listeners: {
                         onControllersReady: function (that) {
                             that.applier.modelChanged.removeListener("fullscreen", that.full);
@@ -249,7 +210,7 @@ fluid.registerNamespace("fluid.tests");
             testFn: function () {
                 jqUnit.expect(1);
 
-                var testPlayer = fluid.tests.initVideoPlayer({
+                var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                     listeners: {
                         onControllersReady: function (that) {
                             jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
