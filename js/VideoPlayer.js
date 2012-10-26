@@ -699,7 +699,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Hard coded URL to amara here 
         var url = encodeURI("http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?");
 
-        $.getJSON(url, callback);
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: callback,
+            timeout: 1500, // only this timeout will force the error function to be called
+            error: function () {
+                console.log("Error loading transcript from Amara: " + videoUrl);
+            }
+        });
+
+
     };
 
 })(jQuery);

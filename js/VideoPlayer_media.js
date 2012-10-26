@@ -19,11 +19,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
 
+    fluid.registerNamespace("fluid.videoPlayer.media");
+
     /*********************************************************************************
      * Video Player Media                                                            *
      *                                                                               *
      * Composes markup for video sources and responds to the video events            *
      *********************************************************************************/
+
+    /* These media error codes and descriptions were taken from
+     *     http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#dom-media-error
+     *  TODO: Find better strings!!
+     */
+    fluid.videoPlayer.media.errorStrings = {
+        "1": "The fetching process for the media resource was aborted by the user agent at the user's request.",
+        "2": "A network error of some description caused the user agent to stop fetching the media resource, after the resource was established to be usable.",
+        "3": "An error of some description occurred while decoding the media resource, after the resource was established to be usable.",
+        "4": "The media resource indicated by the src attribute was not suitable."
+    };
 
     fluid.defaults("fluid.videoPlayer.media", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
@@ -187,6 +200,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.transcript.transcriptInterval.events.onTick.fire(currentTime);
                 }, 300);
 
+            });
+
+            mediaElementVideo.addEventListener("error", function (err) {
+                console.log("Error: " + fluid.videoPlayer.media.errorStrings[mediaElementVideo.error.code]);
             });
 
             // Fire onMediaReady here rather than finalInit() because the instantiation

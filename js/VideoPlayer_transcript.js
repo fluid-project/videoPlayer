@@ -280,7 +280,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertToMilli, "transcript", "inTime", "outTime");
                     },
                     error: function () {
-                        fluid.log("Error loading transcript: " + transcriptSource.src + ". Are you sure this file exists?");
+                        console.log("Error loading transcript: " + transcriptSource.src + ". Are you sure this file exists?");
                         that.events.onLoadTranscriptError.fire(transcriptSource);
                     }
                 };
