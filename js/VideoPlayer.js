@@ -31,11 +31,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
     // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
 
-    fluid.browser.html5 = function () {
+    fluid.browser.supportsHtml5 = function () {
         // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
         // Needs re-work at the integration of mediaElement.
         var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
-        return isHtml5Browser ? fluid.typeTag("fluid.browser.html5") : undefined;
+        return isHtml5Browser ? fluid.typeTag("fluid.browser.supportsHtml5") : undefined;
     };
     
     fluid.browser.requestFullScreen = (function () {
@@ -48,7 +48,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var features = {
-        browserHtml5: fluid.browser.html5(),
+        supportsHtml5: fluid.browser.supportsHtml5(),
         supportsFullScreen: fluid.browser.supportsFullScreen()
     };
     
@@ -426,7 +426,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.produceTree = function (that) {
         var tree = {};
         
-        if (fluid.hasFeature("fluid.browser.html5") && that.options.controls === "native") {
+        if (fluid.hasFeature("fluid.browser.supportsHtml5") && that.options.controls === "native") {
             // Use browser built-in video player
             tree.video = {
                 decorators: [{
@@ -497,11 +497,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
         that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
-   
+
         that.canRenderControllers = function (controlsType) {
             return controlsType === "custom";
         };
-        
+
         that.play = function (ev) {
             that.applier.fireChangeRequest({
                 "path": "play",
@@ -550,7 +550,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.refreshView();
                     that.locate("video").attr("aria-label", that.options.strings.videoTitlePreface + ": " + that.options.videoTitle);
 
-                    //if we're on an old browser there's no point in linking all the evets as they won't exist...
                     bindVideoPlayerDOMEvents(that);
                     //create all the listeners to the model
                     bindVideoPlayerModel(that);
@@ -570,7 +569,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // TODO: Once we have a non-html5 fall-back for captions to replace captionator,
                 // the "if" check on html5 browser can be removed. For now, caption component is
                 // only instantiated in html5 browsers.
-                if (fluid.hasFeature("fluid.browser.html5")) {
+                if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
                     that.events.onHTML5BrowserDetected.fire();
                 }
             }
