@@ -115,4 +115,46 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.assertEquals("Tooltip should contain " + tooltipReleased + " again", tooltipReleased, tooltip.text());
     };
 
+    /*  @testCaseInfo:  an array of objects containing:
+                    desc: description of a test
+                    async: boolean for whether or not the test should be run asyncronously
+                    testFn: the test function to run
+    */
+    fluid.testUtils.testCaseWithEnv = function (name, testCaseInfo, envFeatures, setupFn, teardownFn) {
+        var setup = function () {
+            fluid.testUtils.setStaticEnv(envFeatures);
+            if (setupFn) {
+                setupFn();
+            }
+        };
+
+        var teardown = function () {
+            fluid.testUtils.clearStaticEnv(envFeatures);
+            if (teardownFn) {
+                teardownFn();
+            }
+        };
+
+        var testCase = jqUnit.testCase(name, setup, teardown);
+
+        $.each(testCaseInfo, function (index, testInfo) {
+            var test = testInfo.async ? testCase.asyncTest : testCase.test;
+            test(testInfo.desc, testInfo.testFn);
+        });
+
+        return testCase;
+    };
+
+    fluid.testUtils.setStaticEnv = function (features) {
+        fluid.each(features, function (val, key) {
+            fluid.staticEnvironment[key] = val ? fluid.typeTag(val) : undefined;
+        });
+    };
+
+    fluid.testUtils.clearStaticEnv = function (features) {
+        fluid.each(features, function (val, key) {
+            delete fluid.staticEnvironment[key];
+        });
+    };
+
 })(jQuery);
