@@ -246,7 +246,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         videoPlayerTests.asyncTest("Video label: default", function () {
-            setupEnvironment(true);
+            fluid.testUtils.setStaticEnv(envFeatures);
             initVideoPlayer({
                 listeners: {
                     onReady: function (videoPlayer) {
@@ -258,7 +258,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("Video label: custom", function () {
-            setupEnvironment(true);
+            fluid.testUtils.setStaticEnv(envFeatures);
             var testTitle = "My Test Video Title";
             initVideoPlayer({
                 videoTitle: testTitle,
