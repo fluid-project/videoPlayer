@@ -35,6 +35,14 @@
 .fl-theme-uio-bw .fl-videoPlayer-video-element:focus { outline-color: #000000; }
 
 /*
+ * Error message area
+ */
+.fl-videoPlayer-errorMessage {
+    border: 1px solid red;
+    color: red;
+}
+
+/*
  * Controller area
  */
  
@@ -373,6 +381,12 @@ a.fl-videoPlayer-button-wrapper {
 
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover {
     background-color: #ffcc00;
+}
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-disabled {
+    text-decoration: line-through;
+}
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem.fl-videoPlayer-menuItem-disabled:hover {
+    background-color: #FFFFFF;
 }
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {

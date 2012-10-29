@@ -33,7 +33,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         events: {
             afterTrackElCreated: null,
             onTracksReady: null,
-            onReady: null
+            onReady: null,
+            onLoadCaptionError: null
         },
         elPaths: {
             currentCaptions: "currentTracks.captions",
@@ -83,6 +84,16 @@ https://source.fluidproject.org/svn/LICENSE.txt
             if (display) {
                 fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
                     tracks, that.options.captions);
+
+                // captionator doesn't fire any events or support a configurable error callback,
+                // so we have to wait a bit and check the track's readyState
+                setTimeout(function () {
+                    fluid.each($("track", that.locate("video")), function (element, key) {
+                        if (element.track.readyState === captionator.TextTrack.ERROR) {
+                            that.events.onLoadCaptionError.fire(key, that.options.captions[key]);
+                        }
+                    });
+                }, 3000);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
             }
@@ -129,7 +140,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.events.afterTrackElCreated.fire(that);
         };
 
-        fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch);
+        var errorHandler = function () {
+            that.events.onLoadCaptionError.fire(key, opts);
+        };
+
+        fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch, errorHandler);
     };
 
     fluid.videoPlayer.html5Captionator.createVttTrack = function (that, key, opts) {
@@ -152,6 +167,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             appendCueCanvasTo: that.locate("caption")[0],
             sizeCuesByTextBoundingBox: true
         });
+
         bindCaptionatorModel(that);
         that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };

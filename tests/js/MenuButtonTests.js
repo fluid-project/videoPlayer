@@ -248,5 +248,26 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
+        menuButtonTests.asyncTest("Disabling menu item", function () {
+            jqUnit.expect(6);
+            var testControls = fluid.tests.initLangControls({
+                listeners: {
+                    onReady: function (that) {
+                        var languageIndex = 1;
+                        var item = $($(".flc-videoPlayer-menuItem")[languageIndex]);
+                        jqUnit.assertTrue("Menu item is initially selectable", item.hasClass("flc-videoPlayer-menuItem"));
+                        jqUnit.assertUndefined("Menu item is not aria-disabled", item.attr("aria-disabled"));
+                        jqUnit.assertFalse("Menu item is normally styled", item.hasClass("fl-videoPlayer-menuItem-disabled"));
+                        that.menu.disableItem(languageIndex);
+                        jqUnit.assertFalse("Menu item not selectable", item.hasClass("flc-videoPlayer-menuItem"));
+                        jqUnit.assertTrue("Menu item is aria-disabled", !!item.attr("aria-disabled"));
+                        jqUnit.assertTrue("Menu item has disabled styling", item.hasClass("fl-videoPlayer-menuItem-disabled"));
+
+                        start();
+                    }
+                }
+            });
+        });
+
     });
 })(jQuery);

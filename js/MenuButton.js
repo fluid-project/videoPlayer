@@ -41,7 +41,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null,
             activated: null,
             hiddenByKeyboard: null,
-            onControlledElementReady: null
+            onControlledElementReady: null,
+            onLoadLanguageError: null
         },
         listeners: {
             onControlledElementReady: {
@@ -61,7 +62,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         styles: {
             selected: "fl-videoPlayer-menuItem-selected",
-            active: "fl-videoPlayer-menuItem-active"
+            active: "fl-videoPlayer-menuItem-active",
+            disabled: "fl-videoPlayer-menuItem-disabled"
         },
         invokers: {
             updateTracks: { funcName: "fluid.videoPlayer.languageMenu.updateTracks", args: ["{languageMenu}"] },
@@ -112,7 +114,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.languageMenu.setUpKeyboardA11y = function (that) {
         that.container.fluid("tabbable");
-        that.container.fluid("selectable", {
+        that.selectableContext = fluid.selectable(that.container, {
             direction: fluid.a11y.orientation.VERTICAL,
             selectableSelector: that.options.selectors.menuItem,
             // TODO: add simple style class support to selectable 
@@ -203,11 +205,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
             that.hideMenu();
         };
+        that.disableItem = function (index) {
+            var item = $(that.locate("language")[index]);
+            item.attr("aria-disabled", true);
+            item.addClass(that.options.styles.disabled);
+            item.removeClass(that.options.selectors.menuItem.substring(1));
+            that.selectableContext.refresh();
+        };
     };
 
     fluid.videoPlayer.languageMenu.finalInit = function (that) {
         fluid.videoPlayer.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
+
+        that.events.onLoadLanguageError.addListener(that.disableItem);
 
         that.container.attr("role", "menu");
         that.hideMenu();
@@ -234,7 +245,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onReady: null,
             onRenderingComplete: null,
-            onControlledElementReady: null
+            onControlledElementReady: null,
+            onLoadLanguageError: null
         },
         languages: [],
         currentLanguagePath: "",
@@ -274,7 +286,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
                     strings: "{languageControls}.options.strings",
                     events: {
-                        onControlledElementReady: "{languageControls}.events.onControlledElementReady"
+                        onControlledElementReady: "{languageControls}.events.onControlledElementReady",
+                        onLoadLanguageError: "{languageControls}.events.onLoadLanguageError"
                     }
                 }
             },
@@ -343,6 +356,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var showHide = that.readIndirect("showHidePath");
             that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
         }
+
         that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
         refreshButtonClass();
         that.events.onReady.fire(that);

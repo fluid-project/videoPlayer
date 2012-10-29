@@ -158,7 +158,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                                     onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                                     onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
+                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded",
+                                    onLoadTranscriptError: "{videoPlayer}.events.onLoadTranscriptError"
                                 }
                             }
                         }
@@ -185,7 +186,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
-                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
+                        onLoadCaptionError: "{videoPlayer}.events.onLoadCaptionError",
+                        onLoadTranscriptError: "{videoPlayer}.events.onLoadTranscriptError"
                     }
                 }
             },
@@ -198,7 +201,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.options.video.captions",
                     events: {
-                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                        onReady: "{videoPlayer}.events.onCaptionsReady",
+                        onLoadCaptionError: "{videoPlayer}.events.onLoadCaptionError"
                     }
                 }
             }
@@ -216,10 +220,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             afterScrub: null,
             onStartScrub: null,
             onTemplateLoadError: null,
+            onLoadCaptionError: null,
             onCurrentTranscriptChanged: null,
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
+            onLoadTranscriptError: null,
             onReady: null,
             
             // public, time events
@@ -263,7 +269,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
             transcript: ".flc-videoPlayer-transcriptArea",
-            overlay: ".flc-videoPlayer-overlay"
+            overlay: ".flc-videoPlayer-overlay",
+            errorMessage: ".flc-videoPlayer-errorMessage"
         },
         strings: {
             captionsOff: "Captions OFF",
@@ -272,7 +279,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnTranscriptsOff: "Turn Transcripts OFF",
             videoTitlePreface: "Video"
         },
-        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "errorMessage"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -580,6 +587,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             $("object", that.locate("video")).attr("tabindex", "-1");
 
             that.events.onReady.fire(that);
+
+            // TODO: this needs to be reworked
+            that.events.onLoadTranscriptError.addListener(function (index, source) {
+                    that.locate("errorMessage").text("Error loading transcript: " + source.label);
+            });
+            that.events.onLoadCaptionError.addListener(function (index, source) {
+                    that.locate("errorMessage").text("Error loading caption: " + source.label);
+            });
+
         });
         
         return that;
@@ -689,9 +705,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return vtt;
     };
 
-    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, callback) {
+    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, success, error) {
         // No point continuing because we can't get a useful JSONP response without the url and a callback
-        if (!videoUrl || !callback) {
+        if (!videoUrl || !success) {
             return;
         }
 
@@ -701,11 +717,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         $.ajax({
             url: url,
             dataType: 'json',
-            success: callback,
+            success: success,
             timeout: 1500, // only this timeout will force the error function to be called
-            error: function () {
-                console.log("Error loading file from Amara: " + videoUrl);
-            }
+            error: error
         });
 
 
