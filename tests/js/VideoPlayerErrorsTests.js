@@ -29,6 +29,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var timeoutId;
         var videoPlayerErrorsTests = new jqUnit.TestCase("Video Player Error Handling Tests", setup);
 
+        var captionItemSelector = ".flc-videoPlayer-captionControls-container .flc-videoPlayer-language";
+        var transcriptItemSelector = ".flc-videoPlayer-transcriptControls-container .flc-videoPlayer-language";
+
         var baseOpts = {
             video: {
                 sources: [
@@ -53,6 +56,39 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 $.extend(true, opts, arguments[index]);
             }
             return fluid.videoPlayer(container, opts);
+        };
+
+        fluid.tests.makeListenersForLoadTriggeredTest = function (selector, errorEventName) {
+            var obj = {};
+            obj[errorEventName] = {
+                listener: function (that) {
+                    fluid.tests.testMenuItemAfterLoadError(selector, false);
+                    testsCompleted = true;
+                    clearTimeout(timeoutId);
+                    start();
+                },
+                priority: "last"
+            };
+            return obj;
+        };
+
+        fluid.tests.makeListenersForClickTriggeredTest = function (selector, errorEventName) {
+            var obj = {
+                onReady: function (tjat) {
+                    fluid.tests.testMenuItemBeforeLoad(selector);
+                    $(selector).click();
+                }
+            };
+            obj[errorEventName] = {
+                listener: function (that) {
+                    fluid.tests.testMenuItemAfterLoadError(selector, true);
+                    testsCompleted = true;
+                    clearTimeout(timeoutId);
+                    start();
+                },
+                priority: "last"
+            };
+            return obj;
         };
 
         fluid.tests.testMenuItemBeforeLoad = function (itemSelector) {
@@ -112,7 +148,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        var captionItemSelector = ".flc-videoPlayer-captionControls-container .flc-videoPlayer-language";
 
         fluid.tests.runTestWithTimeout({
             desc: "Caption (amara) load error",
@@ -128,17 +163,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: {
-                    onLoadCaptionError: {
-                        listener: function (that) {
-                            fluid.tests.testMenuItemAfterLoadError(captionItemSelector, false);
-                            testsCompleted = true;
-                            clearTimeout(timeoutId);
-                            start();
-                        },
-                        priority: "last"
-                    }
-                }
+                listeners: fluid.tests.makeListenersForLoadTriggeredTest(captionItemSelector, "onLoadCaptionError")
             }
         });
 
@@ -156,25 +181,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: {
-                    onReady: function (tjat) {
-                        fluid.tests.testMenuItemBeforeLoad(captionItemSelector);
-                        $(captionItemSelector).click();
-                    },
-                    onLoadCaptionError: {
-                        listener: function (that) {
-                            fluid.tests.testMenuItemAfterLoadError(captionItemSelector, true);
-                            testsCompleted = true;
-                            clearTimeout(timeoutId);
-                            start();
-                        },
-                        priority: "last"
-                    }
-                }
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError")
             }
         });
-
-        var transcriptItemSelector = ".flc-videoPlayer-transcriptControls-container .flc-videoPlayer-language";
 
         fluid.tests.runTestWithTimeout({
             desc: "Transcript (amara, default selection) load error",
@@ -195,17 +204,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         transcripts: [0]
                     }
                 },
-                listeners: {
-                    onLoadTranscriptError: {
-                        listener: function (that) {
-                            fluid.tests.testMenuItemAfterLoadError(transcriptItemSelector, false);
-                            testsCompleted = true;
-                            clearTimeout(timeoutId);
-                            start();
-                        },
-                        priority: "last"
-                    }
-                }
+                listeners: fluid.tests.makeListenersForLoadTriggeredTest(transcriptItemSelector, "onLoadTranscriptError")
             }
         });
 
@@ -223,21 +222,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: {
-                    onReady: function (tjat) {
-                        fluid.tests.testMenuItemBeforeLoad(transcriptItemSelector);
-                        $(transcriptItemSelector).click();
-                    },
-                    onLoadTranscriptError: {
-                        listener: function (that) {
-                            fluid.tests.testMenuItemAfterLoadError(transcriptItemSelector, true);
-                            testsCompleted = true;
-                            clearTimeout(timeoutId);
-                            start();
-                        },
-                        priority: "last"
-                    }
-                }
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError")
             }
         });
     });
