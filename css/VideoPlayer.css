@@ -38,8 +38,9 @@
  * Error message area
  */
 .fl-videoPlayer-errorMessage {
-    border: 1px solid red;
+    border: 1px solid #999999;
     color: red;
+    text-align: center;
 }
 
 /*
@@ -382,8 +383,9 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover {
     background-color: #ffcc00;
 }
-.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-disabled {
-    text-decoration: line-through;
+.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-disabled:after {
+    /* TODO: This is not internationalizable */
+    content: " (unavailable)";
 }
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem.fl-videoPlayer-menuItem-disabled:hover {
     background-color: #FFFFFF;
