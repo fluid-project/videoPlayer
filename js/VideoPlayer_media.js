@@ -58,7 +58,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onLoadedMetadata: null,
-            onMediaReady: null
+            onMediaReady: null,
+            onMediaLoadError: null
         },
         sourceRenderers: {
             "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
@@ -203,7 +204,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
 
             mediaElementVideo.addEventListener("error", function (err) {
-                console.log("Error: " + fluid.videoPlayer.media.errorStrings[mediaElementVideo.error.code]);
+                that.events.onMediaLoadError.fire("Error: " + fluid.videoPlayer.media.errorStrings[mediaElementVideo.error.code]);
             });
 
             // Fire onMediaReady here rather than finalInit() because the instantiation

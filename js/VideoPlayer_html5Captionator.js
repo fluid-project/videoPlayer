@@ -90,7 +90,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 setTimeout(function () {
                     fluid.each($("track", that.locate("video")), function (element, key) {
                         if (element.track.readyState === captionator.TextTrack.ERROR) {
-                            that.events.onLoadCaptionError.fire(key, that.options.captions[key]);
+                            that.events.onLoadCaptionError.fire(key, that.options.captions[key], true);
                         }
                     });
                 }, 3000);
@@ -141,7 +141,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
 
         var errorHandler = function () {
-            that.events.onLoadCaptionError.fire(key, opts);
+            that.events.onLoadCaptionError.fire(key, opts, false);
         };
 
         fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch, errorHandler);

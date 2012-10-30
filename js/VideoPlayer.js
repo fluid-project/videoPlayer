@@ -166,7 +166,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
-                        onMediaReady: "{videoPlayer}.events.onMediaReady"
+                        onMediaReady: "{videoPlayer}.events.onMediaReady",
+                        onMediaLoadError: "{videoPlayer}.events.onMediaLoadError"
                     },
                     sources: "{videoPlayer}.options.video.sources"
                 }
@@ -216,6 +217,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onViewReady: null,
             onLoadedMetadata: null,
             onMediaReady: null,
+            onMediaLoadError: null,
             onControllersReady: null,
             afterScrub: null,
             onStartScrub: null,
@@ -589,11 +591,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onReady.fire(that);
 
             // TODO: this needs to be reworked
-            that.events.onLoadTranscriptError.addListener(function (index, source) {
-                    that.locate("errorMessage").text("Error loading transcript: " + source.label);
+            var handleLoadError = function (trackType, source, display) {
+                if (display) {
+                    that.locate("errorMessage").text("Error loading " + trackType + ": " + source.label);
+                }
+            };
+            that.events.onLoadTranscriptError.addListener(function (index, source, display) {
+                handleLoadError("transcript", source, display);
             });
-            that.events.onLoadCaptionError.addListener(function (index, source) {
-                    that.locate("errorMessage").text("Error loading caption: " + source.label);
+            that.events.onLoadCaptionError.addListener(function (index, source, display) {
+                handleLoadError("caption", source, display);
+            });
+            that.events.onMediaLoadError.addListener(function (message) {
+                that.locate("errorMessage").append(message);
             });
 
         });

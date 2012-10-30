@@ -273,7 +273,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertSecsToMilli, "text", "start_time", "end_time");
                 };
                 var errorHandler = function () {
-                    that.events.onLoadTranscriptError.fire(currentIndex, transcriptSource);
+                    that.events.onLoadTranscriptError.fire(currentIndex, transcriptSource, false);
                 };
                 fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, handler, errorHandler);
             } else {
@@ -284,7 +284,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertToMilli, "transcript", "inTime", "outTime");
                     },
                     error: function () {
-                        that.events.onLoadTranscriptError.fire(currentIndex, transcriptSource);
+                        that.events.onLoadTranscriptError.fire(currentIndex, transcriptSource, true);
                     }
                 };
 
