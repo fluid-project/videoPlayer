@@ -207,6 +207,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         that.disableItem = function (index) {
             var item = $(that.locate("language")[index]);
+            item.unbind("click");
             item.attr("aria-disabled", true);
             item.addClass(that.options.styles.disabled);
             item.removeClass(that.options.selectors.menuItem.substring(1));
