@@ -142,6 +142,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
         var errorHandler = function () {
             that.events.onLoadCaptionError.fire(key, opts, false);
+            that.events.afterTrackElCreated.fire(that);
         };
 
         fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch, errorHandler);
