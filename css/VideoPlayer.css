@@ -270,13 +270,13 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-volumeControl {
     display: none;
     z-index: 1000;
-    border-width: 5px 11px;
+    border-width: 5px 9px;
     border-style: solid;
     border-color: #c2c2c2;
     position: absolute;
     bottom: 1.8em;
-    left: 20%;
-    width: 25%;
+    left: 0;
+  /*  width: 25%;*/
     height: 6em;
     background: none;
     background-color: #F2F2F2;
@@ -331,7 +331,6 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-videoPlayer-volumeControl .ui-slider-handle {
     height: 10%;
-    left: -75%;
     margin-bottom: 0;
 }
 
