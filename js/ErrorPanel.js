@@ -58,6 +58,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
          *                          Arrays will work here as well.
          */
         that.show = function (values) {
+console.log("errorPanel.show(); values = "+values.toString());
             that.locate("message").text(fluid.stringTemplate(that.options.strings.messageTemplate, values));
             that.container.show();
         };

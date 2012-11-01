@@ -39,6 +39,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onReady"
+            },
+            transcriptError: {
+                type: "fluid.errorPanel",
+                options: {
+                    strings: {
+                        messageTemplate: "Sorry, %0 transcripts currently unavailable",
+                        dismissLabel: "Dismiss error"
+                    },
+                    templates: {
+                        panel: {
+                            href: "../html/transcriptError_template.html"
+                        }
+                    }
+                }
             }
         },
         events: {
@@ -72,9 +86,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             languageDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
             closeButton: ".flc-videoPlayer-transcripts-close-button",
-            transcriptText: ".flc-videoPlayer-transcript-text"
+            transcriptText: ".flc-videoPlayer-transcript-text",
+            transcriptError: ".flc-videoPlayer-transcriptError"
         },
-        selectorsToIgnore: ["closeButton", "transcriptText"],
+        selectorsToIgnore: ["closeButton", "transcriptText", "transcriptError"],
         styles: {
             element: "fl-videoPlayer-transcript-element",
             highlight: "fl-videoPlayer-transcript-element-highlight",
@@ -442,5 +457,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.events.onReady.fire(that);
     };
+
+    fluid.demands("transcriptError", "fluid.videoPlayer.intervalEventsConductor", {
+        container: "{transcript}.dom.transcriptError",
+        options: {
+            listeners: {
+                "{transcript}.events.onLoadTranscriptError": "{transcriptError}.show"
+            }
+        }
+    });
 
 })(jQuery);

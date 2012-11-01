@@ -84,8 +84,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Captions"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onCaptionsReady",
-                        onLoadLanguageError: "{controllers}.events.onLoadCaptionError"
+                        onControlledElementReady: "{controllers}.events.onCaptionsReady" //,
+//                        onLoadLanguageError: "{controllers}.events.onLoadCaptionError"
                     }
                 }
             },
@@ -113,8 +113,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Transcripts"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onTranscriptsReady",
-                        onLoadLanguageError: "{controllers}.events.onLoadTranscriptError"
+                        onControlledElementReady: "{controllers}.events.onTranscriptsReady" //,
+//                        onLoadLanguageError: "{controllers}.events.onLoadTranscriptError"
                     }
                 }
             },

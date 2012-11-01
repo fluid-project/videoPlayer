@@ -122,8 +122,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             jqUnit.assertTrue("Error message is " + (displayMessage ? "" : "not ") + "displayed", (displayMessage ? msgLen > 0 : msgLen === 0));
             var item = $(itemSelector);
             jqUnit.assertEquals("Language is still present in caption menu", 1, item.length);
-            jqUnit.assertFalse("Language is not selectable in caption menu", item.hasClass("flc-videoPlayer-menuItem"));
-            jqUnit.assertTrue("Language is styled as disabled in caption menu", item.hasClass("fl-videoPlayer-menuItem-disabled"));
+            jqUnit.assertTrue("Language is not selectable in caption menu", item.hasClass("flc-videoPlayer-menuItem"));
+            jqUnit.assertFalse("Language is styled as disabled in caption menu", item.hasClass("fl-videoPlayer-menuItem-disabled"));
         };
 
         fluid.tests.runTestWithTimeout = function (config) {

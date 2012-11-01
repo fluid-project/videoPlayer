@@ -423,6 +423,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             bindKeyboardControl(that);
         });
+
+        that.events.onMediaLoadError.addListener(function () {
+            that.locate("video").hide();
+            // TODO: this is not good: add a class instead? need to remove it on success
+            that.locate("videoPlayer").css("height", "20em");
+            that.locate("overlay").css("width", "32em");
+        });
     };
 
     var bindVideoPlayerModel = function (that) {
@@ -593,7 +600,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // TODO: this needs to be reworked
             var handleLoadError = function (trackType, source, display) {
                 if (display) {
-                    that.locate("errorMessage").text("Error loading " + trackType + ": " + source.label);
+                    console.log("Video player trying to display error");
+                } else {
+                    console.log("Video player trying not to display error");
                 }
             };
             that.events.onLoadTranscriptError.addListener(function (index, source, display) {
@@ -601,9 +610,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
             that.events.onLoadCaptionError.addListener(function (index, source, display) {
                 handleLoadError("caption", source, display);
-            });
-            that.events.onMediaLoadError.addListener(function (message) {
-                that.locate("errorMessage").append(message);
             });
 
         });

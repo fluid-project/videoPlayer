@@ -53,7 +53,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.videoPlayer.transcript",
                 createOnEvent: "onMediaReady"
             },
-            errorPanel: {
+            videoError: {
                 type: "fluid.errorPanel",
                 options: {
                     strings: {
@@ -285,11 +285,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         bindMediaDOMEvents(that);
     };
 
-    fluid.demands("fluid.errorPanel", ["fluid.videoPlayer", "fluid.videoPlayer.media"], {
+    fluid.demands("videoError", ["fluid.videoPlayer", "fluid.videoPlayer.intervalEventsConductor"], {
         container: "{videoPlayer}.dom.videoError",
         options: {
             listeners: {
-                "{media}.events.onMediaLoadError": "{errorPanel}.show"
+                "{media}.events.onMediaLoadError": "{videoError}.show"
             }
         }
     });
