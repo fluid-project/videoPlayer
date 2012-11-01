@@ -35,6 +35,8 @@ fluid.registerNamespace("fluid.tests");
                         panel.show(testStrings);
                         jqUnit.isVisible("After show, error panel should be visible", ".panel1");
                         jqUnit.assertEquals("Panel should contain correct error message", expectedString, $(".panel1 .flc-errorPanel-message").text());
+                        jqUnit.assertEquals("Dismiss should have correct label", that.options.strings.dismissLabel, $(".panel1 .flc-errorPanel-dismissButton-text").text());
+                        jqUnit.assertEquals("Retry should have correct label", that.options.strings.retryLabel, $(".panel1 .flc-errorPanel-retryButton-text").text());
 
                         panel.hide();
                         jqUnit.notVisible("After hide, error panel should not be visible", ".panel1");
@@ -70,12 +72,13 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
+        fluid.tests.retryCallback = function () {
+            jqUnit.assertTrue("retry callback is called", true);
+        };
         errorPanelTests.asyncTest("Interactions", function () {
             jqUnit.expect(3);
             var panel = fluid.errorPanel(".panel0", {
-                retryCallback: function () {
-                    jqUnit.assertTrue("retry callback is called", true);
-                },
+                retryCallback: "fluid.tests.retryCallback",
                 listeners: {
                     onReady: function (that) {
                         panel.show();
@@ -100,9 +103,7 @@ fluid.registerNamespace("fluid.tests");
                         href: "errorPanel_template_noDismiss.html"
                     }
                 },
-                retryCallback: function () {
-                    jqUnit.assertTrue("retry callback is called", true);
-                },
+                retryCallback: "fluid.tests.retryCallback",
                 listeners: {
                     onReady: function (that) {
                         panel.show();

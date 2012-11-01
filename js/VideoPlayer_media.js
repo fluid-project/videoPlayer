@@ -52,6 +52,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcript: {
                 type: "fluid.videoPlayer.transcript",
                 createOnEvent: "onMediaReady"
+            },
+            errorPanel: {
+                type: "fluid.errorPanel",
+                options: {
+                    strings: {
+                        messageTemplate: "Problem loading video",
+                        retryLabel: "Retry"
+                    },
+                    templates: {
+                        panel: {
+                            href: "../html/videoError_template.html"
+                        }
+                    },
+                    retryCallback: "fluid.videoPlayer.media.tempFunc"
+                }
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
@@ -70,6 +85,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         sources: []
     });
+
+    fluid.videoPlayer.media.tempFunc = function () {
+        console.log("callback called, at least");
+    };
 
     fluid.videoPlayer.media.createSourceMarkup = {
         html5SourceTag: function (videoPlayer, mediaSource) {
@@ -265,5 +284,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         bindMediaModel(that);
         bindMediaDOMEvents(that);
     };
+
+    fluid.demands("fluid.errorPanel", ["fluid.videoPlayer", "fluid.videoPlayer.media"], {
+        container: "{videoPlayer}.dom.videoError",
+        options: {
+            listeners: {
+                "{media}.events.onMediaLoadError": "{errorPanel}.show"
+            }
+        }
+    });
 
 })(jQuery);

@@ -22,6 +22,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      ***************************************************************/
     fluid.defaults("fluid.errorPanel", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
+        preInitFunction: "fluid.errorPanel.preInit",
         postInitFunction: "fluid.errorPanel.postInit",
         finalInitFunction: "fluid.errorPanel.finalInit",
         selectors: {
@@ -50,10 +51,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
     
-    fluid.errorPanel.postInit = function (that) {
-        that.refreshView = function (message) {
-        };
-
+    fluid.errorPanel.preInit = function (that) {
         /**
          * @param {Object} values   A collection of token keys and values.
          *                          Keys and values can be of any data type that can be coerced into a string.
@@ -62,6 +60,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.show = function (values) {
             that.locate("message").text(fluid.stringTemplate(that.options.strings.messageTemplate, values));
             that.container.show();
+        };
+
+    };
+
+    fluid.errorPanel.postInit = function (that) {
+        that.refreshView = function (message) {
         };
 
         that.hide = function () {
@@ -86,7 +90,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             that.locate("dismissButton").click(that.hide);
 
-            that.locate("retryButton").click(that.options.retryCallback);
+            that.locate("retryButton").click(function () {
+                fluid.invokeGlobalFunction(that.options.retryCallback, [that]);
+            });
 
             that.events.onReady.fire(that);
         });

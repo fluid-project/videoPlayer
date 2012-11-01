@@ -35,14 +35,32 @@
 .fl-theme-uio-bw .fl-videoPlayer-video-element:focus { outline-color: #000000; }
 
 /*
- * Error message area
+ * Error message areas
  */
-.fl-videoPlayer-errorMessage {
-    border: 1px solid #999999;
-    color: red;
-    text-align: center;
+.fl-videoPlayer-videoError {
+    border: 2px solid #999999;
+    width: 32em;
+    height: 20em;
+    background: url("../images/default/video-load-error.png") no-repeat 50% 30%;
 }
 
+.fl-videoPlayer-videoError .fl-errorPanel-container {
+    margin-top: 40%;
+    text-align: center;
+}
+.fl-videoPlayer-videoError .fl-errorPanel-message {
+    text-transform: lowercase;
+    font-style: italic;
+}
+.fl-videoPlayer-videoError .fl-errorPanel-retryButton {
+    border: none;
+    background: url("../images/default/uio.png") no-repeat left center;
+    padding-left: 1.5em;
+    font-size: inherit;
+    height: 2em;
+    background-size: contain;
+    text-transform: uppercase;
+}
 /*
  * Controller area
  */

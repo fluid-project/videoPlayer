@@ -272,7 +272,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             controllers: ".flc-videoPlayer-controller",
             transcript: ".flc-videoPlayer-transcriptArea",
             overlay: ".flc-videoPlayer-overlay",
-            errorMessage: ".flc-videoPlayer-errorMessage"
+            videoError: ".flc-videoPlayer-videoError"
         },
         strings: {
             captionsOff: "Captions OFF",
@@ -281,7 +281,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnTranscriptsOff: "Turn Transcripts OFF",
             videoTitlePreface: "Video"
         },
-        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "errorMessage"],
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoError"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
