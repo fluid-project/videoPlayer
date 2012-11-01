@@ -84,8 +84,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Captions"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onCaptionsReady" //,
-//                        onLoadLanguageError: "{controllers}.events.onLoadCaptionError"
+                        onControlledElementReady: "{controllers}.events.onCaptionsReady"
                     }
                 }
             },
@@ -113,8 +112,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Transcripts"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onTranscriptsReady" //,
-//                        onLoadLanguageError: "{controllers}.events.onLoadTranscriptError"
+                        onControlledElementReady: "{controllers}.events.onTranscriptsReady"
                     }
                 }
             },
@@ -173,10 +171,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             // private event used for associating transcript menu with transcript via ARIA
             onTranscriptsReady: null,
-            onCaptionsReady: null,
-
-            onLoadTranscriptError: null,
-            onLoadCaptionError: null
+            onCaptionsReady: null
         },
 
         selectors: {

@@ -154,7 +154,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     }
                                 },
                                 events: {
-                                    onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                                    afterCurrentTranscriptChanged: "{videoPlayer}.events.afterCurrentTranscriptChanged",
                                     onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                                     onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                                     onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
@@ -223,7 +223,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onStartScrub: null,
             onTemplateLoadError: null,
             onLoadCaptionError: null,
-            onCurrentTranscriptChanged: null,
+            afterCurrentTranscriptChanged: null,
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
@@ -596,22 +596,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             $("object", that.locate("video")).attr("tabindex", "-1");
 
             that.events.onReady.fire(that);
-
-            // TODO: this needs to be reworked
-            var handleLoadError = function (trackType, source, display) {
-                if (display) {
-                    console.log("Video player trying to display error");
-                } else {
-                    console.log("Video player trying not to display error");
-                }
-            };
-            that.events.onLoadTranscriptError.addListener(function (index, source, display) {
-                handleLoadError("transcript", source, display);
-            });
-            that.events.onLoadCaptionError.addListener(function (index, source, display) {
-                handleLoadError("caption", source, display);
-            });
-
         });
         
         return that;

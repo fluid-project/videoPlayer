@@ -23,7 +23,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.errorPanel", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         preInitFunction: "fluid.errorPanel.preInit",
-        postInitFunction: "fluid.errorPanel.postInit",
         finalInitFunction: "fluid.errorPanel.finalInit",
         selectors: {
             message: ".flc-errorPanel-message",
@@ -58,22 +57,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
          *                          Arrays will work here as well.
          */
         that.show = function (values) {
-console.log("errorPanel.show(); values = "+values.toString());
-            that.locate("message").text(fluid.stringTemplate(that.options.strings.messageTemplate, values));
+            that.locate("message").text(fluid.stringTemplate(that.options.strings.messageTemplate, fluid.makeArray(values)));
             that.container.show();
-        };
-
-    };
-
-    fluid.errorPanel.postInit = function (that) {
-        that.refreshView = function (message) {
         };
 
         that.hide = function () {
             that.container.hide();
         };
     };
-    
+
     fluid.errorPanel.finalInit = function (that) {
         that.container.hide();
         fluid.fetchResources(that.options.templates, function (res) {
