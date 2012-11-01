@@ -32,6 +32,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var captionItemSelector = ".flc-videoPlayer-captionControls-container .flc-videoPlayer-language";
         var transcriptItemSelector = ".flc-videoPlayer-transcriptControls-container .flc-videoPlayer-language";
 
+        /* Using custom baseOpts here because we specifically don't want the default base opts */
         var baseOpts = {
             video: {
                 sources: [
@@ -45,6 +46,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 videoPlayer: {
                     forceCache: true,
                     href: "../../html/videoPlayer_template.html"
+                }
+            },
+            components: {
+                media: {
+                    options: {
+                        components: {
+                            errorPanel: {
+                                options: {
+                                    templates: {
+                                        panel: {
+                                            href: "errorPanel_template.html"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         };
@@ -137,7 +155,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     onMediaLoadError: {
                         listener: function (that) {
                             jqUnit.assertTrue("Error event fires", true);
-                            jqUnit.assertTrue("Error message is displayed", $(".flc-videoPlayer-errorMessage").text().length > 0);
+                            jqUnit.assertTrue("Error message is displayed", $(".flc-videoPlayer-videoError .flc-errorPanel-message").text().length > 0);
                             testsCompleted = true;
                             clearTimeout(timeoutId);
                             start();
