@@ -43,7 +43,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // TODO: Those selectors should come from the parent component!!
         selectors: {
             video: ".flc-videoPlayer-video",
-            caption: ".flc-videoPlayer-captionArea"
+            caption: ".flc-videoPlayer-captionArea",
+            captionError: ".flc-videoPlayer-captionError"
         },
         listeners: {
             afterTrackElCreated: "fluid.videoPlayer.html5Captionator.waitForTracks",
@@ -52,6 +53,23 @@ https://source.fluidproject.org/svn/LICENSE.txt
         createTrackFns: {
             "text/amarajson": "fluid.videoPlayer.html5Captionator.createAmaraTrack",
             "text/vtt": "fluid.videoPlayer.html5Captionator.createVttTrack"
+        },
+        components: {
+            captionError: {
+                type: "fluid.errorPanel",
+                createOnEvent: "onReady",
+                options: {
+                    strings: {
+                        messageTemplate: "Sorry, %0 captions currently unavailable",
+                        dismissLabel: "Dismiss error"
+                    },
+                    templates: {
+                        panel: {
+                            href: "../html/captionError_template.html"
+                        }
+                    }
+                }
+            }
         }
     });
     
@@ -172,5 +190,18 @@ https://source.fluidproject.org/svn/LICENSE.txt
         bindCaptionatorModel(that);
         that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
+
+    fluid.demands("captionError", "fluid.videoPlayer.html5Captionator", {
+        container: "{html5Captionator}.dom.captionError",
+        options: {
+            listeners: {
+                "{html5Captionator}.events.onLoadCaptionError": {
+                    listener: "{captionError}.show",
+                    args: "{arguments}.1.label"
+                },
+                "{html5Captionator}.events.onTracksReady": "{captionError}.hide"
+            }
+        }
+    });
 
 })(jQuery);

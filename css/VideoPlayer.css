@@ -597,7 +597,8 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-uio-bw .fl-videoPlayer-overlay, .fl-theme-uio-bw .fl-videoPlayer-captionArea, .fl-theme-uio-bw .captionator-cue-canvas {
     background-color: transparent !important;
 }
-.fl-videoPlayer-caption-captionText {
+.fl-videoPlayer-caption-captionText,
+.fl-videoPlayer-captionError {
     color: white;
     background-color: black;
     opacity: 0.7;
@@ -610,6 +611,21 @@ ul.fl-videoPlayer-transcripts-languageList li {
     z-index: 101;   /* To make our div showin on top since captionator has 100 so */
 }
 
+.fl-videoPlayer-captionError {
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+}
+.fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
+    pointer-events: visible;
+    cursor: pointer;
+    border: none;
+    background: url("../images/default/transcriptclose.png") no-repeat center center;
+    font-size: inherit;
+    height: 2em;
+    background-size: contain;
+    text-transform: uppercase;
+}
 
 /*
  * Transcript area
