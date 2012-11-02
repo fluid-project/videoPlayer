@@ -32,6 +32,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var captionItemSelector = ".flc-videoPlayer-captionControls-container .flc-videoPlayer-language";
         var transcriptItemSelector = ".flc-videoPlayer-transcriptControls-container .flc-videoPlayer-language";
 
+        fluid.tests.testRetryCallback = function () {
+            jqUnit.assertTrue("Retrycallback is called", true);
+            testsCompleted = true;
+            clearTimeout(timeoutId);
+            start();
+        };
+
         /* Using custom baseOpts here because we specifically don't want the default base opts */
         var baseOpts = {
             video: {
@@ -63,7 +70,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                         panel: {
                                             href: "errorPanel_template.html"
                                         }
-                                    }
+                                    },
+                                    retryCallback: "fluid.tests.testRetryCallback"
                                 }
                             },
                             transcript: {
@@ -77,7 +85,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                                     }
                                                 }
                                             }
-                                        },
+                                        }
                                     }
                                 }
                             }
@@ -130,7 +138,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 fluid.tests.initVideoPlayer($(".videoPlayer-errors"), config.opts);
                 timeoutId = setTimeout(function () {
                     if (!testsCompleted) {
-                        jqUnit.assertFalse("Expected error event didn't fire", true);
+                        jqUnit.assertFalse("Expected error event or callback didn't fire", true);
                         start();
                     }
                 }, 5000);
@@ -139,7 +147,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         fluid.tests.runTestWithTimeout({
             desc: "Video load error",
-            expect: 2,
+            expect: 3,
             opts: {
                 video: {
                     sources: [
@@ -154,9 +162,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         listener: function (that) {
                             jqUnit.assertTrue("Error event fires", true);
                             jqUnit.assertTrue("Error message is displayed", $(".flc-videoPlayer-videoError .flc-errorPanel-message").text().length > 0);
-                            testsCompleted = true;
-                            clearTimeout(timeoutId);
-                            start();
+                            // trigger the retry callback
+                            $(".flc-videoPlayer-videoError .flc-errorPanel-retryButton").click();
                         },
                         priority: "last"
                     }
