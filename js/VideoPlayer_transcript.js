@@ -96,6 +96,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             highlight: "fl-videoPlayer-transcript-element-highlight",
             selected: "fl-videoPlayer-transcript-element-selected"
         },
+        strings: {
+            loading: "loading..."
+        },
         transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"
     });
 
@@ -283,15 +286,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
         var transcriptSource = that.options.transcripts[currentIndex];
         if (transcriptSource) {
-            transcriptSource.transcriptText = "loading...";
+            transcriptSource.transcriptText = that.options.strings.loading;
+            var errorHandler = function () {
+                transcriptSource.transcriptText = null;
+                that.events.onLoadTranscriptError.fire(that, transcriptSource);
+            };
 
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type === "text/amarajson") {
                 var handler = function (data) {
                     fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertSecsToMilli, "text", "start_time", "end_time");
-                };
-                var errorHandler = function () {
-                    that.events.onLoadTranscriptError.fire(that, transcriptSource);
                 };
                 fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, handler, errorHandler);
             } else {
@@ -301,9 +305,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     success: function (data) {
                         fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertToMilli, "transcript", "inTime", "outTime");
                     },
-                    error: function () {
-                        that.events.onLoadTranscriptError.fire(that, transcriptSource);
-                    }
+                    error: errorHandler
                 };
 
                 if (transcriptSource.type !== "JSONcc") {
