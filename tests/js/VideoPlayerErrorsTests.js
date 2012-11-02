@@ -83,6 +83,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             }
                         }
                     }
+                },
+                html5Captionator: {
+                    options: {
+                        components: {
+                            captionError: {
+                                options: {
+                                    templates: {
+                                        panel: {
+                                            href: "errorPanel_template.html"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         };
@@ -149,6 +164,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
+        var testTranscriptLoadError = function (that) {
+            jqUnit.isVisible("Transcript are should be visible", $(".flc-videoPlayer-transcriptArea"));
+            jqUnit.isVisible("Transcript are should container error message", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcriptError"));
+            jqUnit.notVisible("Transcript are should not container transcript text", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcript-text"));
+            testsCompleted = true;
+            clearTimeout(timeoutId);
+            start();
+        };
+
         fluid.tests.runTestWithTimeout({
             desc: "Transcript (amara) load error",
             expect: 3,
@@ -163,14 +187,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", function (that) {
-                    jqUnit.isVisible("Transcript are should be visible", $(".flc-videoPlayer-transcriptArea"));
-                    jqUnit.isVisible("Transcript are should container error message", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcriptError"));
-                    jqUnit.notVisible("Transcript are should not container transcript text", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcript-text"));
-                    testsCompleted = true;
-                    clearTimeout(timeoutId);
-                    start();
-                })
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", testTranscriptLoadError)
             }
         });
 
@@ -188,21 +205,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", function (that) {
-                    jqUnit.isVisible("Transcript are should be visible", $(".flc-videoPlayer-transcriptArea"));
-                    jqUnit.isVisible("Transcript are should container error message", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcriptError"));
-                    jqUnit.notVisible("Transcript are should not container transcript text", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcript-text"));
-                    testsCompleted = true;
-                    clearTimeout(timeoutId);
-                    start();
-                })
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", testTranscriptLoadError)
             }
         });
 
-/*
+        var testCaptionLoadError = function (that) {
+            jqUnit.isVisible("Caption error message should be visible", $(".flc-videoPlayer-captionArea .flc-videoPlayer-captionError"));
+            $(".flc-videoPlayer-captionArea .flc-videoPlayer-captionError .flc-errorPanel-dismissButton").click();
+            jqUnit.notVisible("After dismiss, caption error message should not be visible", $(".flc-videoPlayer-captionArea .flc-videoPlayer-captionError"));
+            testsCompleted = true;
+            clearTimeout(timeoutId);
+            start();
+        };
+
         fluid.tests.runTestWithTimeout({
             desc: "Caption (amara) load error",
-            expect: 5,
+            expect: 2,
             opts: {
                 video: {
                     captions: [
@@ -214,13 +232,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError")
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError", testCaptionLoadError)
             }
         });
 
         fluid.tests.runTestWithTimeout({
             desc: "Caption (non-amara) load error",
-            expect: 8,
+            expect: 2,
             opts: {
                 video: {
                     captions: [
@@ -232,10 +250,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError")
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError", testCaptionLoadError)
             }
         });
-*/
 
     });
 })(jQuery);

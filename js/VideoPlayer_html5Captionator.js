@@ -57,7 +57,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         components: {
             captionError: {
                 type: "fluid.errorPanel",
-                createOnEvent: "onReady",
                 options: {
                     strings: {
                         messageTemplate: "Sorry, %0 captions currently unavailable",
