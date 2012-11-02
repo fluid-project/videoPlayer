@@ -71,12 +71,27 @@ fluid.registerNamespace("fluid.testUtils");
             media: {
                 options: {
                     components: {
-                        errorPanel: {
+                        videoError: {
                             options: {
                                 templates: {
                                     panel: {
                                         href: "errorPanel_template.html"
                                     }
+                                }
+                            }
+                        },
+                        transcript: {
+                            options: {
+                                components: {
+                                    transcriptError: {
+                                        options: {
+                                            templates: {
+                                                panel: {
+                                                    href: "errorPanel_template.html"
+                                                }
+                                            }
+                                        }
+                                    },
                                 }
                             }
                         }

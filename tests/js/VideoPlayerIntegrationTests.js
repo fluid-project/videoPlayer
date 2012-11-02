@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
             jqUnit.expect(3);
 
-            var initialTranscriptText;
+            var initialTranscriptText = null;
             var testedTranscriptSpanClick = false;
             
             fluid.videoPlayer.testTranscript = function (that) {
@@ -153,7 +153,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // Depending on the connection with universal subtitle site, the test below may not get run with remote universal subtitle transcript files.
                 if (!initialTranscriptText) {
                     initialTranscriptText = transcriptTextArea.text();
-                    jqUnit.assertNotNull("The transcript text is filled in", initialTranscriptText);
+                    jqUnit.assertNotNull("Initially, he transcript text is filled in", initialTranscriptText);
                 } else {
                     jqUnit.assertNotEquals("The transcript text is switched", transcriptTextArea.text(), initialTranscriptText);
                 }

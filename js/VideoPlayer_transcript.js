@@ -45,8 +45,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "onReady",
                 options: {
                     strings: {
-                        messageTemplate: "Sorry, %0 transcripts currently unavailable",
-                        dismissLabel: "Dismiss error"
+                        messageTemplate: "Sorry, %0 transcripts currently unavailable"
                     },
                     templates: {
                         panel: {
@@ -284,6 +283,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
         var transcriptSource = that.options.transcripts[currentIndex];
         if (transcriptSource) {
+            transcriptSource.transcriptText = "loading...";
 
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type === "text/amarajson") {

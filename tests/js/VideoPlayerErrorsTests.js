@@ -48,16 +48,36 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     href: "../../html/videoPlayer_template.html"
                 }
             },
+            model: {
+                currentTracks: {
+                    transcripts: [0]
+                }
+            },
             components: {
                 media: {
                     options: {
                         components: {
-                            errorPanel: {
+                            videoError: {
                                 options: {
                                     templates: {
                                         panel: {
                                             href: "errorPanel_template.html"
                                         }
+                                    }
+                                }
+                            },
+                            transcript: {
+                                options: {
+                                    components: {
+                                        transcriptError: {
+                                            options: {
+                                                templates: {
+                                                    panel: {
+                                                        href: "errorPanel_template.html"
+                                                    }
+                                                }
+                                            }
+                                        },
                                     }
                                 }
                             }
@@ -76,54 +96,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             return fluid.videoPlayer(container, opts);
         };
 
-        fluid.tests.makeListenersForLoadTriggeredTest = function (selector, errorEventName) {
-            var obj = {};
-            obj[errorEventName] = {
-                listener: function (that) {
-                    fluid.tests.testMenuItemAfterLoadError(selector, false);
-                    testsCompleted = true;
-                    clearTimeout(timeoutId);
-                    start();
-                },
-                priority: "last"
-            };
-            return obj;
-        };
-
-        fluid.tests.makeListenersForClickTriggeredTest = function (selector, errorEventName) {
+        fluid.tests.makeListenersForClickTriggeredTest = function (selector, errorEventName, listenerFn) {
             var obj = {
                 onReady: function (tjat) {
-                    fluid.tests.testMenuItemBeforeLoad(selector);
                     $(selector).click();
                 }
             };
             obj[errorEventName] = {
-                listener: function (that) {
-                    fluid.tests.testMenuItemAfterLoadError(selector, true);
-                    testsCompleted = true;
-                    clearTimeout(timeoutId);
-                    start();
-                },
+                listener: listenerFn,
                 priority: "last"
             };
             return obj;
-        };
-
-        fluid.tests.testMenuItemBeforeLoad = function (itemSelector) {
-            var item = $(itemSelector);
-            jqUnit.assertEquals("Before language is selected, language is present in caption menu", 1, item.length);
-            jqUnit.assertTrue("Before language is selected, language is selectable in caption menu", item.hasClass("flc-videoPlayer-menuItem"));
-            jqUnit.assertFalse("Before language is selected, language is not styled as disabled in caption menu", item.hasClass("fl-videoPlayer-menuItem-disabled"));
-        };
-
-        fluid.tests.testMenuItemAfterLoadError = function (itemSelector, displayMessage) {
-            jqUnit.assertTrue("Error event fires", true);
-            var msgLen = $(".flc-videoPlayer-errorMessage").text().length;
-            jqUnit.assertTrue("Error message is " + (displayMessage ? "" : "not ") + "displayed", (displayMessage ? msgLen > 0 : msgLen === 0));
-            var item = $(itemSelector);
-            jqUnit.assertEquals("Language is still present in caption menu", 1, item.length);
-            jqUnit.assertTrue("Language is not selectable in caption menu", item.hasClass("flc-videoPlayer-menuItem"));
-            jqUnit.assertFalse("Language is styled as disabled in caption menu", item.hasClass("fl-videoPlayer-menuItem-disabled"));
         };
 
         fluid.tests.runTestWithTimeout = function (config) {
@@ -166,7 +149,57 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
+        fluid.tests.runTestWithTimeout({
+            desc: "Transcript (amara) load error",
+            expect: 3,
+            opts: {
+                video: {
+                    transcripts: [
+                        {
+                            src: "bad.amara.url",
+                            type: "text/amarajson",
+                            srclang: "en",
+                            label: "English"
+                        }
+                    ]
+                },
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", function (that) {
+                    jqUnit.isVisible("Transcript are should be visible", $(".flc-videoPlayer-transcriptArea"));
+                    jqUnit.isVisible("Transcript are should container error message", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcriptError"));
+                    jqUnit.notVisible("Transcript are should not container transcript text", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcript-text"));
+                    testsCompleted = true;
+                    clearTimeout(timeoutId);
+                    start();
+                })
+            }
+        });
 
+        fluid.tests.runTestWithTimeout({
+            desc: "Transcript (non-amara) load error",
+            expect: 3,
+            opts: {
+                video: {
+                    transcripts: [
+                        {
+                            src: "bad.json.url",
+                            type: "JSONcc",
+                            srclang: "en",
+                            label: "English"
+                        }
+                    ]
+                },
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", function (that) {
+                    jqUnit.isVisible("Transcript are should be visible", $(".flc-videoPlayer-transcriptArea"));
+                    jqUnit.isVisible("Transcript are should container error message", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcriptError"));
+                    jqUnit.notVisible("Transcript are should not container transcript text", $(".flc-videoPlayer-transcriptArea .flc-videoPlayer-transcript-text"));
+                    testsCompleted = true;
+                    clearTimeout(timeoutId);
+                    start();
+                })
+            }
+        });
+
+/*
         fluid.tests.runTestWithTimeout({
             desc: "Caption (amara) load error",
             expect: 5,
@@ -181,7 +214,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForLoadTriggeredTest(captionItemSelector, "onLoadCaptionError")
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError")
             }
         });
 
@@ -202,47 +235,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError")
             }
         });
+*/
 
-        fluid.tests.runTestWithTimeout({
-            desc: "Transcript (amara, default selection) load error",
-            expect: 5,
-            opts: {
-                video: {
-                    transcripts: [
-                        {
-                            src: "bad.amara.url",
-                            type: "text/amarajson",
-                            srclang: "en",
-                            label: "English"
-                        }
-                    ]
-                },
-                model: {
-                    currentTracks: {
-                        transcripts: [0]
-                    }
-                },
-                listeners: fluid.tests.makeListenersForLoadTriggeredTest(transcriptItemSelector, "onLoadTranscriptError")
-            }
-        });
-
-        fluid.tests.runTestWithTimeout({
-            desc: "Transcript (non-amara) load error",
-            expect: 8,
-            opts: {
-                video: {
-                    transcripts: [
-                        {
-                            src: "bad.json.url",
-                            type: "JSONcc",
-                            srclang: "en",
-                            label: "English"
-                        }
-                    ]
-                },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError")
-            }
-        });
     });
-
 })(jQuery);
