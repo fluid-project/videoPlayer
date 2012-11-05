@@ -83,8 +83,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             that.locate("dismissButton").click(that.hide);
 
-            that.locate("retryButton").click(function () {
-                fluid.invokeGlobalFunction(that.options.retryCallback, [that]);
+            that.locate("retryButton").click(function (ev) {
+                ev.preventDefault();
+                fluid.invokeGlobalFunction(that.options.retryCallback, fluid.makeArray(that.options.retryArgs));
             });
 
             that.events.onReady.fire(that);

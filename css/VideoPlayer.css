@@ -60,6 +60,8 @@
     height: 2em;
     background-size: contain;
     text-transform: uppercase;
+    pointer-events: all;
+    cursor: pointer;
 }
 /*
  * Controller area

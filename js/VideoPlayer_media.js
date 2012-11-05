@@ -65,7 +65,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             href: "../html/videoError_template.html"
                         }
                     },
-                    retryCallback: "fluid.videoPlayer.media.tempFunc"
+                    retryCallback: "fluid.videoPlayer.media.reloadSources",
+                    retryArgs: "{media}"
                 }
             }
         },
@@ -86,8 +87,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         sources: []
     });
 
-    fluid.videoPlayer.media.tempFunc = function () {
-        console.log("callback called, at least");
+    fluid.videoPlayer.media.reloadSources = function (that) {
+        $("source", that.container).detach();
+        fluid.videoPlayer.media.renderSources(that);
+        that.container.show().load();
     };
 
     fluid.videoPlayer.media.createSourceMarkup = {
@@ -106,7 +109,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
     
-    var renderSources = function (that) {
+    fluid.videoPlayer.media.renderSources = function (that) {
         $.each(that.options.sources, function (idx, source) {
             var renderer = that.options.sourceRenderers[source.type];
             if ($.isFunction(renderer)) {
@@ -280,7 +283,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
-        renderSources(that);
+        fluid.videoPlayer.media.renderSources(that);
         bindMediaModel(that);
         bindMediaDOMEvents(that);
     };

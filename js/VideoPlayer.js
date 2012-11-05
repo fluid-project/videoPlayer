@@ -419,16 +419,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.events.onLoadedMetadata.addListener(function () {
+            that.locate("videoError").hide();
             that.resize();
-            
+
             bindKeyboardControl(that);
         });
 
         that.events.onMediaLoadError.addListener(function () {
             that.locate("video").hide();
-            // TODO: this is not good: add a class instead? need to remove it on success
-            that.locate("videoPlayer").css("height", "20em");
-            that.locate("overlay").css("width", "32em");
         });
     };
 
