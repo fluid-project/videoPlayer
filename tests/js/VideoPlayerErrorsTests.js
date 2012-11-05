@@ -53,6 +53,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 videoPlayer: {
                     forceCache: true,
                     href: "../../html/videoPlayer_template.html"
+                },
+                videoError: {
+                    href: "../../html/videoError_template.html"
+                },
+                transcriptError: {
+                    href: "../../html/transcriptError_template.html"
+                },
+                captionError: {
+                    href: "../../html/captionError_template.html"
                 }
             },
             model: {
@@ -66,42 +75,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         components: {
                             videoError: {
                                 options: {
-                                    templates: {
-                                        panel: {
-                                            href: "errorPanel_template.html"
-                                        }
-                                    },
                                     retryCallback: "fluid.tests.testRetryCallback"
-                                }
-                            },
-                            transcript: {
-                                options: {
-                                    components: {
-                                        transcriptError: {
-                                            options: {
-                                                templates: {
-                                                    panel: {
-                                                        href: "errorPanel_template.html"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                html5Captionator: {
-                    options: {
-                        components: {
-                            captionError: {
-                                options: {
-                                    templates: {
-                                        panel: {
-                                            href: "errorPanel_template.html"
-                                        }
-                                    }
                                 }
                             }
                         }

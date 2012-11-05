@@ -61,9 +61,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         retryLabel: "Retry"
                     },
                     templates: {
-                        panel: {
-                            href: "../html/videoError_template.html"
-                        }
+                        panel: "{videoPlayer}.options.templates.videoError"
                     },
                     retryCallback: "fluid.videoPlayer.media.reloadSources",
                     retryArgs: "{media}"

@@ -63,9 +63,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                         dismissLabel: "Dismiss error"
                     },
                     templates: {
-                        panel: {
-                            href: "../html/captionError_template.html"
-                        }
+                        panel: "{videoPlayer}.options.templates.captionError"
                     }
                 }
             }

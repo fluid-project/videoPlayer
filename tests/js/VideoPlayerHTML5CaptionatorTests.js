@@ -87,6 +87,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             templates: {
                 videoPlayer: {
                     href: "../../html/videoPlayer_template.html"
+                },
+                videoError: {
+                    href: "errorPanel_template.html"
+                },
+                transcriptError: {
+                    href: "errorPanel_template.html"
+                },
+                captionError: {
+                    href: "errorPanel_template.html"
                 }
             }
         };

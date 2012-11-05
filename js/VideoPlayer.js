@@ -313,6 +313,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoPlayer: {
                 forceCache: true,
                 href: "../html/videoPlayer_template.html"
+            },
+            videoError: {
+                href: "../html/videoError_template.html"
+            },
+            transcriptError: {
+                href: "../html/transcriptError_template.html"
+            },
+            captionError: {
+                href: "../html/captionError_template.html"
             }
         },
         videoTitle: "unnamed video"

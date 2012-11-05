@@ -48,9 +48,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         messageTemplate: "Sorry, %0 transcripts currently unavailable"
                     },
                     templates: {
-                        panel: {
-                            href: "../html/transcriptError_template.html"
-                        }
+                        panel: "{videoPlayer}.options.templates.transcriptError"
                     }
                 }
             }

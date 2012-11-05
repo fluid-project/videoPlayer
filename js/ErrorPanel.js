@@ -66,29 +66,37 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
+    fluid.errorPanel.processTemplate = function (that) {
+        if (that.options.templates.panel.fetchError) {
+            fluid.log("couldn't fetch error message template");
+            fluid.log("status: " + that.options.templates.panel.fetchError.status +
+                ", textStatus: " + that.options.templates.panel.fetchError.textStatus +
+                ", errorThrown: " + that.options.templates.panel.fetchError.errorThrown);
+            return;
+        }
+
+        that.container.append(that.options.templates.panel.resourceText);
+        that.locate("dismissButtonText").text(that.options.strings.dismissLabel);
+        that.locate("retryButtonText").text(that.options.strings.retryLabel);
+
+        that.locate("dismissButton").click(that.hide);
+
+        that.locate("retryButton").click(function (ev) {
+            ev.preventDefault();
+            fluid.invokeGlobalFunction(that.options.retryCallback, fluid.makeArray(that.options.retryArgs));
+        });
+
+        that.events.onReady.fire(that);
+    };
+
     fluid.errorPanel.finalInit = function (that) {
         that.container.hide();
-        fluid.fetchResources(that.options.templates, function (res) {
-            if (res.panel.fetchError) {
-                fluid.log("couldn't fetch error message template");
-                fluid.log("status: " + res.panel.fetchError.status +
-                    ", textStatus: " + res.panel.fetchError.textStatus +
-                    ", errorThrown: " + res.panel.fetchError.errorThrown);
-                return;
-            }
-
-            that.container.append(res.panel.resourceText);
-            that.locate("dismissButtonText").text(that.options.strings.dismissLabel);
-            that.locate("retryButtonText").text(that.options.strings.retryLabel);
-
-            that.locate("dismissButton").click(that.hide);
-
-            that.locate("retryButton").click(function (ev) {
-                ev.preventDefault();
-                fluid.invokeGlobalFunction(that.options.retryCallback, fluid.makeArray(that.options.retryArgs));
+        if (!that.options.templates.panel.resourceText) {
+            fluid.fetchResources(that.options.templates, function (res) {
+                fluid.errorPanel.processTemplate(that);
             });
-
-            that.events.onReady.fire(that);
-        });
+        } else {
+            fluid.errorPanel.processTemplate(that);
+        }
     };
 })(jQuery);
