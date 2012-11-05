@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, expect, jQuery, start*/
+/*global fluid, jqUnit, jQuery, start*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -38,7 +38,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerIntervalEventsConductorIntegrationTests.asyncTest("Integration test: intervalEventsConductor with html5MediaTimer (This test is expected to fail when running in non-html5 browsers)", function () {
             var videoContainer = $(".flc-video");
             var timeToSet = 1;
-            var previousInterval = null;
+            var expectedPreviousInterval = null;
             var expectedCurrentInterval = "0";
 
             var that = fluid.videoPlayer.intervalEventsConductor({
@@ -52,15 +52,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 },
                 intervalList: testIntervalList,
                 model: {
-                    previousIntervalId: previousInterval
+                    previousIntervalId: expectedPreviousInterval
                 },
                 listeners: {
                     onTimeChange: function (time) {
                         jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);
                     },
                     onIntervalChange: function (currentInterval, previousInterval) {
-                        jqUnit.assertEquals("The event onIntervalChange is fired with currentInterval " + expectedCurrentInterval, "0", currentInterval);
-                        jqUnit.assertEquals("The event onIntervalChange is fired with previousInterval " + previousInterval, previousInterval, previousInterval);
+                        jqUnit.assertEquals("The event onIntervalChange is fired with currentInterval " + expectedCurrentInterval, expectedCurrentInterval, currentInterval);
+                        jqUnit.assertEquals("The event onIntervalChange is fired with previousInterval " + expectedPreviousInterval, expectedPreviousInterval, previousInterval);
                         start();
                     }
                 }

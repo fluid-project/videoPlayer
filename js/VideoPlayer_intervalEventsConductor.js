@@ -116,13 +116,13 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     };
 
-    /**************************************************************************************
-     * Timer component for HTML5 media element                                            *
-     *                                                                                    *
-     * The timer component fires the onTick event with the arguments of "currentTime"     *
-     * and "buffered" time ranges object at the firing of html5 media event "timeupdate". *
-     **************************************************************************************/
-    
+    /*********************************************************************************
+     * Timer component for HTML5 media element                                       *
+     *                                                                               *
+     * The timer component fires the onTick event with the argument of "currentTime" *
+     * when the time change occurs.                                                  *
+     *********************************************************************************/
+
     fluid.defaults("fluid.videoPlayer.html5MediaTimer", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.html5MediaTimer.finalInit",
@@ -134,21 +134,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.html5MediaTimer.finalInit = function (that) {
         var media = that.options.mediaElement;
-        
+
         if (!media) {
             fluid.fail("Undefined mediaElement option in " + that.typeName + ".");
         }
         media.bind("timeupdate", function (ev) {
             var currentTime = ev.currentTarget.currentTime;
-            var buffered = ev.currentTarget.buffered;
-            
-            /**
-             * onTick event is fired with these arguments,
-             * @arguments
-             * currentTime - the current time that the video plays
-             * buffered - A TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-             */
-            that.events.onTick.fire(currentTime, buffered);
+
+            that.events.onTick.fire(currentTime);
         });
     };
 

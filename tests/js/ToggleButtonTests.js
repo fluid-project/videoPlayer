@@ -10,7 +10,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 // Declare dependencies
-/*global fluid, jqUnit, expect, jQuery, start*/
+/*global fluid, jqUnit, jQuery, start*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -25,7 +25,7 @@ fluid.registerNamespace("fluid.tests");
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.toggleButton");
 
         fluid.tests.onPressEventHandler = function () {
-            expect(1);
+            jqUnit.expect(1);
             jqUnit.assertTrue("The onPress event should fire", true);
         };
 
@@ -41,7 +41,7 @@ fluid.registerNamespace("fluid.tests");
         };
 
         toggleButtonTests.asyncTest("State change", function () {
-            expect(3);
+            jqUnit.expect(3);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onReady: function (that) {
@@ -58,7 +58,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         toggleButtonTests.asyncTest("onPress event", function () {
-            expect(1);
+            jqUnit.expect(1);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onReady: function (that) {
@@ -74,7 +74,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         toggleButtonTests.asyncTest("Press", function () {
-            expect(3);
+            jqUnit.expect(3);
             var testComponent;
             testComponent = fluid.tests.initToggleButton({
                 listeners: {
@@ -110,7 +110,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         toggleButtonTests.asyncTest("Overriding strings", function () {
-            expect(1);
+            jqUnit.expect(1);
             var testStrings = {
                 press: "press me",
                 release: "release me"

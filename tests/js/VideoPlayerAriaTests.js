@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 // Declare dependencies
-/*global fluid, jqUnit, expect, jQuery, start*/
+/*global fluid, jqUnit, jQuery, start*/
 
 // JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         fluid.tests.videoPlayer.checkAriaControlsAttr = function (controlsToTest) {
             fluid.each(controlsToTest, function (spec, index) {
-                expect(2);
+                jqUnit.expect(2);
                 jqUnit.assertTrue(spec.controlName + " should have aria-controls attribute", !!$(spec.control).attr("aria-controls"));
                 jqUnit.assertEquals(spec.controlName + " should aria-controls " + spec.controlledName,
                                     $(spec.controlled).attr("id"),
@@ -133,16 +133,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
             var testOpts = {
                 listeners: {
-                    onReady: "fluid.tests.videoPlayer.triggerTranscript"
-                },
-                components: {
-                    transcript: {
-                        options: {
-                            listeners: {
-                                onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
-                            }
-                        }
-                    }
+                    onReady: "fluid.tests.videoPlayer.triggerTranscript",
+                    onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
                 }
             };
             initVideoPlayer($(".videoPlayer-aria"), testOpts);

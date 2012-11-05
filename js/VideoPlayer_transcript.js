@@ -365,8 +365,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.applier.modelChanged.addListener("currentTracks.transcripts", function (model, oldModel) {
             if (model.currentTracks.transcripts[0] === oldModel.currentTracks.transcripts[0]) {
-                // actual choice of track hasn't changed; just show it and be done
-                fluid.videoPlayer.transcript.showTranscriptArea(that);
+                // actual choice of track hasn't changed
                 return;
             }
 

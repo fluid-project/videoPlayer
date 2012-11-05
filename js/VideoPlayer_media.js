@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid*/
+/*global jQuery, window, swfobject, fluid, MediaElement*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -31,11 +31,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             mediaEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onMediaReady"
+            },
+            intervalEventsConductor: {
+                type: "fluid.videoPlayer.intervalEventsConductor",
+                createOnEvent: "onMediaReady"
+            },
+            transcript: {
+                type: "fluid.videoPlayer.transcript",
+                createOnEvent: "onMediaReady"
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
+            onLoadedMetadata: null,
             onMediaReady: null
         },
         sourceRenderers: {
@@ -71,7 +80,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 renderer.apply(null, [that, source]);
             } else {
                 fluid.invokeGlobalFunction(renderer, [that, source]);
-            }                                      
+            }
         });
     };
 
@@ -83,102 +92,151 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var getcanPlayData = function (data) {
-        return data.readyState === 4 || data.readyState === 3 
-            || data.readyState === 2; 
+        return typeof (data.readyState) === "undefined" ?
+            true : data.readyState === 4 || data.readyState === 3 || data.readyState === 2;
     };
 
     var bindMediaDOMEvents = function (that) {      
-        var video = that.container;
+        MediaElement(that.container[0], {success: function (mediaElementVideo) {
+            that.model.mediaElementVideo = mediaElementVideo;
 
-        video.bind("durationchange", {obj: video[0]}, function (ev) {
-            // FF doesn't implement startTime from the HTML 5 spec.
-            var startTime = ev.data.obj.startTime || 0;
-            that.applier.fireChangeRequest({
-                path: "totalTime",
-                value: ev.data.obj.duration
-            });
-            that.applier.fireChangeRequest({
-                path: "currentTime",
-                value: ev.data.obj.currentTime
-            });
-            that.applier.fireChangeRequest({
-                path: "startTime",
-                value: startTime
-            });
-        });
+            // IE8 workaround to trigger the video initial loading. Otherwise, a blank is displayed at the video area
+            // Html5 browsers tolerate this workaround without initiatively playing the video
+            mediaElementVideo.play();
 
-        video.bind("volumechange", {obj: video[0]}, function (ev) {
-            var mediaVolume = ev.data.obj.volume * 100;
-            // Don't fire self-generated volume changes on zero when muted, to avoid cycles
-            if (!that.model.muted || mediaVolume !== 0) {
-                fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
-            }
-        });
+            mediaElementVideo.addEventListener("volumechange", function () {
+                var mediaVolume = mediaElementVideo.volume * 100;
+                // Don't fire self-generated volume changes on zero when muted, to avoid cycles
+                if (!that.model.muted || mediaVolume !== 0) {
+                    fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
+                }
+            });
 
-        //all browser don't support the canplay so we do all different states
-        video.bind("canplay", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "canPlay",
-                value: getcanPlayData(ev.data.obj)
+            // all browser don't support the canplay so we do all different states
+            mediaElementVideo.addEventListener("canplay", function () {
+                that.applier.fireChangeRequest({
+                    path: "canPlay",
+                    value: getcanPlayData(mediaElementVideo)
+                });
             });
-        });
 
-        video.bind("canplaythrough", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "canPlay",
-                value: getcanPlayData(ev.data.obj)
+            mediaElementVideo.addEventListener("canplaythrough", function () {
+                that.applier.fireChangeRequest({
+                    path: "canPlay",
+                    value: getcanPlayData(mediaElementVideo)
+                });
             });
-        });
 
-        video.bind("loadeddata", {obj: video[0]}, function (ev) {
-            that.applier.fireChangeRequest({
-                path: "canPlay",
-                value: getcanPlayData(ev.data.obj)
+            mediaElementVideo.addEventListener("loadeddata", function () {
+                that.applier.fireChangeRequest({
+                    path: "canPlay",
+                    value: getcanPlayData(mediaElementVideo)
+                });
             });
-        });
 
-        video.bind("ended", function () {
-            that.applier.fireChangeRequest({
-                path: "play",
-                value: false
+            mediaElementVideo.addEventListener("ended", function () {
+                that.applier.fireChangeRequest({
+                    path: "play",
+                    value: false
+                });
+                that.applier.fireChangeRequest({
+                    path: "currentTime",
+                    value: 0
+                });
             });
-            that.applier.fireChangeRequest({
-                path: "currentTime",
-                value: 0
+
+            mediaElementVideo.addEventListener("loadedmetadata", function () {
+                var startTime = mediaElementVideo.startTime || 0;
+
+                that.applier.fireChangeRequest({
+                    path: "totalTime",
+                    value: mediaElementVideo.duration
+                });
+                that.applier.fireChangeRequest({
+                    path: "currentTime",
+                    value: mediaElementVideo.currentTime
+                });
+                that.applier.fireChangeRequest({
+                    path: "startTime",
+                    value: startTime
+                });
+
+                // escalated to the main videoPlayer component
+                that.events.onLoadedMetadata.fire();
             });
-        });
+
+            // The handling of "timeupdate" event is moved out of html5MediaTimer component, which
+            // has been demolished, to here because with media element library in IE8, the link of
+            // video event listeners must occur in the success callback, otherwise, listeners are
+            // not fired.
+            mediaElementVideo.addEventListener("timeupdate", function () {
+                // A workaround to deal with the time delay in IE8 between calling setCurrentTime()
+                // and "currentTime" property gets really set. The delay causes the click on the
+                // scrubber does not reposition the progress handler at the first click, but
+                // happens at the second click. The issue is easier to produce when the video is
+                // at pause.
+
+                // this problem is probably related to a known issue in mediaelement.js:
+                // https://github.com/johndyer/mediaelement/issues/489
+                // https://github.com/johndyer/mediaelement/issues/516
+                setTimeout(function () {
+                    var currentTime = mediaElementVideo.currentTime || 0;
+                    var buffered = mediaElementVideo.buffered || 0;
+
+                    that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
+                    that.transcript.transcriptInterval.events.onTick.fire(currentTime);
+                }, 300);
+
+            });
+
+            // Fire onMediaReady here rather than finalInit() because the instantiation
+            // of the media element object is asynchronous
+            that.events.onMediaReady.fire(that);
+        }});
+
     };
 
     fluid.videoPlayer.media.preInit = function (that) {
         that.updateCurrentTime = function (currentTime, buffered) {
+            // buffered is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
+            var bufferEnd = buffered ? buffered.end(buffered.length - 1) : 0;
+
             that.applier.fireChangeRequest({
                 path: "currentTime", 
                 value: currentTime
             });
             that.applier.fireChangeRequest({
-                path: "buffered", 
-                value: buffered
+                path: "bufferEnd",
+                value: bufferEnd
             });
         };
         
         that.setTime = function (time) {
-            that.container[0].currentTime = time;
+            if (!that.model.mediaElementVideo) { return; }
+
+            that.model.mediaElementVideo.setCurrentTime(time);
         };
 
         that.updateVolume = function () {
-            that.container[0].volume = that.model.volume / 100;
+            if (!that.model.mediaElementVideo) { return; }
+
+            that.model.mediaElementVideo.setVolume(that.model.volume / 100);
         };
 
         that.play = function () {
+            if (!that.model.mediaElementVideo) { return; }
+
             if (that.model.play === true) {
-                that.container[0].play();
+                that.model.mediaElementVideo.play();
             } else {
-                that.container[0].pause();
+                that.model.mediaElementVideo.pause();
             }
         };
 
         that.mute = function () {
-            that.container[0].muted = that.model.muted;
+            if (!that.model.mediaElementVideo) { return; }
+
+            that.model.mediaElementVideo.setMuted(that.model.muted);
         };
 
         that.refresh = function () {
@@ -191,7 +249,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         renderSources(that);
         bindMediaModel(that);
         bindMediaDOMEvents(that);
-        that.events.onMediaReady.fire(that);
     };
 
 })(jQuery);

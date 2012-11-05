@@ -11,43 +11,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, expect, jQuery, start*/
+/*global fluid, jqUnit, jQuery, start*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
     $(document).ready(function () {
-
         var videoPlayerTests = new jqUnit.TestCase("Video Player Tests");
 
-        var initVideoPlayer = function (testOptions) {
-            var opts = {
-                video: {
-                    sources: [
-                        {
-                            src: "TestVideo.mp4",
-                            type: "video/mp4"
-                        }
-                    ]
-                },
-                model: {},
-                templates: {
-                    videoPlayer: {
-                        // override the default template path
-                        // TODO: We need to refactor the VideoPlayer to better support
-                        //       overriding the path without needing to know file names
-                        href: "../../html/videoPlayer_template.html"
-                    }
-                }
-            };
-            $.extend(true, opts, testOptions);
-            return fluid.videoPlayer(".videoPlayer", opts);
-        };
-
         videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): valid path", function () {
-            expect(1);
-            var vidPlayer = initVideoPlayer({
+            jqUnit.expect(1);
+            var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
                 listeners: {
                     onTemplateReady: function () {
                         jqUnit.assertTrue("The template should load", true);
@@ -62,8 +37,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): invalid path", function () {
-            expect(1);
-            var vidPlayer = initVideoPlayer({
+            jqUnit.expect(1);
+            var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
                 templates: {
                     videoPlayer: {
                         href: "bad/test/path.html"
@@ -81,100 +56,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             });
         });
-
-        function setupEnvironment(withHtml5) {
-            delete fluid.staticEnvironment.browserHtml5;
-            
-            if (withHtml5) {
-                fluid.staticEnvironment.browserHtml5 = fluid.typeTag("fluid.browser.html5");
-            }
-        }
         
-        videoPlayerTests.asyncTest("HTML5: video player instantiation with customized controller", function () {
-            expect(6);
-            
-            setupEnvironment(true);
-            
-            initVideoPlayer({
-                controls: "custom",
-                listeners: {
-                    onReady: function (videoPlayer) {
-                        jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
-                        jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
-                        jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
-                        jqUnit.assertNotUndefined("The sub-component transcript has been instantiated", videoPlayer.transcript);
-                        jqUnit.assertUndefined("The sub-component browserCompatibility has NOT been instantiated", videoPlayer.browserCompatibility);
-                        jqUnit.assertNotUndefined("The sub-component intervalEventsConductor has been instantiated", videoPlayer.intervalEventsConductor);
-                        
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerTests.asyncTest("HTML5: video player instantiation with native controller", function () {
-            expect(6);
-            
-            setupEnvironment(true);
-            
-            initVideoPlayer({
-                controls: "native",
-                listeners: {
-                    onReady: function (videoPlayer) {
-                        jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
-                        jqUnit.assertUndefined("The sub-component controllers has been NOT instantiated", videoPlayer.controllers);
-                        jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
-                        jqUnit.assertNotUndefined("The sub-component transcript has been instantiated", videoPlayer.transcript);
-                        jqUnit.assertUndefined("The sub-component browserCompatibility has NOT been instantiated", videoPlayer.browserCompatibility);
-                        jqUnit.assertNotUndefined("The sub-component intervalEventsConductor has been instantiated", videoPlayer.intervalEventsConductor);
-                        
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerTests.asyncTest("HTML5: Controllers instantiation", function () {
-            expect(5);
-            
-            setupEnvironment(true);
-            
-            initVideoPlayer({
-                controls: "custom",
-                listeners: {
-                    onControllersReady: function (controllers) {
-                        jqUnit.assertNotUndefined("The sub-component scrubber has been instantiated", controllers.scrubber);
-                        jqUnit.assertNotUndefined("The sub-component volumeControl has been instantiated", controllers.volumeControl);
-                        jqUnit.assertNotUndefined("The sub-component captionControls has been instantiated", controllers.captionControls);
-                        jqUnit.assertNotUndefined("The sub-component playButton has been instantiated", controllers.playButton);
-                        jqUnit.assertNotUndefined("The sub-component fullScreenButton has been instantiated", controllers.fullScreenButton);
-                        
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerTests.asyncTest("NON-HTML5: video player instantiation", function () {
-            expect(5);
-            
-            setupEnvironment(false);
-            
-            initVideoPlayer({
-                listeners: {
-                    onReady: function (videoPlayer) {
-                        jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
-                        jqUnit.assertUndefined("The sub-component controllers has NOT been instantiated", videoPlayer.controllers);
-                        jqUnit.assertUndefined("The sub-component captionner has NOT been instantiated", videoPlayer.captionner);
-                        jqUnit.assertUndefined("The sub-component captionLoader has NOT been instantiated", videoPlayer.captionLoader);
-                        jqUnit.assertNotUndefined("The sub-component browserCompatibility has been instantiated", videoPlayer.browserCompatibility);
-                        
-                        start();
-                    }
-                }
-            });
-        });
-
         var testVTTCaption = function (vttArray, index, captionObj) {
             jqUnit.assertEquals("First line is empty", "", vttArray[index]);
 
@@ -185,7 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         videoPlayerTests.test("secondsToHmsm", function () {
-            expect(15);
+            jqUnit.expect(15);
             jqUnit.assertEquals("0 seconds", "00:00:00.000", fluid.videoPlayer.secondsToHmsm(0));
             jqUnit.assertEquals("1 milli seconds", "00:00:00.100", fluid.videoPlayer.secondsToHmsm(0.1));
             jqUnit.assertEquals("1111 milli seconds", "00:00:00.111", fluid.videoPlayer.secondsToHmsm(0.1111));
@@ -227,7 +109,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "start_of_paragraph": false
             }];
 
-            expect(2 + 3 * testJson.length);
+            jqUnit.expect(2 + 3 * testJson.length);
 
             var result = fluid.videoPlayer.amaraJsonToVTT(testJson);
             var resultArray = result.split("\n");
@@ -240,7 +122,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTests.asyncTest("fetchAmaraJson", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.fetchAmaraJsonCallback = function (data) {
                 jqUnit.assertTrue("Json was fetched", data.length > 0);
@@ -250,6 +132,123 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             fluid.videoPlayer.fetchAmaraJson("http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en", fluid.fetchAmaraJsonCallback);
         });
+
+        var testVideoLabel = function (vp, expectedLabel) {
+            jqUnit.expect(1);
+            jqUnit.assertEquals("aria-label should be set properly", vp.options.strings.videoTitlePreface + ": " + expectedLabel, vp.locate("video").attr("aria-label"));
+        };
+
+        videoPlayerTests.asyncTest("Video label: default", function () {
+            var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        testVideoLabel(videoPlayer, videoPlayer.options.videoTitle);
+                        start();
+                    }
+                }
+            });
+        });
+
+        videoPlayerTests.asyncTest("Video label: custom", function () {
+            var testTitle = "My Test Video Title";
+            var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                videoTitle: testTitle,
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        testVideoLabel(videoPlayer, testTitle);
+                        start();
+                    }
+                }
+            });
+        });
+
+
+        var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5"};
+
+        var HTML5Tests = [{
+            desc: "video player instantiation with customized controller",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(3);
+
+                var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                    controls: "custom",
+                    listeners: {
+                        onReady: function (videoPlayer) {
+                            jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
+                            jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
+                            jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
+
+                            start();
+                        }
+                    }
+                });
+            }
+        }, {
+            desc: "video player instantiation with native controller",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(3);
+
+                var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                    controls: "native",
+                    listeners: {
+                        onReady: function (videoPlayer) {
+                            jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
+                            jqUnit.assertUndefined("The sub-component controllers has been NOT instantiated", videoPlayer.controllers);
+                            jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
+
+                            start();
+                        }
+                    }
+                });
+            }
+        }, {
+            desc: "Controllers instantiation",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(5);
+
+                var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                    controls: "custom",
+                    listeners: {
+                        onControllersReady: function (controllers) {
+                            jqUnit.assertNotUndefined("The sub-component scrubber has been instantiated", controllers.scrubber);
+                            jqUnit.assertNotUndefined("The sub-component volumeControl has been instantiated", controllers.volumeControl);
+                            jqUnit.assertNotUndefined("The sub-component captionControls has been instantiated", controllers.captionControls);
+                            jqUnit.assertNotUndefined("The sub-component playButton has been instantiated", controllers.playButton);
+                            jqUnit.assertNotUndefined("The sub-component fullScreenButton has been instantiated", controllers.fullScreenButton);
+
+                            start();
+                        }
+                    }
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player Tests: HTML5-specific", HTML5Tests, envFeatures);
+
+        envFeatures = {"supportsHtml5": false};
+
+        var nonHTML5Tests = [{
+            desc: "video player instantiation",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(3);
+
+                var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                    listeners: {
+                        onReady: function (videoPlayer) {
+                            jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
+                            jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
+                            jqUnit.assertUndefined("The sub-component html5Captionator has NOT been instantiated", videoPlayer.captionner);
+
+                            start();
+                        }
+                    }
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player Tests: NON-HTML5-specific", nonHTML5Tests, envFeatures);
 
     });
 })(jQuery);

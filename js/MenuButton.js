@@ -312,6 +312,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.menu.events.hiddenByKeyboard.addListener(function () {
             button.focus();
         });
+
+        // TODO: Causing IE8 failure at clicking caption or transcript button due to FLUID-4762.
+        // Unfortunately, removing it introduces a bug in keyboard interactions in all browsers,
+        // preventing the menu from hiding when keyboard focus moves away.
         fluid.deadMansBlur(that.container, {
             exclusions: [that.menu.options.selectors.menuItem, that.options.selectors.button],
             handler: function () {

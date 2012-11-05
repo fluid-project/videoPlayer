@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, expect, jQuery, start*/
+/*global fluid, jqUnit, jQuery, start*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -21,70 +21,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var videoPlayerIntegrationTests = new jqUnit.TestCase("Video Player Integration Tests");
 
-        var baseOpts = {
-            video: {
-                sources: [
-                    {
-                        src: "TestVideo.mp4",
-                        type: "video/mp4"
-                    },
-                    {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
-                        type: "video/webm"
-                    }
-                ],
-                captions: [
-                    {
-                        src: "TestCaptions.en.vtt",
-                        type: "text/vtt",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "TestCaptions.fr.vtt",
-                        type: "text/vtt",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ],
-                transcripts: [
-                    {
-                        src: "TestTranscripts.en.json",
-                        type: "JSONcc",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "TestTranscripts.fr.json",
-                        type: "JSONcc",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ]
-            },
-            templates: {
-                videoPlayer: {
-                    forceCache: true,
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }
-        };
-        
-        var initVideoPlayer = function () {
-            var opts = fluid.copy(baseOpts);
-            
-            // the 1st argument is the container and the following is component options
-            for (var index in arguments) {
-                if (index === "0") {
-                    var container = arguments[index];
-                } else {
-                    $.extend(true, opts, arguments[index]);
-                }
-            }
-            
-            return fluid.videoPlayer(container, opts);
-        };
-        
 
         var testPlayPause = function (clickFunc) {
             var video = $(".flc-videoPlayer-video");
@@ -109,7 +45,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         
         videoPlayerIntegrationTests.asyncTest("Play button - Play/Pause", function () {
-            expect(2);
+            jqUnit.expect(2);
             
             fluid.videoPlayer.testPlayButton = function (that) {
                 // Play button plays and pauses video
@@ -125,16 +61,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Container click - Play/Pause", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testContainerClick = function (that) {
                 // Clicking on video container plays and pauses video
-                var videoPlayerContainer = $(".flc-videoPlayer-video");
-                var clickFunc = function () { videoPlayerContainer.click() };
+                var videoPlayerContainer = $(".flc-videoPlayer-video-container");
+                var clickFunc = function () { videoPlayerContainer.mousedown() };
                 
                 testPlayPause(clickFunc);
             };
@@ -145,11 +81,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-containerClick"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-containerClick", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Mute button", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testMuteButton = function (that) {
                 var video = $(".flc-videoPlayer-video");
@@ -168,11 +104,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-playButton"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
-            expect(2);
+            jqUnit.expect(2);
 
             fluid.videoPlayer.testTranscript = function (that) {
                 var video = $(".flc-videoPlayer-video");
@@ -193,11 +129,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
         videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
-            expect(3);
+            jqUnit.expect(3);
 
             var initialTranscriptText;
             var testedTranscriptSpanClick = false;
@@ -250,17 +186,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onReady: fluid.videoPlayer.testTranscript
                     },
                     components: {
-                        transcript: {
+                        media: {
                             options: {
-                                listeners: {
-                                    onTranscriptsLoaded: fluid.videoPlayer.testTranscriptLoaded
+                                components: {
+                                    transcript: {
+                                        options: {
+                                            listeners: {
+                                                onTranscriptsLoaded: fluid.videoPlayer.testTranscriptLoaded
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 };
             
-            initVideoPlayer($(".videoPlayer-transcript"), testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
     });
