@@ -230,7 +230,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         // show transcripts
                         that.applier.requestChange("displayTranscripts", true);
                     },
-                    onLoadTranscriptError: {
+                    onTranscriptLoadError: {
                         listener: function () {
                             jqUnit.isVisible("Initally, error message should be visible", $(".flc-videoPlayer-transcriptError"));
                             jqUnit.notVisible("Transcript text is hidden", $(".flc-videoPlayer-transcript-text"));

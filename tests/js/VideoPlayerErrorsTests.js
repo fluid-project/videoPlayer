@@ -168,7 +168,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", testTranscriptLoadError)
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onTranscriptLoadError", testTranscriptLoadError)
             }
         });
 
@@ -186,7 +186,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onLoadTranscriptError", testTranscriptLoadError)
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(transcriptItemSelector, "onTranscriptLoadError", testTranscriptLoadError)
             }
         });
 
@@ -213,7 +213,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError", testCaptionLoadError)
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onCaptionLoadError", testCaptionLoadError)
             }
         });
 
@@ -231,7 +231,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     ]
                 },
-                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onLoadCaptionError", testCaptionLoadError)
+                listeners: fluid.tests.makeListenersForClickTriggeredTest(captionItemSelector, "onCaptionLoadError", testCaptionLoadError)
             }
         });
 

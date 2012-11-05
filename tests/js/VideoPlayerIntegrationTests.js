@@ -153,7 +153,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // Depending on the connection with universal subtitle site, the test below may not get run with remote universal subtitle transcript files.
                 if (!initialTranscriptText) {
                     initialTranscriptText = transcriptTextArea.text();
-                    jqUnit.assertNotNull("Initially, he transcript text is filled in", initialTranscriptText);
+                    jqUnit.assertNotNull("Initially, the transcript text is filled in", initialTranscriptText);
                 } else {
                     jqUnit.assertNotEquals("The transcript text is switched", transcriptTextArea.text(), initialTranscriptText);
                 }

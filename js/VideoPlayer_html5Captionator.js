@@ -34,7 +34,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             afterTrackElCreated: null,
             onTracksReady: null,
             onReady: null,
-            onLoadCaptionError: null
+            onCaptionLoadError: null
         },
         elPaths: {
             currentCaptions: "currentTracks.captions",
@@ -105,7 +105,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 setTimeout(function () {
                     fluid.each($("track", that.locate("video")), function (element, key) {
                         if (element.track.readyState === captionator.TextTrack.ERROR) {
-                            that.events.onLoadCaptionError.fire(key, that.options.captions[key], true);
+                            that.events.onCaptionLoadError.fire(key, that.options.captions[key], true);
                         }
                     });
                 }, 3000);
@@ -156,7 +156,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         };
 
         var errorHandler = function () {
-            that.events.onLoadCaptionError.fire(key, opts, false);
+            that.events.onCaptionLoadError.fire(key, opts, false);
             that.events.afterTrackElCreated.fire(that);
         };
 
@@ -183,7 +183,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             appendCueCanvasTo: that.locate("caption")[0],
             sizeCuesByTextBoundingBox: true
         });
-
         bindCaptionatorModel(that);
         that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
@@ -192,7 +191,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         container: "{html5Captionator}.dom.captionError",
         options: {
             listeners: {
-                "{html5Captionator}.events.onLoadCaptionError": {
+                "{html5Captionator}.events.onCaptionLoadError": {
                     listener: "{captionError}.show",
                     args: "{arguments}.1.label"
                 },

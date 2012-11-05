@@ -159,7 +159,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                                     onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
                                     onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded",
-                                    onLoadTranscriptError: "{videoPlayer}.events.onLoadTranscriptError"
+                                    onTranscriptLoadError: "{videoPlayer}.events.onTranscriptLoadError"
                                 }
                             }
                         }
@@ -188,8 +188,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
-                        onLoadCaptionError: "{videoPlayer}.events.onLoadCaptionError",
-                        onLoadTranscriptError: "{videoPlayer}.events.onLoadTranscriptError"
+                        onCaptionLoadError: "{videoPlayer}.events.onCaptionLoadError",
+                        onTranscriptLoadError: "{videoPlayer}.events.onTranscriptLoadError"
                     }
                 }
             },
@@ -203,7 +203,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captions: "{videoPlayer}.options.video.captions",
                     events: {
                         onReady: "{videoPlayer}.events.onCaptionsReady",
-                        onLoadCaptionError: "{videoPlayer}.events.onLoadCaptionError"
+                        onCaptionLoadError: "{videoPlayer}.events.onCaptionLoadError"
                     }
                 }
             }
@@ -222,12 +222,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             afterScrub: null,
             onStartScrub: null,
             onTemplateLoadError: null,
-            onLoadCaptionError: null,
+            onCaptionLoadError: null,
             afterCurrentTranscriptChanged: null,
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
-            onLoadTranscriptError: null,
+            onTranscriptLoadError: null,
             onReady: null,
             
             // public, time events
@@ -458,7 +458,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         controls: "true"
                     }
                 }]
-            }
+            };
         }
         
         // Keep the selector to render "fluid.videoPlayer.controllers"
@@ -682,8 +682,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         seconds = parseFloat(seconds);
         seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
 
-        var hours = parseInt(seconds / 3600);
-        var minutes = parseInt(seconds / 60) % 60;
+        var hours = parseInt(seconds / 3600, 10);
+        var minutes = parseInt(seconds / 60, 10) % 60;
         seconds = (seconds % 60).toFixed(3);
 
         // Return result of type HH:MM:SS.mmm

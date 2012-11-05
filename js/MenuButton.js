@@ -112,7 +112,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.languageMenu.setUpKeyboardA11y = function (that) {
         that.container.fluid("tabbable");
-        that.selectableContext = fluid.selectable(that.container, {
+        that.container.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
             selectableSelector: that.options.selectors.menuItem,
             // TODO: add simple style class support to selectable 
@@ -343,7 +343,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var showHide = that.readIndirect("showHidePath");
             that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
         }
-
         that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
         refreshButtonClass();
         that.events.onReady.fire(that);

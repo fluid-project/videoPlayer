@@ -55,7 +55,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         events: {
             onTranscriptsLoaded: null,
-            onLoadTranscriptError: null,
+            onTranscriptLoadError: null,
             onIntervalChange: null,
             onCurrentTranscriptChanging: null,
             afterCurrentTranscriptChanged: null,
@@ -287,15 +287,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptSource.transcriptText = that.options.strings.loading;
             var errorHandler = function () {
                 transcriptSource.transcriptText = null;
-                that.events.onLoadTranscriptError.fire(that, transcriptSource);
+                that.events.onTranscriptLoadError.fire(that, transcriptSource);
             };
 
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type === "text/amarajson") {
-                var handler = function (data) {
+                var successHandler = function (data) {
                     fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertSecsToMilli, "text", "start_time", "end_time");
                 };
-                fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, handler, errorHandler);
+                fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, successHandler, errorHandler);
             } else {
                 var opts = {
                     type: "GET",
@@ -405,7 +405,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onTranscriptsLoaded.addListener(function (intervalList) {
             that.transcriptInterval.setIntervalList(intervalList);
         });
-        that.events.onLoadTranscriptError.addListener(function () {
+        that.events.onTranscriptLoadError.addListener(function () {
             that.locate("transcriptText").hide();
         });
         
@@ -468,7 +468,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         container: "{transcript}.dom.transcriptError",
         options: {
             listeners: {
-                "{transcript}.events.onLoadTranscriptError": {
+                "{transcript}.events.onTranscriptLoadError": {
                     listener: "{transcriptError}.show",
                     args: "{arguments}.1.label"
                 },
