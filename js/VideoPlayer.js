@@ -301,7 +301,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             currentTime: 0,
             totalTime: 0,
-            buffered: undefined,        // a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges) set through browser events
+            bufferEnd: 0,
             displayCaptions: false,
             displayTranscripts: false,
             fullscreen: false,
