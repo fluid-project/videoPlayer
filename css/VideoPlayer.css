@@ -95,7 +95,8 @@
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0);
 }
-.fl-videoPlayer-button:focus {
+.fl-videoPlayer-button:focus,
+.fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus {
     background-color: #3195C7;
 }
 .fl-theme-uio-yb .fl-videoPlayer-button:focus { background-color: #FFFF00 !important; }
@@ -108,7 +109,8 @@
     background-size: cover;
 }
 
-.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
+.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover,
+.fl-videoPlayer-videoError .fl-errorPanel-retryButton:hover {
     background-color: rgba(153, 153, 153, 0.45);
     box-shadow: inset 0 0 0.25em rgba(0, 0, 0, 0.30);
 }
