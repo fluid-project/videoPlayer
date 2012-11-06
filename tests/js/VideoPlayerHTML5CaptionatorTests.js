@@ -31,9 +31,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var tracks = $("track", html5Captionator.locate("video"));
 
             $.each(tracksShowing, function (index, showing) {
-                var msg = showing ? " set to SHOWING" : " set to OFF";
+                var track = tracks[index];
+                var msg = showing ? " set to SHOWING" : " set to DISABLED";
                 jqUnit.assertEquals(html5Captionator.options.captions[index].label + msg, 
-                    showing ? captionator.TextTrack.SHOWING : captionator.TextTrack.OFF, tracks[index].track.mode);
+                    showing ? track.track.SHOWING : track.track.DISABLED, track.track.mode);
             });
         };
 
@@ -66,6 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             initVideoPlayer(options, function (videoPlayer) {
                 assertFn(testStr, videoPlayer.html5Captionator);
+console.log("checking DOM");
                 jqUnit.assertEquals(domStr, hasCaptionatorMarkup ? 1 : 0, $(captionatorSelector).length);
                 start();
             });
