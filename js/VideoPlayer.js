@@ -652,11 +652,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     /*******************************************************************
-     * Converts seconds into a WebVTT Timestamp:  HH:MM:SS.mmm
-     * @seconds:  time in seconds expressed as a floating point number
+     * Converts milliseconds into a WebVTT Timestamp:  HH:MM:SS.mmm
+     * @seconds:  time in milliseconds expressed as a floating point number
      *******************************************************************/
-    fluid.videoPlayer.secondsToHmsm = function (seconds) {
-        seconds = parseFloat(seconds);
+    fluid.videoPlayer.millisToHmsm = function (millis) {
+        seconds = parseFloat(millis)/1000;
         seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
 
         var hours = parseInt(seconds / 3600);
@@ -681,8 +681,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var vtt = "WEBVTT";
 
         for (var i = 0; i < json.length; i++) {
-            var startTime = fluid.videoPlayer.secondsToHmsm(json[i].start_time);
-            var endTime = fluid.videoPlayer.secondsToHmsm(json[i].end_time);
+            var startTime = fluid.videoPlayer.millisToHmsm(json[i].start_time);
+            var endTime = fluid.videoPlayer.millisToHmsm(json[i].end_time);
             vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
         }
 
