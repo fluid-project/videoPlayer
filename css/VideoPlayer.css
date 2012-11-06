@@ -41,20 +41,38 @@
     border: 2px solid #999999;
     width: 32em;
     height: 20em;
-    background: url("../images/default/video-load-error.png") no-repeat 50% 30%;
+    background: url("../images/error/exclamation.png") no-repeat 50% 30% rgba(0,0,0,.5);
+}
+.fl-theme-uio-yb .fl-videoPlayer-videoError {
+    background-image: url("../images/error/exclamation-yellow.png");
+}
+.fl-theme-uio-wb .fl-videoPlayer-videoError {
+    background-image: url("../images/error/exclamation-white.png");
+}
+.fl-theme-uio-by .fl-videoPlayer-videoError,
+.fl-theme-uio-bw .fl-videoPlayer-videoError {
+    background-image: url("../images/error/exclamation-black.png");
 }
 
 .fl-videoPlayer-videoError .fl-errorPanel-container {
     margin-top: 40%;
     text-align: center;
+    color: #FFFFFF;
 }
 .fl-videoPlayer-videoError .fl-errorPanel-message {
     text-transform: lowercase;
     font-style: italic;
+    text-shadow: 1px 1px 0 rgba(0,0,0,.3);
+}
+.fl-theme-uio-yb .fl-videoPlayer-videoError .fl-errorPanel-message,
+.fl-theme-uio-wb .fl-videoPlayer-videoError .fl-errorPanel-message,
+.fl-theme-uio-by .fl-videoPlayer-videoError .fl-errorPanel-message,
+.fl-theme-uio-bw .fl-videoPlayer-videoError .fl-errorPanel-message {
+    text-shadow: none;
 }
 .fl-videoPlayer-videoError .fl-errorPanel-retryButton {
     border: none;
-    background: url("../images/default/uio.png") no-repeat left center;
+    background: url("../images/error/2xretry.png") no-repeat left center;
     padding-left: 1.5em;
     font-size: inherit;
     height: 2em;
@@ -62,7 +80,41 @@
     text-transform: uppercase;
     pointer-events: all;
     cursor: pointer;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 0 rgba(0,0,0,.3);
 }
+.fl-videoPlayer-videoError .fl-errorPanel-retryButton:hover {
+    background-color: rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 0 0.25em rgba(0,0,0,.5);
+    background-image: url("../images/error/2xretry-hover.png");
+}
+.fl-theme-yb .fl-videoPlayer-videoError .fl-errorPanel-retryButton {
+    background-image: url("../images/error/2xretry-yellow.png");
+}
+.fl-theme-yb .fl-videoPlayer-videoError .fl-errorPanel-retryButton:hover {
+    background-image: url("../images/error/2xretry-yellow-hover.png");
+    box-shadow: none;
+    border: 1px solid #FFFF00;
+}
+.fl-theme-wb .fl-videoPlayer-videoError .fl-errorPanel-retryButton {
+    background-image: url("../images/error/2xretry-white.png");
+}
+.fl-theme-wb .fl-videoPlayer-videoError .fl-errorPanel-retryButton:hover {
+    background-image: url("../images/error/2xretry-white-hover.png");
+    box-shadow: none;
+    border: 1px solid #FFFFFF;
+}
+.fl-theme-by .fl-videoPlayer-videoError .fl-errorPanel-retryButton,
+.fl-theme-bw .fl-videoPlayer-videoError .fl-errorPanel-retryButton {
+    background-image: url("../images/error/2xretry-black.png");
+}
+.fl-theme-by .fl-videoPlayer-videoError .fl-errorPanel-retryButton:hover,
+.fl-theme-bw .fl-videoPlayer-videoError .fl-errorPanel-retryButton:hover {
+    background-image: url("../images/error/2xretry-black-hover.png");
+    box-shadow: none;
+    border: 1px solid #000000;
+}
+
 /*
  * Controller area
  */
@@ -109,8 +161,7 @@
     background-size: cover;
 }
 
-.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover,
-.fl-videoPlayer-videoError .fl-errorPanel-retryButton:hover {
+.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
     background-color: rgba(153, 153, 153, 0.45);
     box-shadow: inset 0 0 0.25em rgba(0, 0, 0, 0.30);
 }
@@ -606,6 +657,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     color: white;
     background-color: black;
     opacity: 0.7;
+    padding: 0.5em;
 }
 
 .fl-videoPlayer-controller-menu-captions {
@@ -618,17 +670,45 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-captionError {
     position: absolute;
     bottom: 0;
-    left: 10%;
+    margin: 0 10%;
+    width: 80%
+}
+.fl-videoPlayer-captionError .fl-errorPanel-message {
+    width: 95%;
 }
 .fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
     pointer-events: visible;
     cursor: pointer;
     border: none;
-    background: url("../images/default/transcriptclose.png") no-repeat center center;
+    background: url("../images/error/2Xcloseerror-blackonwhite.png") no-repeat center center;
+    background-color: transparent !important;
+    height: 1.5em;
+    width: 1.5em;
+    background-size: cover;
+    margin-top: -1em;
+    margin-right: -1em;
     font-size: inherit;
-    height: 2em;
-    background-size: contain;
-    text-transform: uppercase;
+}
+.fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
+    background-image: url("../images/error/2Xcloseerror-blackonwhite-hover.png");
+}
+.fl-theme-uio-yb .fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
+    background-image: url("../images/error/2Xcloseerror-blackonyellow.png");
+}
+.fl-theme-uio-yb .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
+    background-image: url("../images/error/2Xcloseerror-blackonyellow-hover.png");
+}
+.fl-theme-uio-by .fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
+    background-image: url("../images/error/2Xcloseerror-yellowonblack.png");
+}
+.fl-theme-uio-by .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
+    background-image: url("../images/error/2Xcloseerror-yellowonblack-hover.png");
+}
+.fl-theme-uio-bw .fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
+    background-image: url("../images/error/2Xcloseerror-whiteonblack.png");
+}
+.fl-theme-uio-bw .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
+    background-image: url("../images/error/2Xcloseerror-whiteonblack-hover.png");
 }
 
 /*
@@ -652,7 +732,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .fl-videoPlayer-transcriptError .fl-errorPanel-message {
     text-align: center;
-    padding-top: 30%;
+    margin: 3em;
 }
 .fl-videoPlayer-transcript-text {
     word-spacing: 0.1em;
