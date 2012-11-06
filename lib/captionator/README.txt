@@ -4,8 +4,8 @@ Attribution:
 
 Source:
  * Original code is available on GIT https://github.com/cgiffard/Captionator
- * We are using a fork of the code available here:
-    https://github.com/michelled/Captionator/tree/FLUID-4701
+ * We are using the master branch of a fork of the code available here:
+    https://github.com/fluid-project/Captionator/
 
 Instructions:
  * All necessary documentation about the Captionator could be found on the official Captionator website http://captionatorjs.com/
