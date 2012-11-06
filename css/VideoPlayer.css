@@ -114,6 +114,38 @@
     box-shadow: none;
     border: 1px solid #000000;
 }
+.fl-theme-uio-yb .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus {
+    background-color: #FFFF00 !important;
+    background-image: url("../images/error/2xretry-black-hover.png");
+}
+.fl-theme-uio-yb .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus span {
+    color: #000000 !important;
+    background-color: #FFFF00 !important;
+}
+.fl-theme-uio-wb .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus {
+    background-color: #FFFFFF !important;
+    background-image: url("../images/error/2xretry-black-hover.png");
+}
+.fl-theme-uio-wb .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus span {
+    color: #000000 !important;
+    background-color: #FFFFFF !important;
+}
+.fl-theme-uio-by .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus {
+    background-color: #000000 !important;
+    background-image: url("../images/error/2xretry-yellow-hover.png");
+}
+.fl-theme-uio-by .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus span {
+    color: #FFFF00 !important;
+    background-color: #000000 !important;
+}
+.fl-theme-uio-bw .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus {
+    background-color: #000000 !important;
+    background-image: url("../images/error/2xretry-white-hover.png");
+}
+.fl-theme-uio-bw .fl-videoPlayer-videoError .fl-errorPanel-retryButton:focus span {
+    color: #FFFFFF !important;
+    background-color: #000000 !important;
+}
 
 /*
  * Controller area
@@ -692,11 +724,17 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
     background-image: url("../images/error/2Xcloseerror-blackonwhite-hover.png");
 }
+.fl-videoPlayer-captionError .fl-errorPanel-dismissButton:focus {
+    background-image: url("../images/error/2Xcloseerror-whiteonblack.png");
+}
 .fl-theme-uio-yb .fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
     background-image: url("../images/error/2Xcloseerror-blackonyellow.png");
 }
 .fl-theme-uio-yb .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
     background-image: url("../images/error/2Xcloseerror-blackonyellow-hover.png");
+}
+.fl-theme-uio-yb .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:focus {
+    background-image: url("../images/error/2Xcloseerror-yellowonblack.png");
 }
 .fl-theme-uio-by .fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
     background-image: url("../images/error/2Xcloseerror-yellowonblack.png");
@@ -704,11 +742,17 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-uio-by .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
     background-image: url("../images/error/2Xcloseerror-yellowonblack-hover.png");
 }
+.fl-theme-uio-by .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:focus {
+    background-image: url("../images/error/2Xcloseerror-blackonyellow.png");
+}
 .fl-theme-uio-bw .fl-videoPlayer-captionError .fl-errorPanel-dismissButton {
     background-image: url("../images/error/2Xcloseerror-whiteonblack.png");
 }
 .fl-theme-uio-bw .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:hover {
     background-image: url("../images/error/2Xcloseerror-whiteonblack-hover.png");
+}
+.fl-theme-uio-bw .fl-videoPlayer-captionError .fl-errorPanel-dismissButton:focus {
+    background-image: url("../images/error/2Xcloseerror-blackonwhite.png");
 }
 
 /*
