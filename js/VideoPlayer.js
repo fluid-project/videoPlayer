@@ -435,7 +435,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         controls: "true"
                     }
                 }]
-            }
+            };
         }
         
         // Keep the selector to render "fluid.videoPlayer.controllers"
@@ -652,11 +652,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     /*******************************************************************
-     * Converts seconds into a WebVTT Timestamp:  HH:MM:SS.mmm
-     * @seconds:  time in seconds expressed as a floating point number
+     * Converts milliseconds into a WebVTT Timestamp:  HH:MM:SS.mmm
+     * @millis:  time in milliseconds expressed as a floating point number
      *******************************************************************/
-    fluid.videoPlayer.secondsToHmsm = function (seconds) {
-        seconds = parseFloat(seconds);
+    fluid.videoPlayer.millisToHmsm = function (millis) {
+        var seconds = parseFloat(millis) / 1000;
         seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
 
         var hours = parseInt(seconds / 3600);
@@ -664,7 +664,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         seconds = (seconds % 60).toFixed(3);
 
         // Return result of type HH:MM:SS.mmm
-        return "" + (hours < 10 ? "0" + hours : hours) + ":"
+        return (hours < 10 ? "0" + hours : hours) + ":"
             + (minutes < 10 ? "0" + minutes : minutes) + ":"
             + (seconds  < 10 ? "0" + seconds : seconds);
     };
@@ -681,8 +681,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var vtt = "WEBVTT";
 
         for (var i = 0; i < json.length; i++) {
-            var startTime = fluid.videoPlayer.secondsToHmsm(json[i].start_time);
-            var endTime = fluid.videoPlayer.secondsToHmsm(json[i].end_time);
+            var startTime = fluid.videoPlayer.millisToHmsm(json[i].start_time);
+            var endTime = fluid.videoPlayer.millisToHmsm(json[i].end_time);
             vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
         }
 
