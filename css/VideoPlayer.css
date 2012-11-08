@@ -488,13 +488,6 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem:hover {
     background-color: #ffcc00;
 }
-.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-disabled:after {
-    /* TODO: This is not internationalizable */
-    content: " (unavailable)";
-}
-.fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem.fl-videoPlayer-menuItem-disabled:hover {
-    background-color: #FFFFFF;
-}
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-selected,
 .fl-videoPlayer-languageMenu .fl-videoPlayer-menuItem-active.fl-videoPlayer-menuItem-selected {
     color: #FFFFFF;
