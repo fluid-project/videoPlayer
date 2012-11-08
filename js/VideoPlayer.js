@@ -617,6 +617,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         // Set height on the controller area. To make overlay to show up exactly at the bottom of the video regardless to UIO settings
         videoPlayer.css({height: videoHeight});
+        videoPlayer.css({width: videoWidth}); // Ensures the video and overlay will always be the same width (for ex., coming out of full-screen)
         
         // Set the width of the overlay to be the width of the video, otherwise, the controller bar spreads into transcript area
         overlay.css({width: videoWidth});
