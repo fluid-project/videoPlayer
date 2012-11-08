@@ -62,5 +62,45 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initEnhancedVideoPlayer(instance, uiOptions.relay);
         });
 
+        videoPlayerTranscriptIntegrationTests.asyncTest("Scrubbing", function () {
+            var vp;
+            var newTime = 0;
+            var instance = {
+                container: ".videoPlayer-transcript",
+                options: {
+                    video: {
+                        transcripts: [{
+                            src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                            type: "text/amarajson"
+                        }]
+                    },
+                    templates: {
+                        videoPlayer: {
+                            href: "../../html/videoPlayer_template.html"
+                        }
+                    },
+                    listeners: {
+                        onReady: function (that) {
+                            vp = that;
+                        },
+                        onTranscriptsLoaded: function (intervalList, transcriptTextId, that) {
+                            var anElement = $($("[id^=flc-videoPlayer-transcript-element]")[7]);
+                            newTime = (that.options.transcripts[0].tracks[7].start_time + 1) / 1000;
+                            anElement.click();
+                        },
+                        onTimeChange: {
+                            listener: function (currTime, buffered) {
+                                jqUnit.assertEquals("New time is same as clicked transcript", newTime, currTime);
+                                vp.events.onTimeChange.removeListener("timeChecker");
+                                start();
+                            },
+                            namespace: "timeChecker"
+                        }
+                    }
+                }
+            };
+            vp = fluid.testUtils.initEnhancedVideoPlayer(instance, uiOptions.relay);
+        });
+
     });
 })(jQuery);
