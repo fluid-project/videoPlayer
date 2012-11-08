@@ -293,7 +293,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type === "text/amarajson") {
                 var successHandler = function (data) {
-                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertSecsToMilli, "text", "start_time", "end_time");
+                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, fluid.identity, "text", "start_time", "end_time");
                 };
                 fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, successHandler, errorHandler);
             } else {
