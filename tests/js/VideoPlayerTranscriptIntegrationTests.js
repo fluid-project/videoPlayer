@@ -99,7 +99,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-            vp = fluid.testUtils.initEnhancedVideoPlayer(instance, uiOptions.relay);
+            fluid.testUtils.initEnhancedVideoPlayer(instance, uiOptions.relay);
         });
 
     });
