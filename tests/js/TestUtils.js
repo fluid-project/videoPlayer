@@ -78,7 +78,8 @@ fluid.registerNamespace("fluid.testUtils");
 
     fluid.testUtils.initEnhancedVideoPlayer = function (instance, relay) {
         var opts = fluid.copy(baseOpts);
-        $.extend(true, instance.options, opts);
+        $.extend(true, opts, instance.options);
+        instance.options = opts;
         return fluid.videoPlayer.makeEnhancedInstances(instance, relay);
     };
 

@@ -171,7 +171,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var inTimeMillis;
         if (track.text) {
             // this is a Universal Subtitles format file
-            inTimeMillis = that.convertSecsToMilli(track.start_time);
+            inTimeMillis = track.start_time;
         } else {
             // a WebVTT compatible json format file
             inTimeMillis = that.convertToMilli(track.inTime);
