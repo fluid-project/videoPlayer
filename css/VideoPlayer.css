@@ -472,6 +472,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .fl-videoPlayer-scrubber {
     width: 100%;
+    z-index: 999;
 }
 .fl-videoPlayer-scrubber.ui-slider-horizontal {
     height: 1em;
