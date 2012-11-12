@@ -67,7 +67,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             initVideoPlayer(options, function (videoPlayer) {
                 assertFn(testStr, videoPlayer.html5Captionator);
-console.log("checking DOM");
                 jqUnit.assertEquals(domStr, hasCaptionatorMarkup ? 1 : 0, $(captionatorSelector).length);
                 start();
             });
