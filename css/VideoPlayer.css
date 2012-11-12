@@ -536,7 +536,6 @@ ul.fl-videoPlayer-transcripts-languageList li {
     top: 1px;
     position: absolute;
     width: 100%;
-    pointer-events:none;
 }
 
 /* progress bar */
@@ -563,8 +562,8 @@ ul.fl-videoPlayer-transcripts-languageList li {
     height: 100%;
     width: 100%;
     background-color: #F2F2F2;
-    opacity: 0.3;
-    filter: alpha(opacity=30);
+    opacity: 0.7;
+    filter: alpha(opacity=70);
 }
 
 /************
@@ -587,6 +586,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .fl-videoPlayer-scrubber {
     width: 100%;
+    z-index: 999;
 }
 .fl-videoPlayer-scrubber.ui-slider-horizontal {
     height: 1em;

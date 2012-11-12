@@ -386,7 +386,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
         bindScrubberModel(that);
-        
+
         that.events.onScrubberReady.fire();
     };
     
