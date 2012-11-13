@@ -23,64 +23,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var videoPlayerARIATests = new jqUnit.TestCase("Video Player ARIA Tests");
 
-        var baseOpts = {
-            video: {
-                sources: [
-                    {
-                        src: "TestVideo.mp4",
-                        type: "video/mp4"
-                    },
-                    {
-                        src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
-                        type: "video/webm"
-                    }
-                ],
-                captions: [
-                    {
-                        src: "TestCaptions.en.vtt",
-                        type: "text/vtt",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "TestCaptions.fr.vtt",
-                        type: "text/vtt",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ],
-                transcripts: [
-                    {
-                        src: "TestTranscripts.en.json",
-                        type: "JSONcc",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "TestTranscripts.fr.json",
-                        type: "JSONcc",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ]
-            },
-            templates: {
-                videoPlayer: {
-                    forceCache: true,
-                    href: "../../html/videoPlayer_template.html"
-                }
-            }
-        };
-
-        var initVideoPlayer = function () {
-            var opts = fluid.copy(baseOpts);
-            var container = arguments[0];
-            for (var index = 1; index < arguments.length; index++) {
-                $.extend(true, opts, arguments[index]);
-            }
-            return fluid.videoPlayer(container, opts);
-        };
-
         fluid.tests.videoPlayer.checkAriaControlsAttr = function (controlsToTest) {
             fluid.each(controlsToTest, function (spec, index) {
                 jqUnit.expect(2);
@@ -137,7 +79,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
                 }
             };
-            initVideoPlayer($(".videoPlayer-aria"), testOpts);
+            fluid.testUtils.initVideoPlayer($(".videoPlayer-aria"), testOpts);
         });
 
     });

@@ -154,18 +154,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     }
                                 },
                                 events: {
-                                    onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                                    afterCurrentTranscriptChanged: "{videoPlayer}.events.afterCurrentTranscriptChanged",
                                     onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                                     onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                                     onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
+                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded",
+                                    onTranscriptLoadError: "{videoPlayer}.events.onTranscriptLoadError"
                                 }
                             }
                         }
                     },
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
-                        onMediaReady: "{videoPlayer}.events.onMediaReady"
+                        onMediaReady: "{videoPlayer}.events.onMediaReady",
+                        onMediaLoadError: "{videoPlayer}.events.onMediaLoadError"
                     },
                     sources: "{videoPlayer}.options.video.sources"
                 }
@@ -185,7 +187,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
-                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
+                        onCaptionLoadError: "{videoPlayer}.events.onCaptionLoadError",
+                        onTranscriptLoadError: "{videoPlayer}.events.onTranscriptLoadError"
                     }
                 }
             },
@@ -198,7 +202,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.options.video.captions",
                     events: {
-                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                        onReady: "{videoPlayer}.events.onCaptionsReady",
+                        onCaptionLoadError: "{videoPlayer}.events.onCaptionLoadError"
                     }
                 }
             }
@@ -212,14 +217,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onViewReady: null,
             onLoadedMetadata: null,
             onMediaReady: null,
+            onMediaLoadError: null,
             onControllersReady: null,
             afterScrub: null,
             onStartScrub: null,
             onTemplateLoadError: null,
-            onCurrentTranscriptChanged: null,
+            onCaptionLoadError: null,
+            afterCurrentTranscriptChanged: null,
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
+            onTranscriptLoadError: null,
             onReady: null,
             
             // public, time events
@@ -263,7 +271,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
             transcript: ".flc-videoPlayer-transcriptArea",
-            overlay: ".flc-videoPlayer-overlay"
+            overlay: ".flc-videoPlayer-overlay",
+            videoError: ".flc-videoPlayer-videoError"
         },
         strings: {
             captionsOff: "Captions OFF",
@@ -272,7 +281,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnTranscriptsOff: "Turn Transcripts OFF",
             videoTitlePreface: "Video"
         },
-        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoError"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -304,6 +313,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoPlayer: {
                 forceCache: true,
                 href: "../html/videoPlayer_template.html"
+            },
+            videoError: {
+                href: "../html/videoError_template.html"
+            },
+            transcriptError: {
+                href: "../html/transcriptError_template.html"
+            },
+            captionError: {
+                href: "../html/captionError_template.html"
             }
         },
         videoTitle: "unnamed video"
@@ -410,9 +428,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.events.onLoadedMetadata.addListener(function () {
+            that.locate("videoError").hide();
             that.resize();
-            
+
             bindKeyboardControl(that);
+        });
+
+        that.events.onMediaLoadError.addListener(function () {
+            that.locate("video").hide();
         });
     };
 
@@ -659,8 +682,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var seconds = parseFloat(millis) / 1000;
         seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
 
-        var hours = parseInt(seconds / 3600);
-        var minutes = parseInt(seconds / 60) % 60;
+        var hours = parseInt(seconds / 3600, 10);
+        var minutes = parseInt(seconds / 60, 10) % 60;
         seconds = (seconds % 60).toFixed(3);
 
         // Return result of type HH:MM:SS.mmm
@@ -689,16 +712,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return vtt;
     };
 
-    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, callback) {
+    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, success, error) {
         // No point continuing because we can't get a useful JSONP response without the url and a callback
-        if (!videoUrl || !callback) {
+        if (!videoUrl || !success) {
             return;
         }
 
         // Hard coded URL to amara here 
         var url = encodeURI("http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?");
 
-        $.getJSON(url, callback);
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: success,
+            timeout: 1500, // only this timeout will force the error function to be called
+            error: error
+        });
+
+
     };
 
 })(jQuery);

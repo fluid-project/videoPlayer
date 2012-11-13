@@ -27,6 +27,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     currentTracks: {
                         transcripts: [0]
                     }
+                },
+                components: {
+                    transcriptError: {
+                        options: {
+                            templates: {
+                                panel: {
+                                    href: "errorPanel_template_noRetry.html"
+                                }
+                            }
+                        }
+                    }
                 }
             };
         
@@ -195,5 +206,42 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             };
             var that = initTranscript(localTranscriptOpts, testOpts);
         });
+
+        var badDefaultTranscriptOpts = {
+            transcripts: [
+                {
+                    src: "bad.file",
+                    type: "JSONcc",
+                    srclang: "en",
+                    label: "English"
+                },
+                {
+                    src: "TestTranscripts.fr.json",
+                    type: "JSONcc",
+                    srclang: "fr",
+                    label: "French"
+                }
+            ]
+        };
+        videoPlayerTranscriptTests.asyncTest("Load error", function () {
+            var testOpts = {
+                listeners: {
+                    onReady: function (that) {
+                        // show transcripts
+                        that.applier.requestChange("displayTranscripts", true);
+                    },
+                    onTranscriptLoadError: {
+                        listener: function () {
+                            jqUnit.isVisible("Initally, error message should be visible", $(".flc-videoPlayer-transcriptError"));
+                            jqUnit.notVisible("Transcript text is hidden", $(".flc-videoPlayer-transcript-text"));
+                            start();
+                        },
+                        priority: "last"
+                    }
+                }
+            };
+            initTranscript(badDefaultTranscriptOpts, testOpts);
+        });
+
     });
 })(jQuery);

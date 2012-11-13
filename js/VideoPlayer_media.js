@@ -19,6 +19,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
 
+    fluid.registerNamespace("fluid.videoPlayer.media");
+
     /*********************************************************************************
      * Video Player Media                                                            *
      *                                                                               *
@@ -39,13 +41,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcript: {
                 type: "fluid.videoPlayer.transcript",
                 createOnEvent: "onMediaReady"
+            },
+            videoError: {
+                type: "fluid.errorPanel",
+                options: {
+                    strings: {
+                        messageTemplate: "Problem loading video",
+                        retryLabel: "Retry"
+                    },
+                    templates: {
+                        panel: "{videoPlayer}.options.templates.videoError"
+                    },
+                    events: {
+                        onRetry: "{media}.events.onRetry"
+                    }
+                }
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onLoadedMetadata: null,
-            onMediaReady: null
+            onMediaReady: null,
+            onMediaLoadError: null,
+            onRetry: null
         },
         sourceRenderers: {
             "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
@@ -56,6 +75,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         sources: []
     });
+
+    fluid.videoPlayer.media.reloadSources = function (that) {
+        $("source", that.container).detach();
+        fluid.videoPlayer.media.renderSources(that);
+        that.container.show().load();
+    };
 
     fluid.videoPlayer.media.createSourceMarkup = {
         html5SourceTag: function (videoPlayer, mediaSource) {
@@ -73,7 +98,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
     
-    var renderSources = function (that) {
+    fluid.videoPlayer.media.renderSources = function (that) {
         $.each(that.options.sources, function (idx, source) {
             var renderer = that.options.sourceRenderers[source.type];
             if ($.isFunction(renderer)) {
@@ -189,6 +214,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             });
 
+            mediaElementVideo.addEventListener("error", function (err) {
+                that.events.onMediaLoadError.fire();
+            });
+
             // Fire onMediaReady here rather than finalInit() because the instantiation
             // of the media element object is asynchronous
             that.events.onMediaReady.fire(that);
@@ -246,9 +275,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
-        renderSources(that);
+        fluid.videoPlayer.media.renderSources(that);
         bindMediaModel(that);
         bindMediaDOMEvents(that);
+
+        that.events.onRetry.addListener(function () {
+            $("source", that.container).detach();
+            fluid.videoPlayer.media.renderSources(that);
+            that.container.show().load();
+        });
     };
+
+    fluid.demands("videoError", ["fluid.videoPlayer", "fluid.videoPlayer.intervalEventsConductor"], {
+        container: "{videoPlayer}.dom.videoError",
+        options: {
+            listeners: {
+                "{media}.events.onMediaLoadError": "{videoError}.show"
+            }
+        }
+    });
 
 })(jQuery);

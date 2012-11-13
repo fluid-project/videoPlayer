@@ -33,7 +33,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         events: {
             afterTrackElCreated: null,
             onTracksReady: null,
-            onReady: null
+            onReady: null,
+            onCaptionLoadError: null
         },
         elPaths: {
             currentCaptions: "currentTracks.captions",
@@ -42,7 +43,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
         // TODO: Those selectors should come from the parent component!!
         selectors: {
             video: ".flc-videoPlayer-video",
-            caption: ".flc-videoPlayer-captionArea"
+            caption: ".flc-videoPlayer-captionArea",
+            captionError: ".flc-videoPlayer-captionError"
         },
         listeners: {
             afterTrackElCreated: "fluid.videoPlayer.html5Captionator.waitForTracks",
@@ -51,6 +53,20 @@ https://source.fluidproject.org/svn/LICENSE.txt
         createTrackFns: {
             "text/amarajson": "fluid.videoPlayer.html5Captionator.createAmaraTrack",
             "text/vtt": "fluid.videoPlayer.html5Captionator.createVttTrack"
+        },
+        components: {
+            captionError: {
+                type: "fluid.errorPanel",
+                options: {
+                    strings: {
+                        messageTemplate: "Sorry, %0 captions currently unavailable",
+                        dismissLabel: "Dismiss error"
+                    },
+                    templates: {
+                        panel: "{videoPlayer}.options.templates.captionError"
+                    }
+                }
+            }
         }
     });
     
@@ -83,6 +99,16 @@ https://source.fluidproject.org/svn/LICENSE.txt
             if (display) {
                 fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
                     tracks, that.options.captions);
+
+                // captionator doesn't fire any events or support a configurable error callback,
+                // so we have to wait a bit and check the track's readyState
+                setTimeout(function () {
+                    fluid.each($("track", that.locate("video")), function (element, key) {
+                        if (element.track.readyState === captionator.TextTrack.ERROR) {
+                            that.events.onCaptionLoadError.fire(key, that.options.captions[key], true);
+                        }
+                    });
+                }, 3000);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
             }
@@ -129,7 +155,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.events.afterTrackElCreated.fire(that);
         };
 
-        fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch);
+        var errorHandler = function () {
+            that.events.onCaptionLoadError.fire(key, opts, false);
+            that.events.afterTrackElCreated.fire(that);
+        };
+
+        fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch, errorHandler);
     };
 
     fluid.videoPlayer.html5Captionator.createVttTrack = function (that, key, opts) {
@@ -155,5 +186,18 @@ https://source.fluidproject.org/svn/LICENSE.txt
         bindCaptionatorModel(that);
         that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
+
+    fluid.demands("captionError", "fluid.videoPlayer.html5Captionator", {
+        container: "{html5Captionator}.dom.captionError",
+        options: {
+            listeners: {
+                "{html5Captionator}.events.onCaptionLoadError": {
+                    listener: "{captionError}.show",
+                    args: "{arguments}.1.label"
+                },
+                "{html5Captionator}.events.onTracksReady": "{captionError}.hide"
+            }
+        }
+    });
 
 })(jQuery);

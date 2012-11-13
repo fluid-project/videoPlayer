@@ -39,13 +39,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onReady"
+            },
+            transcriptError: {
+                type: "fluid.errorPanel",
+                createOnEvent: "onReady",
+                options: {
+                    strings: {
+                        messageTemplate: "Sorry, %0 transcripts currently unavailable"
+                    },
+                    templates: {
+                        panel: "{videoPlayer}.options.templates.transcriptError"
+                    }
+                }
             }
         },
         events: {
             onTranscriptsLoaded: null,
-            onLoadTranscriptError: null,
+            onTranscriptLoadError: null,
             onIntervalChange: null,
-            onCurrentTranscriptChanged: null,
+            onCurrentTranscriptChanging: null,
+            afterCurrentTranscriptChanged: null,
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
@@ -72,13 +85,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             languageDropdown: ".flc-videoPlayer-transcripts-language-dropdown",
             closeButton: ".flc-videoPlayer-transcripts-close-button",
-            transcriptText: ".flc-videoPlayer-transcript-text"
+            transcriptText: ".flc-videoPlayer-transcript-text",
+            transcriptError: ".flc-videoPlayer-transcriptError"
         },
-        selectorsToIgnore: ["closeButton", "transcriptText"],
+        selectorsToIgnore: ["closeButton", "transcriptText", "transcriptError"],
         styles: {
             element: "fl-videoPlayer-transcript-element",
             highlight: "fl-videoPlayer-transcript-element-highlight",
             selected: "fl-videoPlayer-transcript-element-selected"
+        },
+        strings: {
+            loading: "loading..."
         },
         transcriptElementIdPrefix: "flc-videoPlayer-transcript-element"
     });
@@ -97,6 +114,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // Update visibility of the transcript area based on the flag "model.displayTranscripts"
     fluid.videoPlayer.transcript.switchTranscriptArea = function (that) {
         if (that.model.displayTranscripts) {
+            fluid.videoPlayer.transcript.prepareTranscript(that);
             fluid.videoPlayer.transcript.showTranscriptArea(that);
             that.events.onTranscriptShow.fire();
         } else {
@@ -181,7 +199,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.transcript.displayTranscript = function (that, transcriptText) {
-        that.locate("transcriptText").html(transcriptText);
+        that.locate("transcriptText").html(transcriptText).show();
         that.updateTranscriptHighlight();
 
         $('span[id|="' + that.options.transcriptElementIdPrefix + '"]').click(function (evt) {
@@ -266,12 +284,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
         var transcriptSource = that.options.transcripts[currentIndex];
         if (transcriptSource) {
+            transcriptSource.transcriptText = that.options.strings.loading;
+            var errorHandler = function () {
+                transcriptSource.transcriptText = null;
+                that.events.onTranscriptLoadError.fire(that, transcriptSource);
+            };
 
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type === "text/amarajson") {
-                fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, function (data) {
+                var successHandler = function (data) {
                     fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, fluid.identity, "text", "start_time", "end_time");
-                });
+                };
+                fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, successHandler, errorHandler);
             } else {
                 var opts = {
                     type: "GET",
@@ -279,10 +303,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     success: function (data) {
                         fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertToMilli, "transcript", "inTime", "outTime");
                     },
-                    error: function () {
-                        fluid.log("Error loading transcript: " + transcriptSource.src + ". Are you sure this file exists?");
-                        that.events.onLoadTranscriptError.fire(transcriptSource);
-                    }
+                    error: errorHandler
                 };
 
                 if (transcriptSource.type !== "JSONcc") {
@@ -368,6 +389,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // actual choice of track hasn't changed
                 return;
             }
+            that.events.onCurrentTranscriptChanging.fire();
 
             fluid.videoPlayer.transcript.prepareTranscript(that);
             
@@ -377,11 +399,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("languageDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
             that.updateTranscriptHighlight();
             
-            that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
+            that.events.afterCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
         
         that.events.onTranscriptsLoaded.addListener(function (intervalList) {
             that.transcriptInterval.setIntervalList(intervalList);
+        });
+        that.events.onTranscriptLoadError.addListener(function () {
+            that.locate("transcriptText").hide();
         });
         
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
@@ -429,7 +454,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.transcript.bindTranscriptDOMEvents(that);
         fluid.videoPlayer.transcript.bindTranscriptModel(that);
         
-        fluid.videoPlayer.transcript.prepareTranscript(that);
         fluid.videoPlayer.transcript.switchTranscriptArea(that);
 
         that.transcriptTextId = function () {
@@ -439,5 +463,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.events.onReady.fire(that);
     };
+
+    fluid.demands("transcriptError", "fluid.videoPlayer.intervalEventsConductor", {
+        container: "{transcript}.dom.transcriptError",
+        options: {
+            listeners: {
+                "{transcript}.events.onTranscriptLoadError": {
+                    listener: "{transcriptError}.show",
+                    args: "{arguments}.1.label"
+                },
+                "{transcript}.events.onTranscriptsLoaded": "{transcriptError}.hide",
+                "{transcript}.events.onCurrentTranscriptChanging": "{transcriptError}.hide"
+            }
+        }
+    });
 
 })(jQuery);

@@ -63,8 +63,16 @@ fluid.registerNamespace("fluid.testUtils");
         },
         templates: {
             videoPlayer: {
-                forceCache: true,
                 href: "../../html/videoPlayer_template.html"
+            },
+            videoError: {
+                href: "errorPanel_template.html"
+            },
+            transcriptError: {
+                href: "errorPanel_template.html"
+            },
+            captionError: {
+                href: "errorPanel_template.html"
             }
         }
     };
