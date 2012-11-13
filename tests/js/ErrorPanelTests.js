@@ -78,8 +78,8 @@ fluid.registerNamespace("fluid.tests");
         errorPanelTests.asyncTest("Interactions", function () {
             jqUnit.expect(3);
             var panel = fluid.errorPanel(".panel0", {
-                retryCallback: "fluid.tests.retryCallback",
                 listeners: {
+                    onRetry: fluid.tests.retryCallback,
                     onReady: function (that) {
                         panel.show();
                         jqUnit.isVisible("After show, error panel should be visible", ".panel0");
@@ -103,8 +103,8 @@ fluid.registerNamespace("fluid.tests");
                         href: "errorPanel_template_noDismiss.html"
                     }
                 },
-                retryCallback: "fluid.tests.retryCallback",
                 listeners: {
+                    onRetry: fluid.tests.retryCallback,
                     onReady: function (that) {
                         panel.show();
                         jqUnit.isVisible("After show, error panel should be visible", ".panel0");

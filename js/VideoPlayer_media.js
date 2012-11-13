@@ -52,8 +52,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     templates: {
                         panel: "{videoPlayer}.options.templates.videoError"
                     },
-                    retryCallback: "fluid.videoPlayer.media.reloadSources",
-                    retryArgs: "{media}"
+                    events: {
+                        onRetry: "{media}.events.onRetry"
+                    }
                 }
             }
         },
@@ -62,7 +63,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onLoadedMetadata: null,
             onMediaReady: null,
-            onMediaLoadError: null
+            onMediaLoadError: null,
+            onRetry: null
         },
         sourceRenderers: {
             "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
@@ -276,6 +278,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.media.renderSources(that);
         bindMediaModel(that);
         bindMediaDOMEvents(that);
+
+        that.events.onRetry.addListener(function () {
+            $("source", that.container).detach();
+            fluid.videoPlayer.media.renderSources(that);
+            that.container.show().load();
+        });
     };
 
     fluid.demands("videoError", ["fluid.videoPlayer", "fluid.videoPlayer.intervalEventsConductor"], {

@@ -75,7 +75,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         components: {
                             videoError: {
                                 options: {
-                                    retryCallback: "fluid.tests.testRetryCallback"
+                                    listeners: {
+                                        onRetry: "fluid.tests.testRetryCallback"
+                                    }
                                 }
                             }
                         }

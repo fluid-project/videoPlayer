@@ -31,7 +31,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             retryButton: ".flc-errorPanel-retryButton",
             retryButtonText: ".flc-errorPanel-retryButton-text"
         },
-        retryCallback: null,
         templates: {
             panel: {
                 href: "errorPanel_template.html"
@@ -46,6 +45,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             hidden: "fl-hidden"
         },
         events: {
+            onRetry: null,
             onReady: null
         }
     });
@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         that.locate("retryButton").click(function (ev) {
             ev.preventDefault();
-            fluid.invokeGlobalFunction(that.options.retryCallback, fluid.makeArray(that.options.retryArgs));
+            that.events.onRetry.fire();
         });
 
         that.events.onReady.fire(that);
