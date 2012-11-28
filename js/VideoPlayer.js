@@ -250,12 +250,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: ["{arguments}.captions.1"]
             }
         },
-        invokers: {
-            resize: {
-                funcName: "fluid.videoPlayer.resize",
-                args: "{videoPlayer}"
-            }  
-        },
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
@@ -410,8 +404,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.events.onLoadedMetadata.addListener(function () {
-            that.resize();
-            
             bindKeyboardControl(that);
         });
     };

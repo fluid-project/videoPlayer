@@ -62,7 +62,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         },
                         {
                             src: "http://www.youtube.com/v/0jw74pfWfxA",
-                            type: "youtube"
+                            type: "video/youtube"
                         }
                     ],
                     captions: [
@@ -111,7 +111,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         },
                         {
                             src: "http://www.youtube.com/v/h_oHNP50FGM",
-                            type: "youtube"
+                            type: "video/youtube"
                         }
                     ],
                     captions: [
@@ -152,17 +152,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 videoTitle: "Polar Mammal Adaptation",
                 video: {
                     sources: [
-                        {
-                            src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.mp4",
-                            type: "video/mp4"
-                        }, 
-                        {
-                            src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.webm",
-                            type: "video/webm"
-                        },
+                        // {
+                        //     src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.mp4",
+                        //     type: "video/mp4"
+                        // }, 
+                        // {
+                        //     src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.webm",
+                        //     type: "video/webm"
+                        // },
                         {
                             src: "http://www.youtube.com/v/3_3p2ylZDAE",
-                            type: "youtube"
+                            type: "video/youtube"
                         }
                     ],
                     captions: [
