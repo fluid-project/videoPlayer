@@ -342,31 +342,6 @@ a.fl-videoPlayer-button-wrapper {
 }
 
 /* Volume slider theming */
-
-/* reset */
-.fl-theme-uio-yb .fl-videoPlayer-volumeControl, 
-.fl-theme-uio-wb .fl-videoPlayer-volumeControl,
-.fl-theme-uio-by .fl-videoPlayer-volumeControl,
-.fl-theme-uio-bw .fl-videoPlayer-volumeControl {
-	background: none !important;
-	border-collapse: separate; /* IE9 */
-}
-
-.fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-range-min,
-.fl-theme-uio-wb .fl-videoPlayer-volumeControl .ui-slider-range-min,
-.fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-range-min,
-.fl-theme-uio-bw .fl-videoPlayer-volumeControl .ui-slider-range-min {
-	background: none !important;
-}
-
-.fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-handle,
-.fl-theme-uio-wb .fl-videoPlayer-volumeControl .ui-slider-handle,
-.fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-handle,
-.fl-theme-uio-bw .fl-videoPlayer-volumeControl .ui-slider-handle {
-	background: none !important;
-}
-
-/* add theme colours */
 .fl-theme-uio-yb .fl-videoPlayer-volumeControl, 
 .fl-theme-uio-wb .fl-videoPlayer-volumeControl {
 	box-shadow: inset 0 0 0 2px #000000;
@@ -380,6 +355,7 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-handle,
 .fl-theme-uio-wb .fl-videoPlayer-volumeControl .ui-slider-handle {
+	background-image: none !important;
 	border: 2px solid #000000 !important;
 }
 .fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-handle {
@@ -390,6 +366,7 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-range-min,
 .fl-theme-uio-wb .fl-videoPlayer-volumeControl .ui-slider-range-min {
+	background-image: none !important;
 	background-color: #000000 !important;	
 }
 
@@ -409,6 +386,7 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-handle, 
 .fl-theme-uio-bw .fl-videoPlayer-volumeControl .ui-slider-handle {
+	background-image: none !important;
 	background-color: #000000 !important;
 }
 .fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-handle {
@@ -418,9 +396,11 @@ a.fl-videoPlayer-button-wrapper {
 	border: 2px solid #FFFFFF !important;
 }
 .fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-range-min {
+	background-image: none !important;
 	background-color: #FFFF00 !important;	
 }
 .fl-theme-uio-bw .fl-videoPlayer-volumeControl .ui-slider-range-min {
+	background-image: none !important;
 	background-color: #FFFFFF !important;	
 }
 
