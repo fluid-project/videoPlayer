@@ -542,6 +542,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.refreshView();
                     var video = that.locate("video");
                     video.attr("aria-label", that.options.strings.videoTitlePreface + ": " + that.options.videoTitle);
+                    // Setting the width and height attributes to respect the CSS API for setting the size of the video
+                    // This is required for cross browser sizing of the video
                     video.attr("width", video.css("width"));
                     video.attr("height", video.css("height"));
 
