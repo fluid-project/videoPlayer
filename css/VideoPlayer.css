@@ -270,7 +270,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-volumeControl {
     display: none;
     z-index: 1000;
-    border-width: 5px 9px;
+    border-width: 5px 0.55em;
     border-style: solid;
     border-color: #c2c2c2;
     position: absolute;
