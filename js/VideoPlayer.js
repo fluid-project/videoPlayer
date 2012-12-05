@@ -264,7 +264,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnCaptionsOff: "Turn Captions OFF",
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF",
-            videoTitlePreface: "Video"
+            videoTitlePreface: "Video: "
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
         keyBindings: fluid.videoPlayer.defaultKeys,
@@ -541,7 +541,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.container.append(res[key].resourceText);
                     that.refreshView();
                     var video = that.locate("video");
-                    video.attr("aria-label", that.options.strings.videoTitlePreface + ": " + that.options.videoTitle);
+                    video.attr("aria-label", that.options.strings.videoTitlePreface + that.options.videoTitle);
                     // Setting the width and height attributes to respect the CSS API for setting the size of the video
                     // This is required for cross browser sizing of the video
                     video.attr("width", video.css("width"));
