@@ -17,6 +17,7 @@
 
 .fl-videoPlayer-video {
     float: left;
+    height: 100%;
 }
 
 .fl-videoPlayer-video-element {
@@ -122,15 +123,6 @@
 .fl-videoPlayer-controller-buttons-secondary > * {
     height: 100%;
     width: 30%;
-}
-
-.fl-theme-uio-yb .fl-videoPlayer-controller-buttons,
-.fl-theme-uio-wb .fl-videoPlayer-controller-buttons,
-.fl-theme-uio-by .fl-videoPlayer-controller-buttons,
-.fl-theme-uio-bw .fl-videoPlayer-controller-buttons {
-	box-shadow: none;
-	border: 1px solid;	
-	padding-bottom: 1px; /* For Safari and Chrome - without padding, button borders overlap controller border */
 }
 
 a.fl-videoPlayer-button-wrapper {
@@ -672,6 +664,23 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .captionator-cue {
     line-height: inherit !important;
+}
+
+/********************
+ * UIO theme styling 
+ ********************/
+ 
+.fl-theme-uio-bw .fl-videoPlayer-main,
+.fl-theme-uio-by .fl-videoPlayer-main {
+    border: 1px solid #fff;  /* This will go away once we have the proper styling for the initial overlay */
+}
+
+.fl-theme-uio-wb .fl-videoPlayer-main {
+    border: 1px solid white;  /* This will go away once we have the proper styling for the initial overlay */
+}
+ 
+.fl-theme-uio-yb .fl-videoPlayer-main {
+    border: 1px solid yellow;  /* This will go away once we have the proper styling for the initial overlay */
 }
 
 /***********************************************************
