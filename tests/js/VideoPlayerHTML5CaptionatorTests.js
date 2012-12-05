@@ -20,6 +20,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     $(document).ready(function () {
         fluid.setLogging(false);    // disable it not to mess up with FireBug in FF
         
+        var nativeTrackSupport = (typeof document.createElement("video").addTextTrack === "function");
+
         var container = ".videoPlayer";
         var firstEnglishCaption = "English caption here";
         var firstFrenchCaption = "French caption here";
@@ -140,20 +142,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        var noHTML5Tests = [{
-            desc: "NO HTML5: html5Captionator was not initialized",
-            async: true,
-            testFn: function () {
-                testInit(optionsFull);
-            }
-        }];
+        var tests, envFeatures;
+        if (!nativeTrackSupport) {
+            /* In browsers that have no native support for <track>, Captionator will do its thing. */
+            var noHTML5Tests = [{
+                desc: "NO HTML5: html5Captionator was not initialized",
+                async: true,
+                testFn: function () {
+                    testInit(optionsFull);
+                }
+            }];
+    
+            envFeatures = {
+                supportsHtml5: null
+            };
+            fluid.testUtils.testCaseWithEnv("Video Player Old Browsers HTML5 Captionator Tests", noHTML5Tests, envFeatures);
 
-        var envFeatures = {
-            supportsHtml5: null
-        };
-        fluid.testUtils.testCaseWithEnv("Video Player Old Browsers HTML5 Captionator Tests", noHTML5Tests, envFeatures);
-
-        var tests = [{
+            tests = [{
                 desc: "HTML5: html5Captionator was initialized but without tracks",
                 async: true,
                 testFn: function () {
@@ -253,11 +258,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     });
                 }
             }];
-
-        envFeatures = {
-            "supportsHtml5": "fluid.browser.supportsHtml5"
-        };
-        fluid.testUtils.testCaseWithEnv("Video Player HTML5 Captionator Tests", tests, envFeatures);
-
+    
+            envFeatures = {
+                "supportsHtml5": "fluid.browser.supportsHtml5"
+            };
+            fluid.testUtils.testCaseWithEnv("Video Player HTML5 Captionator Tests", tests, envFeatures);
+            
+        } else {
+            /* In browsers that have native support for <track>, Captionator will bow out. */
+            tests = [{
+                desc: "HTML5: html5Captionator was initialized but bowed out: markup not present",
+                async: true,
+                testFn: function () {
+                    testInit(optionsFull, true, false);
+                }
+            }];
+            envFeatures = {
+                "supportsHtml5": "fluid.browser.supportsHtml5"
+            };
+            fluid.testUtils.testCaseWithEnv("Video Player HTML5 Captionator Tests", tests, envFeatures);
+        }
     });
 })(jQuery);
