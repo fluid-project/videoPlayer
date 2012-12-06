@@ -250,12 +250,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: ["{arguments}.captions.1"]
             }
         },
-        invokers: {
-            resize: {
-                funcName: "fluid.videoPlayer.resize",
-                args: "{videoPlayer}"
-            }  
-        },
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
@@ -270,7 +264,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnCaptionsOff: "Turn Captions OFF",
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF",
-            videoTitlePreface: "Video"
+            videoTitlePreface: "Video: "
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
         keyBindings: fluid.videoPlayer.defaultKeys,
@@ -410,8 +404,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.events.onLoadedMetadata.addListener(function () {
-            that.resize();
-            
             bindKeyboardControl(that);
         });
     };
@@ -548,7 +540,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 } else if (key === "videoPlayer") {
                     that.container.append(res[key].resourceText);
                     that.refreshView();
-                    that.locate("video").attr("aria-label", that.options.strings.videoTitlePreface + ": " + that.options.videoTitle);
+                    var video = that.locate("video");
+                    video.attr("aria-label", that.options.strings.videoTitlePreface + that.options.videoTitle);
+                    // Setting the width and height attributes to respect the CSS API for setting the size of the video
+                    // This is required for cross browser sizing of the video
+                    video.attr("width", video.css("width"));
+                    video.attr("height", video.css("height"));
 
                     bindVideoPlayerDOMEvents(that);
                     //create all the listeners to the model
@@ -599,33 +596,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         return ret + min + ":" + sec;
     };
-    
-    // Function which modifies containers and their sizes
-    fluid.videoPlayer.resize = function (that) {
-        var video = that.locate("video");
-        var videoPlayer = that.locate("videoPlayer");
-        var overlay = that.locate("overlay");
-        
-        // Get the video sizes first
-        // ToDo: A video wrapper container is used for video scaling. The video width/height are determined by the wrapper container
-        // rather then the video itself. This solution needs a re-consideration once we decide on scaling the video through css or
-        // API.
-//        var videoWidth = video[0].videoWidth;
-//        var videoHeight = video[0].videoHeight;
-        var videoWidth = video.width();
-        var videoHeight = video.height();
-
-        // Set height on the controller area. To make overlay to show up exactly at the bottom of the video regardless to UIO settings
-        videoPlayer.css({height: videoHeight});
-        
-        // Set the width of the overlay to be the width of the video, otherwise, the controller bar spreads into transcript area
-        overlay.css({width: videoWidth});
-        
-        // Save the video width/height in the model so they are accessible by the sub-components
-        that.model.videoWidth = videoWidth;
-        that.model.videoHeight = videoHeight;
-    };
-
+  
     /*********************************************************************************
      * Event Binder:                                                                 *
      * Shared by all video player component whenever an event binder component is    *
