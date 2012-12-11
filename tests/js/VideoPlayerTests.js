@@ -60,29 +60,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var testVTTCaption = function (vttArray, index, captionObj) {
             jqUnit.assertEquals("First line is empty", "", vttArray[index]);
 
-            var times = fluid.videoPlayer.secondsToHmsm(captionObj.start_time) + " --> " + fluid.videoPlayer.secondsToHmsm(captionObj.end_time);
+            var times = fluid.videoPlayer.millisToHmsm(captionObj.start_time) + " --> " + fluid.videoPlayer.millisToHmsm(captionObj.end_time);
 
             jqUnit.assertEquals("Times are correctly specified", times, vttArray[index + 1]);
             jqUnit.assertEquals("Caption is in the correct position", captionObj.text, vttArray[index + 2]);
         };
 
-        videoPlayerTests.test("secondsToHmsm", function () {
+        videoPlayerTests.test("millisToHmsm", function () {
             jqUnit.expect(15);
-            jqUnit.assertEquals("0 seconds", "00:00:00.000", fluid.videoPlayer.secondsToHmsm(0));
-            jqUnit.assertEquals("1 milli seconds", "00:00:00.100", fluid.videoPlayer.secondsToHmsm(0.1));
-            jqUnit.assertEquals("1111 milli seconds", "00:00:00.111", fluid.videoPlayer.secondsToHmsm(0.1111));
-            jqUnit.assertEquals("10 seconds", "00:00:10.000", fluid.videoPlayer.secondsToHmsm(10));
-            jqUnit.assertEquals("1 minute", "00:01:00.000", fluid.videoPlayer.secondsToHmsm(60));
-            jqUnit.assertEquals("59 minutes", "00:59:00.000", fluid.videoPlayer.secondsToHmsm("3540"));
-            jqUnit.assertEquals("59 minutes and 59 seconds", "00:59:59.000", fluid.videoPlayer.secondsToHmsm(3599));
-            jqUnit.assertEquals("1 hour", "01:00:00.000", fluid.videoPlayer.secondsToHmsm(3600));
-            jqUnit.assertEquals("25 hours", "25:00:00.000", fluid.videoPlayer.secondsToHmsm(90000));
-            jqUnit.assertEquals("1 hour, 1 min, 1 sec", "01:01:01.000", fluid.videoPlayer.secondsToHmsm(3661));
-            jqUnit.assertEquals("7 minutes and 5 seconds", "00:07:05.000", fluid.videoPlayer.secondsToHmsm(425));
-            jqUnit.assertEquals("10 hours and 12 minutes", "10:12:00.000", fluid.videoPlayer.secondsToHmsm(36720));
-            jqUnit.assertEquals("100 hours", "100:00:00.000", fluid.videoPlayer.secondsToHmsm(360000));
-            jqUnit.assertEquals("Negative number - return 0", "00:00:00.000", fluid.videoPlayer.secondsToHmsm(-1));
-            jqUnit.assertEquals("letter - return 0", "00:00:00.000", fluid.videoPlayer.secondsToHmsm("x"));
+            jqUnit.assertEquals("0 seconds", "00:00:00.000", fluid.videoPlayer.millisToHmsm(0));
+            jqUnit.assertEquals("1 milli seconds", "00:00:00.100", fluid.videoPlayer.millisToHmsm(100));
+            jqUnit.assertEquals("1111 milli seconds", "00:00:00.111", fluid.videoPlayer.millisToHmsm(111.1));
+            jqUnit.assertEquals("10 seconds", "00:00:10.000", fluid.videoPlayer.millisToHmsm(10000));
+            jqUnit.assertEquals("1 minute", "00:01:00.000", fluid.videoPlayer.millisToHmsm(60000));
+            jqUnit.assertEquals("59 minutes", "00:59:00.000", fluid.videoPlayer.millisToHmsm("3540000"));
+            jqUnit.assertEquals("59 minutes and 59 seconds", "00:59:59.000", fluid.videoPlayer.millisToHmsm(3599000));
+            jqUnit.assertEquals("1 hour", "01:00:00.000", fluid.videoPlayer.millisToHmsm(3600000));
+            jqUnit.assertEquals("25 hours", "25:00:00.000", fluid.videoPlayer.millisToHmsm(90000000));
+            jqUnit.assertEquals("1 hour, 1 min, 1 sec", "01:01:01.000", fluid.videoPlayer.millisToHmsm(3661000));
+            jqUnit.assertEquals("7 minutes and 5 seconds", "00:07:05.000", fluid.videoPlayer.millisToHmsm(425000));
+            jqUnit.assertEquals("10 hours and 12 minutes", "10:12:00.000", fluid.videoPlayer.millisToHmsm(36720000));
+            jqUnit.assertEquals("100 hours", "100:00:00.000", fluid.videoPlayer.millisToHmsm(360000000));
+            jqUnit.assertEquals("Negative number - return 0", "00:00:00.000", fluid.videoPlayer.millisToHmsm(-1));
+            jqUnit.assertEquals("letter - return 0", "00:00:00.000", fluid.videoPlayer.millisToHmsm("x"));
         });
 
         videoPlayerTests.test("amaraJsonToVTT", function () {
@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var testVideoLabel = function (vp, expectedLabel) {
             jqUnit.expect(1);
-            jqUnit.assertEquals("aria-label should be set properly", vp.options.strings.videoTitlePreface + ": " + expectedLabel, vp.locate("video").attr("aria-label"));
+            jqUnit.assertEquals("aria-label should be set properly", vp.options.strings.videoTitlePreface + expectedLabel, vp.locate("video").attr("aria-label"));
         };
 
         videoPlayerTests.asyncTest("Video label: default", function () {

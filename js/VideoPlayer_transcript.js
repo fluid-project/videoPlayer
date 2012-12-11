@@ -171,7 +171,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var inTimeMillis;
         if (track.text) {
             // this is a Universal Subtitles format file
-            inTimeMillis = that.convertSecsToMilli(track.start_time);
+            inTimeMillis = track.start_time;
         } else {
             // a WebVTT compatible json format file
             inTimeMillis = that.convertToMilli(track.inTime);
@@ -270,7 +270,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type === "text/amarajson") {
                 fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, function (data) {
-                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, that.convertSecsToMilli, "text", "start_time", "end_time");
+                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data, currentIndex, fluid.identity, "text", "start_time", "end_time");
                 });
             } else {
                 var opts = {

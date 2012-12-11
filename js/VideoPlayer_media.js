@@ -52,7 +52,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             "video/webm": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/ogg": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/ogv": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
-            "youtube": "fluid.videoPlayer.media.createSourceMarkup.youTubePlayer"
+            "video/youtube": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag"
         },
         sources: []
     });
@@ -63,13 +63,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             sourceTag.attr(mediaSource);
             videoPlayer.container.append(sourceTag);
             return sourceTag;
-        },
-        youTubePlayer: function (videoPlayer, mediaSource) {
-            var placeholder = $("<div/>"),
-                id = fluid.allocateSimpleId(placeholder);
-            videoPlayer.container.append(placeholder);
-            swfobject.embedSWF(mediaSource.src, id, "425", "356", "8");
-            return placeholder;
         }
     };
     
@@ -198,13 +191,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.media.preInit = function (that) {
         that.updateCurrentTime = function (currentTime, buffered) {
+            // buffered is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
+            var bufferEnd = buffered ? buffered.end(buffered.length - 1) : 0;
+
             that.applier.fireChangeRequest({
                 path: "currentTime", 
                 value: currentTime
             });
             that.applier.fireChangeRequest({
-                path: "buffered", 
-                value: buffered
+                path: "bufferEnd",
+                value: bufferEnd
             });
         };
         

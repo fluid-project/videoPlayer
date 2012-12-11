@@ -1,5 +1,6 @@
 .fl-videoPlayer {
     font-family: sans-serif;
+    height: 22.5em;
 }
 
 /*
@@ -9,6 +10,7 @@
 .fl-videoPlayer-main {
     position: relative;
     display: inline-block;
+    height: inherit;
 }
 
 /*
@@ -17,15 +19,16 @@
 
 .fl-videoPlayer-video {
     float: left;
-	height: inherit;
+    height: inherit;
 }
 
 .fl-videoPlayer-video-element {
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    height: inherit;
+    width: 29.75em;
 }
+
 .fl-videoPlayer-video-element:focus,
 .fl-videoPlayer-transcript-element-selected {
     outline: solid 3px #3195C7;
@@ -272,13 +275,12 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-volumeControl {
     display: none;
     z-index: 1000;
-    border-width: 5px 11px;
+    border-width: 5px 0.55em;
     border-style: solid;
     border-color: #c2c2c2;
     position: absolute;
     bottom: 1.8em;
-    left: 20%;
-    width: 25%;
+    left: 0;
     height: 6em;
     background: none;
     background-color: #F2F2F2;
@@ -333,7 +335,6 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-videoPlayer-volumeControl .ui-slider-handle {
     height: 10%;
-    left: -75%;
     margin-bottom: 0;
 }
 
@@ -424,7 +425,6 @@ ul.fl-videoPlayer-transcripts-languageList li {
     top: 1px;
     position: absolute;
     width: 100%;
-    pointer-events:none;
 }
 
 /* progress bar */
@@ -451,8 +451,8 @@ ul.fl-videoPlayer-transcripts-languageList li {
     height: 100%;
     width: 100%;
     background-color: #F2F2F2;
-    opacity: 0.3;
-    filter: alpha(opacity=30);
+    opacity: 0.7;
+    filter: alpha(opacity=70);
 }
 
 /************
@@ -475,6 +475,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .fl-videoPlayer-scrubber {
     width: 100%;
+    z-index: 999;
 }
 .fl-videoPlayer-scrubber.ui-slider-horizontal {
     height: 1em;
@@ -556,7 +557,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoPlayer-overlay {
     bottom: 0em;
     position: absolute;
-    width: 100%;
+    width: 29.75em;
     pointer-events: none;
 }
 .fl-theme-uio-yb .fl-videoPlayer-overlay, .fl-theme-uio-yb .fl-videoPlayer-captionArea, .fl-theme-uio-yb .captionator-cue-canvas,

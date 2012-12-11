@@ -210,6 +210,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
 
         that.container.attr("role", "menu");
+        that.container.css("z-index", 9999);
         that.hideMenu();
         that.updateTracks();
         that.updateShowHide();
