@@ -333,9 +333,6 @@ a.fl-videoPlayer-button-wrapper {
     border-radius: 0px 0px 0px 0px;
 }
 .fl-videoPlayer-volumeControl .ui-slider-handle {
-   /* height: 0.5em;
-    left: -0.4em;
-    width: 1em;*/
     height: 10%;
     margin-bottom: 0;
 }
