@@ -92,17 +92,9 @@ fluid.registerNamespace("fluid.tests");
                 }
             });
         });
-
-        var testBufferEndTime;
         
         var baseScrubberOpts = {
             model: {
-                buffered: {
-                    length: 1,
-                    end: function (index) {
-                        return testBufferEndTime;
-                    }
-                },
                 totalTime: 200
             }
         };
@@ -118,13 +110,13 @@ fluid.registerNamespace("fluid.tests");
             var scrubber = fluid.tests.initScrubber();
             
             fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);
-            jqUnit.assertEquals("The buffer progress bar should not get updated with undefined buffered value", "0", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
+            jqUnit.assertEquals("The buffer progress bar should not get updated when bufferEnd is not set", "0", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
 
-            testBufferEndTime = 100;
+            scrubber.applier.requestChange("bufferEnd", 100);
             fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);
             jqUnit.assertEquals("The buffer progress bar should have valuenow of '50'", "50", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
 
-            testBufferEndTime = 200;
+            scrubber.applier.requestChange("bufferEnd", 200);
             fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);
             jqUnit.assertEquals("The buffer progress bar should have valuenow of '100'", "100", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
 

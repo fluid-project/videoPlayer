@@ -248,7 +248,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         that.applier.modelChanged.addListener("currentTime", that.updateCurrent);
-        that.applier.modelChanged.addListener("buffered", that.updateBuffered);
+        that.applier.modelChanged.addListener("bufferEnd", that.updateBuffered);
 
         that.applier.modelChanged.addListener("canPlay", function () {
             var scrubber = that.locate("scrubber");
@@ -325,10 +325,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bufferCompleted = false;
     
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
-        // "model.buffered" is a TimeRanges object set by the browser timeupdate event 
-        //    (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-        var bufferedExists = that.model.buffered && (that.model.buffered.length > 0);
-        var lastBufferedTime = bufferedExists ? that.model.buffered.end(that.model.buffered.length - 1) : 0;
+        var lastBufferedTime = that.model.bufferEnd;
         var totalTime = that.model.totalTime;
 
         // Turn on buffer progress update if the re-buffering is triggered, for instance, 
@@ -389,7 +386,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
         bindScrubberModel(that);
-        
+
         that.events.onScrubberReady.fire();
     };
     

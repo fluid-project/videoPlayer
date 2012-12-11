@@ -250,12 +250,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: ["{arguments}.captions.1"]
             }
         },
-        invokers: {
-            resize: {
-                funcName: "fluid.videoPlayer.resize",
-                args: "{videoPlayer}"
-            }  
-        },
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
@@ -270,7 +264,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnCaptionsOff: "Turn Captions OFF",
             transcriptsOff: "Transcripts OFF",
             turnTranscriptsOff: "Turn Transcripts OFF",
-            videoTitlePreface: "Video"
+            videoTitlePreface: "Video: "
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
         keyBindings: fluid.videoPlayer.defaultKeys,
@@ -292,7 +286,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             currentTime: 0,
             totalTime: 0,
-            buffered: undefined,        // a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges) set through browser events
+            bufferEnd: 0,
             displayCaptions: false,
             displayTranscripts: false,
             fullscreen: false,
@@ -410,8 +404,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.events.onLoadedMetadata.addListener(function () {
-            that.resize();
-            
             bindKeyboardControl(that);
         });
     };
@@ -435,7 +427,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         controls: "true"
                     }
                 }]
-            }
+            };
         }
         
         // Keep the selector to render "fluid.videoPlayer.controllers"
@@ -548,7 +540,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 } else if (key === "videoPlayer") {
                     that.container.append(res[key].resourceText);
                     that.refreshView();
-                    that.locate("video").attr("aria-label", that.options.strings.videoTitlePreface + ": " + that.options.videoTitle);
+                    var video = that.locate("video");
+                    video.attr("aria-label", that.options.strings.videoTitlePreface + that.options.videoTitle);
+                    // Setting the width and height attributes to respect the CSS API for setting the size of the video
+                    // This is required for cross browser sizing of the video
+                    video.attr("width", video.css("width"));
+                    video.attr("height", video.css("height"));
 
                     bindVideoPlayerDOMEvents(that);
                     //create all the listeners to the model
@@ -599,33 +596,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         return ret + min + ":" + sec;
     };
-    
-    // Function which modifies containers and their sizes
-    fluid.videoPlayer.resize = function (that) {
-        var video = that.locate("video");
-        var videoPlayer = that.locate("videoPlayer");
-        var overlay = that.locate("overlay");
-        
-        // Get the video sizes first
-        // ToDo: A video wrapper container is used for video scaling. The video width/height are determined by the wrapper container
-        // rather then the video itself. This solution needs a re-consideration once we decide on scaling the video through css or
-        // API.
-//        var videoWidth = video[0].videoWidth;
-//        var videoHeight = video[0].videoHeight;
-        var videoWidth = video.width();
-        var videoHeight = video.height();
-
-        // Set height on the controller area. To make overlay to show up exactly at the bottom of the video regardless to UIO settings
-        videoPlayer.css({height: videoHeight});
-        
-        // Set the width of the overlay to be the width of the video, otherwise, the controller bar spreads into transcript area
-        overlay.css({width: videoWidth});
-        
-        // Save the video width/height in the model so they are accessible by the sub-components
-        that.model.videoWidth = videoWidth;
-        that.model.videoHeight = videoHeight;
-    };
-
+  
     /*********************************************************************************
      * Event Binder:                                                                 *
      * Shared by all video player component whenever an event binder component is    *
@@ -652,11 +623,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     /*******************************************************************
-     * Converts seconds into a WebVTT Timestamp:  HH:MM:SS.mmm
-     * @seconds:  time in seconds expressed as a floating point number
+     * Converts milliseconds into a WebVTT Timestamp:  HH:MM:SS.mmm
+     * @millis:  time in milliseconds expressed as a floating point number
      *******************************************************************/
-    fluid.videoPlayer.secondsToHmsm = function (seconds) {
-        seconds = parseFloat(seconds);
+    fluid.videoPlayer.millisToHmsm = function (millis) {
+        var seconds = parseFloat(millis) / 1000;
         seconds = seconds < 0 || isNaN(seconds) ? 0 : seconds;
 
         var hours = parseInt(seconds / 3600);
@@ -664,7 +635,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         seconds = (seconds % 60).toFixed(3);
 
         // Return result of type HH:MM:SS.mmm
-        return "" + (hours < 10 ? "0" + hours : hours) + ":"
+        return (hours < 10 ? "0" + hours : hours) + ":"
             + (minutes < 10 ? "0" + minutes : minutes) + ":"
             + (seconds  < 10 ? "0" + seconds : seconds);
     };
@@ -681,8 +652,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var vtt = "WEBVTT";
 
         for (var i = 0; i < json.length; i++) {
-            var startTime = fluid.videoPlayer.secondsToHmsm(json[i].start_time);
-            var endTime = fluid.videoPlayer.secondsToHmsm(json[i].end_time);
+            var startTime = fluid.videoPlayer.millisToHmsm(json[i].start_time);
+            var endTime = fluid.videoPlayer.millisToHmsm(json[i].end_time);
             vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
         }
 
