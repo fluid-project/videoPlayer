@@ -93,7 +93,11 @@
     width: 100%;
     height: 2.05em;
     box-shadow: inset 0 0 0.5em rgba(0, 0, 0, 0.15);
+	padding-bottom: 1px; /* For Safari and Chrome. Without padding, button overlaps container border */    
 }
+
+.fl-theme-uio-by .fl-videoPlayer-controller-buttons,
+.fl-theme-uio-bw .fl-videoPlayer-controller-buttons { box-shadow: none !important; }
 
 .fl-videoPlayer-controller-buttons * {
     display: inline-block;
@@ -341,6 +345,70 @@ a.fl-videoPlayer-button-wrapper {
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-volumeControl {
     display: inline;
 }
+
+/* Volume slider theming */
+.fl-theme-uio-yb .fl-videoPlayer-volumeControl, 
+.fl-theme-uio-wb .fl-videoPlayer-volumeControl {
+	box-shadow: inset 0 0 0 2px #000000;
+	outline: 1px solid #000000;
+}	
+.fl-theme-uio-yb .fl-videoPlayer-volumeControl {
+	background-image: url('../images/yellow/sliderbg_yellowonblack.jpg') !important;
+}
+.fl-theme-uio-wb .fl-videoPlayer-volumeControl {
+	background-image: url('../images/white/sliderbg_whiteonblack.jpg') !important;
+}
+.fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-handle,
+.fl-theme-uio-wb .fl-videoPlayer-volumeControl .ui-slider-handle {
+	background-image: none !important;
+	border: 2px solid #000000 !important;
+}
+.fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-handle {
+	background-color: #FFFF00 !important;
+}
+.fl-theme-uio-wb .fl-videoPlayer-volumeControl .ui-slider-handle {
+	background-color: #FFFFFF !important;
+}
+.fl-theme-uio-yb .fl-videoPlayer-volumeControl .ui-slider-range-min,
+.fl-theme-uio-wb .fl-videoPlayer-volumeControl .ui-slider-range-min {
+	background-image: none !important;
+	background-color: #000000 !important;	
+}
+
+.fl-theme-uio-by .fl-videoPlayer-volumeControl {
+	box-shadow: inset 0 0 0 2px #FFFF00;
+	outline: 1px solid #FFFF00;
+}
+.fl-theme-uio-bw .fl-videoPlayer-volumeControl {
+	box-shadow: inset 0 0 0 2px #FFFFFF;
+	outline: 1px solid #FFFFFF;
+}
+.fl-theme-uio-by .fl-videoPlayer-volumeControl {
+	background-image: url('../images/black/sliderbg_blackonyellow.jpg') !important;
+}
+.fl-theme-uio-bw .fl-videoPlayer-volumeControl {
+	background-image: url('../images/black/sliderbg_blackonwhite.jpg') !important;
+}
+.fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-handle, 
+.fl-theme-uio-bw .fl-videoPlayer-volumeControl .ui-slider-handle {
+	background-image: none !important;
+	background-color: #000000 !important;
+}
+.fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-handle {
+	border: 2px solid #FFFF00 !important;
+} 
+.fl-theme-uio-bw .fl-videoPlayer-volumeControl .ui-slider-handle {
+	border: 2px solid #FFFFFF !important;
+}
+.fl-theme-uio-by .fl-videoPlayer-volumeControl .ui-slider-range-min {
+	background-image: none !important;
+	background-color: #FFFF00 !important;	
+}
+.fl-theme-uio-bw .fl-videoPlayer-volumeControl .ui-slider-range-min {
+	background-image: none !important;
+	background-color: #FFFFFF !important;	
+}
+
 
 /**********************************
  * Captions and Transcripts Menus *
@@ -691,7 +759,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-uio-bw .fl-videoPlayer-scrubber,
 .fl-theme-uio-wb .fl-videoPlayer-scrubber,
 .fl-theme-uio-by .fl-videoPlayer-scrubber,
-.fl-theme-uio-yb .fl-videoPlayer-scrubber,
+.fl-theme-uio-yb .fl-videoPlayer-scrubber {
+     border-width: 1px;
+     margin: 0 -2px; /* To compensate for the additional border width, so div stays within container */
+}
+
 .fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-wb .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-by .fl-videoPlayer-scrubber .ui-slider-handle,
