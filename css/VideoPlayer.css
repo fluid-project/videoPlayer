@@ -695,13 +695,16 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-uio-bw .fl-videoPlayer-scrubber,
 .fl-theme-uio-wb .fl-videoPlayer-scrubber,
 .fl-theme-uio-by .fl-videoPlayer-scrubber,
-.fl-theme-uio-yb .fl-videoPlayer-scrubber,
+.fl-theme-uio-yb .fl-videoPlayer-scrubber {
+     border-width: 1px;
+     margin: 0 -2px; /* To compensate for the additional border width, so div stays within container */
+}
+
 .fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-wb .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-by .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-yb .fl-videoPlayer-scrubber .ui-slider-handle {
      border-width: 1px;
-     margin: 0 -2px; /* To compensate for the additional border width, so div stays within container */
  }
 
 .fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-range,
