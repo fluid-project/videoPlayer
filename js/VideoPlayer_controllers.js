@@ -71,6 +71,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     currentLanguagePath: "currentTracks.captions",
                     selectors: {
                         button: ".flc-videoPlayer-captions-button",
+                        label: ".flc-videoPlayer-captions-label",
                         menu: ".flc-videoPlayer-captions-languageMenu"
                     },
                     styles: {
@@ -99,6 +100,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     currentLanguagePath: "currentTracks.transcripts",
                     selectors: {
                         button: ".flc-videoPlayer-transcripts-button",
+                        label: ".flc-videoPlayer-transcripts-label",
                         menu: ".flc-videoPlayer-transcripts-languageMenu"
                     },
                     styles: {
@@ -121,7 +123,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{controllers}.container",
                 options: {
                     selectors: {
-                        button: ".flc-videoPlayer-play"
+                        button: ".flc-videoPlayer-play",
+                        label: ".flc-videoPlayer-play-label"
                     },
                     styles: {
                         init: "fl-videoPlayer-play",
@@ -143,7 +146,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{controllers}.container",
                 options: {
                     selectors: {
-                        button: ".flc-videoPlayer-fullscreen"
+                        button: ".flc-videoPlayer-fullscreen",
+                        label: ".flc-videoPlayer-fullscreen-label"
                     },
                     styles: {
                         init: "fl-videoPlayer-fullscreen",

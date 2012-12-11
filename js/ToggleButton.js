@@ -26,7 +26,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onReady: null
         },
         selectors: {    // Integrators may override this selector
-            button: ".flc-videoPlayer-button"
+            button: ".flc-videoPlayer-button",
+            label: ".flc-videoPlayer-button-label"
         },
         styles: {
             init: "fl-videoPlayer-button-init",
@@ -80,7 +81,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             button.attr("aria-pressed", pressed);
 
-            that.tooltip.updateContent(that.tooltipContentFunction(that));
+            var labelText = that.tooltipContentFunction(that);
+            that.locate("label").text(labelText);
+            that.tooltip.updateContent(labelText);
         };
 
         that.press = function () {

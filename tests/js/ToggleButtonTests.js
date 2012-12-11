@@ -34,15 +34,15 @@ fluid.registerNamespace("fluid.tests");
                 button: ".test-toggle-button"
             }
         };
-        fluid.tests.initToggleButton = function (testOpts) {
+        fluid.tests.initToggleButton = function (container, testOpts) {
             var opts = fluid.copy(baseToggleButtonOpts);
             $.extend(true, opts, testOpts);
-            return fluid.toggleButton("#basic-toggle-button-test", opts);
+            return fluid.toggleButton(container, opts);
         };
 
         toggleButtonTests.asyncTest("State change", function () {
             jqUnit.expect(3);
-            var testComponent = fluid.tests.initToggleButton({
+            var testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
                 listeners: {
                     onReady: function (that) {
                         jqUnit.assertEquals("Initial state should be 'false'", false, that.readIndirect("modelPath"));
@@ -59,7 +59,7 @@ fluid.registerNamespace("fluid.tests");
 
         toggleButtonTests.asyncTest("onPress event", function () {
             jqUnit.expect(1);
-            var testComponent = fluid.tests.initToggleButton({
+            var testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
                 listeners: {
                     onReady: function (that) {
                         var toggleButton = that.locate("button");
@@ -76,7 +76,7 @@ fluid.registerNamespace("fluid.tests");
         toggleButtonTests.asyncTest("Press", function () {
             jqUnit.expect(3);
             var testComponent;
-            testComponent = fluid.tests.initToggleButton({
+            testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
                 listeners: {
                     onReady: function (that) {
                         jqUnit.assertEquals("Initial state should be 'false'", false, that.readIndirect("modelPath"));
@@ -92,7 +92,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         toggleButtonTests.asyncTest("Default integrated functionality", function () {
-            var testComponent = fluid.tests.initToggleButton({
+            var testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
                 listeners: {
                     onPress: fluid.tests.onPressEventHandler,
                     onReady: function (that) {
@@ -115,7 +115,7 @@ fluid.registerNamespace("fluid.tests");
                 press: "press me",
                 release: "release me"
             };
-            var testComponent = fluid.tests.initToggleButton({
+            var testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
                 strings: testStrings,
                 listeners: {
                     onReady: function (that) {
@@ -142,7 +142,7 @@ fluid.registerNamespace("fluid.tests");
                     press: "press me",
                     release: "release me"
                 },
-                testComponent = fluid.tests.initToggleButton({
+                testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
                     invokers: {
                         tooltipContentFunction: {
                             funcName: "fluid.tests.tooltipContentFunction"
@@ -159,5 +159,39 @@ fluid.registerNamespace("fluid.tests");
                 });
         });
 
+        toggleButtonTests.asyncTest("Label text", function () {
+            jqUnit.expect(2);
+            testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("Content should contain press label text", that.options.strings.press, that.locate("label").text());
+                        that.locate("button").click();
+                    },
+                    onPress: function (that) {
+                        jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("label").text());
+                        start();
+                    }
+                }
+            });
+        });
+
+        toggleButtonTests.asyncTest("Label text: custom selector", function () {
+            jqUnit.expect(2);
+            testComponent = fluid.tests.initToggleButton("#custom-selector-test", {
+                selectors: {
+                    label: ".special-selector"
+                },
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("Content should contain press label text", that.options.strings.press, that.locate("label").text());
+                        that.locate("button").click();
+                    },
+                    onPress: function (that) {
+                        jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("label").text());
+                        start();
+                    }
+                }
+            });
+        });
     });
 })(jQuery);

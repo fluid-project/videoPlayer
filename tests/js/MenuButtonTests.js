@@ -177,7 +177,7 @@ fluid.registerNamespace("fluid.tests");
                 listeners: {
                     onReady: {
                         listener: function (that) {
-                            jqUnit.expect(8);
+                            jqUnit.expect(10);
                             var langList = that.menu.locate("language");
                             var showHide = $(that.menu.locate("showHide")[0]);
                             var verifyLanguageState = function (expectedShowText, expectedShowHideFlag) {
@@ -190,10 +190,12 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.notVisible("Menu should not be visible initially", that.menu.container);
                             verifyLanguageState(that.options.strings.showLanguage, false);
 
+                            jqUnit.assertEquals("Button should have default text", that.button.options.strings.press, that.button.locate("label").text());
                             var button = $(that.locate("button")[0]);
                             button.click();
                             jqUnit.isVisible("Clicking the button should show menu", that.menu.container);
                             jqUnit.assertTrue("Buttons state should be released", that.button.model.pressed);
+                            jqUnit.assertEquals("Button should have pressed text", that.button.options.strings.release, that.button.locate("label").text());
                             button.click();
                             jqUnit.notVisible("Clicking the button again should hide menu again", that.menu.container);
 

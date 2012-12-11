@@ -92,11 +92,12 @@ fluid.registerNamespace("fluid.testUtils");
     };
 
     fluid.testUtils.verifyBasicButtonFunctions = function (buttonEl, name, tooltipReleased, tooltipPressed, stylePressed) {
-        jqUnit.expect(12);
+        jqUnit.expect(13);
         jqUnit.assertEquals("There should be exactly one " + name + " button", 1, buttonEl.length);
         jqUnit.assertEquals(name + " button should have role of 'button'", "button", buttonEl.attr("role"));
         jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", "false", buttonEl.attr("aria-pressed"));
         jqUnit.assertFalse(name + " button should not have the 'pressed' style", buttonEl.hasClass(stylePressed));
+        jqUnit.assertEquals(name + " button should have correct label", tooltipReleased, $("span", buttonEl).text());
 
         var tooltip = fluid.testUtils.getTooltipCheckString(buttonEl, tooltipReleased);
         var tooltipID = buttonEl.attr("aria-describedby");
