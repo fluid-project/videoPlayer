@@ -82,7 +82,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             button.attr("aria-pressed", pressed);
 
             var labelText = that.tooltipContentFunction(that);
-            that.locate("label").text(labelText);
+            that.locate("button").attr("aria-label", labelText);
             that.tooltip.updateContent(labelText);
         };
 
