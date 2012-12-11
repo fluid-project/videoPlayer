@@ -93,7 +93,11 @@
     width: 100%;
     height: 2.05em;
     box-shadow: inset 0 0 0.5em rgba(0, 0, 0, 0.15);
+	padding-bottom: 1px; /* For Safari and Chrome. Without padding, button overlaps container border */    
 }
+
+.fl-theme-uio-by .fl-videoPlayer-controller-buttons,
+.fl-theme-uio-bw .fl-videoPlayer-controller-buttons { box-shadow: none !important; }
 
 .fl-videoPlayer-controller-buttons * {
     display: inline-block;
@@ -755,7 +759,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-uio-bw .fl-videoPlayer-scrubber,
 .fl-theme-uio-wb .fl-videoPlayer-scrubber,
 .fl-theme-uio-by .fl-videoPlayer-scrubber,
-.fl-theme-uio-yb .fl-videoPlayer-scrubber,
+.fl-theme-uio-yb .fl-videoPlayer-scrubber {
+     border-width: 1px;
+     margin: 0 -2px; /* To compensate for the additional border width, so div stays within container */
+}
+
 .fl-theme-uio-bw .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-wb .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-uio-by .fl-videoPlayer-scrubber .ui-slider-handle,
