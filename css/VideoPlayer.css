@@ -96,6 +96,9 @@
 	padding-bottom: 1px; /* For Safari and Chrome. Without padding, button overlaps container border */    
 }
 
+.fl-theme-uio-by .fl-videoPlayer-controller-buttons,
+.fl-theme-uio-bw .fl-videoPlayer-controller-buttons { box-shadow: none !important; }
+
 .fl-videoPlayer-controller-buttons * {
     display: inline-block;
 }
