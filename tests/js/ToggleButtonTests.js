@@ -161,33 +161,14 @@ fluid.registerNamespace("fluid.tests");
 
         toggleButtonTests.asyncTest("Label text", function () {
             jqUnit.expect(2);
-            testComponent = fluid.tests.initToggleButton("#basic-toggle-button-test", {
+            fluid.tests.initToggleButton("#basic-toggle-button-test", {
                 listeners: {
                     onReady: function (that) {
-                        jqUnit.assertEquals("Content should contain press label text", that.options.strings.press, that.locate("label").text());
+                        jqUnit.assertEquals("Content should contain press label text", that.options.strings.press, that.locate("button").attr("aria-label"));
                         that.locate("button").click();
                     },
                     onPress: function (that) {
-                        jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("label").text());
-                        start();
-                    }
-                }
-            });
-        });
-
-        toggleButtonTests.asyncTest("Label text: custom selector", function () {
-            jqUnit.expect(2);
-            testComponent = fluid.tests.initToggleButton("#custom-selector-test", {
-                selectors: {
-                    label: ".special-selector"
-                },
-                listeners: {
-                    onReady: function (that) {
-                        jqUnit.assertEquals("Content should contain press label text", that.options.strings.press, that.locate("label").text());
-                        that.locate("button").click();
-                    },
-                    onPress: function (that) {
-                        jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("label").text());
+                        jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("button").attr("aria-label"));
                         start();
                     }
                 }

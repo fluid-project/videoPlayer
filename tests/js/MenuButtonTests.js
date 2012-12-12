@@ -180,6 +180,7 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.expect(10);
                             var langList = that.menu.locate("language");
                             var showHide = $(that.menu.locate("showHide")[0]);
+                            var button = that.locate("button");
                             var verifyLanguageState = function (expectedShowText, expectedShowHideFlag) {
                                 jqUnit.expect(2);
                                 jqUnit.assertEquals("The 'show language' model flag should be " + expectedShowHideFlag, expectedShowHideFlag, fluid.get(that.model, that.options.showHidePath));
@@ -190,12 +191,11 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.notVisible("Menu should not be visible initially", that.menu.container);
                             verifyLanguageState(that.options.strings.showLanguage, false);
 
-                            jqUnit.assertEquals("Button should have default text", that.button.options.strings.press, that.button.locate("label").text());
-                            var button = $(that.locate("button")[0]);
+                            jqUnit.assertEquals("Button should have default aria-label", that.button.options.strings.press, button.attr("aria-label"));
                             button.click();
                             jqUnit.isVisible("Clicking the button should show menu", that.menu.container);
                             jqUnit.assertTrue("Buttons state should be released", that.button.model.pressed);
-                            jqUnit.assertEquals("Button should have pressed text", that.button.options.strings.release, that.button.locate("label").text());
+                            jqUnit.assertEquals("Button should have pressed aria-label", that.button.options.strings.release, button.attr("aria-label"));
                             button.click();
                             jqUnit.notVisible("Clicking the button again should hide menu again", that.menu.container);
 
