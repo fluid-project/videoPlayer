@@ -97,7 +97,7 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.assertEquals(name + " button should have role of 'button'", "button", buttonEl.attr("role"));
         jqUnit.assertEquals(name + " button should have aria-pressed of 'false' initially", "false", buttonEl.attr("aria-pressed"));
         jqUnit.assertFalse(name + " button should not have the 'pressed' style", buttonEl.hasClass(stylePressed));
-        jqUnit.assertEquals(name + " button should have correct label", tooltipReleased, $("span", buttonEl).text());
+        jqUnit.assertEquals(name + " button should have correct aria-label", tooltipReleased, buttonEl.attr("aria-label"));
 
         var tooltip = fluid.testUtils.getTooltipCheckString(buttonEl, tooltipReleased);
         var tooltipID = buttonEl.attr("aria-describedby");

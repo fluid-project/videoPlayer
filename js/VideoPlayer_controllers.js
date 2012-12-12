@@ -465,6 +465,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.volumeControls.init = function (that) {
         var volumeControl = that.locate("volumeControl");
+        var mute = that.locate("mute");
+
         volumeControl.addClass(that.options.styles.volumeControl);
         volumeControl.slider({
             orientation: "vertical",
@@ -473,8 +475,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             max: that.model.maxVolume,
             value: that.model.volume
         });
+        var handle = that.locate("handle");
+
         // TODO: This in inherited. Do we need to add aria to sliders ourselves?
-        that.locate("handle").attr({
+        handle.attr({
             "aria-label": that.options.strings.volume,
             "aria-valuemin": that.model.minVolume,
             "aria-valuemax": that.model.maxVolume,
@@ -484,9 +488,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         fluid.tabindex(that.container, 0);
-        fluid.tabindex(that.locate("mute"), -1);
+        fluid.tabindex(mute, -1);
         fluid.tabindex(volumeControl, -1);
-        fluid.tabindex(that.locate("handle"), -1);
+        fluid.tabindex(handle, -1);
 
         fluid.activatable(that.container, function (evt) {
             that.muteButton.press();
@@ -505,6 +509,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }]
         });
+
+        that.container.attr("aria-label", that.options.strings.instructions);
+        mute.attr("title", that.options.strings.instructions);
     };
 
     fluid.defaults("fluid.videoPlayer.volumeControls", {
@@ -533,7 +540,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
-            volume: "Volume"
+            volume: "Volume",
+            instructions: "Volume controls. Use up and down arrows to adjust volume, space or enter to mute."
         },
         components: {
             muteButton: {
