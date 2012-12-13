@@ -159,5 +159,20 @@ fluid.registerNamespace("fluid.tests");
                 });
         });
 
+        toggleButtonTests.asyncTest("Label text", function () {
+            jqUnit.expect(2);
+            fluid.tests.initToggleButton({
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.assertEquals("Content should contain press label text", that.options.strings.press, that.locate("button").attr("aria-label"));
+                        that.locate("button").click();
+                    },
+                    onPress: function (that) {
+                        jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("button").attr("aria-label"));
+                        start();
+                    }
+                }
+            });
+        });
     });
 })(jQuery);
