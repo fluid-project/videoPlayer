@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var testVideoLabel = function (vp, expectedLabel) {
             jqUnit.expect(1);
-            jqUnit.assertEquals("aria-label should be set properly", vp.options.strings.videoTitlePreface + expectedLabel, vp.locate("video").attr("aria-label"));
+            jqUnit.assertEquals("aria-label should be set properly", vp.options.strings.videoTitlePreface + expectedLabel, vp.locate("videoContainer").attr("aria-label"));
         };
 
         videoPlayerTests.asyncTest("Video label: default", function () {
