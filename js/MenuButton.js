@@ -230,6 +230,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.languageControls.finalInit",
         selectors: {
             button: ".flc-videoPlayer-languageButton",
+            label: ".flc-videoPlayer-languageButton-label",
             menu: ".flc-videoPlayer-languageMenu"
         },
         events: {
@@ -259,7 +260,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         pressed: "{languageControls}.options.styles.button"  
                     },
                     selectors: {
-                        button: "{languageControls}.options.selectors.button"
+                        button: "{languageControls}.options.selectors.button",
+                        label: "{languageControls}.options.selectors.label"
                     },
                     strings: "{languageControls}.options.strings"
                 }

@@ -37,7 +37,7 @@ fluid.registerNamespace("fluid.tests");
         });
 
         videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            jqUnit.expect(5);
+            jqUnit.expect(7);
             var checkSlider = function (ariavaluenow, expectedValue) {
                     jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
                 },
@@ -52,6 +52,8 @@ fluid.registerNamespace("fluid.tests");
                                 volumeSlider = that.locate("volumeControl"),
                                 sliderHandle = that.locate("handle");
 
+                            jqUnit.assertEquals("Mute button should have title", that.options.strings.instructions, muteButton.attr("title"));
+                            jqUnit.assertEquals("Volume container should have aria-label", that.options.strings.instructions, that.container.attr("aria-label"));
                             checkTooltipOnHover(volumeSlider, "Volume");
                             checkTooltipOnHover(muteButton, "Mute");
                             muteButton.click();
