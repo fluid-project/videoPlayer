@@ -24,7 +24,7 @@
 /* Links */
 .fl-theme-uio-mist a {
   color: #5a95cf !important;
-  font-weight: bold;
+  font-weight: bold !important;
 }
 .fl-theme-uio-mist a:hover {
   color: #6DB5FB !important;
@@ -114,14 +114,14 @@
   border-bottom-color: #4070a1 !important;
 }
 .fl-theme-uio-mist .fl-tabs li, .fl-theme-uio-mist .fl-tabs li a {
-  font-weight: bold;
+  font-weight: bold !important;
   color: #4070a1 !important;
   border-top-color: #4070a1 !important;
   border-right-color: #4070a1 !important;
   border-bottom-color: #4070a1 !important;
   border-left-color: #4070a1 !important;
   border-bottom-color: #4070a1 !important;
-  text-decoration: none;
+  text-decoration: none !important;
   background-color: #dfefff !important;
 }
 .fl-theme-uio-mist .fl-tabs li a:hover {
@@ -243,14 +243,14 @@
   background-color: #fff !important;
 }
 .fl-theme-uio-mist .fl-listmenu li, .fl-theme-uio-mist .fl-list-menu li, .fl-theme-uio-mist .fl-listmenu li a, .fl-theme-uio-mist .fl-list-menu li a {
-  font-weight: bold;
+  font-weight: bold !important;
   color: #4070a1 !important;
   background-color: #dfefff !important;
   border-top-color: #4070a1 !important;
   border-right-color: #4070a1 !important;
   border-bottom-color: #4070a1 !important;
   border-left-color: #4070a1 !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-mist .fl-listmenu a:hover, .fl-theme-uio-mist .fl-list-menu a:hover {
   background-color: #5a95cf !important;
@@ -337,7 +337,7 @@
 .fl-theme-uio-mist .fl-widget-titlebar .fl-button-right, .fl-theme-uio-mist .fl-widget-titlebar .fl-button-left {
   color: #4070a1 !important;
   background-image: url('../../../../framework/fss/css/../images/themes/mist/buttons-titlebar-cap.png') !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-mist .fl-widget-titlebar .fl-button-inner {
   background-image: url('../../../../framework/fss/css/../images/themes/mist/buttons-titlebar-bg.png') !important;
