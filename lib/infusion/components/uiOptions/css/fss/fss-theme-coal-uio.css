@@ -21,7 +21,7 @@
 /* Links */
 .fl-theme-uio-coal a {
   color: #333333 !important;
-  font-weight: bold;
+  font-weight: bold !important;
 }
 .fl-theme-uio-coal a:hover {
   color: #999999 !important;
@@ -116,7 +116,7 @@
   border-bottom-color: #333333 !important;
 }
 .fl-theme-uio-coal .fl-tabs li, .fl-theme-uio-coal .fl-tabs li a {
-  font-weight: bold;
+  font-weight: bold !important;
   color: #ffffff !important;
   border-top-color: #333333 !important;
   border-right-color: #333333 !important;
@@ -124,7 +124,7 @@
   border-left-color: #333333 !important;
   border-bottom-color: #333333 !important;
   background-color: #666666 !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-coal .fl-tabs li a:hover {
   background-color: #333333 !important;
@@ -264,13 +264,13 @@
   background-color: #ebebeb !important;
 }
 .fl-theme-uio-coal .fl-listmenu li, .fl-theme-uio-coal .fl-list-menu li, .fl-theme-uio-coal .fl-listmenu li a, .fl-theme-uio-coal .fl-list-menu li a {
-  font-weight: bold;
+  font-weight: bold !important;
   background-color: #ebebeb !important;
   border-top-color: #333 !important;
   border-right-color: #333 !important;
   border-bottom-color: #333 !important;
   border-left-color: #333 !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-coal .fl-listmenu a:hover, .fl-theme-uio-coal .fl-list-menu a:hover {
   background-color: #ffffff !important;
@@ -362,7 +362,7 @@
 }
 .fl-theme-uio-coal .fl-widget-titlebar .fl-button-right, .fl-theme-uio-coal .fl-widget-titlebar .fl-button-left {
   background-image: url('../../../../framework/fss/css/../images/themes/coal/buttons-titlebar-cap.png') !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-coal .fl-widget-titlebar .fl-button-inner {
   background-image: url('../../../../framework/fss/css/../images/themes/coal/buttons-titlebar-bg.png') !important;

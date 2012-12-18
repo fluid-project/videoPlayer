@@ -185,10 +185,10 @@
   color: yellow !important;
 }
 .fl-text-underline {
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
 .fl-text-bold {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 .fl-text-larger {
   font-size: 125% !important;
@@ -219,4 +219,10 @@
 .fl-highlight-blue, .fl-highlight-hover-blue:hover, .fl-highlight-focus-blue:focus {
   background-color: #00F !important;
   background-image: none !important;
+}
+/* UI Enhancer 'enhanced links' styling */
+.fl-link-enhanced {
+  font-size: 125% !important;
+  text-decoration: underline !important;
+  font-weight: bold !important;
 }
