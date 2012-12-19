@@ -161,6 +161,12 @@ fluid.registerNamespace("fluid.tests");
                 },
                 displayCaptions: false
             },
+            templates: {
+                menuButton: {
+                    forceCache: true,
+                    href: "../../html/menuButton_template.html"
+                }
+            },
             currentLanguagePath: "currentTracks.captions",
             showHidePath: "displayCaptions"
         };

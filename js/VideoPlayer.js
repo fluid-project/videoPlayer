@@ -21,9 +21,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.setLogging(false);
 
     /*******************************************************************************
-     * Browser type detection: html5 or non-html5.                                 *
-     *                                                                             *
-     * Add type tags of html5 into static environment for the html5 browsers.      *
+     * Browser type and feature detection: html5 or non-html5,                     *
+     *                      video element support.                                 *
      *******************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
@@ -43,13 +42,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
     })();
 
-    fluid.browser.supportsFullScreen = function () {
+    fluid.videoPlayer.supportsFullScreen = function () {
+        fluid.browser.supportFullScreen = fluid.typeTag("fluid.browser.supportsFullScreen");
         return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
+    };
+
+    fluid.videoPlayer.supportsVideoElement = function () {
+fluid.browser.supportsVideoElement = fluid.typeTag("fluid.browser.supportsVideoElement");
+return fluid.typeTag("fluid.browser.supportsVideoElement");
+//        return (typeof(HTMLVideoElement) === "undefined");
     };
 
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
-        supportsFullScreen: fluid.browser.supportsFullScreen()
+        supportsFullScreen: fluid.videoPlayer.supportsFullScreen(),
+        supportsVideoElement: fluid.videoPlayer.supportsVideoElement()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -185,14 +192,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
-                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
+                        onVideoElementDetected: "{videoPlayer}.events.onVideoElementDetected"
+                    },
+                    templates: {
+                        menuButton: "{videoPlayer}.options.templates.menuButton"
                     }
                 }
             },
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onHTML5BrowserDetected",
+                createOnEvent: "onVideoElementDetected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -230,6 +241,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCreateControllersReady: null,
             onCreateMediaReady: null,
             onHTML5BrowserDetected: null,
+            onVideoElementDetected: null,
 
             // private events used for associating menus with what they control via ARIA
             onTranscriptsReady: null,
@@ -250,6 +262,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: ["{arguments}.captions.1"]
             }
         },
+listeners: {
+    canBindTranscriptMenu: function () {
+        console.log("^^^^^^^^^^^^^^^^^^^^^^^^^ options-defined listener for canBindTranscriptMenu");
+    }
+},
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
@@ -376,7 +393,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var hideControllers = function (that) {
-        that.locate("controllers").stop(false, true).delay(500).slideUp();
+//        that.locate("controllers").stop(false, true).delay(500).slideUp();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -485,6 +502,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.postInit = function (that) {
+that.events.canBindTranscriptMenu.addListener(function () {
+    console.log("==== videoPlayer handler for aggregate canBindTranscriptMenu event");
+});
         // TODO: declarative syntax for this in framework
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
@@ -569,6 +589,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // only instantiated in html5 browsers.
                 if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
                     that.events.onHTML5BrowserDetected.fire();
+                }
+                if (typeof(HTMLVideoElement !== "undefined")) {
+                    that.events.onVideoElementDetected.fire();
                 }
             }
 

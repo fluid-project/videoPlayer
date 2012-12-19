@@ -65,6 +65,10 @@ fluid.registerNamespace("fluid.testUtils");
             videoPlayer: {
                 forceCache: true,
                 href: "../../html/videoPlayer_template.html"
+            },
+            menuButton: {
+                forceCache: true,
+                href: "../../html/menuButton_template.html"
             }
         }
     };

@@ -216,5 +216,51 @@ fluid.registerNamespace("fluid.tests");
         }];
         fluid.testUtils.testCaseWithEnv("Video Player Controls Tests: Non-Full-screen", nonFullScreenTests, envFeatures);
 
+        /*
+         * Test of controllers component as a whole, outside the context of the VideoPlayer
+         */
+        var baseControllerOptions = {
+            model: {
+                currentTracks: {
+                    transcripts: []
+                }
+            },
+            components: {
+                transcriptControls: {
+                    options: {
+                        templates: {
+                            menuButton: {
+                                href: "../../html/menuButton_template.html"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        fluid.testUtils.initControllers = function (container, options) {
+            var opts = fluid.copy(baseControllerOptions);
+            $.extend(true, opts, options);
+            return fluid.videoPlayer.controllers(container, opts);
+        };
+
+        var fullControllerTests = [{
+            desc: "Only transcripts",
+            async: true,
+            testFn: function () {
+//                jqUnit.expect(??);
+
+                var testPlayer = fluid.testUtils.initControllers("#full-controllers-test", {
+                    listeners: {
+                        onReady: function (that) {
+console.log("onReady handler");
+                            jqUnit.assertTrue("test should run", true);
+                            jqUnit.assertTrue("Transcript controls should be present", $(".flc-videoPlayer-transcriptControls-container *").length > 0);
+                            start();
+                        }
+                    }
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player Full Controller: default", fullControllerTests, {});
     });
 })(jQuery);

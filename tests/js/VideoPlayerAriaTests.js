@@ -68,6 +68,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 videoPlayer: {
                     forceCache: true,
                     href: "../../html/videoPlayer_template.html"
+                },
+                menuButton: {
+                    forceCache: true,
+                    href: "../../html/menuButton_template.html"
                 }
             }
         };
@@ -92,7 +96,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         fluid.tests.videoPlayer.triggerTranscript = function (that) {
-            $(".flc-videoPlayer-transcripts-languageMenu li:eq(0)").click();
+            $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu li:eq(0)").click();
         };
 
         fluid.tests.videoPlayer.testAriaControlsAttrs = function (that) {
@@ -133,7 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
             var testOpts = {
                 listeners: {
-                    onReady: "fluid.tests.videoPlayer.triggerTranscript",
+                    onControllersReady: "fluid.tests.videoPlayer.triggerTranscript",
                     onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
                 }
             };
