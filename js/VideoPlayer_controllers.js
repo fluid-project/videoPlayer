@@ -102,7 +102,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     templates: {
                         menuButton: {
-                            href: "{controllers}.options.templates.menuButton"
+                            href: "{controllers}.options.templates.menuButton.href"
                         }
                     }
                 }
@@ -142,8 +142,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
-        preInitFunction: "fluid.videoPlayer.controllers.preInit",
-        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onStartTimeChange: null,
@@ -263,7 +261,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             templates: {
                 menuButton: {
-                    href: "{controllers}.options.templates.menuButton"
+                    href: "{controllers}.options.templates.menuButton.href"
                 }
             }
         }
@@ -293,12 +291,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.videoPlayer.controllers.preInit = function (that) {
-        console.log("controllers.preInit");
-    };
-    fluid.videoPlayer.controllers.postInit = function (that) {
-        console.log("controllers.postInit");
-    };
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
 /*
