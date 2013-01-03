@@ -158,13 +158,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCaptionsReady: null,
             
             // aggregating all subcomponent's ready events for the main controllers onReady
+
             onPlayReady: null,
             onVolumeReady: null,
             onScrubberReady: null,
             onCaptionControlsReady: null,
             onTranscriptControlsReady: null,
             onFullScreenReady: null,
-            onReady: {
+            onReady: null, // TODO: onReady should be the aggregate event, but not working now - need to check with Boz
+            /*onReady*/onControllersReady: {
                 events: {
                     playReady: "onPlayReady",
                     volumeReady: "onVolumeReady",
@@ -259,6 +261,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
+        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but not working; need to talk to Boz
+        that.events.onControllersReady.addListener(function () {
+            that.events.onReady.fire(that);
+        });
         bindControllerModel(that);
 /*
         // TODO: Once we have a non-html5 fall-back for captions to replace captionator,

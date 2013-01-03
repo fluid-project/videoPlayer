@@ -347,7 +347,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {
         that.events.afterFetchResources.addListener(function (that) {
-            that.container.append(that.options.templates.menuButton.resourceText);
             that.container.show();
             that.events.onRenderingComplete.fire(that);
     

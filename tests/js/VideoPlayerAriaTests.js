@@ -109,17 +109,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tests.videoPlayer.testAriaControlsAttrs = function (that) {
             var controlsToTest = [{
                 controlName: "Caption menu",
-                control: ".flc-videoPlayer-captions-languageMenu",
+                control: ".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu",
                 controlledName: "captions area",
                 controlled: ".flc-videoPlayer-captionArea"
             }, {
                 controlName: "Transcript menu",
-                control: ".flc-videoPlayer-transcripts-languageMenu",
+                control: ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu",
                 controlledName: "transcript area",
                 controlled: ".flc-videoPlayer-transcript-text"
             }];
 
-            var captionMenuLanguages = $(".flc-videoPlayer-captions-languageMenu .flc-videoPlayer-language");
+            var captionMenuLanguages = $(".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu .flc-videoPlayer-language");
             for (var i = 0; i < captionMenuLanguages.length; i++) {
                 controlsToTest.push({
                     controlName: "Caption language " + i,
@@ -128,7 +128,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     controlled: ".flc-videoPlayer-captionArea"
                 });
             }
-            var transcriptMenuLanguages = $(".flc-videoPlayer-transcripts-languageMenu .flc-videoPlayer-language");
+            var transcriptMenuLanguages = $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu .flc-videoPlayer-language");
             for (i = 0; i < transcriptMenuLanguages.length; i++) {
                 controlsToTest.push({
                     controlName: "Transcript language " + i,

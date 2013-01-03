@@ -42,18 +42,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
     })();
 
-    fluid.videoPlayer.supportsFullScreen = function () {
+    fluid.browser.supportsFullScreen = function () {
         return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
     };
 
-    fluid.videoPlayer.supportsVideoElement = function () {
+    fluid.browser.supportsVideoElement = function () {
         return typeof (HTMLVideoElement) !== "undefined" ? fluid.typeTag("fluid.browser.supportsVideoElement") : undefined;
     };
 
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
-        supportsFullScreen: fluid.videoPlayer.supportsFullScreen(),
-        supportsVideoElement: fluid.videoPlayer.supportsVideoElement()
+        supportsFullScreen: fluid.browser.supportsFullScreen(),
+        supportsVideoElement: fluid.browser.supportsVideoElement()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -579,7 +579,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
                     that.events.onHTML5BrowserDetected.fire();
                 }
-                if (typeof (HTMLVideoElement !== "undefined")) {
+                if (typeof (HTMLVideoElement) !== "undefined") {
                     that.events.onVideoElementDetected.fire();
                 }
             }

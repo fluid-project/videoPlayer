@@ -159,7 +159,7 @@ fluid.registerNamespace("fluid.tests");
                             that.applier.modelChanged.removeListener("fullscreen", that.full);
 
                             var fullScreenButton = that.locate("fullscreen"),
-                                fullScreenButtonStyles = that.options.components.fullScreenButton.options.styles;
+                                fullScreenButtonStyles = that.fullScreenButton.options.styles;
 
                             fluid.testUtils.verifyBasicButtonFunctions(fullScreenButton, "Fullscreen", "Full screen", "Exit full screen mode", "fl-videoPlayer-fullscreen-on");
 
@@ -207,7 +207,7 @@ fluid.registerNamespace("fluid.tests");
                 var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                     listeners: {
                         onControllersReady: function (that) {
-                            jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                            jqUnit.assertEquals("Full screen button should NOT be present", "fluid.emptyEventedSubcomponent", that.options.components.fullScreenButton.type);
                             start();
                         }
                     }
