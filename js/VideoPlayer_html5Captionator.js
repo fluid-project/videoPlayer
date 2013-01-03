@@ -63,15 +63,21 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (trackEl) {
-            trackEl.track.mode = trackEl.track.DISABLED;
+            // TODO: Here we are deciding whether to use the Captionator API or the spec API
+            //       We should actually fix Captionator to use the spec API instead of doing this
+            trackEl.track.mode = trackEl.track.DISABLED === undefined ? "disabled" : trackEl.track.DISABLED;
         });
     };
     
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
-            var currentState = $.inArray(key, currentCaptions) === -1 ? "DISABLED" : "SHOWING";
+            var currentState = $.inArray(key, currentCaptions) === -1 ? "disabled" : "showing";
             var track = tracks[key].track;
-            track.mode = track[currentState];
+            // TODO: Here we are deciding whether to use the Captionator API or the spec API
+            //       We should actually fix Captionator to use the spec API instead of doing this
+            var captionatorModeVal = track[currentState.toUpperCase()];
+            // Need to test against undefined because Captionator uses numeric values for mode
+            track.mode =  captionatorModeVal === undefined ? currentState : captionatorModeVal;
         });
     };
 
