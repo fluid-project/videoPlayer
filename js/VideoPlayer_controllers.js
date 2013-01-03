@@ -18,7 +18,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
-
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
      *      a volume controller, a button to put captions on/off
@@ -98,7 +97,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     events: {
                         onControlledElementReady: "{controllers}.events.onTranscriptsReady",
-                        onRenderingComplete: "{controllers}.events.onTranscriptControlsReady"
+                        onReady: "{controllers}.events.onTranscriptControlsReady"
                     },
                     templates: {
                         menuButton: {
@@ -195,100 +194,68 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    var fullScreenButtonOptions = {
+        selectors: {
+            button: ".flc-videoPlayer-fullscreen",
+            label: ".flc-videoPlayer-fullscreen-label"
+        },
+        styles: {
+            init: "fl-videoPlayer-fullscreen",
+            pressed: "fl-videoPlayer-fullscreen-on"
+        },
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+        strings: {
+            press: "Full screen",
+            release: "Exit full screen mode"
+        },
+        model: "{controllers}.model",
+        modelPath: "fullscreen",
+        ownModel: false,
+        applier: "{controllers}.applier",
+        events: {
+            onReady: "{controllers}.events.onFullScreenReady"
+        }
+    };
 
-
-
-/* PLAN:
-- empty subcomponents in defaults
-- positive context statements
-- demands block specifying the positive-case subcomponents
-*/
-
-    var fullScreenButtonConfig = {
-        type: "fluid.toggleButton",
-        container: "{controllers}.container",
-        options: {
-            selectors: {
-                button: ".flc-videoPlayer-fullscreen",
-                label: ".flc-videoPlayer-fullscreen-label"
-            },
-            styles: {
-                init: "fl-videoPlayer-fullscreen",
-                pressed: "fl-videoPlayer-fullscreen-on"
-            },
-            // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-            strings: {
-                press: "Full screen",
-                release: "Exit full screen mode"
-            },
-            model: "{controllers}.model",
-            modelPath: "fullscreen",
-            ownModel: false,
-            applier: "{controllers}.applier",
-            events: {
-                onReady: "{controllers}.events.onFullScreenReady"
+    var captionControlsOptions = {
+        languages: "{controllers}.options.captions",
+        model: "{controllers}.model",
+        applier: "{controllers}.applier",
+        showHidePath: "displayCaptions",
+        currentLanguagePath: "currentTracks.captions",
+        selectors: {
+            button: ".flc-menuButton-button",
+            label: ".flc-menuButton-label",
+            menu: ".flc-menuButton-languageMenu"
+        },
+        styles: {
+            button: "fl-videoPlayer-captions-button",
+            buttonWithShowing: "fl-videoPlayer-captions-button-on"
+        },
+        strings: {
+            showLanguage: "Show Captions",
+            hideLanguage: "Hide Captions",
+            press: "Captions",
+            release: "Captions"
+        },
+        events: {
+            onControlledElementReady: "{controllers}.events.onCaptionsReady",
+            onReady: "{controllers}.events.onCaptionControlsReady"
+        },
+        templates: {
+            menuButton: {
+                href: "{controllers}.options.templates.menuButton.href"
             }
         }
     };
 
-    var captionControlsConfig = {
-        type: "fluid.videoPlayer.languageControls",
-        container: "{controllers}.dom.captionControlsContainer",
-        options: {
-            languages: "{controllers}.options.captions",
-            model: "{controllers}.model",
-            applier: "{controllers}.applier",
-            showHidePath: "displayCaptions",
-            currentLanguagePath: "currentTracks.captions",
-            selectors: {
-                button: ".flc-menuButton-button",
-                label: ".flc-menuButton-label",
-                menu: ".flc-menuButton-languageMenu"
-            },
-            styles: {
-                button: "fl-videoPlayer-captions-button",
-                buttonWithShowing: "fl-videoPlayer-captions-button-on"
-            },
-            strings: {
-                showLanguage: "Show Captions",
-                hideLanguage: "Hide Captions",
-                press: "Captions",
-                release: "Captions"
-            },
-            events: {
-                onControlledElementReady: "{controllers}.events.onCaptionsReady",
-                onRenderingComplete: "{controllers}.events.onCaptionControlsReady"
-            },
-            templates: {
-                menuButton: {
-                    href: "{controllers}.options.templates.menuButton.href"
-                }
-            }
-        }
-    };
-
-    fluid.demands("fluid.videoPlayer.controllers", ["fluid.browser.supportsFullScreen", "fluid.videoPlayer"], {
-        options: {
-            components: {
-                fullScreenButton: fullScreenButtonConfig
-            }
-        }
+    fluid.demands("fullScreenButton", ["fluid.browser.supportsFullScreen"], {
+        funcName: "fluid.toggleButton",
+        args: ["{controllers}.container", fullScreenButtonOptions]
     });
-    fluid.demands("fluid.videoPlayer.controllers", ["fluid.browser.supportsVideoElement", "fluid.videoPlayer"], {
-        options: {
-            components: {
-                captionControls: captionControlsConfig
-            }
-        }
-    });
-
-    fluid.demands("fluid.videoPlayer.controllers", ["fluid.browser.supportsFullScreen", "fluid.browser.supportsVideoElement", "fluid.videoPlayer"], {
-        options: {
-            components: {
-                captionControls: captionControlsConfig,
-                fullScreenButton: fullScreenButtonConfig
-            }
-        }
+    fluid.demands("captionControls", ["fluid.browser.supportsVideoElement"], {
+        funcName: "fluid.videoPlayer.languageControls",
+        args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
 
     fluid.videoPlayer.controllers.finalInit = function (that) {

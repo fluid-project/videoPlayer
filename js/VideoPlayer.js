@@ -43,14 +43,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     })();
 
     fluid.videoPlayer.supportsFullScreen = function () {
-        fluid.browser.supportFullScreen = fluid.typeTag("fluid.browser.supportsFullScreen");
         return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
     };
 
     fluid.videoPlayer.supportsVideoElement = function () {
-fluid.browser.supportsVideoElement = fluid.typeTag("fluid.browser.supportsVideoElement");
-return fluid.typeTag("fluid.browser.supportsVideoElement");
-//        return (typeof(HTMLVideoElement) === "undefined");
+        return typeof (HTMLVideoElement) !== "undefined" ? fluid.typeTag("fluid.browser.supportsVideoElement") : undefined;
     };
 
     var features = {
@@ -187,7 +184,7 @@ return fluid.typeTag("fluid.browser.supportsVideoElement");
                     captions: "{videoPlayer}.options.video.captions",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
-                        onControllersReady: "{videoPlayer}.events.onControllersReady",
+                        onReady: "{videoPlayer}.events.onControllersReady",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
@@ -262,11 +259,6 @@ return fluid.typeTag("fluid.browser.supportsVideoElement");
                 args: ["{arguments}.captions.1"]
             }
         },
-listeners: {
-    canBindTranscriptMenu: function () {
-        console.log("^^^^^^^^^^^^^^^^^^^^^^^^^ options-defined listener for canBindTranscriptMenu");
-    }
-},
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
@@ -502,9 +494,6 @@ listeners: {
     };
 
     fluid.videoPlayer.postInit = function (that) {
-that.events.canBindTranscriptMenu.addListener(function () {
-    console.log("==== videoPlayer handler for aggregate canBindTranscriptMenu event");
-});
         // TODO: declarative syntax for this in framework
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
@@ -590,7 +579,7 @@ that.events.canBindTranscriptMenu.addListener(function () {
                 if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
                     that.events.onHTML5BrowserDetected.fire();
                 }
-                if (typeof(HTMLVideoElement !== "undefined")) {
+                if (typeof (HTMLVideoElement !== "undefined")) {
                     that.events.onVideoElementDetected.fire();
                 }
             }

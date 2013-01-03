@@ -170,7 +170,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.languageMenu.setAriaControlsAttr = function (that, controlledId) {
-console.log("<<<<<<<<<<<<<<<<<<<<<< setAriaControlsAttr()");
         that.container.attr("aria-controls", controlledId);
         that.locate("menuItem").attr("aria-controls", controlledId);
     };
@@ -348,7 +347,6 @@ console.log("<<<<<<<<<<<<<<<<<<<<<< setAriaControlsAttr()");
 
     fluid.videoPlayer.languageControls.finalInit = function (that) {
         that.events.afterFetchResources.addListener(function (that) {
-console.log("languageControls.finalInit() afterFetch injecting markup into DOM");
             that.container.append(that.options.templates.menuButton.resourceText);
             that.container.show();
             that.events.onRenderingComplete.fire(that);
@@ -365,7 +363,7 @@ console.log("languageControls.finalInit() afterFetch injecting markup into DOM")
             that.events.onReady.fire(that);
         });
 
-        fluid.fetchResources(that.options.templates, function(resourceSpec) {
+        fluid.fetchResources(that.options.templates, function (resourceSpec) {
             that.container.append(that.options.templates.menuButton.resourceText);
             that.events.afterFetchResources.fire(that);
         });

@@ -68,10 +68,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 videoPlayer: {
                     forceCache: true,
                     href: "../../html/videoPlayer_template.html"
-                },
-                menuButton: {
-                    forceCache: true,
-                    href: "../../html/menuButton_template.html"
+                }
+            },
+            components: {
+                controllers: {
+                    options: {
+                        templates: {
+                            menuButton: {
+                                href: "../../html/menuButton_template.html"
+                            }
+                        }
+                    }
                 }
             }
         };
