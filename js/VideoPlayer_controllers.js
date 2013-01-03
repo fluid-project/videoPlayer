@@ -147,7 +147,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTimeChange: null,
             afterTimeChange: null,
             onMarkupReady: null,
-            onHTML5BrowserDetected: null,
             onVideoElementDetected: null,
             onScrub: null,
             onStartScrub: null,

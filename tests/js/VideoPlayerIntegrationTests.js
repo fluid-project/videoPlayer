@@ -112,12 +112,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             fluid.videoPlayer.testTranscript = function (that) {
                 var video = $(".flc-videoPlayer-video");
-                var transMenu = $(".flc-videoPlayer-transcripts-languageMenu");
+                var transMenu = $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu");
 
                 jqUnit.assertFalse("The transcript panel is hidden initially", $(".flc-videoPlayer-transcriptArea").is(":visible"));
                 
                 // Clicking "show transcript" menu item to open transcript panel
-                $(".flc-videoPlayer-transcripts-languageMenu li:last").click();  // click "show transcript" button
+                $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu li:last").click();  // click "show transcript" button
                 jqUnit.assertTrue("The transcript panel is shown", $(".flc-videoPlayer-transcriptArea").is(":visible"));
                 
                 start();
@@ -140,9 +140,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             fluid.videoPlayer.testTranscript = function (that) {
                 // initial loading
-                $(".flc-videoPlayer-transcripts-languageMenu li:eq(0)").click();
+                $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu li:eq(0)").click();
                 // switch to another language
-                $(".flc-videoPlayer-transcripts-languageMenu li:eq(1)").click();
+                $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu li:eq(1)").click();
 
             };
             

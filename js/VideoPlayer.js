@@ -20,13 +20,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.setLogging(false);
 
-    /*******************************************************************************
-     * Browser type and feature detection: html5 or non-html5,                     *
-     *                      video element support.                                 *
-     *******************************************************************************/
+    /********************************************************************************
+     * Browser type and feature detection: html5 or non-html5, full-screen support, *
+     *                                     video element support.                   *
+     ********************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
-    // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
+    // TODO: Some of this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
     // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
     // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
 
@@ -228,7 +228,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
-            onReady: null,
+
+            // main VideoPlayer is not 'ready' until the controllers are ready
+            onReady: {
+                event: "onControllersReady",
+                args: ["{videoPlayer}"]
+            },
             
             // public, time events
             onTimeChange: null,
@@ -237,7 +242,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onHTML5BrowserDetected: null,
             onVideoElementDetected: null,
 
             // private events used for associating menus with what they control via ARIA
@@ -576,10 +580,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // TODO: Once we have a non-html5 fall-back for captions to replace captionator,
                 // the "if" check on html5 browser can be removed. For now, caption component is
                 // only instantiated in html5 browsers.
-                if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
-                    that.events.onHTML5BrowserDetected.fire();
-                }
-                if (typeof (HTMLVideoElement) !== "undefined") {
+                if (fluid.hasFeature("fluid.browser.supportsVideoElement")) {
                     that.events.onVideoElementDetected.fire();
                 }
             }
@@ -589,7 +590,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Ensure <object> element is not in tab order, for IE9
             $("object", that.locate("video")).attr("tabindex", "-1");
 
-            that.events.onReady.fire(that);
+            if (that.options.controls === "native") {
+                // onReady will fire automatically when the controllers subcomponent is ready
+                // with native controls, we must fire it ourselves
+                that.events.onReady.fire(that);
+            }
         });
         
         return that;

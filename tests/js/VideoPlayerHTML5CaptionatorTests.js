@@ -49,7 +49,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             });
 
-            return fluid.videoPlayer(container, options);
+            return fluid.testUtils.initVideoPlayer(container, options);
         };
         // IMPORTANT. RUNS FROM A WEB SERVER: Captionator code does not handle reading files from file system.
         var testCaptionPresence = function (html5Captionator, captionText) {
@@ -152,7 +152,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }];
 
         var noHtml5envFeatures = {
-            supportsHtml5: null
+            supportsVideoElement: null
         };
 
         var html5tests = [{
@@ -257,7 +257,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }];
 
         var html5envFeatures = {
-            "supportsHtml5": "fluid.browser.supportsHtml5"
+            "supportsVideoElement": "fluid.browser.supportsVideoElement"
         };
 
         // In browsers that have native support for <track>, Captionator will bow out.
@@ -269,7 +269,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }];
         var envFeatures = {
-            "supportsHtml5": "fluid.browser.supportsHtml5"
+            "supportsVideoElement": "fluid.browser.supportsVideoElement"
         };
 
         if (!nativeTrackSupport) {
