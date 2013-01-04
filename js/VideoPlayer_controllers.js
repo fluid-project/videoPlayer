@@ -250,13 +250,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.videoPlayer.controllers.postInit = function (that) {
+        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but that's not working; need to talk to Boz
         that.events.onControllersReady.addListener(function () {
             that.events.onReady.fire(that);
         });
     };
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
-        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but that's not working; need to talk to Boz
         bindControllerModel(that);
     };
     
@@ -642,7 +642,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.onReady.fire(that);
     };
 
-    /*
+    /********************************************************************************
      * Evented empty subcomponent: an empty subcomponent that fires an onReady event
      */
     fluid.defaults("fluid.emptyEventedSubcomponent", {
