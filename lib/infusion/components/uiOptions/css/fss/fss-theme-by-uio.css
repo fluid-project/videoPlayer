@@ -35,7 +35,7 @@
 /* Links */
 .fl-theme-uio-by a, .fl-theme-uio-yb .fl-inverted-color a {
   color: #000 !important;
-  font-weight: bold;
+  font-weight: bold !important;
   background-color: #ff0 !important;
 }
 /* Headers */
@@ -116,9 +116,9 @@
 }
 .fl-theme-uio-by .fl-tabs li *, .fl-theme-uio-yb .fl-inverted-color .fl-tabs li * {
   color: #ff0 !important;
-  font-weight: bold;
+  font-weight: bold !important;
   background-color: #000 !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-by .fl-tabs li:hover, .fl-theme-uio-by .fl-tabs li:hover *, .fl-theme-uio-by .fl-tabs li a:hover, .fl-theme-uio-yb .fl-inverted-color .fl-tabs li:hover, .fl-theme-uio-yb .fl-inverted-color .fl-tabs li:hover *, .fl-theme-uio-yb .fl-inverted-color .fl-tabs li a:hover {
   color: #000 !important;
@@ -151,14 +151,14 @@
   background-color: #ff0 !important;
 }
 .fl-theme-uio-by .fl-listmenu li, .fl-theme-uio-by .fl-list-menu li, .fl-theme-uio-by .fl-listmenu li a, .fl-theme-uio-by .fl-list-menu li a .fl-theme-uio-yb .fl-inverted-color .fl-listmenu li, .fl-theme-uio-yb .fl-inverted-color .fl-list-menu li, .fl-theme-uio-yb .fl-inverted-color .fl-listmenu li a, .fl-theme-uio-yb .fl-inverted-color .fl-list-menu li a {
-  font-weight: bold;
+  font-weight: bold !important;
   color: #000000 !important;
   background-color: #ffff00 !important;
   border-top-color: #000000 !important;
   border-right-color: #000000 !important;
   border-bottom-color: #000000 !important;
   border-left-color: #000000 !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-by .fl-listmenu a:hover, .fl-theme-uio-by .fl-list-menu a:hover, .fl-theme-uio-yb .fl-inverted-color .fl-listmenu a:hover, .fl-theme-uio-yb .fl-inverted-color .fl-list-menu a:hover {
   background-color: #000000 !important;
@@ -222,7 +222,7 @@
 .fl-theme-uio-by .fl-widget-titlebar .fl-button-right, .fl-theme-uio-by .fl-widget-titlebar .fl-button-left, .fl-theme-uio-yb .fl-inverted-color .fl-widget-titlebar .fl-button-right, .fl-theme-uio-yb .fl-inverted-color .fl-widget-titlebar .fl-button-left {
   color: #000000 !important;
   background-image: url('../../../../framework/fss/css/../images/themes/by/buttons-titlebar-cap.png') !important;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .fl-theme-uio-by .fl-widget-titlebar .fl-button-inner, .fl-theme-uio-yb .fl-inverted-color .fl-widget-titlebar .fl-button-inner {
   background-image: url('../../../../framework/fss/css/../images/themes/by/buttons-titlebar-bg.png') !important;

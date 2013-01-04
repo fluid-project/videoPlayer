@@ -56,6 +56,10 @@
     width:100%;
     position: relative;
     pointer-events: all;
+    background-color: rgba(242, 242, 242, 0.75);
+    height: 2.05em;
+    box-shadow: inset 0 0 0.5em rgba(0, 0, 0, 0.15);
+    padding-bottom: 1px; /* For Safari and Chrome. Without padding, button overlaps container border */
 }
 
 
@@ -64,11 +68,12 @@
  ***********/
 
 .fl-videoPlayer-button {
-    width: 100%;
-    height: 100%;
+    width: 2em;
+    height: 2em;
     border: 0;
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0);
+    font-size: 1em;
 }
 .fl-videoPlayer-button:focus {
     background-color: #3195C7;
@@ -78,28 +83,20 @@
 .fl-theme-uio-by .fl-videoPlayer-button:focus,
 .fl-theme-uio-bw .fl-videoPlayer-button:focus { background-color: #000000 !important; }
 
-.fl-videoPlayer-controller-buttons .fl-videoPlayer-button,
-.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
+.fl-videoPlayer-controller .fl-videoPlayer-button,
+.fl-videoPlayer-controller .fl-videoPlayer-button:hover {
     background-size: cover;
 }
 
-.fl-videoPlayer-controller-buttons .fl-videoPlayer-button:hover {
+.fl-videoPlayer-controller .fl-videoPlayer-button:hover {
     background-color: rgba(153, 153, 153, 0.45);
     box-shadow: inset 0 0 0.25em rgba(0, 0, 0, 0.30);
 }
 
-.fl-videoPlayer-controller-buttons { 
-    background-color: rgba(242, 242, 242, 0.75);
-    width: 100%;
-    height: 2.05em;
-    box-shadow: inset 0 0 0.5em rgba(0, 0, 0, 0.15);
-	padding-bottom: 1px; /* For Safari and Chrome. Without padding, button overlaps container border */    
-}
+.fl-theme-uio-by .fl-videoPlayer-controller,
+.fl-theme-uio-bw .fl-videoPlayer-controller { box-shadow: none !important; }
 
-.fl-theme-uio-by .fl-videoPlayer-controller-buttons,
-.fl-theme-uio-bw .fl-videoPlayer-controller-buttons { box-shadow: none !important; }
-
-.fl-videoPlayer-controller-buttons * {
+.fl-videoPlayer-controller * {
     display: inline-block;
 }
 
@@ -117,21 +114,10 @@
 }
 .fl-videoPlayer-controller-buttons-main {
     float: left;
-    width: 4.5em;
-}
-.fl-videoPlayer-controller-buttons-main > * {
-    height: 100%;
-    width: 45%;
 }
 .fl-videoPlayer-controller-buttons-secondary {
     float: right;
-    width: 7em;
 }
-.fl-videoPlayer-controller-buttons-secondary > * {
-    height: 100%;
-    width: 30%;
-}
-
 a.fl-videoPlayer-button-wrapper {
     text-decoration: none;
 }
