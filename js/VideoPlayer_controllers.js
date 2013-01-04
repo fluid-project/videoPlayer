@@ -265,16 +265,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onReady.fire(that);
         });
         bindControllerModel(that);
-/*
-        // TODO: Once we have a non-html5 fall-back for captions to replace captionator,
-        // the "if" check on html5 browser can be removed. For now, caption component is
-        // only instantiated in html5 browsers.
-        if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
-console.log("firing onHTML5BrowserDetected");
-            that.events.onHTML5BrowserDetected.fire();
-        }
-*/
-//        that.events.onControllersReady.fire(that);
     };
     
     /********************************************
