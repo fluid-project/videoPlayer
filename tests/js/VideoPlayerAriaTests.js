@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -102,24 +102,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         };
 
+        var captionLangMenuSelector = ".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu";
+        var transcriptLangMenuSelector = ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu";
+
         fluid.tests.videoPlayer.triggerTranscript = function (that) {
-            $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu li:eq(0)").click();
+            $(transcriptLangMenuSelector + " li:eq(0)").click();
         };
 
         fluid.tests.videoPlayer.testAriaControlsAttrs = function (that) {
             var controlsToTest = [{
                 controlName: "Caption menu",
-                control: ".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu",
+                control: captionLangMenuSelector,
                 controlledName: "captions area",
                 controlled: ".flc-videoPlayer-captionArea"
             }, {
                 controlName: "Transcript menu",
-                control: ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu",
+                control: transcriptLangMenuSelector,
                 controlledName: "transcript area",
                 controlled: ".flc-videoPlayer-transcript-text"
             }];
 
-            var captionMenuLanguages = $(".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu .flc-videoPlayer-language");
+            var captionMenuLanguages = $(captionLangMenuSelector + " .flc-videoPlayer-language");
             for (var i = 0; i < captionMenuLanguages.length; i++) {
                 controlsToTest.push({
                     controlName: "Caption language " + i,
@@ -128,7 +131,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     controlled: ".flc-videoPlayer-captionArea"
                 });
             }
-            var transcriptMenuLanguages = $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu .flc-videoPlayer-language");
+            var transcriptMenuLanguages = $(transcriptLangMenuSelector + " .flc-videoPlayer-language");
             for (i = 0; i < transcriptMenuLanguages.length; i++) {
                 controlsToTest.push({
                     controlName: "Transcript language " + i,

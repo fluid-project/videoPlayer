@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -152,7 +152,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }];
 
         var noHtml5envFeatures = {
-            supportsVideoElement: null
+            supportsHtml5: null
         };
 
         var html5tests = [{
@@ -257,7 +257,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }];
 
         var html5envFeatures = {
-            "supportsVideoElement": "fluid.browser.supportsVideoElement"
+            "supportsHtml5": "fluid.browser.supportsHtml5"
         };
 
         // In browsers that have native support for <track>, Captionator will bow out.
@@ -269,7 +269,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }];
         var envFeatures = {
-            "supportsVideoElement": "fluid.browser.supportsVideoElement"
+            "supportsHtml5": "fluid.browser.supportsHtml5"
         };
 
         if (!nativeTrackSupport) {

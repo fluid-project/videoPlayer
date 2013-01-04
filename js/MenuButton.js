@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -230,7 +230,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.languageControls.finalInit",
         selectors: {
             button: ".flc-menuButton-button",
-            label: ".flc-menuButton-button-label",
+            label: ".flc-menuButton-label",
             menu: ".flc-menuButton-languageMenu"
         },
         events: {
@@ -349,10 +349,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.events.afterFetchResources.addListener(function (that) {
             that.container.show();
             that.events.onRenderingComplete.fire(that);
-    
+
             fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
             fluid.videoPlayer.languageControls.setUpAria(that);
-    
+
             function refreshButtonClass() {
                 var showHide = that.readIndirect("showHidePath");
                 that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);

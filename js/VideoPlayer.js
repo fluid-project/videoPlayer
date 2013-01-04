@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2012 OCAD University
+Copyright 2011-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -21,12 +21,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.setLogging(false);
 
     /********************************************************************************
-     * Browser type and feature detection: html5 or non-html5, full-screen support, *
-     *                                     video element support.                   *
+     * Browser type and feature detection: html5 or non-html5, full-screen support. *
      ********************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
-    // TODO: Some of this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
+    // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
     // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
     // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
 
@@ -46,14 +45,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
     };
 
-    fluid.browser.supportsVideoElement = function () {
-        return typeof (HTMLVideoElement) !== "undefined" ? fluid.typeTag("fluid.browser.supportsVideoElement") : undefined;
-    };
-
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
-        supportsFullScreen: fluid.browser.supportsFullScreen(),
-        supportsVideoElement: fluid.browser.supportsVideoElement()
+        supportsFullScreen: fluid.browser.supportsFullScreen()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -189,8 +183,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
-                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
-                        onVideoElementDetected: "{videoPlayer}.events.onVideoElementDetected"
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     },
                     templates: {
                         menuButton: "{videoPlayer}.options.templates.menuButton"
@@ -200,7 +193,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             html5Captionator: {
                 type: "fluid.videoPlayer.html5Captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onVideoElementDetected",
+                createOnEvent: "onHTML5BrowserDetected",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -242,7 +235,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
-            onVideoElementDetected: null,
+            onHTML5BrowserDetected: null,
 
             // private events used for associating menus with what they control via ARIA
             onTranscriptsReady: null,
@@ -389,7 +382,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var hideControllers = function (that) {
-//        that.locate("controllers").stop(false, true).delay(500).slideUp();
+        that.locate("controllers").stop(false, true).delay(500).slideUp();
     };
 
     var bindVideoPlayerDOMEvents = function (that) {
@@ -580,8 +573,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // TODO: Once we have a non-html5 fall-back for captions to replace captionator,
                 // the "if" check on html5 browser can be removed. For now, caption component is
                 // only instantiated in html5 browsers.
-                if (fluid.hasFeature("fluid.browser.supportsVideoElement")) {
-                    that.events.onVideoElementDetected.fire();
+                if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
+                    that.events.onHTML5BrowserDetected.fire();
                 }
             }
 
@@ -591,8 +584,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             $("object", that.locate("video")).attr("tabindex", "-1");
 
             if (that.options.controls === "native") {
-                // onReady will fire automatically when the controllers subcomponent is ready
-                // with native controls, we must fire it ourselves
+                // onReady will fire automatically when the controllers subcomponent is ready,
+                // but with native controls, we must fire it ourselves
                 that.events.onReady.fire(that);
             }
         });

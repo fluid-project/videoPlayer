@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2012 OCAD University
+Copyright 2011-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -18,6 +18,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
+
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
      *      a volume controller, a button to put captions on/off
@@ -80,11 +81,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
                     currentLanguagePath: "currentTracks.transcripts",
-                    selectors: {
-                        button: ".flc-menuButton-button",
-                        label: ".flc-menuButton-label",
-                        menu: ".flc-menuButton-languageMenu"
-                    },
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
                         buttonWithShowing: "fl-videoPlayer-transcripts-button-on"
@@ -147,7 +143,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTimeChange: null,
             afterTimeChange: null,
             onMarkupReady: null,
-            onVideoElementDetected: null,
             onScrub: null,
             onStartScrub: null,
             afterScrub: null,
@@ -155,9 +150,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // private event used for associating transcript menu with transcript via ARIA
             onTranscriptsReady: null,
             onCaptionsReady: null,
-            
-            // aggregating all subcomponent's ready events for the main controllers onReady
 
+            // aggregating all subcomponent's ready events for the main controllers onReady
             onPlayReady: null,
             onVolumeReady: null,
             onScrubberReady: null,
@@ -165,7 +159,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptControlsReady: null,
             onFullScreenReady: null,
             onReady: null, // TODO: onReady should be the aggregate event, but not working now - need to check with Boz
-            /*onReady*/onControllersReady: {
+            onControllersReady: {
                 events: {
                     playReady: "onPlayReady",
                     volumeReady: "onVolumeReady",
@@ -224,11 +218,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         applier: "{controllers}.applier",
         showHidePath: "displayCaptions",
         currentLanguagePath: "currentTracks.captions",
-        selectors: {
-            button: ".flc-menuButton-button",
-            label: ".flc-menuButton-label",
-            menu: ".flc-menuButton-languageMenu"
-        },
         styles: {
             button: "fl-videoPlayer-captions-button",
             buttonWithShowing: "fl-videoPlayer-captions-button-on"
@@ -254,13 +243,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         funcName: "fluid.toggleButton",
         args: ["{controllers}.container", fullScreenButtonOptions]
     });
-    fluid.demands("captionControls", ["fluid.browser.supportsVideoElement"], {
+    fluid.demands("captionControls", ["fluid.browser.supportsHtml5"], {
         funcName: "fluid.videoPlayer.languageControls",
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
-        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but not working; need to talk to Boz
+        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but that's not working; need to talk to Boz
         that.events.onControllersReady.addListener(function () {
             that.events.onReady.fire(that);
         });

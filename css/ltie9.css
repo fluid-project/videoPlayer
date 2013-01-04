@@ -1,3 +1,11 @@
+/***************
+ * Control bar *
+ ***************/
+
+.fl-videoPlayer-controller {
+    background-color: rgb(242, 242, 242);
+}
+
 /***********
  * Buttons *
  ***********/
