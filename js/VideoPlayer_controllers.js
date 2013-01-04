@@ -137,6 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
+        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onStartTimeChange: null,
@@ -248,11 +249,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
 
-    fluid.videoPlayer.controllers.finalInit = function (that) {
-        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but that's not working; need to talk to Boz
+    fluid.videoPlayer.controllers.postInit = function (that) {
         that.events.onControllersReady.addListener(function () {
             that.events.onReady.fire(that);
         });
+    };
+
+    fluid.videoPlayer.controllers.finalInit = function (that) {
+        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but that's not working; need to talk to Boz
         bindControllerModel(that);
     };
     
