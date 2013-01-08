@@ -3,6 +3,24 @@
     height: 22.5em;
 }
 
+:-moz-full-screen .fl-videoPlayer-main {
+    height: 100%;
+    width: 100%;
+    padding-bottom: 2em;
+}
+:-moz-full-screen .fl-videoPlayer-video-element, :-moz-full-screen .fl-videoPlayer-overlay {
+    width: auto;
+}
+
+:-webkit-full-screen .fl-videoPlayer-main {
+    height: 100%;
+    width: 100%;
+    padding-bottom: 2em;
+}
+:-webkit-full-screen .fl-videoPlayer-video-element, :-webkit-full-screen .fl-videoPlayer-overlay {
+    width: auto;
+}
+
 /*
 * Video player main container
 */
