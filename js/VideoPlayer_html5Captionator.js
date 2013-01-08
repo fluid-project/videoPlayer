@@ -71,7 +71,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         fluid.each(captionSources, function (element, key) {
             var currentState = $.inArray(key, currentCaptions) === -1 ? "disabled" : "showing";
             var track = tracks[key].track;
-            track.mode = currentState;
+            track.mode =  track[currentState.toUpperCase()] || currentState;
         });
     };
 
