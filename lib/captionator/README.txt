@@ -4,7 +4,7 @@ Attribution:
 
 Source:
  * Original code is available on GIT https://github.com/cgiffard/Captionator
- * We are using the master branch of a fork of the code available here:
+ * We are using commit 130ebca2213c12f506f5006ff2d2d71cf365a28e of the master branch of a fork of the code available here:
     https://github.com/fluid-project/Captionator/
 
 Instructions:
