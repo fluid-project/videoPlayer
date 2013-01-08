@@ -285,6 +285,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 transcripts: []
             },
             currentTime: 0,
+            scrubTime: null,
             totalTime: 0,
             bufferEnd: 0,
             displayCaptions: false,

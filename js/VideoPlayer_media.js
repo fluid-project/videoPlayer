@@ -163,17 +163,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // video event listeners must occur in the success callback, otherwise, listeners are
             // not fired.
             mediaElementVideo.addEventListener("timeupdate", function () {
-                // A workaround to deal with the time delay in IE8 between calling setCurrentTime()
-                // and "currentTime" property gets really set. The delay causes the click on the
-                // scrubber does not reposition the progress handler at the first click, but
-                // happens at the second click. The issue is easier to produce when the video is
-                // at pause.
 
-                // this problem is probably related to a known issue in mediaelement.js:
-                // https://github.com/johndyer/mediaelement/issues/489
-                // https://github.com/johndyer/mediaelement/issues/516
                 setTimeout(function () {
                     var currentTime = mediaElementVideo.currentTime || 0;
+
+                    // In IE8 (i.e. Flash fallback), the currentTime property doesn't get properly
+                    // updated after a call to setCurrentTime if the video is paused.
+                    // This workaround will use the scrubTime instead, in these cases.
+                    // see also: https://github.com/johndyer/mediaelement/issues/516
+                    //           https://github.com/johndyer/mediaelement/issues/489
+                    if (mediaElementVideo.paused && that.model.scrubTime) {
+                        if (that.model.scrubTime !== currentTime) {
+                            // if currentTime hasn't been properly updated, don't use it, use the scrubTime
+                            currentTime = that.model.scrubTime;
+                        } else if (currentTime >= that.model.scrubTime) {
+                            // if currentTime has caught up with scrubTime, we don't need scrubTime anymore
+                            that.applier.requestChange("scrubTime", null);
+                        }
+                    }
+
                     var buffered = mediaElementVideo.buffered || 0;
 
                     that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
@@ -207,6 +215,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.setTime = function (time) {
             if (!that.model.mediaElementVideo) { return; }
 
+            that.applier.requestChange("scrubTime", time);
             that.model.mediaElementVideo.setCurrentTime(time);
         };
 
