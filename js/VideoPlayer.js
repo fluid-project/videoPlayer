@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2012 OCAD University
+Copyright 2011-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
