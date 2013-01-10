@@ -164,29 +164,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // not fired.
             mediaElementVideo.addEventListener("timeupdate", function () {
 
-                setTimeout(function () {
-                    var currentTime = mediaElementVideo.currentTime || 0;
+                var currentTime = mediaElementVideo.currentTime || 0;
 
-                    // In IE8 (i.e. Flash fallback), the currentTime property doesn't get properly
-                    // updated after a call to setCurrentTime if the video is paused.
-                    // This workaround will use the scrubTime instead, in these cases.
-                    // see also: https://github.com/johndyer/mediaelement/issues/516
-                    //           https://github.com/johndyer/mediaelement/issues/489
-                    if (mediaElementVideo.paused && that.model.scrubTime) {
-                        if (that.model.scrubTime !== currentTime) {
-                            // if currentTime hasn't been properly updated, don't use it, use the scrubTime
-                            currentTime = that.model.scrubTime;
-                        } else if (currentTime >= that.model.scrubTime) {
-                            // if currentTime has caught up with scrubTime, we don't need scrubTime anymore
-                            that.applier.requestChange("scrubTime", null);
+                // In IE8 (i.e. Flash fallback), the currentTime property doesn't get properly
+                // updated after a call to setCurrentTime if the video is paused.
+                // This workaround will use the scrubTime instead, in these cases.
+                // see also: https://github.com/johndyer/mediaelement/issues/516
+                //           https://github.com/johndyer/mediaelement/issues/489
+                if (mediaElementVideo.paused && that.model.scrubTime) {
+                    if (that.model.scrubTime !== currentTime) {
+                        // if currentTime hasn't been properly updated, don't use it, use the scrubTime
+                        currentTime = that.model.scrubTime;
+                    } else if (currentTime >= that.model.scrubTime) {
+                        // if currentTime has caught up with scrubTime, we don't need scrubTime anymore.
+                        // if we don't wait for currentTime to catch up, scrubbing with they keyboard
+                        // jumps and doesn't progress.
+                        that.applier.requestChange("scrubTime", null);
                         }
                     }
 
                     var buffered = mediaElementVideo.buffered || 0;
 
-                    that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
-                    that.transcript.transcriptInterval.events.onTick.fire(currentTime);
-                }, 300);
+                that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
+                that.transcript.transcriptInterval.events.onTick.fire(currentTime);
 
             });
 
@@ -200,7 +200,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.media.preInit = function (that) {
         that.updateCurrentTime = function (currentTime, buffered) {
             // buffered is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-            var bufferEnd = buffered ? buffered.end(buffered.length - 1) : 0;
+            var bufferEnd = (buffered && buffered.length > 0) ? buffered.end(buffered.length - 1) : 0;
 
             that.applier.fireChangeRequest({
                 path: "currentTime", 
