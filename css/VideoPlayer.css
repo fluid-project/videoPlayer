@@ -27,15 +27,16 @@
     width: inherit;
     height: inherit;
 }
+:-webkit-full-screen .fl-videoPlayer-video-element {
+    float: right;
+}
 :-webkit-full-screen .fl-videoPlayer-overlay {
     width: 100%;
+    float: left;
 }
 :-webkit-full-screen .fl-videoPlayer-transcriptArea {
-    width: 100%;
-    float: none;
-}
-:-webkit-full-screen .fl-videoPlayer-video {
-    width: inherit;
+    width: 20%;
+    max-width: 25em;
 }
 
 /*
