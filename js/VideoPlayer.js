@@ -38,13 +38,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return isHtml5Browser ? fluid.typeTag("fluid.browser.supportsHtml5") : undefined;
     };
     
-    fluid.browser.requestFullScreen = (function () {
-        var v = $("<video />")[0];
-        return v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
-    })();
+    var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
+    var cancelFullscreenFnNames = ["cancelFullScreen", "mozCancelFullScreen", "webkitCancelFullScreen", "oCancelFullScreen", "msieCancelFullScreen"];
 
+    var setupFnName = function (el, fnNameToSet, fnNames) {
+        var name = fluid.find(fnNames, function (name) {
+            return el[name] ? name : undefined;
+        });
+
+        fluid.set(fluid.browser, fnNameToSet, name);
+    };
+
+    var el = $("<div />")[0];
+    setupFnName(el, "requestFullScreenFnName", fullscreenFnNames);
+    setupFnName(document, "cancelFullScreenFnName", cancelFullscreenFnNames);
+    
+    
     fluid.browser.supportsFullScreen = function () {
-        return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
+        return fluid.browser.requestFullScreenFnName ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
     };
 
     var features = {
@@ -453,35 +464,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         that.fullscreen = function () {
             if (that.model.fullscreen === true) {
-                fluid.browser.requestFullScreen.apply(that.locate("video")[0]);
+                that.locate("videoPlayer")[0][fluid.browser.requestFullScreenFnName]();
+            } else {
+                document[fluid.browser.cancelFullScreenFnName]();
             }
         };
-        
-        // FLUID-4661: Change the fullscreen model flag back to false when browser exits its HTML5 fullscreen mode
-        // Once our own custome fullscreen mode is implemented we want to call this fireChangeRequest in another function
-        // which will be called by pressing a full screen toggle Button or when a key shortcut for exiting a fullscreen is pressed
-        fluid.each({
-            "fullscreenchange": "fullscreen",
-            "mozfullscreenchange": "mozFullScreen",
-            "webkitfullscreenchange": "webkitIsFullScreen",
-            "ofullscreenchange": "oFullScreen"
-        }, function (value, key) {
-            var turnoffFullScreen = function () {
-                if (!document[value]) {
-                    that.applier.fireChangeRequest({
-                        path: "fullscreen",
-                        value: false
-                    });
-                }
-            };
-            
-            if (document.addEventListener) {
-                document.addEventListener(key, turnoffFullScreen);
-            } else {
-                // IE8 uses attachEvent rather than the standard addEventListener
-                document.attachEvent(key, turnoffFullScreen);
-            }
-        });
     };
 
     fluid.videoPlayer.postInit = function (that) {
