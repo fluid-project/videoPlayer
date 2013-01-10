@@ -44,6 +44,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
+            onDurationMissingAtLoad: null,
+            onDurationFound: null,
             onLoadedMetadata: null,
             onMediaReady: null
         },
@@ -107,6 +109,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             // all browser don't support the canplay so we do all different states
             mediaElementVideo.addEventListener("canplay", function () {
+                // The load of youtube videos that are played with flash by mediaElement never triggers
+                // "loadedmetadata" event where the video start time and duration are set, which causes these
+                // times are left empty. However, media element using flash does trigger "canplay" event
+                // at initial load. The workaround is to detect this situation and hide the scrubber handle
+                // that displays the start time and duration.
+                // Note that the duration of youtube videos does get returned at "timeupdate" event where 
+                // the duration should be updated at then and show back the scrubber handle.
+                if (that.model.totalTime === 0) {
+                    that.events.onDurationMissingAtLoad.fire();
+                }
+                
                 that.applier.fireChangeRequest({
                     path: "canPlay",
                     value: getcanPlayData(mediaElementVideo)
@@ -155,6 +168,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 });
 
                 // escalated to the main videoPlayer component
+                that.events.onDurationFound.fire();
                 that.events.onLoadedMetadata.fire();
             });
 
@@ -173,6 +187,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // https://github.com/johndyer/mediaelement/issues/489
                 // https://github.com/johndyer/mediaelement/issues/516
                 setTimeout(function () {
+                    // With youtube videos, the video duration is not returned at the initial load
+                    // but when the video starts to play. Refer to the comments for youtube videos
+                    // in "canplay" event handler.
+                    if (that.model.totalTime === 0) {
+                        that.applier.requestChange("totalTime", mediaElementVideo.duration);
+                        that.events.onDurationFound.fire();
+                    }
+
                     var currentTime = mediaElementVideo.currentTime || 0;
                     var buffered = mediaElementVideo.buffered || 0;
 

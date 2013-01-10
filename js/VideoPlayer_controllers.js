@@ -163,6 +163,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     ownModel: false,
                     applier: "{controllers}.applier"
                 }
+            },
+            controllersEventBinder: {
+                type: "fluid.videoPlayer.eventBinder",
+                createOnEvent: "onControllersReady"
             }
         },
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
@@ -309,6 +313,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             updateBuffered: {
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
                 args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            },
+            hideHandle: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.hideHandle",
+                args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            },
+            showHandle: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.showHandle",
+                args: ["{fluid.videoPlayer.controllers.scrubber}"]
             }  
         },
         selectors: {
@@ -353,6 +365,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
 
+    fluid.videoPlayer.controllers.scrubber.hideHandle = function (that) {
+        that.locate("handle").hide();
+    };
+    
+    fluid.videoPlayer.controllers.scrubber.showHandle = function (that) {
+        that.locate("handle").show();
+    };
+    
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
         // TODO: these methods should be public functions, since people might like to alter them
         //       (inherited code)
