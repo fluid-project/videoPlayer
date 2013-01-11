@@ -239,6 +239,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onControlledElementReady: null,
             afterFetchResources: null
         },
+        listeners: {
+            afterFetchResources: {
+                listener: "fluid.videoPlayer.languageControls.setUpControls",
+                priority: "last"
+            }
+        },
         languages: [],
         currentLanguagePath: "",
         showHidePath: "",
@@ -294,6 +300,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 forceCache: true,
                 href: "../html/menuButton_template.html"
             }
+        },
+        invokers: {
+            refreshButtonClass: {
+                funcName: "fluid.videoPlayer.languageControls.refreshButtonClass",
+                args: ["{languageControls}"]
+            }
         }
     });
 
@@ -345,23 +357,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    fluid.videoPlayer.languageControls.refreshButtonClass = function (that) {
+        var showHide = that.readIndirect("showHidePath");
+        that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
+    };
+
+    fluid.videoPlayer.languageControls.setUpControls = function (that) {
+        that.container.show();
+        that.events.onRenderingComplete.fire(that);
+
+        fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
+        fluid.videoPlayer.languageControls.setUpAria(that);
+
+        that.applier.modelChanged.addListener(that.options.showHidePath, that.refreshButtonClass);
+        that.refreshButtonClass();
+        that.events.onReady.fire(that);
+    };
+
     fluid.videoPlayer.languageControls.finalInit = function (that) {
-        that.events.afterFetchResources.addListener(function (that) {
-            that.container.show();
-            that.events.onRenderingComplete.fire(that);
-
-            fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
-            fluid.videoPlayer.languageControls.setUpAria(that);
-
-            function refreshButtonClass() {
-                var showHide = that.readIndirect("showHidePath");
-                that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
-            }
-            that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
-            refreshButtonClass();
-            that.events.onReady.fire(that);
-        });
-
         fluid.fetchResources(that.options.templates, function (resourceSpec) {
             that.container.append(that.options.templates.menuButton.resourceText);
             that.events.afterFetchResources.fire(that);
