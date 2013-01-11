@@ -165,7 +165,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
-                        onMediaReady: "{videoPlayer}.events.onMediaReady"
+                        onReady: "{videoPlayer}.events.onMediaReady"
                     },
                     sources: "{videoPlayer}.options.video.sources"
                 }

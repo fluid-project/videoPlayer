@@ -30,22 +30,61 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         components: {
             mediaEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onMediaReady"
+                createOnEvent: "onReady"
             },
             intervalEventsConductor: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onMediaReady"
+                createOnEvent: "onReady"
             },
             transcript: {
                 type: "fluid.videoPlayer.transcript",
-                createOnEvent: "onMediaReady"
+                createOnEvent: "onReady"
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
-            onLoadedMetadata: null,
-            onMediaReady: null
+            onReady: null,
+
+            // local events to mirror the media element events
+            onMediaElementCanPlay: null,
+            onMediaElementLoadedMetadata: null,
+            onMediaElementVolumeChange: null,
+            onMediaElementEnded: null,
+            onMediaElementTimeUpdate: null
+        },
+        mediaEventBindings: {
+            canplay: "onMediaElementCanPlay",
+            canplaythrough: "onMediaElementCanPlay",
+            loadeddata: "onMediaElementCanPlay",
+            loadedmetadata: "onMediaElementLoadedMetadata",
+            volumechange: "onMediaElementVolumeChange",
+            ended: "onMediaElementEnded",
+            timeupdate: "onMediaElementTimeUpdate"
+        },
+        listeners: {
+            onMediaElementCanPlay: "fluid.videoPlayer.media.handleCanPlay",
+            onMediaElementLoadedMetadata: [{
+                listener: "{media}.applier.fireChangeRequest",
+                args: [{path: "totalTime", value: "{media}.model.mediaElementVideo.duration"}]
+            }, {
+                listener: "{media}.applier.fireChangeRequest",
+                args: [{path: "currentTime", value: "{media}.model.mediaElementVideo.currentTime"}]
+            }, {
+                listener: "{media}.applier.fireChangeRequest",
+                args: [{path: "startTime", value: "{media}.model.mediaElementVideo.startTime"}] // TODO: how do wo the "|| 0" here?
+            }, {
+                listener: "{media}.events.onLoadedMetadata.fire"
+            }],
+            onMediaElementVolumeChange: "fluid.videoPlayer.media.handleVolumeChange",
+            onMediaElementEnded: [{
+                listener: "{media}.applier.fireChangeRequest",
+                args: [{path: "play", value: false}]
+            }, {
+                listener: "{media}.applier.fireChangeRequest",
+                args: [{path: "currentTime", value: 0}]
+            }],
+            onMediaElementTimeUpdate: "fluid.videoPlayer.media.handleTimeUpdate"
         },
         sourceRenderers: {
             "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
@@ -66,7 +105,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
     
-    var renderSources = function (that) {
+    fluid.videoPlayer.media.renderSources = function (that) {
         $.each(that.options.sources, function (idx, source) {
             var renderer = that.options.sourceRenderers[source.type];
             if ($.isFunction(renderer)) {
@@ -77,19 +116,57 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    var bindMediaModel = function (that) {
+    fluid.videoPlayer.media.bindMediaModel = function (that) {
         that.applier.modelChanged.addListener("play", that.play);
         that.applier.modelChanged.addListener("muted", that.mute);
         fluid.addSourceGuardedListener(that.applier, 
             "volume", "media", that.updateVolume);
     };
 
-    var getcanPlayData = function (data) {
-        return typeof (data.readyState) === "undefined" ?
-            true : data.readyState === 4 || data.readyState === 3 || data.readyState === 2;
+    fluid.videoPlayer.media.handleVolumeChange = function (that, evt) {
+        var mediaVolume = that.model.mediaElementVideo.volume * 100;
+        // Don't fire self-generated volume changes on zero when muted, to avoid cycles
+        if (!that.model.muted || mediaVolume !== 0) {
+            fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
+        }
+    };
+    fluid.videoPlayer.media.handleCanPlay = function (that, evt) {
+        var el = that.model.mediaElementVideo;
+        that.applier.fireChangeRequest({
+            path: "canPlay",
+            value: (typeof (el.readyState) === "undefined") || (el.readyState === 4) || (el.readyState === 3) || (el.readyState === 2)
+        });
+    };
+    fluid.videoPlayer.media.handleTimeUpdate = function (that, evt) {
+        // in IE8, the mediaElement's currentTime isn't updated, but the event carries a currentTime field
+        var currentTime = evt.currentTime || that.model.mediaElementVideo.currentTime || 0;
+
+        // In IE8 (i.e. Flash fallback), the currentTime property doesn't get properly
+        // updated after a call to setCurrentTime if the video is paused.
+        // This workaround will use the scrubTime instead, in these cases.
+        // see also: https://github.com/johndyer/mediaelement/issues/516
+        //           https://github.com/johndyer/mediaelement/issues/489
+        if (that.model.mediaElementVideo.paused && that.model.scrubTime) {
+            if (that.model.scrubTime !== currentTime) {
+                // if currentTime hasn't been properly updated, don't use it, use the scrubTime
+                currentTime = that.model.scrubTime;
+            } else if (currentTime >= that.model.scrubTime) {
+                // if currentTime has caught up with scrubTime, we don't need scrubTime anymore.
+                // if we don't wait for currentTime to catch up, scrubbing with they keyboard
+                // jumps and doesn't progress.
+                that.applier.requestChange("scrubTime", null);
+            }
+        }
+
+        var buffered = that.model.mediaElementVideo.buffered || 0;
+
+        that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
+        that.transcript.transcriptInterval.events.onTick.fire(currentTime);
     };
 
-    var bindMediaDOMEvents = function (that) {      
+
+
+    fluid.videoPlayer.media.bindMediaDOMEvents = function (that) {
         MediaElement(that.container[0], {success: function (mediaElementVideo) {
             that.model.mediaElementVideo = mediaElementVideo;
 
@@ -97,102 +174,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Html5 browsers tolerate this workaround without initiatively playing the video
             mediaElementVideo.play();
 
-            mediaElementVideo.addEventListener("volumechange", function () {
-                var mediaVolume = mediaElementVideo.volume * 100;
-                // Don't fire self-generated volume changes on zero when muted, to avoid cycles
-                if (!that.model.muted || mediaVolume !== 0) {
-                    fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
-                }
-            });
-
-            // all browser don't support the canplay so we do all different states
-            mediaElementVideo.addEventListener("canplay", function () {
-                that.applier.fireChangeRequest({
-                    path: "canPlay",
-                    value: getcanPlayData(mediaElementVideo)
+            fluid.each(that.options.mediaEventBindings, function (localEvtName, mediaElEvtName) {
+                mediaElementVideo.addEventListener(mediaElEvtName, function (evt) {
+                    that.events[localEvtName].fire(that, evt);
                 });
             });
 
-            mediaElementVideo.addEventListener("canplaythrough", function () {
-                that.applier.fireChangeRequest({
-                    path: "canPlay",
-                    value: getcanPlayData(mediaElementVideo)
-                });
-            });
-
-            mediaElementVideo.addEventListener("loadeddata", function () {
-                that.applier.fireChangeRequest({
-                    path: "canPlay",
-                    value: getcanPlayData(mediaElementVideo)
-                });
-            });
-
-            mediaElementVideo.addEventListener("ended", function () {
-                that.applier.fireChangeRequest({
-                    path: "play",
-                    value: false
-                });
-                that.applier.fireChangeRequest({
-                    path: "currentTime",
-                    value: 0
-                });
-            });
-
-            mediaElementVideo.addEventListener("loadedmetadata", function () {
-                var startTime = mediaElementVideo.startTime || 0;
-
-                that.applier.fireChangeRequest({
-                    path: "totalTime",
-                    value: mediaElementVideo.duration
-                });
-                that.applier.fireChangeRequest({
-                    path: "currentTime",
-                    value: mediaElementVideo.currentTime
-                });
-                that.applier.fireChangeRequest({
-                    path: "startTime",
-                    value: startTime
-                });
-
-                // escalated to the main videoPlayer component
-                that.events.onLoadedMetadata.fire();
-            });
-
-            // The handling of "timeupdate" event is moved out of html5MediaTimer component, which
-            // has been demolished, to here because with media element library in IE8, the link of
-            // video event listeners must occur in the success callback, otherwise, listeners are
-            // not fired.
-            mediaElementVideo.addEventListener("timeupdate", function () {
-
-                var currentTime = mediaElementVideo.currentTime || 0;
-
-                // In IE8 (i.e. Flash fallback), the currentTime property doesn't get properly
-                // updated after a call to setCurrentTime if the video is paused.
-                // This workaround will use the scrubTime instead, in these cases.
-                // see also: https://github.com/johndyer/mediaelement/issues/516
-                //           https://github.com/johndyer/mediaelement/issues/489
-                if (mediaElementVideo.paused && that.model.scrubTime) {
-                    if (that.model.scrubTime !== currentTime) {
-                        // if currentTime hasn't been properly updated, don't use it, use the scrubTime
-                        currentTime = that.model.scrubTime;
-                    } else if (currentTime >= that.model.scrubTime) {
-                        // if currentTime has caught up with scrubTime, we don't need scrubTime anymore.
-                        // if we don't wait for currentTime to catch up, scrubbing with they keyboard
-                        // jumps and doesn't progress.
-                        that.applier.requestChange("scrubTime", null);
-                        }
-                    }
-
-                    var buffered = mediaElementVideo.buffered || 0;
-
-                that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
-                that.transcript.transcriptInterval.events.onTick.fire(currentTime);
-
-            });
-
-            // Fire onMediaReady here rather than finalInit() because the instantiation
+            // Fire onReady here rather than finalInit() because the instantiation
             // of the media element object is asynchronous
-            that.events.onMediaReady.fire(that);
+            that.events.onReady.fire(that);
         }});
 
     };
@@ -248,9 +238,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
-        renderSources(that);
-        bindMediaModel(that);
-        bindMediaDOMEvents(that);
+        fluid.videoPlayer.media.renderSources(that);
+        fluid.videoPlayer.media.bindMediaModel(that);
+        fluid.videoPlayer.media.bindMediaDOMEvents(that);
     };
 
 })(jQuery);
