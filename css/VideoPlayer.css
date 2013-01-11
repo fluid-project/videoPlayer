@@ -293,10 +293,6 @@ a.fl-videoPlayer-button-wrapper {
  * Volume Control *
  ******************/
  
-.fl-videoPlayer-volumeContainer {
-    position: relative;
-}
-
 .fl-videoPlayer-volumeControl {
     display: none;
     z-index: 1000;
@@ -305,7 +301,7 @@ a.fl-videoPlayer-button-wrapper {
     border-color: #c2c2c2;
     position: absolute;
     bottom: 1.8em;
-    left: 0;
+    left: 2em;
     height: 6em;
     background: none;
     background-color: #F2F2F2;
