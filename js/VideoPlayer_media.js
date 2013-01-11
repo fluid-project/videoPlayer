@@ -214,7 +214,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.videoPlayer.media.preInit = function (that) {
         that.updateCurrentTime = function (currentTime, buffered) {
             // buffered is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-            var bufferEnd = buffered ? buffered.end(buffered.length - 1) : 0;
+            var bufferEnd = (buffered && buffered.length > 0) ? buffered.end(buffered.length - 1) : 0;
 
             that.applier.fireChangeRequest({
                 path: "currentTime", 

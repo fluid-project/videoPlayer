@@ -56,7 +56,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 },
                 listeners: {
                     onTimeChange: function (time) {
-                        jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);
+                        // In chrome, the "timeupdate" event is fired at the video initial load with currentTime "0". Ignore it. 
+                        if (time !== 0) {
+                            jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);
+                        }
                     },
                     onIntervalChange: function (currentInterval, previousInterval) {
                         jqUnit.assertEquals("The event onIntervalChange is fired with currentInterval " + expectedCurrentInterval, expectedCurrentInterval, currentInterval);
