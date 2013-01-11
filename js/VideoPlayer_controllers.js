@@ -159,8 +159,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCaptionControlsReady: null,
             onTranscriptControlsReady: null,
             onFullScreenReady: null,
-            onReady: null, // TODO: onReady should be the aggregate event, but not working now - need to check with Boz
-            onControllersReady: {
+            onReady: {
                 events: {
                     playReady: "onPlayReady",
                     volumeReady: "onVolumeReady",
@@ -249,13 +248,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
 
-    fluid.videoPlayer.controllers.postInit = function (that) {
-        // TODO: Shouldn't have to fire onReady manually, should be an aggregate event, but that's not working; need to talk to Boz
-        that.events.onControllersReady.addListener(function () {
-            that.events.onReady.fire(that);
-        });
-    };
-
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
     };
@@ -333,7 +325,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
-        postInitFunction: "fluid.videoPlayer.controllers.scrubber.postInit",
         components: {
             bufferedProgress: {
                 type: "fluid.progress",

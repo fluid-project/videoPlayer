@@ -198,7 +198,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captions: "{videoPlayer}.options.video.captions",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
-                        onReady: "{videoPlayer}.events.onControllersReady",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
@@ -233,7 +232,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onViewReady: null,
             onLoadedMetadata: null,
             onMediaReady: null,
-            onControllersReady: null,
+            onControllersReady: "{videoPlayer}.controllers.events.onReady",
             afterScrub: null,
             onStartScrub: null,
             onTemplateLoadError: null,
