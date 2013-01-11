@@ -36,18 +36,38 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return isHtml5Browser ? fluid.typeTag("fluid.browser.supportsHtml5") : undefined;
     };
     
-    fluid.browser.requestFullScreen = (function () {
-        var v = $("<video />")[0];
-        return v.requestFullScreen || v.mozRequestFullScreen || v.webkitRequestFullScreen || v.oRequestFullScreen || v.msieRequestFullScreen;
-    })();
+    var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
+    var cancelFullscreenFnNames = ["cancelFullScreen", "mozCancelFullScreen", "webkitCancelFullScreen", "oCancelFullScreen", "msieCancelFullScreen"];
 
+    var setupFnName = function (el, fnNameToSet, fnNames) {
+        var name = fluid.find(fnNames, function (name) {
+            return el[name] ? name : undefined;
+        });
+
+        fluid.set(fluid.browser, fnNameToSet, name);
+    };
+
+    var el = $("<div />")[0];
+    setupFnName(el, "requestFullScreenFnName", fullscreenFnNames);
+    setupFnName(document, "cancelFullScreenFnName", cancelFullscreenFnNames);
+    
+    
     fluid.browser.supportsFullScreen = function () {
-        return fluid.browser.requestFullScreen ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
+        return fluid.browser.requestFullScreenFnName ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
+    };
+
+    // This browser test is used in a workaround that avoids the problem by not animating the
+    // show/hide of controls in Safari
+    // Note: $.browser sets safari=true for both safari and chrome
+    fluid.browser.isSafari = function () {
+        var ua = navigator.userAgent.toLowerCase();
+        return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
     };
 
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
-        supportsFullScreen: fluid.browser.supportsFullScreen()
+        supportsFullScreen: fluid.browser.supportsFullScreen(),
+        safari: fluid.browser.isSafari()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -306,7 +326,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 href: "../html/videoPlayer_template.html"
             }
         },
-        videoTitle: "unnamed video"
+        videoTitle: "unnamed video",
+        invokers: {
+            showControllers: "fluid.videoPlayer.showControllers",
+            hideControllers: "fluid.videoPlayer.hideControllers"
+        }
     });
 
     var bindKeyboardControl = function (that) {
@@ -377,11 +401,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         video.fluid("activatable", [that.play, opts]);
     };
 
-    var showControllers = function (that) {
+    fluid.videoPlayer.showControllersSimple = function (that) {
+        that.locate("controllers").show();
+    };
+    fluid.videoPlayer.hideControllersSimple = function (that) {
+        that.locate("controllers").hide();
+    };
+    fluid.videoPlayer.showControllersAnimated = function (that) {
         that.locate("controllers").stop(false, true).slideDown();
     };
 
-    var hideControllers = function (that) {
+    fluid.videoPlayer.hideControllersAnimated = function (that) {
         that.locate("controllers").stop(false, true).delay(500).slideUp();
     };
 
@@ -398,15 +428,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         that.locate("videoPlayer").mouseenter(function () {
-            showControllers(that);
+            that.showControllers(that);
         });
 
         that.container.mouseleave(function () {
-            hideControllers(that);
+            that.hideControllers(that);
         });
 
         videoContainer.focus(function () {
-            showControllers(that);
+            that.showControllers(that);
         });
 
         that.events.onLoadedMetadata.addListener(function () {
@@ -459,35 +489,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         that.fullscreen = function () {
             if (that.model.fullscreen === true) {
-                fluid.browser.requestFullScreen.apply(that.locate("video")[0]);
+                that.locate("videoPlayer")[0][fluid.browser.requestFullScreenFnName]();
+            } else {
+                document[fluid.browser.cancelFullScreenFnName]();
             }
         };
-        
-        // FLUID-4661: Change the fullscreen model flag back to false when browser exits its HTML5 fullscreen mode
-        // Once our own custome fullscreen mode is implemented we want to call this fireChangeRequest in another function
-        // which will be called by pressing a full screen toggle Button or when a key shortcut for exiting a fullscreen is pressed
-        fluid.each({
-            "fullscreenchange": "fullscreen",
-            "mozfullscreenchange": "mozFullScreen",
-            "webkitfullscreenchange": "webkitIsFullScreen",
-            "ofullscreenchange": "oFullScreen"
-        }, function (value, key) {
-            var turnoffFullScreen = function () {
-                if (!document[value]) {
-                    that.applier.fireChangeRequest({
-                        path: "fullscreen",
-                        value: false
-                    });
-                }
-            };
-            
-            if (document.addEventListener) {
-                document.addEventListener(key, turnoffFullScreen);
-            } else {
-                // IE8 uses attachEvent rather than the standard addEventListener
-                document.attachEvent(key, turnoffFullScreen);
-            }
-        });
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -683,4 +689,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         $.getJSON(url, callback);
     };
 
+    /*********
+     * In Safari, repositioning of relatively positioned elements is buggy. See
+     *    http://www.quirksmode.org/css/position.html (sidebar)
+     * This manifests itself in the video player as disappearing controls.
+     *    http://issues.fluidproject.org/browse/FLUID-4804
+     * Workaround: Don't animate show/hide in Safari
+     *********/
+    fluid.demands("fluid.videoPlayer.showControllers", ["fluid.videoPlayer"], {
+        funcName: "fluid.videoPlayer.showControllersAnimated",
+        args: ["{videoPlayer}"]
+    });
+    fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.videoPlayer"], {
+        funcName: "fluid.videoPlayer.hideControllersAnimated",
+        args: ["{videoPlayer}"]
+    });
+    fluid.demands("fluid.videoPlayer.showControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
+        funcName: "fluid.videoPlayer.showControllersSimple",
+        args: ["{videoPlayer}"]
+    });
+    fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
+        funcName: "fluid.videoPlayer.hideControllersSimple",
+        args: ["{videoPlayer}"]
+    });
 })(jQuery);
