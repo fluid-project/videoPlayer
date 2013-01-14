@@ -40,18 +40,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
     var cancelFullscreenFnNames = ["cancelFullScreen", "mozCancelFullScreen", "webkitCancelFullScreen", "oCancelFullScreen", "msieCancelFullScreen"];
+    var fullscreenchangeEventNames = ["fullscreenchange", "mozfullscreenchange", "webkitfullscreenchange", "ofullscreenchange", "msiefullscreenchange"];
 
-    var setupFnName = function (el, fnNameToSet, fnNames) {
-        var name = fluid.find(fnNames, function (name) {
-            return el[name] ? name : undefined;
+    var setupEnvVar = function (nameToSet, names, testFn) {
+        var name = fluid.find(names, function (name) {
+            return testFn(name) ? name : undefined;
         });
-
-        fluid.set(fluid.browser, fnNameToSet, name);
+        fluid.set(fluid.browser, nameToSet, name);
     };
 
     var el = $("<div />")[0];
-    setupFnName(el, "requestFullScreenFnName", fullscreenFnNames);
-    setupFnName(document, "cancelFullScreenFnName", cancelFullscreenFnNames);
+    setupEnvVar("requestFullScreenFnName", fullscreenFnNames, function (name) {
+        return el[name];
+    });
+    setupEnvVar("cancelFullScreenFnName", cancelFullscreenFnNames, function (name) {
+        return document[name];
+    });
+    setupEnvVar("fullscreenchangeEventName", fullscreenchangeEventNames, function (name) {
+        return (el["on" + name] !== undefined);
+    });
     
     
     fluid.browser.supportsFullScreen = function () {
@@ -525,6 +532,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             that.events.afterScrub.fire();
         };
+
+        document.addEventListener(fluid.browser.fullscreenchangeEventName, function () {
+            var isFullScreenRightNow = document.mozFullScreenElement || document.webkitIsFullScreen || document.fullscreen;
+            if (that.model.fullscreen && !isFullScreenRightNow) {
+                // we've left fullscreen, but the model has not been updated (must have used ESC)
+                that.applier.requestChange("fullscreen", false);
+            }
+        });
     };
     
     fluid.videoPlayer.finalInit = function (that) {
