@@ -9,13 +9,20 @@
     padding-bottom: 2em;
 }
 
-:-moz-full-screen .fl-videoPlayer-video-element, :-moz-full-screen .fl-videoPlayer-overlay {
+:-moz-full-screen .fl-videoPlayer-video {
+    width: 80%;
+    text-align: center;
+}
+:-moz-full-screen .fl-videoPlayer-video-element {
     width: auto;
+}
+:-moz-full-screen .fl-videoPlayer-overlay {
+    width: 80%;
 }
 :-moz-full-screen .fl-videoPlayer-transcriptArea {
     width: 20%;
     max-width: 25em;
-    float: left;
+    /*float: left;*/
 }
 
 :-webkit-full-screen.fl-videoPlayer-main {
