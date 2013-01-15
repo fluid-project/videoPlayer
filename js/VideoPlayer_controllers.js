@@ -137,6 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
+        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onStartTimeChange: null,
@@ -158,7 +159,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCaptionControlsReady: null,
             onTranscriptControlsReady: null,
             onFullScreenReady: null,
-            onReady: {
+            // TODO: onReady should be the aggregate event, but not working now - see http://issues.fluidproject.org/browse/FLUID-4879
+            // Once FLUID-4879 is addressed, this should be updated
+            onControllersReady: {
                 events: {
                     playReady: "onPlayReady",
                     volumeReady: "onVolumeReady",
@@ -167,7 +170,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     transcriptControlsReady: "onTranscriptControlsReady",
                     fullScreenReady: "onFullScreenReady"
                 }
-            }
+            },
+            onReady: null
         },
 
         selectors: {
@@ -246,6 +250,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         funcName: "fluid.videoPlayer.languageControls",
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
+
+    fluid.videoPlayer.controllers.postInit = function (that) {
+        // TODO: onReady should fire automatically, but not working now - see http://issues.fluidproject.org/browse/FLUID-4879
+        // Once FLUID-4879 is addressed, this will not be necessary
+        that.events.onControllersReady.addListener(function () {
+            that.events.onReady.fire(that);
+        });
+    };
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
