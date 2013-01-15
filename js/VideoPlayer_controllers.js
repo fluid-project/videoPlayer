@@ -137,7 +137,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
-        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onStartTimeChange: null,
