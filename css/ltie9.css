@@ -155,6 +155,61 @@
     background-image: url('../images/small/white/volume_off.png');
 }
 
+/* Captions */
+.fl-videoPlayer-captions-button {
+    background-image: url('../images/small/default/captions.png');
+}
+.fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/default/captions_hover.png');
+}
+.fl-videoPlayer-captions-button-on {
+    background-image: url('../images/small/default/captions_on.png');
+}
+.fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/white/captions.png');
+}
+.fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/white/captions_on.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-captions-button,
+.fl-theme-uio-by .fl-videoPlayer-captions-button,
+.fl-theme-uio-yb .fl-videoPlayer-captions-button:focus,
+.fl-theme-uio-wb .fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/black/captions.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-captions-button:hover,
+.fl-theme-uio-by .fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/black/captions_hover.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-by .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-yb .fl-videoPlayer-captions-button-on:focus,
+.fl-theme-uio-wb .fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/black/captions_on.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button,
+.fl-theme-uio-by .fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/yellow/captions.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/yellow/captions_hover.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-by .fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/yellow/captions_on.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-captions-button,
+.fl-theme-uio-bw .fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/white/captions.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/white/captions_hover.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-bw .fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/white/captions_on.png');
+}
+
 /* Transcripts */
 .fl-videoPlayer-transcripts-button {
     background-image: url('../images/small/default/transcript.png');
