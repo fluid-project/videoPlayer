@@ -533,13 +533,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.afterScrub.fire();
         };
 
-        document.addEventListener(fluid.browser.fullscreenchangeEventName, function () {
-            var isFullScreenRightNow = document.mozFullScreenElement || document.webkitIsFullScreen || document.fullscreen;
-            if (that.model.fullscreen && !isFullScreenRightNow) {
-                // we've left fullscreen, but the model has not been updated (must have used ESC)
-                that.applier.requestChange("fullscreen", false);
-            }
-        });
+        if (fluid.browser.fullscreenchangeEventName) {
+            document.addEventListener(fluid.browser.fullscreenchangeEventName, function () {
+                var isFullScreenRightNow = document.mozFullScreenElement || document.webkitIsFullScreen || document.fullscreen;
+                if (that.model.fullscreen && !isFullScreenRightNow) {
+                    // we've left fullscreen, but the model has not been updated (must have used ESC)
+                    that.applier.requestChange("fullscreen", false);
+                }
+            });
+        }
     };
     
     fluid.videoPlayer.finalInit = function (that) {
