@@ -122,6 +122,7 @@
 .fl-videoPlayer-controller .fl-videoPlayer-button,
 .fl-videoPlayer-controller .fl-videoPlayer-button:hover {
     background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .fl-videoPlayer-controller .fl-videoPlayer-button:hover {
