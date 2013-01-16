@@ -111,28 +111,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         fluid.tests.videoPlayer.testAriaControlsAttrs = function (that) {
             var controlsToTest = [{
-                controlName: "Caption menu",
-                control: captionLangMenuSelector,
-                controlledName: "captions area",
-                controlled: ".flc-videoPlayer-captionArea"
-            }, {
                 controlName: "Transcript menu",
                 control: transcriptLangMenuSelector,
                 controlledName: "transcript area",
                 controlled: ".flc-videoPlayer-transcript-text"
             }];
 
-            var captionMenuLanguages = $(captionLangMenuSelector + " .flc-videoPlayer-language");
-            for (var i = 0; i < captionMenuLanguages.length; i++) {
-                controlsToTest.push({
-                    controlName: "Caption language " + i,
-                    control: captionMenuLanguages[i],
-                    controlledName: "captions area",
-                    controlled: ".flc-videoPlayer-captionArea"
-                });
-            }
             var transcriptMenuLanguages = $(transcriptLangMenuSelector + " .flc-videoPlayer-language");
-            for (i = 0; i < transcriptMenuLanguages.length; i++) {
+            for (var i = 0; i < transcriptMenuLanguages.length; i++) {
                 controlsToTest.push({
                     controlName: "Transcript language " + i,
                     control: transcriptMenuLanguages[i],
@@ -140,6 +126,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     controlled: ".flc-videoPlayer-transcript-text"
                 });
             }
+
+            if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
+                controlsToTest.push({
+                    controlName: "Caption menu",
+                    control: captionLangMenuSelector,
+                    controlledName: "captions area",
+                    controlled: ".flc-videoPlayer-captionArea"
+                });
+                var captionMenuLanguages = $(captionLangMenuSelector + " .flc-videoPlayer-language");
+                for (i = 0; i < captionMenuLanguages.length; i++) {
+                    controlsToTest.push({
+                        controlName: "Caption language " + i,
+                        control: captionMenuLanguages[i],
+                        controlledName: "captions area",
+                        controlled: ".flc-videoPlayer-captionArea"
+                    });
+                }
+            }
+
             fluid.tests.videoPlayer.checkAriaControlsAttr(controlsToTest);
             start();
         };
