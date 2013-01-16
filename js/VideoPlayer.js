@@ -20,11 +20,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.setLogging(false);
 
-    /*******************************************************************************
-     * Browser type detection: html5 or non-html5.                                 *
-     *                                                                             *
-     * Add type tags of html5 into static environment for the html5 browsers.      *
-     *******************************************************************************/
+    /********************************************************************************
+     * Browser type and feature detection: html5 or non-html5, full-screen support. *
+     ********************************************************************************/
     fluid.registerNamespace("fluid.browser");
 
     // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
@@ -200,12 +198,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captions: "{videoPlayer}.options.video.captions",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
-                        onControllersReady: "{videoPlayer}.events.onControllersReady",
+                        // TODO: Once FLUID-4879 is addressed, handling of the controllers ready event will need to be updated
+                        onReady: "{videoPlayer}.events.onControllersReady",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
+                    },
+                    templates: {
+                        menuButton: "{videoPlayer}.options.templates.menuButton"
                     }
                 }
             },
@@ -240,7 +242,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
-            onReady: null,
+
+            // main VideoPlayer is not 'ready' until the controllers are ready
+            onReady: {
+                event: "onControllersReady",
+                args: ["{videoPlayer}"]
+            },
             
             // public, time events
             onTimeChange: null,
@@ -584,7 +591,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Ensure <object> element is not in tab order, for IE9
             $("object", that.locate("video")).attr("tabindex", "-1");
 
-            that.events.onReady.fire(that);
+            if (that.options.controls === "native") {
+                // onReady will fire automatically when the controllers subcomponent is ready,
+                // but with native controls, we must fire it ourselves
+                that.events.onReady.fire(that);
+            }
         });
         
         return that;

@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2012 OCAD University
+Copyright 2011-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -48,7 +48,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     events: {
                         onScrub: "{controllers}.events.onScrub",
                         afterScrub: "{controllers}.events.afterScrub",
-                        onStartScrub: "{controllers}.events.onStartScrub"
+                        onStartScrub: "{controllers}.events.onStartScrub",
+                        onScrubberReady: "{controllers}.events.onScrubberReady"
                     }
                 }
             },
@@ -57,35 +58,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{controllers}.dom.volumeContainer",
                 options: {
                     model: "{controllers}.model",
-                    applier: "{controllers}.applier"
+                    applier: "{controllers}.applier",
+                    events: {
+                        onReady: "{controllers}.events.onVolumeReady"
+                    }
                 }
             },
             captionControls: {
-                type: "fluid.videoPlayer.languageControls",
-                container: "{controllers}.dom.captionControlsContainer",
+                type: "fluid.emptyEventedSubcomponent",
                 options: {
-                    languages: "{controllers}.options.captions",
-                    model: "{controllers}.model",
-                    applier: "{controllers}.applier",
-                    showHidePath: "displayCaptions",
-                    currentLanguagePath: "currentTracks.captions",
-                    selectors: {
-                        button: ".flc-videoPlayer-captions-button",
-                        label: ".flc-videoPlayer-captions-label",
-                        menu: ".flc-videoPlayer-captions-languageMenu"
-                    },
-                    styles: {
-                        button: "fl-videoPlayer-captions-button",
-                        buttonWithShowing: "fl-videoPlayer-captions-button-on"
-                    },
-                    strings: {
-                        showLanguage: "Show Captions",
-                        hideLanguage: "Hide Captions",
-                        press: "Captions",
-                        release: "Captions"
-                    },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onCaptionsReady"
+                        onReady: "{controllers}.events.onCaptionControlsReady"
                     }
                 }
             },
@@ -98,11 +81,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
                     currentLanguagePath: "currentTracks.transcripts",
-                    selectors: {
-                        button: ".flc-videoPlayer-transcripts-button",
-                        label: ".flc-videoPlayer-transcripts-label",
-                        menu: ".flc-videoPlayer-transcripts-languageMenu"
-                    },
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
                         buttonWithShowing: "fl-videoPlayer-transcripts-button-on"
@@ -114,7 +92,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         release: "Transcripts"
                     },
                     events: {
-                        onControlledElementReady: "{controllers}.events.onTranscriptsReady"
+                        onControlledElementReady: "{controllers}.events.onTranscriptsReady",
+                        onReady: "{controllers}.events.onTranscriptControlsReady"
+                    },
+                    templates: {
+                        menuButton: {
+                            href: "{controllers}.options.templates.menuButton.href"
+                        }
                     }
                 }
             },
@@ -138,44 +122,56 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{controllers}.model",
                     modelPath: "play",
                     ownModel: false,
-                    applier: "{controllers}.applier"
+                    applier: "{controllers}.applier",
+                    events: {
+                        onReady: "{controllers}.events.onPlayReady"
+                    }
                 }
             },
             fullScreenButton: {
-                type: "fluid.toggleButton",
-                container: "{controllers}.container",
+                type: "fluid.emptyEventedSubcomponent",
                 options: {
-                    selectors: {
-                        button: ".flc-videoPlayer-fullscreen",
-                        label: ".flc-videoPlayer-fullscreen-label"
-                    },
-                    styles: {
-                        init: "fl-videoPlayer-fullscreen",
-                        pressed: "fl-videoPlayer-fullscreen-on"
-                    },
-                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-                    strings: {
-                        press: "Full screen",
-                        release: "Exit full screen mode"
-                    },
-                    model: "{controllers}.model",
-                    modelPath: "fullscreen",
-                    ownModel: false,
-                    applier: "{controllers}.applier"
+                    events: {
+                        onReady: "{controllers}.events.onFullScreenReady"
+                    }
                 }
             }
         },
+        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
-            onControllersReady: null,
             onStartTimeChange: null,
             onTimeChange: null,
             afterTimeChange: null,
             onMarkupReady: null,
+            onScrub: null,
+            onStartScrub: null,
+            afterScrub: null,
 
             // private event used for associating transcript menu with transcript via ARIA
             onTranscriptsReady: null,
-            onCaptionsReady: null
+            onCaptionsReady: null,
+
+            // aggregating all subcomponent's ready events for the main controllers onReady
+            onPlayReady: null,
+            onVolumeReady: null,
+            onScrubberReady: null,
+            onCaptionControlsReady: null,
+            onTranscriptControlsReady: null,
+            onFullScreenReady: null,
+            // TODO: onReady should be the aggregate event, but not working now - see http://issues.fluidproject.org/browse/FLUID-4879
+            // Once FLUID-4879 is addressed, this should be updated
+            onControllersReady: {
+                events: {
+                    playReady: "onPlayReady",
+                    volumeReady: "onVolumeReady",
+                    scrubReady: "onScrubberReady",
+                    captionControlsReady: "onCaptionControlsReady",
+                    transcriptControlsReady: "onTranscriptControlsReady",
+                    fullScreenReady: "onFullScreenReady"
+                }
+            },
+            onReady: null
         },
 
         selectors: {
@@ -196,23 +192,75 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    // Hide fullscreen button if browser does not have a fullscreen functionality
-    fluid.demands("fluid.videoPlayer.controllers", "fluid.videoPlayer", {
-        options: {
-            components: {
-                fullScreenButton: {
-                    type: "fluid.emptySubcomponent"
-                }
+    var fullScreenButtonOptions = {
+        selectors: {
+            button: ".flc-videoPlayer-fullscreen",
+            label: ".flc-videoPlayer-fullscreen-label"
+        },
+        styles: {
+            init: "fl-videoPlayer-fullscreen",
+            pressed: "fl-videoPlayer-fullscreen-on"
+        },
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+        strings: {
+            press: "Full screen",
+            release: "Exit full screen mode"
+        },
+        model: "{controllers}.model",
+        modelPath: "fullscreen",
+        ownModel: false,
+        applier: "{controllers}.applier",
+        events: {
+            onReady: "{controllers}.events.onFullScreenReady"
+        }
+    };
+
+    var captionControlsOptions = {
+        languages: "{controllers}.options.captions",
+        model: "{controllers}.model",
+        applier: "{controllers}.applier",
+        showHidePath: "displayCaptions",
+        currentLanguagePath: "currentTracks.captions",
+        styles: {
+            button: "fl-videoPlayer-captions-button",
+            buttonWithShowing: "fl-videoPlayer-captions-button-on"
+        },
+        strings: {
+            showLanguage: "Show Captions",
+            hideLanguage: "Hide Captions",
+            press: "Captions",
+            release: "Captions"
+        },
+        events: {
+            onControlledElementReady: "{controllers}.events.onCaptionsReady",
+            onReady: "{controllers}.events.onCaptionControlsReady"
+        },
+        templates: {
+            menuButton: {
+                href: "{controllers}.options.templates.menuButton.href"
             }
         }
+    };
+
+    fluid.demands("fullScreenButton", ["fluid.browser.supportsFullScreen"], {
+        funcName: "fluid.toggleButton",
+        args: ["{controllers}.container", fullScreenButtonOptions]
     });
-    fluid.demands("fluid.videoPlayer.controllers", ["fluid.browser.supportsFullScreen", "fluid.videoPlayer"], {
-        options: fluid.COMPONENT_OPTIONS
+    fluid.demands("captionControls", ["fluid.browser.supportsHtml5"], {
+        funcName: "fluid.videoPlayer.languageControls",
+        args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
+
+    fluid.videoPlayer.controllers.postInit = function (that) {
+        // TODO: onReady should fire automatically, but not working now - see http://issues.fluidproject.org/browse/FLUID-4879
+        // Once FLUID-4879 is addressed, this will not be necessary
+        that.events.onControllersReady.addListener(function () {
+            that.events.onReady.fire(that);
+        });
+    };
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
-        that.events.onControllersReady.fire(that);
     };
     
     /********************************************
@@ -288,7 +336,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
-        postInitFunction: "fluid.videoPlayer.controllers.scrubber.postInit",
         components: {
             bufferedProgress: {
                 type: "fluid.progress",
@@ -595,6 +642,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         volumeControls.bindModel(that);
 
         that.events.onReady.fire(that);
+    };
+
+    /********************************************************************************
+     * Evented empty subcomponent: an empty subcomponent that fires an onReady event
+     */
+    fluid.defaults("fluid.emptyEventedSubcomponent", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        events: {
+            onReady: null
+        },
+        finalInitFunction: "fluid.emptyEventedSubcomponent.finalInit"
+    });
+    fluid.emptyEventedSubcomponent.finalInit = function (that) {
+        that.events.onReady.fire();
     };
 
 })(jQuery);
