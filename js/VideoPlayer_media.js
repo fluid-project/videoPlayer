@@ -30,21 +30,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         components: {
             mediaEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onReady"
+                createOnEvent: "onEventBindingReady"
             },
             intervalEventsConductor: {
                 type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onReady"
+                createOnEvent: "onEventBindingReady"
             },
             transcript: {
                 type: "fluid.videoPlayer.transcript",
-                createOnEvent: "onReady"
+                createOnEvent: "onEventBindingReady"
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
-            onReady: null,
+            onEventBindingReady: null,
+            onReady: {
+                events: {
+                    eventBindingReady: "onEventBindingReady",
+                    created: "onCreate"
+                }
+            },
 
             // local events to mirror the media element events
             onMediaElementCanPlay: null,
@@ -52,6 +58,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onMediaElementVolumeChange: null,
             onMediaElementEnded: null,
             onMediaElementTimeUpdate: null
+        },
+        invokers: {
+            renderSources: { funcName: "fluid.videoPlayer.media.renderSources", args: ["{media}"] },
+            bindMediaModel: { funcName: "fluid.videoPlayer.media.bindMediaModel", args: ["{media}"] },
+            bindMediaDOMEvents: { funcName: "fluid.videoPlayer.media.bindMediaDOMEvents", args: ["{media}"] }
         },
         mediaEventBindings: {
             canplay: "onMediaElementCanPlay",
@@ -71,8 +82,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 listener: "{media}.applier.fireChangeRequest",
                 args: [{path: "currentTime", value: "{media}.model.mediaElementVideo.currentTime"}]
             }, {
-                listener: "{media}.applier.fireChangeRequest",
-                args: [{path: "startTime", value: "{media}.model.mediaElementVideo.startTime"}] // TODO: how do wo the "|| 0" here?
+                listener: "fluid.videoPlayer.media.updateStartTime",
+                args: ["{media}"]
             }, {
                 listener: "{media}.events.onLoadedMetadata.fire"
             }],
@@ -152,7 +163,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 currentTime = that.model.scrubTime;
             } else if (currentTime >= that.model.scrubTime) {
                 // if currentTime has caught up with scrubTime, we don't need scrubTime anymore.
-                // if we don't wait for currentTime to catch up, scrubbing with they keyboard
+                // if we don't wait for currentTime to catch up, scrubbing with the keyboard
                 // jumps and doesn't progress.
                 that.applier.requestChange("scrubTime", null);
             }
@@ -164,7 +175,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.transcript.transcriptInterval.events.onTick.fire(currentTime);
     };
 
-
+    fluid.videoPlayer.media.updateStartTime = function (that) {
+        var newStartTime = that.model.mediaElementVideo.startTime || 0;
+        that.applier.requestChange("startTime", newStartTime);
+    };
 
     fluid.videoPlayer.media.bindMediaDOMEvents = function (that) {
         MediaElement(that.container[0], {success: function (mediaElementVideo) {
@@ -180,9 +194,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 });
             });
 
-            // Fire onReady here rather than finalInit() because the instantiation
-            // of the media element object is asynchronous
-            that.events.onReady.fire(that);
+            that.events.onEventBindingReady.fire(that);
         }});
 
     };
@@ -238,9 +250,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
-        fluid.videoPlayer.media.renderSources(that);
-        fluid.videoPlayer.media.bindMediaModel(that);
-        fluid.videoPlayer.media.bindMediaDOMEvents(that);
+        that.renderSources(that);
+        that.bindMediaModel(that);
+        that.bindMediaDOMEvents(that);
     };
 
 })(jQuery);
