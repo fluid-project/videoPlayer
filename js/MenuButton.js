@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -229,14 +229,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.languageControls.finalInit",
         selectors: {
-            button: ".flc-videoPlayer-languageButton",
-            label: ".flc-videoPlayer-languageButton-label",
-            menu: ".flc-videoPlayer-languageMenu"
+            button: ".flc-menuButton-button",
+            label: ".flc-menuButton-label",
+            menu: ".flc-menuButton-languageMenu"
         },
         events: {
             onReady: null,
             onRenderingComplete: null,
-            onControlledElementReady: null
+            onControlledElementReady: null,
+            afterFetchResources: null
+        },
+        listeners: {
+            afterFetchResources: {
+                listener: "fluid.videoPlayer.languageControls.setUpControls",
+                priority: "last"
+            }
         },
         languages: [],
         currentLanguagePath: "",
@@ -252,6 +259,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         components: {
             button: {
                 type: "fluid.toggleButton",
+                createOnEvent: "afterFetchResources",
                 container: "{languageControls}.container",
                 options: {
                     styles: {
@@ -268,6 +276,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             menu: {
                 type: "fluid.videoPlayer.languageMenu",
+                createOnEvent: "afterFetchResources",
                 container: "{languageControls}.dom.menu",
                 options: {
                     model: "{languageControls}.model",
@@ -284,6 +293,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             eventBinder: {
                 type: "fluid.videoPlayer.languageControls.eventBinder",
                 createOnEvent: "onRenderingComplete"
+            }
+        },
+        templates: {
+            menuButton: {
+                forceCache: true,
+                href: "../html/menuButton_template.html"
+            }
+        },
+        invokers: {
+            refreshButtonClass: {
+                funcName: "fluid.videoPlayer.languageControls.refreshButtonClass",
+                args: ["{languageControls}"]
             }
         }
     });
@@ -336,19 +357,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.languageControls.finalInit = function (that) {
+    fluid.videoPlayer.languageControls.refreshButtonClass = function (that) {
+        var showHide = that.readIndirect("showHidePath");
+        that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
+    };
+
+    fluid.videoPlayer.languageControls.setUpControls = function (that) {
+        that.container.show();
         that.events.onRenderingComplete.fire(that);
 
         fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         fluid.videoPlayer.languageControls.setUpAria(that);
 
-        function refreshButtonClass() {
-            var showHide = that.readIndirect("showHidePath");
-            that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
-        }
-        that.applier.modelChanged.addListener(that.options.showHidePath, refreshButtonClass);
-        refreshButtonClass();
+        that.applier.modelChanged.addListener(that.options.showHidePath, that.refreshButtonClass);
+        that.refreshButtonClass();
         that.events.onReady.fire(that);
+    };
+
+    fluid.videoPlayer.languageControls.finalInit = function (that) {
+        fluid.fetchResources(that.options.templates, function (resourceSpec) {
+            that.container.append(that.options.templates.menuButton.resourceText);
+            that.events.afterFetchResources.fire(that);
+        });
     };
 
     /**************************************************************************************
