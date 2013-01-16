@@ -183,7 +183,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
-                        onMediaReady: "{videoPlayer}.events.onMediaReady"
+                        onReady: "{videoPlayer}.events.onMediaReady"
                     },
                     sources: "{videoPlayer}.options.video.sources"
                 }
@@ -312,6 +312,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 transcripts: []
             },
             currentTime: 0,
+            scrubTime: null,
             totalTime: 0,
             bufferEnd: 0,
             displayCaptions: false,
