@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -69,6 +69,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     forceCache: true,
                     href: "../../html/videoPlayer_template.html"
                 }
+            },
+            components: {
+                controllers: {
+                    options: {
+                        templates: {
+                            menuButton: {
+                                href: "../../html/menuButton_template.html"
+                            }
+                        }
+                    }
+                }
             }
         };
 
@@ -91,34 +102,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         };
 
+        var captionLangMenuSelector = ".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu";
+        var transcriptLangMenuSelector = ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu";
+
         fluid.tests.videoPlayer.triggerTranscript = function (that) {
-            $(".flc-videoPlayer-transcripts-languageMenu li:eq(0)").click();
+            $(transcriptLangMenuSelector + " li:eq(0)").click();
         };
 
         fluid.tests.videoPlayer.testAriaControlsAttrs = function (that) {
             var controlsToTest = [{
-                controlName: "Caption menu",
-                control: ".flc-videoPlayer-captions-languageMenu",
-                controlledName: "captions area",
-                controlled: ".flc-videoPlayer-captionArea"
-            }, {
                 controlName: "Transcript menu",
-                control: ".flc-videoPlayer-transcripts-languageMenu",
+                control: transcriptLangMenuSelector,
                 controlledName: "transcript area",
                 controlled: ".flc-videoPlayer-transcript-text"
             }];
 
-            var captionMenuLanguages = $(".flc-videoPlayer-captions-languageMenu .flc-videoPlayer-language");
-            for (var i = 0; i < captionMenuLanguages.length; i++) {
-                controlsToTest.push({
-                    controlName: "Caption language " + i,
-                    control: captionMenuLanguages[i],
-                    controlledName: "captions area",
-                    controlled: ".flc-videoPlayer-captionArea"
-                });
-            }
-            var transcriptMenuLanguages = $(".flc-videoPlayer-transcripts-languageMenu .flc-videoPlayer-language");
-            for (i = 0; i < transcriptMenuLanguages.length; i++) {
+            var transcriptMenuLanguages = $(transcriptLangMenuSelector + " .flc-videoPlayer-language");
+            for (var i = 0; i < transcriptMenuLanguages.length; i++) {
                 controlsToTest.push({
                     controlName: "Transcript language " + i,
                     control: transcriptMenuLanguages[i],
@@ -126,6 +126,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     controlled: ".flc-videoPlayer-transcript-text"
                 });
             }
+
+            if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
+                controlsToTest.push({
+                    controlName: "Caption menu",
+                    control: captionLangMenuSelector,
+                    controlledName: "captions area",
+                    controlled: ".flc-videoPlayer-captionArea"
+                });
+                var captionMenuLanguages = $(captionLangMenuSelector + " .flc-videoPlayer-language");
+                for (i = 0; i < captionMenuLanguages.length; i++) {
+                    controlsToTest.push({
+                        controlName: "Caption language " + i,
+                        control: captionMenuLanguages[i],
+                        controlledName: "captions area",
+                        controlled: ".flc-videoPlayer-captionArea"
+                    });
+                }
+            }
+
             fluid.tests.videoPlayer.checkAriaControlsAttr(controlsToTest);
             start();
         };
@@ -133,7 +152,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
             var testOpts = {
                 listeners: {
-                    onReady: "fluid.tests.videoPlayer.triggerTranscript",
+                    onControllersReady: "fluid.tests.videoPlayer.triggerTranscript",
                     onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"
                 }
             };

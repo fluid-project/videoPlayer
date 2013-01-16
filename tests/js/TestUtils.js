@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -65,6 +65,17 @@ fluid.registerNamespace("fluid.testUtils");
             videoPlayer: {
                 forceCache: true,
                 href: "../../html/videoPlayer_template.html"
+            }
+        },
+        components: {
+            controllers: {
+                options: {
+                    templates: {
+                        menuButton: {
+                            href: "../../html/menuButton_template.html"
+                        }
+                    }
+                }
             }
         }
     };
