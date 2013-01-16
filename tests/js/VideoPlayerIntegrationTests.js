@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -50,7 +50,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.testPlayButton = function (that) {
                 // Play button plays and pauses video
                 var playButton = $(".flc-videoPlayer-play");
-                var clickFunc = function () { playButton.click() };
+                var clickFunc = function () { playButton.click(); };
                 
                 testPlayPause(clickFunc);
             };
@@ -70,7 +70,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.testContainerClick = function (that) {
                 // Clicking on video container plays and pauses video
                 var videoPlayerContainer = $(".flc-videoPlayer-video-container");
-                var clickFunc = function () { videoPlayerContainer.mousedown() };
+                var clickFunc = function () { videoPlayerContainer.mousedown(); };
                 
                 testPlayPause(clickFunc);
             };
@@ -107,17 +107,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
+        var transcriptMenuSelector = ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu";
+
         videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
             jqUnit.expect(2);
 
             fluid.videoPlayer.testTranscript = function (that) {
                 var video = $(".flc-videoPlayer-video");
-                var transMenu = $(".flc-videoPlayer-transcripts-languageMenu");
+                var transMenu = $(transcriptMenuSelector);
 
                 jqUnit.assertFalse("The transcript panel is hidden initially", $(".flc-videoPlayer-transcriptArea").is(":visible"));
                 
                 // Clicking "show transcript" menu item to open transcript panel
-                $(".flc-videoPlayer-transcripts-languageMenu li:last").click();  // click "show transcript" button
+                $(transcriptMenuSelector + " li:last").click();  // click "show transcript" button
                 jqUnit.assertTrue("The transcript panel is shown", $(".flc-videoPlayer-transcriptArea").is(":visible"));
                 
                 start();
@@ -140,9 +142,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             fluid.videoPlayer.testTranscript = function (that) {
                 // initial loading
-                $(".flc-videoPlayer-transcripts-languageMenu li:eq(0)").click();
+                $(transcriptMenuSelector + " li:eq(0)").click();
                 // switch to another language
-                $(".flc-videoPlayer-transcripts-languageMenu li:eq(1)").click();
+                $(transcriptMenuSelector + " li:eq(1)").click();
 
             };
             

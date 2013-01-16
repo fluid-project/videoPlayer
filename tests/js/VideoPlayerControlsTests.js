@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -21,200 +21,121 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Tests");
-
-        videoPlayerControlsTests.asyncTest("Play button", function () {
-            var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
-                listeners: {
-                    onControllersReady: function (that) {
-                        var playButton = that.locate("play");
-                        fluid.testUtils.verifyBasicButtonFunctions(playButton, "Play", "Play", "Pause", "fl-videoPlayer-playing");
-
-                        start();
-                    }
-                }
-            });
-        });
-
-        videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            jqUnit.expect(7);
-            var checkSlider = function (ariavaluenow, expectedValue) {
-                    jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
-                },
-                checkTooltipOnHover = function (element, expectedText) {
-                    fluid.testUtils.getTooltipCheckString(element, expectedText);
-                    element.mouseleave();
-                },
-                testVolumeControls = fluid.videoPlayer.volumeControls("#basic-volume-controls-test", {
-                    listeners: {
-                        onReady: function (that) {
-                            var muteButton = that.locate("mute"),
-                                volumeSlider = that.locate("volumeControl"),
-                                sliderHandle = that.locate("handle");
-
-                            jqUnit.assertEquals("Mute button should have title", that.options.strings.instructions, muteButton.attr("title"));
-                            jqUnit.assertEquals("Volume container should have aria-label", that.options.strings.instructions, that.container.attr("aria-label"));
-                            checkTooltipOnHover(volumeSlider, "Volume");
-                            checkTooltipOnHover(muteButton, "Mute");
-                            muteButton.click();
-                            checkSlider(sliderHandle.attr("aria-valuenow"), "0");
-                            checkTooltipOnHover(muteButton, "Un-mute");
-                            muteButton.click();
-
-                            jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
-                            jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
-                            checkSlider(sliderHandle.attr("aria-valuenow"), "50");
-                            jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
-
-                            start();
-                        }
-                    }
-                });
-        });
-
-        videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
-            jqUnit.expect(4);
-            var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
-                listeners: {
-                    onControllersReady: function (that) {
-                        var video = $("video")[0];
-                        var muteButton = that.volumeControl.locate("mute");
-
-                        jqUnit.assertFalse("Initially, video should not be muted", video.muted);
-                        muteButton.click();
-                        jqUnit.assertTrue("After clicking mute button, video should be muted", video.muted);
-                        muteButton.click();
-                        jqUnit.assertFalse("After clicking mute button again, video should again not be muted", video.muted);
-
-                        var sliderHandle = that.volumeControl.locate("handle");
-                        jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
-
-                        start();
-                    }
-                }
-            });
-        });
-        
-        var baseScrubberOpts = {
+        /*
+         * Test of controllers component as a whole, outside the context of the VideoPlayer
+         */
+        var baseControllerOptions = {
             model: {
-                totalTime: 200
+                currentTracks: {
+                    transcripts: [],
+                    captions: []
+                }
+            },
+            templates: {
+                menuButton: {
+                    href: "../../html/menuButton_template.html"
+                }
             }
         };
 
-        fluid.tests.initScrubber = function (testOpts) {
-            var opts = fluid.copy(baseScrubberOpts);
-            $.extend(true, opts, testOpts);
-            return fluid.videoPlayer.controllers.scrubber("#scrubber-test", opts);
-        };
-
-        videoPlayerControlsTests.test("Buffer progress update", function () {
+        var verifyNonOptionalControls = function () {
             jqUnit.expect(3);
-            var scrubber = fluid.tests.initScrubber();
-            
-            fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);
-            jqUnit.assertEquals("The buffer progress bar should not get updated when bufferEnd is not set", "0", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
-
-            scrubber.applier.requestChange("bufferEnd", 100);
-            fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);
-            jqUnit.assertEquals("The buffer progress bar should have valuenow of '50'", "50", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
-
-            scrubber.applier.requestChange("bufferEnd", 200);
-            fluid.videoPlayer.controllers.scrubber.updateBuffered(scrubber);
-            jqUnit.assertEquals("The buffer progress bar should have valuenow of '100'", "100", scrubber.locate("bufferedProgressBar").attr("aria-valuenow"));
-
-        });
-
-        fluid.tests.checkFullScreenButtonStyle = function (options) {
-            jqUnit[options.expectedFullScreen ? "assertTrue" : "assertFalse"](options.message, options.modelFullScreen);
-            jqUnit.assertEquals("After click, full screen button should have a proper styling", !options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.init));
-            jqUnit.assertEquals("After click, full screen button should have a proper styling", options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.pressed));
+            jqUnit.isVisible("Play button should be present", $(".flc-videoPlayer-play"));
+            jqUnit.isVisible("Volume controls should be present", $(".flc-videoPlayer-volumeContainer"));
+            jqUnit.assertTrue("Transcript controls should be present", $(".flc-videoPlayer-transcriptControls-container *").length > 0);
         };
 
-        var envFeatures = {"supportsFullScreen": "fluid.browser.supportsFullScreen"};
+        fluid.testUtils.initControllers = function (container, options) {
+            var opts = fluid.copy(baseControllerOptions);
+            $.extend(true, opts, options);
+            return fluid.videoPlayer.controllers(container, opts);
+        };
 
-        var fullScreenTests = [{
-            desc: "Fullscreen button should be present in the browsers which support fullscreen mode",
+        var defaultTests = [{
+            desc: "Default: only transcripts",
             async: true,
             testFn: function () {
                 jqUnit.expect(2);
 
-                var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
+                fluid.testUtils.initControllers("#full-controllers-test", {
                     listeners: {
-                        onControllersReady: function (that) {
-                            jqUnit.assertNotEquals("Full screen button component is not an empty one", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
-                            jqUnit.assertNotEquals("Full screen button should be present", that.locate("fullscreen").css("display"), "none");
-                            start();
-                        }
-                    }
-                });
-            }
-        }, {
-            desc: "Fullscreen button",
-            async: true,
-            testFn: function () {
-                jqUnit.expect(9);
-                var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
-                    listeners: {
-                        onControllersReady: function (that) {
-                            that.applier.modelChanged.removeListener("fullscreen", that.full);
-
-                            var fullScreenButton = that.locate("fullscreen"),
-                                fullScreenButtonStyles = that.options.components.fullScreenButton.options.styles;
-
-                            fluid.testUtils.verifyBasicButtonFunctions(fullScreenButton, "Fullscreen", "Full screen", "Exit full screen mode", "fl-videoPlayer-fullscreen-on");
-
-                            fluid.tests.checkFullScreenButtonStyle({
-                                message: "Initally, video should not be in full screen mode",
-                                expectedFullScreen: false,
-                                modelFullScreen: that.model.fullscreen,
-                                fullScreenButtonStyles: fullScreenButtonStyles,
-                                fullScreenButton: fullScreenButton
-                            });
-
-                            fullScreenButton.click();
-                            fluid.tests.checkFullScreenButtonStyle({
-                                message: "After click, video should be in full screen mode",
-                                expectedFullScreen: true,
-                                modelFullScreen: that.model.fullscreen,
-                                fullScreenButtonStyles: fullScreenButtonStyles,
-                                fullScreenButton: fullScreenButton
-                            });
-
-                            fullScreenButton.click();
-                            fluid.tests.checkFullScreenButtonStyle({
-                                message: "After clicking again, video should not be in full screen mode",
-                                expectedFullScreen: false,
-                                modelFullScreen: that.model.fullscreen,
-                                fullScreenButtonStyles: fullScreenButtonStyles,
-                                fullScreenButton: fullScreenButton
-                            });
+                        onReady: function (that) {
+                            verifyNonOptionalControls();
+                            jqUnit.assertEquals("Caption controls should NOT be present", 0, $(".flc-videoPlayer-captionControls-container *").length);
+                            jqUnit.notVisible("Full-screen button should NOT be visible", $(".flc-videoPlayer-fullscreen"));
                             start();
                         }
                     }
                 });
             }
         }];
-        fluid.testUtils.testCaseWithEnv("Video Player Controls Tests: Full-screen", fullScreenTests, envFeatures);
+        fluid.testUtils.testCaseWithEnv("Video Player Controller: ", defaultTests, {});
 
-        envFeatures = {"supportsFullScreen": false};
-
-        var nonFullScreenTests = [{
-            desc: "Fullscreen button should NOT be present",
+        var defaultPlusFullScreen = [{
+            desc: "Transcripts with full-screen",
             async: true,
             testFn: function () {
-                jqUnit.expect(1);
+                jqUnit.expect(2);
 
-                var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
+                fluid.testUtils.initControllers("#full-controllers-test", {
                     listeners: {
-                        onControllersReady: function (that) {
-                            jqUnit.assertEquals("Full screen button should NOT be present", that.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
+                        onReady: function (that) {
+                            verifyNonOptionalControls();
+                            jqUnit.assertEquals("Caption controls should NOT be present", 0, $(".flc-videoPlayer-captionControls-container *").length);
+                            jqUnit.isVisible("Full-screen button should be visible", $(".flc-videoPlayer-fullscreen"));
                             start();
                         }
                     }
                 });
             }
         }];
-        fluid.testUtils.testCaseWithEnv("Video Player Controls Tests: Non-Full-screen", nonFullScreenTests, envFeatures);
+        fluid.testUtils.testCaseWithEnv("Video Player Controller: ", defaultPlusFullScreen, {
+            "supportsFullScreen": "fluid.browser.supportsFullScreen"
+        });
 
+        var defaultPlusCaptions = [{
+            desc: "Transcripts with captions",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(2);
+
+                fluid.testUtils.initControllers("#full-controllers-test", {
+                    listeners: {
+                        onReady: function (that) {
+                            verifyNonOptionalControls();
+                            jqUnit.assertTrue("Caption controls should be present", $(".flc-videoPlayer-captionControls-container *").length > 0);
+                            jqUnit.notVisible("Full-screen button should NOT be visible", $(".flc-videoPlayer-fullscreen"));
+                            start();
+                        }
+                    }
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player Controller: ", defaultPlusCaptions, {
+            "supportsHtml5": "fluid.browser.supportsHtml5"
+        });
+
+        var defaultPlusFullScreenAndCaptions = [{
+            desc: "Transcripts with full-screen and captions",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(2);
+
+                fluid.testUtils.initControllers("#full-controllers-test", {
+                    listeners: {
+                        onReady: function (that) {
+                            verifyNonOptionalControls();
+                            jqUnit.assertTrue("Caption controls should be present", $(".flc-videoPlayer-captionControls-container *").length > 0);
+                            jqUnit.isVisible("Full-screen button should be visible", $(".flc-videoPlayer-fullscreen"));
+                            start();
+                        }
+                    }
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player Controller: ", defaultPlusFullScreenAndCaptions, {
+            "supportsFullScreen": "fluid.browser.supportsFullScreen",
+            "supportsHtml5": "fluid.browser.supportsHtml5"
+        });
     });
 })(jQuery);
