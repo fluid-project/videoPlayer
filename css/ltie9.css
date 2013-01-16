@@ -1,3 +1,12 @@
+/***************
+* Control bar *
+***************/
+
+.fl-videoPlayer-controller {
+    background-color: rgb(242, 242, 242);
+}
+
+
 /***********
  * Buttons *
  ***********/
@@ -28,4 +37,230 @@
 
 .fl-videoPlayer-buffered-progress {
     z-index: -1;
+}
+
+/****************
+ * Button icons *
+ ****************/
+/* Play */
+.fl-videoPlayer-play {
+    background-image: url('../images/small/default/play.png');
+}
+.fl-videoPlayer-play:hover {
+    background-image: url('../images/small/default/play_hover.png');
+}
+.fl-videoPlayer-play:focus {
+    background-image: url('../images/small/white/play.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-play,
+.fl-theme-uio-by .fl-videoPlayer-play,
+.fl-theme-uio-yb .fl-videoPlayer-play:focus,
+.fl-theme-uio-wb .fl-videoPlayer-play:focus {
+    background-image: url('../images/small/black/play.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-play:hover,
+.fl-theme-uio-by .fl-videoPlayer-play:hover {
+    background-image: url('../images/small/black/play_hover.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-play,
+.fl-theme-uio-by .fl-videoPlayer-play:focus {
+    background-image: url('../images/small/yellow/play.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-play:hover {
+    background-image: url('../images/small/yellow/play_hover.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-play,
+.fl-theme-uio-bw .fl-videoPlayer-play:focus {
+    background-image: url('../images/small/white/play.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-play:hover {
+    background-image: url('../images/small/white/play_hover.png');
+}
+
+
+/* Pause */
+.fl-videoPlayer-playing {
+    background-image: url('../images/small/default/pause.png');
+}
+.fl-videoPlayer-playing:hover {
+    background-image: url('../images/small/default/pause_hover.png');
+}
+.fl-videoPlayer-playing:focus {
+    background-image: url('../images/small/white/pause.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-playing,
+.fl-theme-uio-by .fl-videoPlayer-playing,
+.fl-theme-uio-yb .fl-videoPlayer-playing:focus,
+.fl-theme-uio-wb .fl-videoPlayer-playing:focus {
+    background-image: url('../images/small/black/pause.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-playing:hover,
+.fl-theme-uio-by .fl-videoPlayer-playing:hover {
+    background-image: url('../images/small/black/pause_hover.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-playing,
+.fl-theme-uio-by .fl-videoPlayer-playing:focus {
+    background-image: url('../images/small/yellow/pause.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-playing:hover {
+    background-image: url('../images/small/yellow/pause_hover.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-playing,
+.fl-theme-uio-bw .fl-videoPlayer-playing:focus {
+    background-image: url('../images/small/white/pause.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-playing:hover {
+    background-image: url('../images/small/white/pause_hover.png');
+}
+
+/* Volume */
+.fl-videoPlayer-mute {
+    background-image: url('../images/small/default/volume.png');
+}
+.fl-videoPlayer-muted {
+    background-image: url('../images/small/default/volume_off.png');
+}
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-image: url('../images/small/white/volume.png');
+}
+.fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-image: url('../images/small/white/volume_off.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-mute,
+.fl-theme-uio-by .fl-videoPlayer-mute,
+.fl-theme-uio-wb .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute,
+.fl-theme-uio-yb .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-image: url('../images/small/black/volume.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-mute,
+.fl-theme-uio-by .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-image: url('../images/small/yellow/volume.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-mute,
+.fl-theme-uio-bw .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
+    background-image: url('../images/small/white/volume.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-muted,
+.fl-theme-uio-by .fl-videoPlayer-muted,
+.fl-theme-uio-wb .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted,
+.fl-theme-uio-yb .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-image: url('../images/small/black/volume_off.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-muted,
+.fl-theme-uio-by .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-image: url('../images/small/yellow/volume_off.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-muted,
+.fl-theme-uio-bw .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
+    background-image: url('../images/small/white/volume_off.png');
+}
+
+/* Captions */
+.fl-videoPlayer-captions-button {
+    background-image: url('../images/small/default/captions.png');
+}
+.fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/default/captions_hover.png');
+}
+.fl-videoPlayer-captions-button-on {
+    background-image: url('../images/small/default/captions_on.png');
+}
+.fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/white/captions.png');
+}
+.fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/white/captions_on.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-captions-button,
+.fl-theme-uio-by .fl-videoPlayer-captions-button,
+.fl-theme-uio-yb .fl-videoPlayer-captions-button:focus,
+.fl-theme-uio-wb .fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/black/captions.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-captions-button:hover,
+.fl-theme-uio-by .fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/black/captions_hover.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-by .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-yb .fl-videoPlayer-captions-button-on:focus,
+.fl-theme-uio-wb .fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/black/captions_on.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button,
+.fl-theme-uio-by .fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/yellow/captions.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/yellow/captions_hover.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-by .fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/yellow/captions_on.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-captions-button,
+.fl-theme-uio-bw .fl-videoPlayer-captions-button:focus {
+    background-image: url('../images/small/white/captions.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/small/white/captions_hover.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-captions-button-on,
+.fl-theme-uio-bw .fl-videoPlayer-captions-button-on:focus {
+    background-image: url('../images/small/white/captions_on.png');
+}
+
+/* Transcripts */
+.fl-videoPlayer-transcripts-button {
+    background-image: url('../images/small/default/transcript.png');
+}
+.fl-videoPlayer-transcripts-button:hover {
+    background-image: url('../images/small/default/transcript_hover.png');
+}
+.fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/small/default/transcript_on.png');
+}
+.fl-videoPlayer-transcripts-button:focus {
+    background-image: url('../images/small/white/transcript.png');
+}
+.fl-videoPlayer-transcripts-button-on:focus {
+    background-image: url('../images/small/white/transcript_on.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button,
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button:focus,
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button:focus {
+    background-image: url('../images/small/black/transcript.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button:hover,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button:hover {
+    background-image: url('../images/small/black/transcript_hover.png');
+}
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button-on,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button-on,
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button-on:focus,
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button-on:focus {
+    background-image: url('../images/small/black/transcript_on.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button:focus {
+    background-image: url('../images/small/yellow/transcript.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button:hover {
+    background-image: url('../images/small/yellow/transcript_hover.png');
+}
+.fl-theme-uio-yb .fl-videoPlayer-transcripts-button-on,
+.fl-theme-uio-by .fl-videoPlayer-transcripts-button-on:focus {
+    background-image: url('../images/small/yellow/transcript_on.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button,
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button:focus {
+    background-image: url('../images/small/white/transcript.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button:hover {
+    background-image: url('../images/small/white/transcript_hover.png');
+}
+.fl-theme-uio-wb .fl-videoPlayer-transcripts-button-on,
+.fl-theme-uio-bw .fl-videoPlayer-transcripts-button-on:focus {
+    background-image: url('../images/small/white/transcript_on.png');
 }
