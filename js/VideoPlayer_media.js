@@ -250,9 +250,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
-        that.renderSources(that);
-        that.bindMediaModel(that);
-        that.bindMediaDOMEvents(that);
+        that.renderSources();
+        that.bindMediaModel();
+        that.bindMediaDOMEvents();
     };
 
 })(jQuery);
