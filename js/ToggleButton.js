@@ -23,7 +23,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.toggleButton.finalInit",
         events: {
             onPress: null,
-            onReady: null
+            onTooltipAttached: null,
+            onReady: {
+                events: {
+                    onCreate: "onCreate",
+                    tooltip: "onTooltipAttached"
+                },
+                args: ["{toggleButton}"]
+            }
         },
         selectors: {    // Integrators may override this selector
             button: ".flc-videoPlayer-button",
@@ -55,6 +62,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     styles: {
                         tooltip: "{toggleButton}.options.styles.tooltip"
+                    },
+                    listeners: {
+                        onAttach: "{toggleButton}.events.onTooltipAttached"
                     }
                 }
             }
@@ -114,7 +124,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.toggleButton.finalInit = function (that) {
         fluid.toggleButton.setUpToggleButton(that);
         fluid.toggleButton.bindToggleButtonEvents(that);
-        that.events.onReady.fire(that);
     };
     
 })(jQuery);

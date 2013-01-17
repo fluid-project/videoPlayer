@@ -38,7 +38,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         showHidePath: "showLanguage",
         model: {},
         events: {
-            onReady: null,
+            onReady: {
+                events: {
+                    onCreate: "onCreate",
+                    afterRender: "afterRender"
+                },
+                args: ["{languageMenu}"]
+            },
             activated: null,
             hiddenByKeyboard: null,
             onControlledElementReady: null
@@ -214,7 +220,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.hideMenu();
         that.updateTracks();
         that.updateShowHide();
-        that.events.onReady.fire(that);
     };
 
 

@@ -123,7 +123,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     modelPath: "play",
                     ownModel: false,
                     applier: "{controllers}.applier",
-                    events: {
+                    listeners: {
                         onReady: "{controllers}.events.onPlayReady"
                     }
                 }
@@ -131,7 +131,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullScreenButton: {
                 type: "fluid.emptyEventedSubcomponent",
                 options: {
-                    events: {
+                    listeners: {
                         onReady: "{controllers}.events.onFullScreenReady"
                     }
                 }
@@ -214,7 +214,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         modelPath: "fullscreen",
         ownModel: false,
         applier: "{controllers}.applier",
-        events: {
+        listeners: {
             onReady: "{controllers}.events.onFullScreenReady"
         }
     };
