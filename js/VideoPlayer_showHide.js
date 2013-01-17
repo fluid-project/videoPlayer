@@ -23,17 +23,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.showHide", {
         gradeNames: ["fluid.modelComponent", "autoInit"],
         finalInit: "fluid.videoPlayer.showHide.finalInit",
+        modelPrefix: "showFlags",
         model: {},
         showHidePath: ""
     });
     
     fluid.videoPlayer.showHide.finalInit = function (that) {
-        var modelCollectionName = "showFlags";
-        
-        that.applier.modelChanged.addListener(modelCollectionName + "." + that.options.showHidePath, function () {
+        that.applier.modelChanged.addListener(fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath), function () {
             if (!that.container) return;
             
-            var showFlag = fluid.get(that.model, modelCollectionName + "." + that.options.showHidePath) ? true : false;
+            var showFlag = fluid.get(that.model, fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath)) ? true : false;
             
             if (showFlag) {
                 that.container.show();
