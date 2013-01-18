@@ -135,10 +135,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onReady: "{controllers}.events.onFullScreenReady"
                     }
                 }
-            },
-            controllersEventBinder: {
-                type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onControllersReady"
             }
         },
         postInitFunction: "fluid.videoPlayer.controllers.postInit",
@@ -338,8 +334,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
+        showHidePath: "scrubber",
         components: {
             bufferedProgress: {
                 type: "fluid.progress",
@@ -360,15 +357,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             updateBuffered: {
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
                 args: ["{fluid.videoPlayer.controllers.scrubber}"]
-            },
-            hideHandle: {
-                funcName: "fluid.videoPlayer.controllers.scrubber.hideHandle",
-                args: ["{fluid.videoPlayer.controllers.scrubber}"]
-            },
-            showHandle: {
-                funcName: "fluid.videoPlayer.controllers.scrubber.showHandle",
-                args: ["{fluid.videoPlayer.controllers.scrubber}"]
-            }  
+            }
         },
         selectors: {
             totalTime: ".flc-videoPlayer-total",
@@ -412,14 +401,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
 
-    fluid.videoPlayer.controllers.scrubber.hideHandle = function (that) {
-        that.locate("handle").hide();
-    };
-    
-    fluid.videoPlayer.controllers.scrubber.showHandle = function (that) {
-        that.locate("handle").show();
-    };
-    
     fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
         // TODO: these methods should be public functions, since people might like to alter them
         //       (inherited code)

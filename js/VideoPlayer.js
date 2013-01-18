@@ -182,8 +182,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     },
                     events: {
-                        onDurationMissingAtLoad: "{videoPlayer}.events.onDurationMissingAtLoad",
-                        onDurationFound: "{videoPlayer}.events.onDurationFound",
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
                         onReady: "{videoPlayer}.events.onMediaReady"
                     },
@@ -234,8 +232,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onScrub: null,
             onTemplateReady: null,
             onViewReady: null,
-            onDurationMissingAtLoad: null,
-            onDurationFound: null,
             onLoadedMetadata: null,
             onMediaReady: null,
             onControllersReady: null,
@@ -641,15 +637,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
                 "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
-            }
-        }
-    });
-
-    fluid.demands("controllersEventBinder", ["fluid.videoPlayer.controllers", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onDurationMissingAtLoad": "{controllers}.scrubber.hideHandle",
-                "{videoPlayer}.events.onDurationFound": "{controllers}.scrubber.showHandle",
             }
         }
     });

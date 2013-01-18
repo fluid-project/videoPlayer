@@ -33,6 +33,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 // unique component name. "handle" is the selector defined in the "scrubber" component.
             }
         },
+        // The identifier of the component for showing/hiding in the model "isShown" collection,
+        // normally the unique component name, or any name as long as it maintains the uniqueness
+        // of each component that has the "showHide" grade attached on.
         showHidePath: ""
     });
     
