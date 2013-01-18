@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -21,21 +21,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var videoPlayerTranscriptTests = new jqUnit.TestCase("Video Player Display Config Tests");
     
-        var container = ".flc-videoPlayer-showHide";
+        var showHideContainer = ".flc-videoPlayer-testContainer";
         
         fluid.defaults("fluid.videoPlayer.testShowHide", {
             gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
-            showHidePath: "scrubber"
+            showHidePath: "scrubber",
+            selectors: {
+                testContainer: showHideContainer
+            },
+            selectorsToIgnore: ["testContainer"]
         });
         
         videoPlayerTranscriptTests.test("hide", function () {
-            var that = fluid.videoPlayer.testShowHide(container);
+            var that = fluid.videoPlayer.testShowHide(".flc-videoPlayer-showHide");
             
-            jqUnit.isVisible("The container is shown", $(container));
-            that.applier.requestChange("showFlags.scrubber", false);
-            jqUnit.notVisible("The container is hidden", $(container));
-            that.applier.requestChange("showFlags.scrubber", true);
-            jqUnit.isVisible("The container is back to be shown", $(container));
+            jqUnit.isVisible("The container is shown", $(showHideContainer));
+            that.applier.requestChange("isShown.scrubber.testContainer", false);
+            jqUnit.notVisible("The container is hidden", $(showHideContainer));
+            that.applier.requestChange("isShown.scrubber.testContainer", true);
+            jqUnit.isVisible("The container is back to be shown", $(showHideContainer));
         });
         
     });

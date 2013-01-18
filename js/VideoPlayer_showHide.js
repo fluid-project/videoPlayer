@@ -23,22 +23,38 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.showHide", {
         gradeNames: ["fluid.modelComponent", "autoInit"],
         finalInit: "fluid.videoPlayer.showHide.finalInit",
-        modelPrefix: "showFlags",
-        model: {},
+        modelPrefix: "isShown",
+        model: {
+            isShown: {
+                // A list of flags (true or false) to define the showing/hiding of any selectors
+                // in a component. Example:
+                // "scrubber.handle": false
+                // "scrubber" is the identifier defined in the option "showHidePath", normally the 
+                // unique component name. "handle" is the selector defined in the "scrubber" component.
+            }
+        },
         showHidePath: ""
     });
     
     fluid.videoPlayer.showHide.finalInit = function (that) {
-        that.applier.modelChanged.addListener(fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath), function () {
-            if (!that.container) return;
+        fluid.each(that.options.selectors, function (selectorValue, selectorKey) {
+            var modelPath = fluid.pathUtil.composePath(
+                    fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath),
+                    selectorKey);
             
-            var showFlag = fluid.get(that.model, fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath)) ? true : false;
-            
-            if (showFlag) {
-                that.container.show();
-            } else {
-                that.container.hide();
-            }
+            that.applier.modelChanged.addListener(modelPath, function () {
+                var container = that.locate(selectorKey);
+                
+                if (!container) return;
+
+                var showFlag = fluid.get(that.model, modelPath) ? true : false;
+                
+                if (showFlag) {
+                    container.show();
+                } else {
+                    container.hide();
+                }
+            });
         });
     };
 
