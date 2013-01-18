@@ -43,12 +43,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.each(that.options.selectors, function (selectorValue, selectorKey) {
             var modelPath = fluid.pathUtil.composePath(
                     fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath),
-                    selectorKey);
+                    selectorKey
+                );
             
             that.applier.modelChanged.addListener(modelPath, function () {
                 var container = that.locate(selectorKey);
                 
-                if (!container) return;
+                if (!container) {
+                    return;
+                }
 
                 var showFlag = fluid.get(that.model, modelPath) ? true : false;
                 
