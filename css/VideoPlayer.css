@@ -37,7 +37,7 @@
     float: left;
 }
 :-webkit-full-screen .fl-videoPlayer-transcriptArea {
-    width: 15%;
+    width: 20%;
     max-width: 25em;
 }
 
