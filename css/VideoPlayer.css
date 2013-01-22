@@ -4,6 +4,7 @@
 }
 
 :-moz-full-screen .fl-videoPlayer-main {
+	height: 100%;
 	width: 100%;
 }
 :-moz-full-screen .fl-videoPlayer-video-element { 
