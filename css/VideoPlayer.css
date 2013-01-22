@@ -8,8 +8,10 @@
     width: 100%;
     padding-bottom: 2em;
 }
-
-:-moz-full-screen .fl-videoPlayer-video-element, :-moz-full-screen .fl-videoPlayer-overlay {
+:-moz-full-screen .fl-videoPlayer-video-element {
+	width: 100%;
+}
+:-moz-full-screen .fl-videoPlayer-overlay {
     width: auto;
 }
 :-moz-full-screen .fl-videoPlayer-transcriptArea {
@@ -35,7 +37,7 @@
     float: left;
 }
 :-webkit-full-screen .fl-videoPlayer-transcriptArea {
-    width: 20%;
+    width: 15%;
     max-width: 25em;
 }
 
