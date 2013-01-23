@@ -31,16 +31,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.videoPlayer.transcript.preInit",
         finalInitFunction: "fluid.videoPlayer.transcript.finalInit",
         produceTree: "fluid.videoPlayer.transcript.produceTree",
-        components: {
-            transcriptInterval: {
-                type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onReady"
-            },
-            transcriptEventBinder: {
-                type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onReady"
-            }
-        },
+//        components: {
+//            transcriptInterval: {
+//                type: "fluid.videoPlayer.intervalEventsConductor",
+//                createOnEvent: "onReady"
+//            }
+//        },
         events: {
             onTranscriptsLoaded: null,
             onLoadTranscriptError: null,
@@ -380,9 +376,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
         
-        that.events.onTranscriptsLoaded.addListener(function (intervalList) {
-            that.transcriptInterval.setIntervalList(intervalList);
-        });
+//        that.events.onTranscriptsLoaded.addListener(function (intervalList) {
+//            that.transcriptInterval.setIntervalList(intervalList);
+//        });
         
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
             if (currentInterval !== that.model.transcriptIntervalId) {

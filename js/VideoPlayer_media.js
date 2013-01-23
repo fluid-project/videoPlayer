@@ -57,7 +57,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onMediaElementLoadedMetadata: null,
             onMediaElementVolumeChange: null,
             onMediaElementEnded: null,
-            onMediaElementTimeUpdate: null
+            onMediaElementTimeUpdate: null,
+            
+            onLoadedMetadata: null
         },
         invokers: {
             renderSources: { funcName: "fluid.videoPlayer.media.renderSources", args: ["{media}"] },
@@ -171,8 +173,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var buffered = that.model.mediaElementVideo.buffered || 0;
 
-        that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
-        that.transcript.transcriptInterval.events.onTick.fire(currentTime);
+        that.transcriptInterval.events.onTick.fire(currentTime, buffered);
     };
 
     fluid.videoPlayer.media.updateStartTime = function (that) {
