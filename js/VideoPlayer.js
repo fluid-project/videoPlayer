@@ -143,40 +143,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-//                    components: {
-//                        transcript: {
-//                            type: "fluid.videoPlayer.transcript",
-//                            container: "{videoPlayer}.dom.transcript",
-//                            createOnEvent: "onTranscriptIntervalReady",
-//                            options: {
-//                                model: "{videoPlayer}.model",
-//                                applier: "{videoPlayer}.applier",
-//                                transcripts: "{videoPlayer}.options.video.transcripts",
-//                                events: {
-//                                    onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
-//                                    onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
-//                                    onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
-//                                    onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-//                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded",
-//                                    onIntervalChange: "{intervalEventsConductor}.events.onIntervalChange"
-//                                },
-//                                listeners: {
-//                                    onTranscriptsLoaded: "{intervalEventsConductor}.setIntervalList"
-//                                }
-//                            }
-//                        },
-//                        transcriptInterval: {
-//                            type: "fluid.videoPlayer.intervalEventsConductor",
-//                            options: {
-//                                events: {
-//                                    onTimeChange: "{videoPlayer}.events.onTimeChange"
-//                                },
-//                                listeners: {
-//                                    onReady: "{media}.events.onTranscriptIntervalReady"
-//                                }
-//                            }
-//                        }
-//                    },
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
                         onReady: "{videoPlayer}.events.onMediaReady"
@@ -206,12 +172,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "onMediaReady",
                 options: {
                     events: {
-                        onTimeUpdate: "{videoPlayer}.events.onTimeUpdate"
+                        onTimeUpdate: "{videoPlayer}.events.onTimeUpdate",
+                        onIntervalChange: "{transcript}.events.onIntervalChange"
                     },
                     listeners: {
-//                        onReady: "{videoPlayer}.events.onIntervalEventsConductorReady"
-                        "{transcript}.events.onTranscriptLoaded": "{intervalEventsConductor}.setIntervalList"
-//                        "{transcript}.events.onTranscriptsLoaded": function () {console.log("loaded is fired");}
+                        "{transcript}.events.onTranscriptsLoaded": "{intervalEventsConductor}.setIntervalList"
                     }
                 }
             },
@@ -754,12 +719,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
     
-//    fluid.demands("fluid.videoPlayer.transcript", ["fluid.videoPlayer.intervalEventsConductor", "fluid.videoPlayer"], {
-//        options: {
-//            listeners: {
-//                onTranscriptsLoaded: "{intervalEventsConductor}.setIntervalList"
-//            }
-//        }
-//    });
-
 })(jQuery);

@@ -67,7 +67,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
     
     fluid.videoPlayer.intervalEventsConductor.setIntervalList = function (that, intervalList) {
         that.options.intervalList = intervalList;
-        console.log("intervalList is set to: " + that.options.intervalList);
     };
     
     fluid.videoPlayer.intervalEventsConductor.inInterval = function (currentTimeInMillis, interval) {
@@ -104,8 +103,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
      * The main process to re-wire the events
      */
     fluid.videoPlayer.intervalEventsConductor.handleTimeUpdate = function (that, currentTime, buffered) {
-//        that.events.onTimeChange.fire(currentTime, buffered);
-        
         if (that.options.intervalList) {
             var previousInterval = that.options.model.previousIntervalId;
             var currentInterval = fluid.videoPlayer.intervalEventsConductor.findCurrentInterval(currentTime, that.options.intervalList, previousInterval);
