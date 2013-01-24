@@ -88,10 +88,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             newTime = (that.options.transcripts[0].tracks[7].start_time + 1) / 1000;
                             anElement.click();
                         },
-                        onTimeChange: {
+                        onTimeUpdate: {
                             listener: function (currTime, buffered) {
                                 jqUnit.assertEquals("New time is same as clicked transcript", newTime, currTime);
-                                vp.events.onTimeChange.removeListener("timeChecker");
+                                vp.events.onTimeUpdate.removeListener("timeChecker");
                                 start();
                             },
                             namespace: "timeChecker"

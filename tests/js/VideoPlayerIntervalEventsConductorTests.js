@@ -51,20 +51,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             testFindCurrentInterval(4, null, 2);
         });
         
-        videoPlayerIntervalEventsConductorTests.test("Test onTimeChange event", function () {
-            jqUnit.expect(1);
-            var timeToSet = 20;
-            
-            var that = fluid.videoPlayer.intervalEventsConductor({
-                listeners: {
-                    onTimeChange: function (time) {
-                        jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);
-                    }
-                }
-            });
-            that.events.onTick.fire(timeToSet);
-        });
-
         var testIntervalChangeFired = function (timeToSet, expectedCurrentInterval, expectedPreviousInterval, desc) {
             videoPlayerIntervalEventsConductorTests.test("onIntervalChange event gets fired: " + desc, function () {
                 jqUnit.expect(2);
@@ -80,7 +66,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     }
                 });
-                that.events.onTick.fire(timeToSet);
+                that.events.onTimeUpdate.fire(timeToSet);
             });
         };
         
@@ -106,7 +92,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 });
           
-                that.events.onTick.fire(timeToSet);
+                that.events.onTimeUpdate.fire(timeToSet);
                 jqUnit.assertFalse("The event onIntervalChange is not fired", onIntervalChangeFired);
             });
         };
@@ -123,13 +109,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             finalInitFunction: "fluid.videoPlayer.testTimer.finalInit",
             timeToTick: null,
             events: {
-                onTick: null
+                onTimeUpdate: null
             }
         });
 
         fluid.videoPlayer.testTimer.finalInit = function (that) {
             setTimeout(function () {
-                that.events.onTick.fire(that.options.timeToTick);
+                that.events.onTimeUpdate.fire(that.options.timeToTick);
             }, 1);
         };
 
@@ -147,7 +133,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         options: {
                             timeToTick: timeToSet,
                             events: {
-                                onTick: "{intervalEventsConductor}.events.onTick"
+                                onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
                             }
                         }
                     }
@@ -157,8 +143,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     previousIntervalId: previousInterval
                 },
                 listeners: {
-                    onTimeChange: function (time) {
-                        jqUnit.assertEquals("The event onTimeChange is fired with argument " + time, timeToSet, time);
+                    onTimeUpdate: function (time) {
+                        jqUnit.assertEquals("The event onTimeUpdate is fired with argument " + time, timeToSet, time);
                     },
                     onIntervalChange: function (currentInterval, previousInterval) {
                         jqUnit.assertEquals("The event onIntervalChange is fired with currentInterval " + expectedCurrentInterval, "0", currentInterval);
