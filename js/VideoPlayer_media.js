@@ -45,6 +45,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onEventBindingReady: null,
+            onTimeUpdate: null, // for intervalEventsConductor.events.onTimeUpdate
             onReady: {
                 events: {
                     eventBindingReady: "onEventBindingReady",
@@ -173,7 +174,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var buffered = that.model.mediaElementVideo.buffered || 0;
 
-        that.transcriptInterval.events.onTick.fire(currentTime, buffered);
+        that.events.onTimeUpdate.fire(currentTime, buffered);
+//        that.transcriptInterval.events.onTick.fire(currentTime, buffered);
     };
 
     fluid.videoPlayer.media.updateStartTime = function (that) {

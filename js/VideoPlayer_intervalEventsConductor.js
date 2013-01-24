@@ -38,9 +38,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.intervalEventsConductor", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         events: {
-            onTimeChange: null,
+            onTimeUpdate: null,
             onIntervalChange: null,
-            onTick: null,
             onReady: {
                 events: {
                     onCreate: "onCreate"
@@ -49,8 +48,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
         },
         listeners: {
-            onTick: {
-                listener: "fluid.videoPlayer.intervalEventsConductor.handleTicks",
+            onTimeUpdate: {
+                listener: "fluid.videoPlayer.intervalEventsConductor.handleTimeUpdate",
                 args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0", "{arguments}.1"]
             }
         },
@@ -108,8 +107,8 @@ https://source.fluidproject.org/svn/LICENSE.txt
     /**
      * The main process to re-wire the events
      */
-    fluid.videoPlayer.intervalEventsConductor.handleTicks = function (that, currentTime, buffered) {
-        that.events.onTimeChange.fire(currentTime, buffered);
+    fluid.videoPlayer.intervalEventsConductor.handleTimeUpdate = function (that, currentTime, buffered) {
+//        that.events.onTimeChange.fire(currentTime, buffered);
         
         if (that.options.intervalList) {
             var previousInterval = that.options.model.previousIntervalId;
@@ -122,34 +121,5 @@ https://source.fluidproject.org/svn/LICENSE.txt
             }
         }
     };
-
-    /*********************************************************************************
-     * Timer component for HTML5 media element                                       *
-     *                                                                               *
-     * The timer component fires the onTick event with the argument of "currentTime" *
-     * when the time change occurs.                                                  *
-     *********************************************************************************/
-
-//    fluid.defaults("fluid.videoPlayer.html5MediaTimer", {
-//        gradeNames: ["fluid.eventedComponent", "autoInit"],
-//        finalInitFunction: "fluid.videoPlayer.html5MediaTimer.finalInit",
-//        mediaElement: null,
-//        events: {
-//            onTick: null
-//        }
-//    });
-//
-//    fluid.videoPlayer.html5MediaTimer.finalInit = function (that) {
-//        var media = that.options.mediaElement;
-//
-//        if (!media) {
-//            fluid.fail("Undefined mediaElement option in " + that.typeName + ".");
-//        }
-//        media.bind("timeupdate", function (ev) {
-//            var currentTime = ev.currentTarget.currentTime;
-//
-//            that.events.onTick.fire(currentTime);
-//        });
-//    };
 
 })(jQuery);

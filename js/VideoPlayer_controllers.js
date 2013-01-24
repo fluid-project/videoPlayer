@@ -141,7 +141,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onStartTimeChange: null,
-            onTimeChange: null,
             afterTimeChange: null,
             onMarkupReady: null,
             onScrub: null,

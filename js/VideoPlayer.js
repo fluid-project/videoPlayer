@@ -143,58 +143,78 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
-                    components: {
-                        transcript: {
-                            type: "fluid.videoPlayer.transcript",
-                            container: "{videoPlayer}.dom.transcript",
-                            createOnEvent: "onTranscriptIntervalReady",
-                            options: {
-                                // TODO (long term) - should not share entire model and applier with transcripts
-                                model: "{videoPlayer}.model",
-                                applier: "{videoPlayer}.applier",
-                                transcripts: "{videoPlayer}.options.video.transcripts",
-//                                components: {
-//                                    transcriptInterval: {
-//                                        type: "fluid.videoPlayer.intervalEventsConductor",
-//                                        options: {
-//                                            events: {
-//                                                onTimeChange: "{videoPlayer}.events.onTimeChange",
-//                                                onIntervalChange: "{transcript}.events.onIntervalChange"
-//                                            }
-//                                        }
-//                                    }
+//                    components: {
+//                        transcript: {
+//                            type: "fluid.videoPlayer.transcript",
+//                            container: "{videoPlayer}.dom.transcript",
+//                            createOnEvent: "onTranscriptIntervalReady",
+//                            options: {
+//                                model: "{videoPlayer}.model",
+//                                applier: "{videoPlayer}.applier",
+//                                transcripts: "{videoPlayer}.options.video.transcripts",
+//                                events: {
+//                                    onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+//                                    onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
+//                                    onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
+//                                    onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
+//                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded",
+//                                    onIntervalChange: "{intervalEventsConductor}.events.onIntervalChange"
 //                                },
-                                events: {
-                                    onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
-                                    onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
-                                    onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
-                                    onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                                    onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded",
-                                    onIntervalChange: "{intervalEventsConductor}.events.onIntervalChange"
-                                },
-                                listeners: {
-                                    onTranscriptsLoaded: "{intervalEventsConductor}.setIntervalList"
-                                }
-                            }
-                        },
-                        transcriptInterval: {
-                            type: "fluid.videoPlayer.intervalEventsConductor",
-                            options: {
-                                events: {
-                                    onTimeChange: "{videoPlayer}.events.onTimeChange"
-                                },
-                                listeners: {
-                                    onReady: "{media}.events.onTranscriptIntervalReady"
-                                }
-                            }
-                        }
-                    },
+//                                listeners: {
+//                                    onTranscriptsLoaded: "{intervalEventsConductor}.setIntervalList"
+//                                }
+//                            }
+//                        },
+//                        transcriptInterval: {
+//                            type: "fluid.videoPlayer.intervalEventsConductor",
+//                            options: {
+//                                events: {
+//                                    onTimeChange: "{videoPlayer}.events.onTimeChange"
+//                                },
+//                                listeners: {
+//                                    onReady: "{media}.events.onTranscriptIntervalReady"
+//                                }
+//                            }
+//                        }
+//                    },
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
-                        onReady: "{videoPlayer}.events.onMediaReady",
-                        onTranscriptIntervalReady: null
+                        onReady: "{videoPlayer}.events.onMediaReady"
                     },
                     sources: "{videoPlayer}.options.video.sources"
+                }
+            },
+            transcript: {
+                type: "fluid.videoPlayer.transcript",
+                container: "{videoPlayer}.dom.transcript",
+                createOnEvent: "onIntervalEventsConductorReady",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    transcripts: "{videoPlayer}.options.video.transcripts",
+                    events: {
+                        onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                        onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
+                        onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
+                        onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
+                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"//,
+//                        onIntervalChange: "{intervalEventsConductor}.events.onIntervalChange"
+                    },
+                    listeners: {
+//                        onTranscriptsLoaded: "{intervalEventsConductor}.setIntervalList"
+                    }
+                }
+            },
+            intervalEventsConductor: {
+                type: "fluid.videoPlayer.intervalEventsConductor",
+                createOnEvent: "onMediaReady",
+                options: {
+                    events: {
+                        onTimeUpdate: "{videoPlayer}.events.onTimeUpdate"
+                    },
+                    listeners: {
+                        onReady: "{videoPlayer}.events.onIntervalEventsConductorReady"
+                    }
                 }
             },
             controllers: {
@@ -259,12 +279,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             
             // public, time events
-            onTimeChange: null,
+            onTimeUpdate: null,
             onIntervalChange: null,
             
             // The following events are private
             onCreateControllersReady: null,
             onCreateMediaReady: null,
+            onIntervalEventsConductorReady: null,
             onHTML5BrowserDetected: null,
 
             // private events used for associating menus with what they control via ARIA
@@ -644,7 +665,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             listeners: {
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
                 "{videoPlayer}.events.onViewReady": "{media}.refresh",
-                "{videoPlayer}.events.onTimeChange": "{media}.updateCurrentTime",
+                "{videoPlayer}.events.onTimeUpdate": "{media}.updateCurrentTime",
                 "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
             }
         }
@@ -723,4 +744,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         funcName: "fluid.videoPlayer.hideControllersSimple",
         args: ["{videoPlayer}"]
     });
+
+    /*************************************************************************************
+     * The wiring up of the onTick event btw timer component and intervalEventsConductor *
+     *************************************************************************************/
+    fluid.demands("fluid.videoPlayer.media", ["fluid.videoPlayer.intervalEventsConductor"], {
+        options: {
+            events: {
+                onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
+            }
+        }
+    });
+    
 })(jQuery);
