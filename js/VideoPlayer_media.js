@@ -31,15 +31,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             mediaEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onEventBindingReady"
-            },
-            intervalEventsConductor: {
-                type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onEventBindingReady"
-            },
-            transcript: {
-                type: "fluid.videoPlayer.transcript",
-                createOnEvent: "onEventBindingReady"
-            }
+            }//,
+//            intervalEventsConductor: {
+//                type: "fluid.videoPlayer.intervalEventsConductor",
+//                createOnEvent: "onEventBindingReady"
+//            },
+//            transcript: {
+//                type: "fluid.videoPlayer.transcript",
+//                createOnEvent: "onEventBindingReady"
+//            }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",

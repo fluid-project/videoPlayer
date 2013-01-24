@@ -17,17 +17,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 (function ($) {
 
-    /*************************************************************************************
-     * The wiring up of the onTick event btw timer component and intervalEventsConductor *
-     *************************************************************************************/
-//    fluid.demands("fluid.videoPlayer.html5MediaTimer", ["fluid.videoPlayer.intervalEventsConductor"], {
-//        options: {
-//            events: {
-//                onTick: "{intervalEventsConductor}.events.onTick"
-//            }
-//        }
-//    });
-
     /*********************************************************************************
      * fluid.videoPlayer.intervalEventsConductor                                     *
      *                                                                               *
@@ -59,7 +48,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0"]
             }  
         },
-        
+        preInitFunction: "fluid.videoPlayer.intervalEventsConductor.preInit",
         // An array of the time intervals with all the begin and end time in millisecond
         // Example: Array[intervalID] = {begin: beginTimeInMilli, end: endTimeInMilli}
         intervalList: [],
@@ -70,8 +59,15 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
     
+    fluid.videoPlayer.intervalEventsConductor.preInit = function (that) {
+        that.setIntervalList = function (intervalList) {
+            that.setIntervalList(intervalList);
+        };
+    };
+    
     fluid.videoPlayer.intervalEventsConductor.setIntervalList = function (that, intervalList) {
         that.options.intervalList = intervalList;
+        console.log("intervalList is set to: " + that.options.intervalList);
     };
     
     fluid.videoPlayer.intervalEventsConductor.inInterval = function (currentTimeInMillis, interval) {

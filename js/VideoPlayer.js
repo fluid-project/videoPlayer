@@ -198,10 +198,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                         onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
                         onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"//,
-//                        onIntervalChange: "{intervalEventsConductor}.events.onIntervalChange"
-                    },
-                    listeners: {
-//                        onTranscriptsLoaded: "{intervalEventsConductor}.setIntervalList"
                     }
                 }
             },
@@ -213,7 +209,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onTimeUpdate: "{videoPlayer}.events.onTimeUpdate"
                     },
                     listeners: {
-                        onReady: "{videoPlayer}.events.onIntervalEventsConductorReady"
+//                        onReady: "{videoPlayer}.events.onIntervalEventsConductorReady"
+                        "{transcript}.events.onTranscriptLoaded": "{intervalEventsConductor}.setIntervalList"
+//                        "{transcript}.events.onTranscriptsLoaded": function () {console.log("loaded is fired");}
                     }
                 }
             },
@@ -748,7 +746,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /*************************************************************************************
      * The wiring up of the onTick event btw timer component and intervalEventsConductor *
      *************************************************************************************/
-    fluid.demands("fluid.videoPlayer.media", ["fluid.videoPlayer.intervalEventsConductor"], {
+    fluid.demands("fluid.videoPlayer.media", ["fluid.videoPlayer.intervalEventsConductor", "fluid.videoPlayer"], {
         options: {
             events: {
                 onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
@@ -756,4 +754,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
     
+//    fluid.demands("fluid.videoPlayer.transcript", ["fluid.videoPlayer.intervalEventsConductor", "fluid.videoPlayer"], {
+//        options: {
+//            listeners: {
+//                onTranscriptsLoaded: "{intervalEventsConductor}.setIntervalList"
+//            }
+//        }
+//    });
+
 })(jQuery);
