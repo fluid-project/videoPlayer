@@ -80,9 +80,9 @@ fluid.registerNamespace("fluid.tests");
             var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                 listeners: {
                     onReady: {
-                        listener: function (volumeControl) {
-                            var video = $("video")[0];
-                            var muteButton = volumeControl.locate("mute");
+                        listener: function (that) {
+                            var video = that.model.mediaElementVideo;
+                            var muteButton = that.controllers.volumeControl.locate("mute");
 
                             jqUnit.assertFalse("Initially, video should not be muted", video.muted);
                             muteButton.click();
@@ -90,12 +90,11 @@ fluid.registerNamespace("fluid.tests");
                             muteButton.click();
                             jqUnit.assertFalse("After clicking mute button again, video should again not be muted", video.muted);
 
-                            var sliderHandle = volumeControl.locate("handle");
+                            var sliderHandle = that.controllers.volumeControl.locate("handle");
                             jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
 
                             start();
-                        },
-                        args: ["{controllers}.volumeControl"]
+                        }
                     }
                 }
             });
