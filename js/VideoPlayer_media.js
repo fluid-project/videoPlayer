@@ -80,9 +80,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 args: [{path: "totalTime", value: "{media}.model.mediaElementVideo.duration"}]
             }, {
                 listener: "{media}.applier.fireChangeRequest",
-                args: [{path: "isShown.scrubber.handle", value: true}]
-            }, {
-                listener: "{media}.applier.fireChangeRequest",
                 args: [{path: "currentTime", value: "{media}.model.mediaElementVideo.currentTime"}]
             }, {
                 listener: "fluid.videoPlayer.media.updateStartTime",
@@ -144,29 +141,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
         }
     };
+    
     fluid.videoPlayer.media.handleCanPlay = function (that, evt) {
-         // FLUID-4853: With youtube videos, which are played using flash, their initial load never triggers
-        // "loadedmetadata" event where the video start time and duration get returned, which causes these
-        // times are left empty on the interface. However, "canplay" event does get triggered at this point.
-        // The workaround is to hide the display of these time at video initial load. When the duration does 
-        // get returned at "timeupdate" event, revive the display.
-        if (that.model.totalTime === 0) {
-            that.applier.requestChange("isShown.scrubber.handle", false);
-        }
-        
         var el = that.model.mediaElementVideo;
         that.applier.fireChangeRequest({
             path: "canPlay",
             value: (typeof (el.readyState) === "undefined") || (el.readyState === 4) || (el.readyState === 3) || (el.readyState === 2)
         });
     };
+    
     fluid.videoPlayer.media.handleTimeUpdate = function (that, evt) {
-        // With youtube videos, the video duration is not returned at the initial load
-        // but does get returned when the video is at play.
+        // With youtube videos, "loadedmetadata" event is not triggered at the initial load,
+        // so the video duration is not set but the duration does get returned when the video is at play.
         if (that.model.totalTime === 0) {
             that.applier.requestChange("totalTime", that.model.mediaElementVideo.duration);
-            that.applier.requestChange("isShown.scrubber.handle", true);
         }
+        
         // in IE8, the mediaElement's currentTime isn't updated, but the event carries a currentTime field
         var currentTime = evt.currentTime || that.model.mediaElementVideo.currentTime || 0;
 

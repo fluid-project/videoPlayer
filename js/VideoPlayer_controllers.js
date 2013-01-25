@@ -135,6 +135,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onReady: "{controllers}.events.onFullScreenReady"
                     }
                 }
+            },
+            showHideScrubberHandle: {
+                type: "fluid.videoPlayer.showHideScrubberHandle",
+                options: {
+                    model: "{controllers}.model",
+                    applier: "{controllers}.applier"
+                }
             }
         },
         postInitFunction: "fluid.videoPlayer.controllers.postInit",
@@ -657,6 +664,32 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
     fluid.emptyEventedSubcomponent.finalInit = function (that) {
         that.events.onReady.fire();
+    };
+
+    /********************************************************************************
+     * showHideScrubberHandle: A subcomponent to show/hide the scrubber handler
+     * based on the model "totalTime"
+     ********************************************************************************/
+    fluid.defaults("fluid.videoPlayer.showHideScrubberHandle", {
+        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
+        finalInitFunction: "fluid.videoPlayer.showHideScrubberHandle.finalInit",
+        invokers: {
+            toShowHideScrubberHandle: { 
+                funcName: "fluid.videoPlayer.toShowHideScrubberHandle", 
+                args: ["{showHideScrubberHandle}", "{showHideScrubberHandle}.model.totalTime"]
+            }
+        }
+    });
+    
+    fluid.videoPlayer.toShowHideScrubberHandle = function (that, totalTime) {
+        totalTime ? that.applier.requestChange("isShown.scrubber.handle", true) :
+            that.applier.requestChange("isShown.scrubber.handle", false);
+    };
+    
+    fluid.videoPlayer.showHideScrubberHandle.finalInit = function (that) {
+        that.toShowHideScrubberHandle();
+        
+        that.applier.modelChanged.addListener("totalTime", that.toShowHideScrubberHandle);
     };
 
 })(jQuery);

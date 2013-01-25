@@ -216,5 +216,25 @@ fluid.registerNamespace("fluid.tests");
         }];
         fluid.testUtils.testCaseWithEnv("Video Player Controls Integration Tests: Non-Full-screen", nonFullScreenTests, envFeatures);
 
+        videoPlayerControlsTests.asyncTest("Show/hide scrubber handle", function () {
+            var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
+                listeners: {
+                    onControllersReady: function (that) {
+                        that.applier.requestChange("totalTime", 100);
+                        jqUnit.isVisible("The scrubber handle is shown", that.scrubber.locate("handle"));
+
+                        that.applier.requestChange("totalTime", 0);
+                        jqUnit.notVisible("The scrubber handle is not shown", that.scrubber.locate("handle"));
+
+                        start();
+                    },
+                    onReady: function (that) {
+                        that.controllers.container.show();
+                    }
+                }
+            });
+        });
+
     });
+
 })(jQuery);
