@@ -48,8 +48,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     events: {
                         onScrub: "{controllers}.events.onScrub",
                         afterScrub: "{controllers}.events.afterScrub",
-                        onStartScrub: "{controllers}.events.onStartScrub",
-                        onScrubberReady: "{controllers}.events.onScrubberReady"
+                        onStartScrub: "{controllers}.events.onStartScrub"
+                    },
+                    listeners: {
+                        onReady: "{controllers}.events.onScrubberReady"
                     }
                 }
             },
@@ -59,7 +61,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
-                    events: {
+                    listeners: {
                         onReady: "{controllers}.events.onVolumeReady"
                     }
                 }
@@ -67,7 +69,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captionControls: {
                 type: "fluid.emptyEventedSubcomponent",
                 options: {
-                    events: {
+                    listeners: {
                         onReady: "{controllers}.events.onCaptionControlsReady"
                     }
                 }
@@ -137,7 +139,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         },
-        postInitFunction: "fluid.videoPlayer.controllers.postInit",
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             onStartTimeChange: null,
@@ -159,9 +160,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCaptionControlsReady: null,
             onTranscriptControlsReady: null,
             onFullScreenReady: null,
-            // TODO: onReady should be the aggregate event, but not working now - see http://issues.fluidproject.org/browse/FLUID-4879
-            // Once FLUID-4879 is addressed, this should be updated
-            onControllersReady: {
+            onReady: {
                 events: {
                     playReady: "onPlayReady",
                     volumeReady: "onVolumeReady",
@@ -169,9 +168,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captionControlsReady: "onCaptionControlsReady",
                     transcriptControlsReady: "onTranscriptControlsReady",
                     fullScreenReady: "onFullScreenReady"
-                }
-            },
-            onReady: null
+                },
+                args: ["{controllers}"]
+            }
         },
 
         selectors: {
@@ -250,14 +249,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         funcName: "fluid.videoPlayer.languageControls",
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
-
-    fluid.videoPlayer.controllers.postInit = function (that) {
-        // TODO: onReady should fire automatically, but not working now - see http://issues.fluidproject.org/browse/FLUID-4879
-        // Once FLUID-4879 is addressed, this will not be necessary
-        that.events.onControllersReady.addListener(function () {
-            that.events.onReady.fire(that);
-        });
-    };
 
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
@@ -342,15 +333,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{scrubber}.dom.bufferedProgress",
                 options: {
                     initiallyHidden: false,
-                    minWidth: 0
+                    minWidth: 0,
+                    listeners: {
+                        onAttach: "{scrubber}.events.onProgressAttached"
+                    }
                 }
             }
         },
         events: {
             afterScrub: null,
             onScrub: null,
-            onScrubberReady: null,
-            onStartScrub: null
+            onStartScrub: null,
+            onProgressAttached: null,
+            onReady: {
+                events: {
+                    onProgressAttached: "onProgressAttached",
+                    onCreate: "onCreate"
+                },
+                args: ["{scrubber}"]
+            }
         },
         invokers: {
             updateBuffered: {
@@ -437,8 +438,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
         bindScrubberModel(that);
-
-        that.events.onScrubberReady.fire();
     };
     
 
@@ -566,7 +565,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         postInitFunction: "fluid.videoPlayer.volumeControls.postInit",
         finalInitFunction: "fluid.videoPlayer.volumeControls.finalInit",
         events: {
-            onReady: null
+            muteButtonReady: null,
+            onReady: {
+                events: {
+                    muteButtonReady: "muteButtonReady",
+                    onCreate: "onCreate"
+                },
+                args: ["{volumeControls}"]
+            }
         },
         model: {
             muted: false,
@@ -613,7 +619,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         tooltip: {
                             container: "{volumeControls}.container"
                         }
-                    }
+                    },
+                    listeners: {
+                        onReady: "{volumeControls}.events.muteButtonReady"
+                    } 
                 }
             }
         }
@@ -640,8 +649,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         volumeControls.init(that);
         volumeControls.bindDOMEvents(that);
         volumeControls.bindModel(that);
-
-        that.events.onReady.fire(that);
     };
 
     /********************************************************************************
@@ -650,12 +657,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.emptyEventedSubcomponent", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         events: {
-            onReady: null
-        },
-        finalInitFunction: "fluid.emptyEventedSubcomponent.finalInit"
+            onReady: {
+                events: {
+                    onCreate: "onCreate"
+                },
+                args: ["{emptyEventedSubcomponent}"]
+            }
+        }
     });
-    fluid.emptyEventedSubcomponent.finalInit = function (that) {
-        that.events.onReady.fire();
-    };
 
 })(jQuery);
