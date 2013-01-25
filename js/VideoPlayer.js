@@ -243,7 +243,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             // public, time events
             onTimeUpdate: null,
-            onIntervalChange: null,
             
             // The following events are private
             onCreateControllersReady: null,
