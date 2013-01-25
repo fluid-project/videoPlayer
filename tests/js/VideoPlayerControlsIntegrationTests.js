@@ -39,42 +39,6 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        videoPlayerControlsTests.asyncTest("Volume controls", function () {
-            jqUnit.expect(7);
-            var checkSlider = function (ariavaluenow, expectedValue) {
-                    jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
-                },
-                checkTooltipOnHover = function (element, expectedText) {
-                    fluid.testUtils.getTooltipCheckString(element, expectedText);
-                    element.mouseleave();
-                },
-                testVolumeControls = fluid.videoPlayer.volumeControls("#basic-volume-controls-test", {
-                    listeners: {
-                        onReady: function (that) {
-                            var muteButton = that.locate("mute"),
-                                volumeSlider = that.locate("volumeControl"),
-                                sliderHandle = that.locate("handle");
-
-                            jqUnit.assertEquals("Mute button should have title", that.options.strings.instructions, muteButton.attr("title"));
-                            jqUnit.assertEquals("Volume container should have aria-label", that.options.strings.instructions, that.container.attr("aria-label"));
-                            checkTooltipOnHover(volumeSlider, "Volume");
-                            checkTooltipOnHover(muteButton, "Mute");
-                            muteButton.click();
-                            checkSlider(sliderHandle.attr("aria-valuenow"), "0");
-                            checkTooltipOnHover(muteButton, "Un-mute");
-                            muteButton.click();
-
-                            jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
-                            jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
-                            checkSlider(sliderHandle.attr("aria-valuenow"), "50");
-                            jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
-
-                            start();
-                        }
-                    }
-                });
-        });
-
         videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
             jqUnit.expect(4);
             var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
