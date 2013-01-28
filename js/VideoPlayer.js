@@ -163,7 +163,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onTranscriptHide: "{videoPlayer}.events.onTranscriptHide",
                         onTranscriptShow: "{videoPlayer}.events.onTranscriptShow",
                         onTranscriptElementChange: "{videoPlayer}.events.onTranscriptElementChange",
-                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"//,
+                        onTranscriptsLoaded: "{videoPlayer}.events.onTranscriptsLoaded"
                     }
                 }
             },

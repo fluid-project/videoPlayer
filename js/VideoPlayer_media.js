@@ -167,7 +167,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var buffered = that.model.mediaElementVideo.buffered || 0;
 
         that.events.onTimeUpdate.fire(currentTime, buffered);
-//        that.transcriptInterval.events.onTick.fire(currentTime, buffered);
     };
 
     fluid.videoPlayer.media.updateStartTime = function (that) {

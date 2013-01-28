@@ -60,6 +60,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
     });
     
     fluid.videoPlayer.intervalEventsConductor.preInit = function (that) {
+        /*
+         * Work around for FLUID-4709
+         * These methods are overwritten by the framework after initComponent executes.
+         * This preInit function guarantees that functions which forward to the overwritten versions are available during the event binding phase.
+         */
         that.setIntervalList = function (intervalList) {
             that.setIntervalList(intervalList);
         };
