@@ -136,8 +136,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             },
-            showHideScrubberHandle: {
-                type: "fluid.videoPlayer.showHideScrubberHandle",
+            totalTimeToScubber: {
+                type: "fluid.videoPlayer.totalTimeToScubber",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier"
@@ -667,29 +667,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     /********************************************************************************
-     * showHideScrubberHandle: A subcomponent to show/hide the scrubber handler
+     * totalTimeToScubber: A subcomponent to show/hide the scrubber handler
      * based on the model "totalTime"
      ********************************************************************************/
-    fluid.defaults("fluid.videoPlayer.showHideScrubberHandle", {
+    fluid.defaults("fluid.videoPlayer.totalTimeToScubber", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.showHideScrubberHandle.finalInit",
+        finalInitFunction: "fluid.videoPlayer.totalTimeToScubber.finalInit",
         invokers: {
-            toShowHideScrubberHandle: { 
-                funcName: "fluid.videoPlayer.toShowHideScrubberHandle", 
-                args: ["{showHideScrubberHandle}", "{showHideScrubberHandle}.model.totalTime"]
+            showHideScrubberHandle: { 
+                funcName: "fluid.videoPlayer.showHideScrubberHandle", 
+                args: ["{totalTimeToScubber}", "{totalTimeToScubber}.model.totalTime"]
             }
         }
     });
     
-    fluid.videoPlayer.toShowHideScrubberHandle = function (that, totalTime) {
-        totalTime ? that.applier.requestChange("isShown.scrubber.handle", true) :
-            that.applier.requestChange("isShown.scrubber.handle", false);
+    fluid.videoPlayer.showHideScrubberHandle = function (that, totalTime) {
+        that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
     };
     
-    fluid.videoPlayer.showHideScrubberHandle.finalInit = function (that) {
-        that.toShowHideScrubberHandle();
+    fluid.videoPlayer.totalTimeToScubber.finalInit = function (that) {
+        that.showHideScrubberHandle();
         
-        that.applier.modelChanged.addListener("totalTime", that.toShowHideScrubberHandle);
+        that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
     };
 
 })(jQuery);
