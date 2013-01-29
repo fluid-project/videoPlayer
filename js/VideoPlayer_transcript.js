@@ -372,10 +372,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
             if (currentInterval !== that.model.transcriptIntervalId) {
-               // TODO: use a better strategy for this, which was intended to prevent event pile-up 
-                setTimeout(function () {
-                    that.applier.requestChange("transcriptIntervalId", currentInterval);
-                }, 100);
+                that.applier.requestChange("transcriptIntervalId", currentInterval);
             }
         });
         that.applier.modelChanged.addListener("transcriptIntervalId", that.updateTranscriptHighlight);

@@ -63,15 +63,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         videoPlayerTranscriptIntegrationTests.asyncTest("Scrubbing", function () {
-            var vp;
-            var newTime = 0;
+            var newTime;
             var instance = {
                 container: ".videoPlayer-transcript",
                 options: {
                     video: {
+                        sources: [{
+                            src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.mp4",
+                            type: "video/mp4"
+                        }, {
+                            src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
+                            type: "video/webm"
+                        }, {
+                            src: "http://www.youtube.com/v/_VxQEPw1x9E",
+                            type: "video/youtube"
+                        }],
                         transcripts: [{
-                            src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
-                            type: "text/amarajson"
+                            src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.transcripts.fr.json",
+                            type: "JSONcc",
+                            srclang: "fr",
+                            label: "French"
                         }]
                     },
                     templates: {
@@ -79,22 +90,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             href: "../../html/videoPlayer_template.html"
                         }
                     },
+                    events: {
+                        onVideoAndTranscriptsLoaded: {
+                            events: {
+                                transcriptsLoaded: "onTranscriptsLoaded",
+                                loadedMetadata: "onLoadedMetadata"
+                            },
+                            args: ["{videoPlayer}", "{transcript}"]
+                        }
+                    },
                     listeners: {
-                        onReady: function (that) {
-                            vp = that;
-                        },
-                        onTranscriptsLoaded: function (intervalList, transcriptTextId, that) {
-                            var anElement = $($("[id^=flc-videoPlayer-transcript-element]")[7]);
-                            newTime = (that.options.transcripts[0].tracks[7].start_time + 1) / 1000;
-                            anElement.click();
-                        },
-                        onTimeUpdate: {
-                            listener: function (currTime, buffered) {
+                        onVideoAndTranscriptsLoaded: function (vp, that) {
+                            var anElement = $("[id^=flc-videoPlayer-transcript-element]").eq(7);
+                            newTime = (that.convertToMilli(that.options.transcripts[0].tracks[7].inTime) + 1) / 1000;
+                            
+                            vp.events.onTimeUpdate.addListener(function (currTime, buffered) {
                                 jqUnit.assertEquals("New time is same as clicked transcript", newTime, currTime);
                                 vp.events.onTimeUpdate.removeListener("timeChecker");
                                 start();
-                            },
-                            namespace: "timeChecker"
+                            }, "timeChecker");
+                            
+                            anElement.click();
                         }
                     }
                 }
