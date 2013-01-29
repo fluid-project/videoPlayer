@@ -190,13 +190,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     captions: "{videoPlayer}.options.video.captions",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
-                        // TODO: Once FLUID-4879 is addressed, handling of the controllers ready event will need to be updated
-                        onReady: "{videoPlayer}.events.onControllersReady",
                         onStartScrub: "{videoPlayer}.events.onStartScrub",
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
+                    },
+                    listeners: {
+                        onReady: "{videoPlayer}.events.onControllersReady",
                     },
                     templates: {
                         menuButton: "{videoPlayer}.options.templates.menuButton"
@@ -235,9 +236,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptShow: null,
             onTranscriptElementChange: null,
 
-            // main VideoPlayer is not 'ready' until the controllers are ready
             onReady: {
-                event: "onControllersReady",
+                events: {
+                    onTemplateReady: "onTemplateReady",
+                    onControllersReady: "onControllersReady",
+                    onCreate: "onCreate"
+                },
                 args: ["{videoPlayer}"]
             },
             
