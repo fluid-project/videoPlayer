@@ -93,6 +93,26 @@ fluid.registerNamespace("fluid.tests");
 
         });
 
+        videoPlayerControlsTests.asyncTest("Show/hide scrubber handle", function () {
+            var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
+                listeners: {
+                    onReady: {
+                        listener: function (controllers) {
+                            // The controllers main container is hidden by default. Show it for the further tests.
+                            controllers.container.show();
+                            
+                            controllers.applier.requestChange("totalTime", 0);
+                            jqUnit.notVisible("The scrubber handle is not shown", controllers.scrubber.locate("handle"));
+                            controllers.applier.requestChange("totalTime", 100);
+                            jqUnit.isVisible("The scrubber handle is shown", controllers.scrubber.locate("handle"));
+                            start();
+                        },
+                        args: ["{controllers}"]
+                    }
+                }
+            });
+        });
+
         fluid.tests.checkFullScreenButtonStyle = function (options) {
             jqUnit[options.expectedFullScreen ? "assertTrue" : "assertFalse"](options.message, options.modelFullScreen);
             jqUnit.assertEquals("After click, full screen button should have a proper styling", !options.expectedFullScreen, options.fullScreenButton.hasClass(options.fullScreenButtonStyles.init));
@@ -194,25 +214,6 @@ fluid.registerNamespace("fluid.tests");
             }
         }];
         fluid.testUtils.testCaseWithEnv("Video Player Controls Integration Tests: Non-Full-screen", nonFullScreenTests, envFeatures);
-
-        videoPlayerControlsTests.asyncTest("Show/hide scrubber handle", function () {
-            var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
-                listeners: {
-                    onControllersReady: function (that) {
-                        that.applier.requestChange("totalTime", 100);
-                        jqUnit.isVisible("The scrubber handle is shown", that.scrubber.locate("handle"));
-
-                        that.applier.requestChange("totalTime", 0);
-                        jqUnit.notVisible("The scrubber handle is not shown", that.scrubber.locate("handle"));
-
-                        start();
-                    },
-                    onReady: function (that) {
-                        that.controllers.container.show();
-                    }
-                }
-            });
-        });
 
     });
 
