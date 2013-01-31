@@ -711,9 +711,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         args: ["{videoPlayer}"]
     });
 
-    /*************************************************************************************
-     * The wiring up of the onTick event btw timer component and intervalEventsConductor *
-     *************************************************************************************/
+    /***************************************************************************************************
+     * The wiring up of the onTimeUpdate event btw timer component "media" and intervalEventsConductor *
+     ***************************************************************************************************/
     fluid.demands("fluid.videoPlayer.media", ["fluid.videoPlayer.intervalEventsConductor", "fluid.videoPlayer"], {
         options: {
             events: {
