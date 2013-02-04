@@ -137,13 +137,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onReady: "{controllers}.events.onFullScreenReady"
                     }
                 }
-            },
-            totalTimeToScubber: {
-                type: "fluid.videoPlayer.totalTimeToScubber",
-                options: {
-                    model: "{controllers}.model",
-                    applier: "{controllers}.applier"
-                }
             }
         },
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
@@ -195,6 +188,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullscreenIcon: "ui-icon-extlink",
             captionIcon: "ui-icon-comment",
             transcriptIcon: "ui-icon-comment"
+        },
+        
+        invokers: {
+            showHideScrubberHandle: { 
+                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
+                args: ["{controllers}", "{controllers}.model.totalTime"]
+            }
         }
     });
 
@@ -257,8 +257,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
 
+    fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
+        that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
+    };
+    
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
+        that.showHideScrubberHandle();
+        
+        that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
     };
     
     /********************************************
@@ -514,7 +521,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
                 }
             }
-        });  
+        });
     };
 
     fluid.videoPlayer.volumeControls.init = function (that) {
@@ -673,30 +680,5 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-
-    /********************************************************************************
-     * totalTimeToScubber: A subcomponent to show/hide the scrubber handler
-     * based on the model "totalTime"
-     ********************************************************************************/
-    fluid.defaults("fluid.videoPlayer.totalTimeToScubber", {
-        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.totalTimeToScubber.finalInit",
-        invokers: {
-            showHideScrubberHandle: { 
-                funcName: "fluid.videoPlayer.showHideScrubberHandle", 
-                args: ["{totalTimeToScubber}", "{totalTimeToScubber}.model.totalTime"]
-            }
-        }
-    });
-    
-    fluid.videoPlayer.showHideScrubberHandle = function (that, totalTime) {
-        that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
-    };
-    
-    fluid.videoPlayer.totalTimeToScubber.finalInit = function (that) {
-        that.showHideScrubberHandle();
-        
-        that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
-    };
 
 })(jQuery);
