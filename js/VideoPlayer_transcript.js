@@ -31,16 +31,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         preInitFunction: "fluid.videoPlayer.transcript.preInit",
         finalInitFunction: "fluid.videoPlayer.transcript.finalInit",
         produceTree: "fluid.videoPlayer.transcript.produceTree",
-        components: {
-            transcriptInterval: {
-                type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onReady"
-            },
-            transcriptEventBinder: {
-                type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onReady"
-            }
-        },
         events: {
             onTranscriptsLoaded: null,
             onLoadTranscriptError: null,
@@ -380,16 +370,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });
         
-        that.events.onTranscriptsLoaded.addListener(function (intervalList) {
-            that.transcriptInterval.setIntervalList(intervalList);
-        });
-        
         that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
             if (currentInterval !== that.model.transcriptIntervalId) {
-               // TODO: use a better strategy for this, which was intended to prevent event pile-up 
-                setTimeout(function () {
-                    that.applier.requestChange("transcriptIntervalId", currentInterval);
-                }, 100);
+                that.applier.requestChange("transcriptIntervalId", currentInterval);
             }
         });
         that.applier.modelChanged.addListener("transcriptIntervalId", that.updateTranscriptHighlight);
