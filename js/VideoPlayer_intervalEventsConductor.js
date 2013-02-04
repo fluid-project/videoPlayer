@@ -17,17 +17,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 (function ($) {
 
-    /*************************************************************************************
-     * The wiring up of the onTick event btw timer component and intervalEventsConductor *
-     *************************************************************************************/
-    fluid.demands("fluid.videoPlayer.html5MediaTimer", ["fluid.videoPlayer.intervalEventsConductor"], {
-        options: {
-            events: {
-                onTick: "{intervalEventsConductor}.events.onTick"
-            }
-        }
-    });
-
     /*********************************************************************************
      * fluid.videoPlayer.intervalEventsConductor                                     *
      *                                                                               *
@@ -38,13 +27,18 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.intervalEventsConductor", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         events: {
-            onTimeChange: null,
+            onTimeUpdate: null,
             onIntervalChange: null,
-            onTick: null
+            onReady: {
+                events: {
+                    onCreate: "onCreate"
+                },
+                args: ["{intervalEventsConductor}"]
+            }
         },
         listeners: {
-            onTick: {
-                listener: "fluid.videoPlayer.intervalEventsConductor.handleTicks",
+            onTimeUpdate: {
+                listener: "fluid.videoPlayer.intervalEventsConductor.handleTimeUpdate",
                 args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0", "{arguments}.1"]
             }
         },
@@ -54,7 +48,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0"]
             }  
         },
-        
+        preInitFunction: "fluid.videoPlayer.intervalEventsConductor.preInit",
         // An array of the time intervals with all the begin and end time in millisecond
         // Example: Array[intervalID] = {begin: beginTimeInMilli, end: endTimeInMilli}
         intervalList: [],
@@ -64,6 +58,17 @@ https://source.fluidproject.org/svn/LICENSE.txt
             previousIntervalId: null
         }
     });
+    
+    fluid.videoPlayer.intervalEventsConductor.preInit = function (that) {
+        /*
+         * Work around for FLUID-4709
+         * These methods are overwritten by the framework after initComponent executes.
+         * This preInit function guarantees that functions which forward to the overwritten versions are available during the event binding phase.
+         */
+        that.setIntervalList = function (intervalList) {
+            that.setIntervalList(intervalList);
+        };
+    };
     
     fluid.videoPlayer.intervalEventsConductor.setIntervalList = function (that, intervalList) {
         that.options.intervalList = intervalList;
@@ -102,47 +107,17 @@ https://source.fluidproject.org/svn/LICENSE.txt
     /**
      * The main process to re-wire the events
      */
-    fluid.videoPlayer.intervalEventsConductor.handleTicks = function (that, currentTime, buffered) {
-        that.events.onTimeChange.fire(currentTime, buffered);
-        
+    fluid.videoPlayer.intervalEventsConductor.handleTimeUpdate = function (that, currentTime, buffered) {
         if (that.options.intervalList) {
             var previousInterval = that.options.model.previousIntervalId;
             var currentInterval = fluid.videoPlayer.intervalEventsConductor.findCurrentInterval(currentTime, that.options.intervalList, previousInterval);
             
             if (currentInterval !== previousInterval) {
                 that.applier.requestChange("previousIntervalId", currentInterval);
+                
                 that.events.onIntervalChange.fire(currentInterval, previousInterval);
             }
         }
-    };
-
-    /*********************************************************************************
-     * Timer component for HTML5 media element                                       *
-     *                                                                               *
-     * The timer component fires the onTick event with the argument of "currentTime" *
-     * when the time change occurs.                                                  *
-     *********************************************************************************/
-
-    fluid.defaults("fluid.videoPlayer.html5MediaTimer", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.html5MediaTimer.finalInit",
-        mediaElement: null,
-        events: {
-            onTick: null
-        }
-    });
-
-    fluid.videoPlayer.html5MediaTimer.finalInit = function (that) {
-        var media = that.options.mediaElement;
-
-        if (!media) {
-            fluid.fail("Undefined mediaElement option in " + that.typeName + ".");
-        }
-        media.bind("timeupdate", function (ev) {
-            var currentTime = ev.currentTarget.currentTime;
-
-            that.events.onTick.fire(currentTime);
-        });
     };
 
 })(jQuery);

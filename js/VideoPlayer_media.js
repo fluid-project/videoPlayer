@@ -31,20 +31,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             mediaEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",
                 createOnEvent: "onEventBindingReady"
-            },
-            intervalEventsConductor: {
-                type: "fluid.videoPlayer.intervalEventsConductor",
-                createOnEvent: "onEventBindingReady"
-            },
-            transcript: {
-                type: "fluid.videoPlayer.transcript",
-                createOnEvent: "onEventBindingReady"
             }
         },
         finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onEventBindingReady: null,
+            onTimeUpdate: null, // picked up by intervalEventsConductor.events.onTimeUpdate
             onReady: {
                 events: {
                     eventBindingReady: "onEventBindingReady",
@@ -57,7 +50,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onMediaElementLoadedMetadata: null,
             onMediaElementVolumeChange: null,
             onMediaElementEnded: null,
-            onMediaElementTimeUpdate: null
+            onMediaElementTimeUpdate: null,
+            
+            onLoadedMetadata: null
         },
         invokers: {
             renderSources: { funcName: "fluid.videoPlayer.media.renderSources", args: ["{media}"] },
@@ -171,8 +166,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var buffered = that.model.mediaElementVideo.buffered || 0;
 
-        that.intervalEventsConductor.events.onTick.fire(currentTime, buffered);
-        that.transcript.transcriptInterval.events.onTick.fire(currentTime);
+        that.events.onTimeUpdate.fire(currentTime, buffered);
     };
 
     fluid.videoPlayer.media.updateStartTime = function (that) {
