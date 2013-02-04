@@ -16,7 +16,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
-    fluid.setLogging(false);
 
     fluid.defaults("fluid.videoPlayer.showHide", {
         gradeNames: ["fluid.modelComponent", "autoInit"],
