@@ -24,22 +24,21 @@
 
 :-webkit-full-screen.fl-videoPlayer-main {
     height: 100%;
-    width: auto;
+    width: 100%;
+    position: absolute;
 }
-:-webkit-full-screen .fl-videoPlayer-container,
-:-webkit-full-screen .fl-videoPlayer-video-element {
-    width: inherit;
-    height: inherit;
+:-webkit-full-screen .fl-videoPlayer-video {
+	height: 100%;
+	width: 80%;
 }
 :-webkit-full-screen .fl-videoPlayer-video-element {
-    float: right;
+	width: 100%;
 }
 :-webkit-full-screen .fl-videoPlayer-overlay {
-    width: 100%;
-    float: left;
+	width: 80%;
 }
 :-webkit-full-screen .fl-videoPlayer-transcriptArea {
-    width: 17%;
+    width: 19.8%;
     max-width: 25em;
 }
 
