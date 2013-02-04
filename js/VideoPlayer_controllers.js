@@ -187,6 +187,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullscreenIcon: "ui-icon-extlink",
             captionIcon: "ui-icon-comment",
             transcriptIcon: "ui-icon-comment"
+        },
+        
+        invokers: {
+            showHideScrubberHandle: { 
+                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
+                args: ["{controllers}", "{controllers}.model.totalTime"]
+            }
         }
     });
 
@@ -249,8 +256,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
 
+    fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
+        that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
+    };
+    
     fluid.videoPlayer.controllers.finalInit = function (that) {
         bindControllerModel(that);
+        that.showHideScrubberHandle();
+        
+        that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
     };
     
     /********************************************
@@ -324,8 +338,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
         finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
+        showHidePath: "scrubber",
         components: {
             bufferedProgress: {
                 type: "fluid.progress",
@@ -356,7 +371,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             updateBuffered: {
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
                 args: ["{fluid.videoPlayer.controllers.scrubber}"]
-            }  
+            }
         },
         selectors: {
             totalTime: ".flc-videoPlayer-total",
@@ -505,7 +520,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
                 }
             }
-        });  
+        });
     };
 
     fluid.videoPlayer.volumeControls.init = function (that) {
