@@ -28,14 +28,14 @@
     position: absolute;
 }
 :-webkit-full-screen .fl-videoPlayer-video {
-	height: 100%;
-	width: 80%;
+    height: 100%;
+    width: 80%;
 }
 :-webkit-full-screen .fl-videoPlayer-video-element {
-	width: 100%;
+    width: 100%;
 }
 :-webkit-full-screen .fl-videoPlayer-overlay {
-	width: 80%;
+    width: 80%;
 }
 :-webkit-full-screen .fl-videoPlayer-transcriptArea {
     width: 19.8%;
