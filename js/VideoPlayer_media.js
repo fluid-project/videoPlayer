@@ -136,6 +136,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
         }
     };
+    
     fluid.videoPlayer.media.handleCanPlay = function (that, evt) {
         var el = that.model.mediaElementVideo;
         that.applier.fireChangeRequest({
@@ -143,7 +144,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             value: (typeof (el.readyState) === "undefined") || (el.readyState === 4) || (el.readyState === 3) || (el.readyState === 2)
         });
     };
+    
     fluid.videoPlayer.media.handleTimeUpdate = function (that, evt) {
+        // With youtube videos, "loadedmetadata" event is not triggered at the initial load,
+        // so the video duration is not set but the duration does get returned when the video is at play.
+        if (that.model.totalTime === 0) {
+            that.applier.requestChange("totalTime", that.model.mediaElementVideo.duration);
+        }
+        
         // in IE8, the mediaElement's currentTime isn't updated, but the event carries a currentTime field
         var currentTime = evt.currentTime || that.model.mediaElementVideo.currentTime || 0;
 
