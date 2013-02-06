@@ -289,6 +289,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnTranscriptsOff: "Turn Transcripts OFF",
             videoTitlePreface: "Video: "
         },
+        styles: {
+        	playOverlay: "fl-videoplayer-overlay-play"
+        },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
@@ -316,7 +319,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullscreen: false,
             volume: 60,
             muted: false,
-            canPlay: false
+            canPlay: false,
+            play: false
         },
         templates: {
             videoPlayer: {
@@ -411,7 +415,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.hideControllersAnimated = function (that) {
         that.locate("controllers").stop(false, true).delay(500).slideUp();
-    };
+    };       
+
+    fluid.videoPlayer.togglePlayOverlay = function (that) {
+        if (!that.model.play) {
+            that.locate("overlay").addClass(that.options.styles.playOverlay);
+        } else {
+            that.locate("overlay").removeClass(that.options.styles.playOverlay);
+        }       
+    }; 
 
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
@@ -446,6 +458,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("fullscreen", that.fullscreen);
         that.applier.modelChanged.addListener("canPlay", function () {
             that.events.onViewReady.fire();
+        });
+        that.applier.modelChanged.addListener("play", function () { 
+        	fluid.videoPlayer.togglePlayOverlay(that); 
         });
     };
 
@@ -583,6 +598,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
+//            that.locate("overlay").css("height", that.locate("video").css("height"));
+            fluid.videoPlayer.togglePlayOverlay(that);
 
             // Ensure <object> element is not in tab order, for IE9
             $("object", that.locate("video")).attr("tabindex", "-1");

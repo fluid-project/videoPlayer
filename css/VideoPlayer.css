@@ -649,6 +649,9 @@ ul.fl-videoPlayer-transcripts-languageList li {
     width: 29.75em;
     pointer-events: none;
 }
+.fl-videoplayer-overlay-play {
+	background: url('../images/default/play_overlay.png') no-repeat center center;
+}
 .fl-theme-uio-yb .fl-videoPlayer-overlay, .fl-theme-uio-yb .fl-videoPlayer-captionArea, .fl-theme-uio-yb .captionator-cue-canvas,
 .fl-theme-uio-wb .fl-videoPlayer-overlay, .fl-theme-uio-wb .fl-videoPlayer-captionArea, .fl-theme-uio-wb .captionator-cue-canvas,
 .fl-theme-uio-by .fl-videoPlayer-overlay, .fl-theme-uio-by .fl-videoPlayer-captionArea, .fl-theme-uio-by .captionator-cue-canvas,
