@@ -93,7 +93,8 @@
 
 .fl-videoPlayer-controller {
     width:100%;
-    position: relative;
+    position: absolute;
+    bottom: 0;
     pointer-events: all;
     background-color: rgba(242, 242, 242, 0.75);
     height: 2.05em;
@@ -647,6 +648,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     bottom: 0em;
     position: absolute;
     width: 29.75em;
+    height: inherit;
     pointer-events: none;
 }
 .fl-videoplayer-overlay-play {
