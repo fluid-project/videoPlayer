@@ -598,7 +598,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
-//            that.locate("overlay").css("height", that.locate("video").css("height"));
             fluid.videoPlayer.togglePlayOverlay(that);
 
             // Ensure <object> element is not in tab order, for IE9
