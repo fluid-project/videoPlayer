@@ -64,10 +64,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
     };
 
+    // IE detection is used in a workaround to pass through the mousedown event on the overlay
+    // div to the video underneath
+    fluid.browser.msie = function () {
+        var isIE = ($.browser.msie);
+        return isIE ? fluid.typeTag("fluid.browser.msie") : undefined;
+    };
+
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
         supportsFullScreen: fluid.browser.supportsFullScreen(),
-        safari: fluid.browser.isSafari()
+        safari: fluid.browser.isSafari(),
+        ie: fluid.browser.msie()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -197,7 +205,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     },
                     listeners: {
-                        onReady: "{videoPlayer}.events.onControllersReady",
+                        onReady: "{videoPlayer}.events.onControllersReady"
                     },
                     templates: {
                         menuButton: "{videoPlayer}.options.templates.menuButton"
@@ -290,7 +298,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoTitlePreface: "Video: "
         },
         styles: {
-        	playOverlay: "fl-videoplayer-overlay-play"
+            playOverlay: "fl-videoplayer-overlay-play"
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
         keyBindings: fluid.videoPlayer.defaultKeys,
@@ -422,12 +430,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("overlay").addClass(that.options.styles.playOverlay);
         } else {
             that.locate("overlay").removeClass(that.options.styles.playOverlay);
-        }       
+        }
     }; 
 
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
 
+        if (fluid.hasFeature("fluid.browser.msie")) {
+            that.locate("overlay").mousedown(function () {
+                videoContainer.trigger("mousedown");
+            });
+        }
+        
         fluid.tabindex(videoContainer, 0);
 
         // Using "mousedown" event rather than "click", which does not work
@@ -460,7 +474,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onViewReady.fire();
         });
         that.applier.modelChanged.addListener("play", function () { 
-        	fluid.videoPlayer.togglePlayOverlay(that); 
+            fluid.videoPlayer.togglePlayOverlay(that); 
         });
     };
 
