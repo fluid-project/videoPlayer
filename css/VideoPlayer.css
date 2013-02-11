@@ -654,6 +654,20 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-videoplayer-overlay-play {
 	background: url('../images/default/play_overlay.png') no-repeat center center;
 }
+
+.fl-theme-uio-yb .fl-videoplayer-overlay-play {
+	background-image: url('../images/yellow/play_overlay.png');
+}
+.fl-theme-uio-wb .fl-videoplayer-overlay-play {
+	background-image: url('../images/white/play_overlay.png');
+}
+.fl-theme-uio-by .fl-videoplayer-overlay-play {
+	background-image: url('../images/black/play_overlay_by.png');
+}
+.fl-theme-uio-bw .fl-videoplayer-overlay-play {
+	background-image: url('../images/black/play_overlay_bw.png');
+}
+
 .fl-theme-uio-yb .fl-videoPlayer-overlay, .fl-theme-uio-yb .fl-videoPlayer-captionArea, .fl-theme-uio-yb .captionator-cue-canvas,
 .fl-theme-uio-wb .fl-videoPlayer-overlay, .fl-theme-uio-wb .fl-videoPlayer-captionArea, .fl-theme-uio-wb .captionator-cue-canvas,
 .fl-theme-uio-by .fl-videoPlayer-overlay, .fl-theme-uio-by .fl-videoPlayer-captionArea, .fl-theme-uio-by .captionator-cue-canvas,
