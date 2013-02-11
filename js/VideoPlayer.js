@@ -436,9 +436,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
 
+        // The work-around for the IE event pass-thru issue as IE does not support css "pointer-events: none".
+        // If the mouse click is within the video container area and above the scrubber bar, pass mousedown 
+        // event on the overlay layer to the underneath video container.
         if (fluid.hasFeature("fluid.browser.msie")) {
-            that.locate("overlay").mousedown(function () {
-                videoContainer.trigger("mousedown");
+            that.locate("overlay").mousedown(function (e) {
+                var scrubber = that.controllers.locate("scrubberContainer");
+                
+                var mouseX = e.pageX;
+                var mouseY = e.pageY;
+                
+                var videoOffset = videoContainer.offset();
+                var videoWidth = videoContainer.width();
+                var videoHeight = videoContainer.height();
+                
+                var scrubberOffset = scrubber.offset();
+
+                if (mouseX > videoOffset.left && mouseX < videoOffset.left + videoWidth &&
+                    mouseY > videoOffset.top && mouseY < videoOffset.top + videoHeight &&
+                    mouseY < scrubberOffset.top) {
+                    videoContainer.trigger("mousedown");
+                }
             });
         }
         
