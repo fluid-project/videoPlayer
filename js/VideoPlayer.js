@@ -448,7 +448,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
                 var videoOffset = videoContainer.offset();
                 var videoWidth = videoContainer.width();
-                var videoHeight = videoContainer.height();
                 
                 var scrubberOffset = scrubber.offset();
 
