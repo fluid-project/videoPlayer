@@ -440,21 +440,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // If the mouse click is within the video container area and above the scrubber bar, pass mousedown 
         // event on the overlay layer to the underneath video container.
         if (fluid.hasFeature("fluid.browser.msie")) {
-            that.locate("overlay").mousedown(function (e) {
-                var scrubber = that.controllers.locate("scrubberContainer");
-                
-                var mouseX = e.pageX;
-                var mouseY = e.pageY;
-                
-                var videoOffset = videoContainer.offset();
-                var videoWidth = videoContainer.width();
-                
-                var scrubberOffset = scrubber.offset();
+            that.locate("overlay").mousedown(function (ev) {
+                that.play();
+            });
 
-                if (mouseX > videoOffset.left && mouseX < videoOffset.left + videoWidth &&
-                    mouseY > videoOffset.top && mouseY < scrubberOffset.top) {
-                    videoContainer.trigger("mousedown");
-                }
+            that.locate("controllers").mousedown(function (ev) {
+                ev.stopPropagation();
             });
         }
         
@@ -466,7 +457,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
-
+        
         that.locate("videoPlayer").mouseenter(function () {
             that.showControllers(that);
         });
