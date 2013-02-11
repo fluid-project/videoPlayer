@@ -453,8 +453,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 var scrubberOffset = scrubber.offset();
 
                 if (mouseX > videoOffset.left && mouseX < videoOffset.left + videoWidth &&
-                    mouseY > videoOffset.top && mouseY < videoOffset.top + videoHeight &&
-                    mouseY < scrubberOffset.top) {
+                    mouseY > videoOffset.top && mouseY < scrubberOffset.top) {
                     videoContainer.trigger("mousedown");
                 }
             });
