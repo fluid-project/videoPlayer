@@ -440,13 +440,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var videoContainer = that.locate("videoContainer");
 
         // The work-around for the IE event pass-thru issue as IE does not support css "pointer-events: none".
-        // If the mouse click is within the video container area and above the scrubber bar, pass mousedown 
-        // event on the overlay layer to the underneath video container.
+        // If the mouse click is within the video area, pass mousedown event on the overlay layer to the 
+        // underneath video container.
         if (fluid.hasFeature("fluid.browser.msie")) {
             that.locate("overlay").mousedown(function (ev) {
                 that.play();
             });
 
+            // Prevent the mousedown event caused by clicking the controller bar from bubbling up to the 
+            // overlay layer so the video does not respond to that.
             that.locate("controllers").mousedown(function (ev) {
                 ev.stopPropagation();
             });
