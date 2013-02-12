@@ -426,11 +426,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };       
 
     fluid.videoPlayer.togglePlayOverlay = function (that) {
+        var ol = that.locate("overlay");
+        var olstyle = that.options.styles.playOverlay;
+        
         if (!that.model.play) {
-            that.locate("overlay").addClass(that.options.styles.playOverlay);
+            ol.addClass(olstyle)
         } else {
-            that.locate("overlay").removeClass(that.options.styles.playOverlay);
-        }
+            ol.removeClass(olstyle)
+        }    
     }; 
 
     var bindVideoPlayerDOMEvents = function (that) {
