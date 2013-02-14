@@ -38,7 +38,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
     var cancelFullscreenFnNames = ["cancelFullScreen", "mozCancelFullScreen", "webkitCancelFullScreen", "oCancelFullScreen", "msieCancelFullScreen"];
-    var fullscreenchangeEventNames = ["fullscreenchange", "mozfullscreenchange", "webkitfullscreenchange", "ofullscreenchange", "msiefullscreenchange"];
 
     var setupEnvVar = function (nameToSet, names, testFn) {
         var name = fluid.find(names, function (name) {
@@ -53,9 +52,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
     setupEnvVar("cancelFullScreenFnName", cancelFullscreenFnNames, function (name) {
         return document[name];
-    });
-    setupEnvVar("fullscreenchangeEventName", fullscreenchangeEventNames, function (name) {
-        return (el["on" + name] !== undefined);
     });
     
     
@@ -153,6 +149,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
                         onReady: "{videoPlayer}.events.onMediaReady"
+                    },
+                    listeners: {
+                        onExitFullScreen: {
+                            // Ensures that the model is in the correct state after exiting fullscren
+                            // for example when exiting with "esc" instead of clicking the exit full screen button
+                            listener: "{videoPlayer}.applier.requestChange",
+                            args: ["fullscreen", false]
+                        }
                     },
                     sources: "{videoPlayer}.options.video.sources"
                 }
@@ -536,16 +540,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
             that.events.afterScrub.fire();
         };
-
-        if (fluid.browser.fullscreenchangeEventName) {
-            document.addEventListener(fluid.browser.fullscreenchangeEventName, function () {
-                var isFullScreenRightNow = document.mozFullScreenElement || document.webkitIsFullScreen || document.fullscreen;
-                if (that.model.fullscreen && !isFullScreenRightNow) {
-                    // we've left fullscreen, but the model has not been updated (must have used ESC)
-                    that.applier.requestChange("fullscreen", false);
-                }
-            });
-        }
     };
     
     fluid.videoPlayer.finalInit = function (that) {

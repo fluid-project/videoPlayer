@@ -51,6 +51,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onMediaElementVolumeChange: null,
             onMediaElementEnded: null,
             onMediaElementTimeUpdate: null,
+            onFullScreen: null,
+            onExitFullScreen: null,
             
             onLoadedMetadata: null
         },
@@ -195,6 +197,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.events[localEvtName].fire(that, evt);
                 });
             });
+            
+            // Need to add the fullScreenEvent separately as it can be different depending on the browser
+            document.addEventListener(mejs.MediaFeatures.fullScreenEventName, function (evt) {
+                that.events[mejs.MediaFeatures.isFullScreen() ? "onFullScreen" : "onExitFullScreen"].fire(that, evt);
+            });
 
             that.events.onEventBindingReady.fire(that);
         }});
@@ -249,6 +256,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.updateVolume();
             that.play();
         };
+        
+        that.requestFullScreen = function () {
+            mejs.MediaFeatures.requestFullScreen(that.model.mediaElementVideo);
+        };
+        
+        that.cancelFullScreen = function () {
+            mejs.MediaFeatures.cancelFullScreen();
+        }
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
