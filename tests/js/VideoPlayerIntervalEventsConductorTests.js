@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -19,7 +19,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
 
-        var videoPlayerIntervalEventsConductorTests = new jqUnit.TestCase("Video Player Interval Events Conductor Tests");
+        jqUnit.module("Video Player Interval Events Conductor Tests");
     
         // Test data used across all the tests
         var testIntervalList = 
@@ -42,7 +42,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             jqUnit.assertDeepEq("The result from finding interval for the current time " + currentTime + " is expected", expected, result);
         };
         
-        videoPlayerIntervalEventsConductorTests.test("findCurrentInterval", function () {
+        jqUnit.test("findCurrentInterval", function () {
             testFindCurrentInterval(0.1, null, null);
             testFindCurrentInterval(1.1, null, 0);
             testFindCurrentInterval(1.5, 0, 0);
@@ -52,7 +52,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
         
         var testIntervalChangeFired = function (timeToSet, expectedCurrentInterval, expectedPreviousInterval, desc) {
-            videoPlayerIntervalEventsConductorTests.test("onIntervalChange event gets fired: " + desc, function () {
+            jqUnit.test("onIntervalChange event gets fired: " + desc, function () {
                 jqUnit.expect(2);
                 var that = fluid.videoPlayer.intervalEventsConductor({
                     intervalList: testIntervalList,
@@ -75,7 +75,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         testIntervalChangeFired(3.5, null, "1", "Interval is changed from one to none");
 
         var testIntervalChangeNotFired = function (timeToSet, previousInterval, desc) {
-            videoPlayerIntervalEventsConductorTests.test("onIntervalChange event does NOT get fired: " + desc, function () {
+            jqUnit.test("onIntervalChange event does NOT get fired: " + desc, function () {
                 jqUnit.expect(1);
                 
                 var onIntervalChangeFired = false;
@@ -119,7 +119,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, 1);
         };
 
-        videoPlayerIntervalEventsConductorTests.asyncTest("intervalEventsConductor with a synthetic timer", function () {
+        jqUnit.asyncTest("intervalEventsConductor with a synthetic timer", function () {
             jqUnit.expect(3);
             
             var timeToSet = 1;
@@ -149,7 +149,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     onIntervalChange: function (currentInterval, previousInterval) {
                         jqUnit.assertEquals("The event onIntervalChange is fired with currentInterval " + expectedCurrentInterval, "0", currentInterval);
                         jqUnit.assertEquals("The event onIntervalChange is fired with previousInterval " + previousInterval, previousInterval, previousInterval);
-                        start();
+                        jqUnit.start();
                     }
                 }
             });

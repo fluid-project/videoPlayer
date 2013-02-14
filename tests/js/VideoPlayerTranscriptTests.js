@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -19,7 +19,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
 
-        var videoPlayerTranscriptTests = new jqUnit.TestCase("Video Player Transcript Tests");
+        jqUnit.module("Video Player Transcript Tests");
     
         // The transcript files sit in the local disk
         var baseOptions = {
@@ -38,7 +38,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
         
         // Test convertToMilli
-        videoPlayerTranscriptTests.test("Test convertToMilli function", function () {
+        jqUnit.test("Test convertToMilli function", function () {
             // Success cases
             testConvertToMilli("12:01.1", 721001);
             testConvertToMilli("12:01.10", 721010);
@@ -92,17 +92,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             // Depending on the connection with universal subtitle site, the test below may not get run with remote universal subtitle transcript files.
             if (!initialTranscriptText) {
                 initialTranscriptText = $(".flc-videoPlayer-transcript-text").text();
+                jqUnit.start();
             } else {
                 jqUnit.assertNotEquals("The transcript text is switched", $(".flc-videoPlayer-transcript-text").text(), initialTranscriptText);
             }
-            start();
         };
         
         var testProcess = function (transcriptOps, purpose) {
             // initialize the var that saves the loaded transcript for a fresh start.
             initialTranscriptText = undefined;
             
-            videoPlayerTranscriptTests.asyncTest(purpose + " - instantiation", function () {
+            jqUnit.asyncTest(purpose + " - instantiation", function () {
                 jqUnit.expect(5);
                 
                 var testOpts = {
@@ -113,10 +113,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 
                 var that = initTranscript(transcriptOps, testOpts);
                 
-                start();
+                jqUnit.start();
             });
     
-            videoPlayerTranscriptTests.asyncTest(purpose + " - load and switch transcript", function () {
+            jqUnit.asyncTest(purpose + " - load and switch transcript", function () {
                 var testOpts = {
                         listeners: {
                             onReady: fluid.videoPlayer.switchTranscript,
@@ -170,26 +170,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
         }, 500);
 
-        videoPlayerTranscriptTests.asyncTest("Drop-down aria-controls text area", function () {
+        jqUnit.asyncTest("Drop-down aria-controls text area", function () {
             var testOpts = {
                 listeners: {
                     onReady: function (that) {
                         var attr = that.locate("languageDropdown").attr("aria-controls");
                         jqUnit.assertTrue("Drop-down should have aria-controls attribute", !!attr);
                         jqUnit.assertEquals("aria-controls should reference the text area", that.locate("transcriptText").attr("id"), attr);
-                        start();
+                        jqUnit.start();
                     }
                 }
             };
             var that = initTranscript(localTranscriptOpts, testOpts);
         });
 
-        videoPlayerTranscriptTests.asyncTest("transcriptTextId", function () {
+        jqUnit.asyncTest("transcriptTextId", function () {
             var testOpts = {
                 listeners: {
                     onReady: function (that) {
                         jqUnit.assertEquals("should be able to retrieve transcript id", that.locate("transcriptText").attr("id"), that.transcriptTextId());
-                        start();
+                        jqUnit.start();
                     }
                 }
             };

@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -21,9 +21,9 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controls Integration Tests");
+        jqUnit.module("Video Player Controls Integration Tests");
 
-        videoPlayerControlsTests.asyncTest("Play button", function () {
+        jqUnit.asyncTest("Play button", function () {
             var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                 listeners: {
                     onReady: {
@@ -31,7 +31,7 @@ fluid.registerNamespace("fluid.tests");
                             var playButton = controllers.locate("play");
                             fluid.testUtils.verifyBasicButtonFunctions(playButton, "Play", "Play", "Pause", "fl-videoPlayer-playing");
 
-                            start();
+                            jqUnit.start();
                         },
                         args: ["{controllers}"]
                     }
@@ -39,7 +39,7 @@ fluid.registerNamespace("fluid.tests");
             });
         });
 
-        videoPlayerControlsTests.asyncTest("Volume controls integration", function () {
+        jqUnit.asyncTest("Volume controls integration", function () {
             jqUnit.expect(4);
             var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                 listeners: {
@@ -57,7 +57,7 @@ fluid.registerNamespace("fluid.tests");
                             var sliderHandle = that.controllers.volumeControl.locate("handle");
                             jqUnit.assertEquals("The slider button should have valuenow of '60'", "60", sliderHandle.attr("aria-valuenow"));
 
-                            start();
+                            jqUnit.start();
                         }
                     }
                 }
@@ -76,7 +76,7 @@ fluid.registerNamespace("fluid.tests");
             return fluid.videoPlayer.controllers.scrubber("#scrubber-test", opts);
         };
 
-        videoPlayerControlsTests.test("Buffer progress update", function () {
+        jqUnit.test("Buffer progress update", function () {
             jqUnit.expect(3);
             var scrubber = fluid.tests.initScrubber();
             
@@ -93,7 +93,7 @@ fluid.registerNamespace("fluid.tests");
 
         });
 
-        videoPlayerControlsTests.asyncTest("Show/hide scrubber handle", function () {
+        jqUnit.asyncTest("Show/hide scrubber handle", function () {
             var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                 listeners: {
                     onReady: {
@@ -105,7 +105,7 @@ fluid.registerNamespace("fluid.tests");
                             jqUnit.notVisible("The scrubber handle is not shown", controllers.scrubber.locate("handle"));
                             controllers.applier.requestChange("totalTime", 100);
                             jqUnit.isVisible("The scrubber handle is shown", controllers.scrubber.locate("handle"));
-                            start();
+                            jqUnit.start();
                         },
                         args: ["{controllers}"]
                     }
@@ -131,7 +131,7 @@ fluid.registerNamespace("fluid.tests");
                             listener: function (controllers) {
                                 jqUnit.assertNotEquals("Full screen button component is not an empty one", controllers.options.components.fullScreenButton.type, "fluid.emptySubcomponent");
                                 jqUnit.assertNotEquals("Full screen button should be present", controllers.locate("fullscreen").css("display"), "none");
-                                start();
+                                jqUnit.start();
                             },
                             args: ["{controllers}"]
                         }
@@ -179,7 +179,7 @@ fluid.registerNamespace("fluid.tests");
                                     fullScreenButtonStyles: fullScreenButtonStyles,
                                     fullScreenButton: fullScreenButton
                                 });
-                                start();
+                                jqUnit.start();
                             },
                             args: ["{controllers}"]
                         }
@@ -205,7 +205,7 @@ fluid.registerNamespace("fluid.tests");
                         onReady: {
                             listener: function (controllers) {
                                 jqUnit.assertEquals("Full screen button should NOT be present", "fluid.emptyEventedSubcomponent", controllers.options.components.fullScreenButton.type);
-                                start();
+                                jqUnit.start();
                             },
                             args: ["{controllers}"]
                         }

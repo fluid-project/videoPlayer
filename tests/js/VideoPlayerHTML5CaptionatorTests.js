@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start, captionator*/
+/*global fluid, jqUnit, jQuery, captionator*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -70,7 +70,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             initVideoPlayer(options, function (videoPlayer) {
                 assertFn(testStr, videoPlayer.html5Captionator);
                 jqUnit.assertEquals(domStr, hasCaptionatorMarkup ? 1 : 0, $(captionatorSelector).length);
-                start();
+                jqUnit.start();
             });
         };
 
@@ -190,7 +190,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             testTrackMode(html5Captionator, [false, false]);
                             testCaptionPresence(html5Captionator, "");
                             jqUnit.expect(1);
-                            start();
+                            jqUnit.start();
                         }, 1000);
                     }, 1000);
                 });
@@ -207,7 +207,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
                         testCaptionPresence(html5Captionator, firstEnglishCaption);
                         jqUnit.expect(1);
-                        start();
+                        jqUnit.start();
                     }, 1000);
                 });
             }
@@ -236,7 +236,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         // Check that captions are not present in the DOM
                         testCaptionPresence(html5Captionator, "");
                         jqUnit.expect(3);
-                        start();
+                        jqUnit.start();
                     });
                 });
             }
@@ -250,7 +250,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         testTrackMode(html5Captionator, [false, false]);
                         // Check that captions are not present in the DOM
                         testCaptionPresence(html5Captionator, "");
-                        start();
+                        jqUnit.start();
                     });
                 });
             }

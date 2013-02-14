@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -63,7 +63,7 @@ fluid.registerNamespace("fluid.tests");
                             verifyNonOptionalControls();
                             jqUnit.assertEquals("Caption controls should NOT be present", 0, $(".flc-videoPlayer-captionControls-container *").length);
                             jqUnit.notVisible("Full-screen button should NOT be visible", $(".flc-videoPlayer-fullscreen"));
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
@@ -83,7 +83,7 @@ fluid.registerNamespace("fluid.tests");
                             verifyNonOptionalControls();
                             jqUnit.assertEquals("Caption controls should NOT be present", 0, $(".flc-videoPlayer-captionControls-container *").length);
                             jqUnit.isVisible("Full-screen button should be visible", $(".flc-videoPlayer-fullscreen"));
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
@@ -105,7 +105,7 @@ fluid.registerNamespace("fluid.tests");
                             verifyNonOptionalControls();
                             jqUnit.assertTrue("Caption controls should be present", $(".flc-videoPlayer-captionControls-container *").length > 0);
                             jqUnit.notVisible("Full-screen button should NOT be visible", $(".flc-videoPlayer-fullscreen"));
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
@@ -127,7 +127,7 @@ fluid.registerNamespace("fluid.tests");
                             verifyNonOptionalControls();
                             jqUnit.assertTrue("Caption controls should be present", $(".flc-videoPlayer-captionControls-container *").length > 0);
                             jqUnit.isVisible("Full-screen button should be visible", $(".flc-videoPlayer-fullscreen"));
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
@@ -138,9 +138,9 @@ fluid.registerNamespace("fluid.tests");
             "supportsHtml5": "fluid.browser.supportsHtml5"
         });
         
-        var videoPlayerControlsTests = new jqUnit.TestCase("Video Player Controller");
+        jqUnit.module("Video Player Controller");
         
-        videoPlayerControlsTests.asyncTest("Volume controls", function () {
+        jqUnit.asyncTest("Volume controls", function () {
             jqUnit.expect(7);
             var checkSlider = function (ariavaluenow, expectedValue) {
                     jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
@@ -170,7 +170,7 @@ fluid.registerNamespace("fluid.tests");
                             checkSlider(sliderHandle.attr("aria-valuenow"), "50");
                             jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
 
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });

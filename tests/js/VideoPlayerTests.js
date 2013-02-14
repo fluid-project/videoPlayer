@@ -11,32 +11,32 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
     $(document).ready(function () {
-        var videoPlayerTests = new jqUnit.TestCase("Video Player Tests");
+        jqUnit.module("Video Player Tests");
 
-        videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): valid path", function () {
+        jqUnit.asyncTest("Configurable template path (FLUID-4572): valid path", function () {
             jqUnit.expect(1);
             var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
                 listeners: {
                     onTemplateReady: function () {
                         jqUnit.assertTrue("The template should load", true);
-                        start();
+                        jqUnit.start();
                     },
                     onTemplateLoadError: function (href) {
                         jqUnit.assertTrue("Template Load Error should not fire", false);
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
         });
 
-        videoPlayerTests.asyncTest("Configurable template path (FLUID-4572): invalid path", function () {
+        jqUnit.asyncTest("Configurable template path (FLUID-4572): invalid path", function () {
             jqUnit.expect(1);
             var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
                 templates: {
@@ -47,11 +47,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 listeners: {
                     onTemplateReady: function () {
                         jqUnit.assertTrue("The template should not load", false);
-                        start();
+                        jqUnit.start();
                     },
                     onTemplateLoadError: function (href) {
                         jqUnit.assertTrue("Event 'onTemplateLoadError' should fire", true);
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
@@ -66,7 +66,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             jqUnit.assertEquals("Caption is in the correct position", captionObj.text, vttArray[index + 2]);
         };
 
-        videoPlayerTests.test("millisToHmsm", function () {
+        jqUnit.test("millisToHmsm", function () {
             jqUnit.expect(15);
             jqUnit.assertEquals("0 seconds", "00:00:00.000", fluid.videoPlayer.millisToHmsm(0));
             jqUnit.assertEquals("1 milli seconds", "00:00:00.100", fluid.videoPlayer.millisToHmsm(100));
@@ -85,7 +85,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             jqUnit.assertEquals("letter - return 0", "00:00:00.000", fluid.videoPlayer.millisToHmsm("x"));
         });
 
-        videoPlayerTests.test("amaraJsonToVTT", function () {
+        jqUnit.test("amaraJsonToVTT", function () {
             var testJson = [{
                 "subtitle_id": "cseicmgnhp6334683",
                 "text": "Eeny, meeny, miny, moe,",
@@ -121,13 +121,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        videoPlayerTests.asyncTest("fetchAmaraJson", function () {
+        jqUnit.asyncTest("fetchAmaraJson", function () {
             jqUnit.expect(2);
 
             fluid.fetchAmaraJsonCallback = function (data) {
                 jqUnit.assertTrue("Json was fetched", data.length > 0);
                 jqUnit.assertEquals("Checking the first caption text", "Eeny, meeny, miny, moe,", data[0].text);
-                start();
+                jqUnit.start();
             };
 
             fluid.videoPlayer.fetchAmaraJson("http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en", fluid.fetchAmaraJsonCallback);
@@ -138,25 +138,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             jqUnit.assertEquals("aria-label should be set properly", vp.options.strings.videoTitlePreface + expectedLabel, vp.locate("videoContainer").attr("aria-label"));
         };
 
-        videoPlayerTests.asyncTest("Video label: default", function () {
+        jqUnit.asyncTest("Video label: default", function () {
             var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
                 listeners: {
                     onReady: function (videoPlayer) {
                         testVideoLabel(videoPlayer, videoPlayer.options.videoTitle);
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
         });
 
-        videoPlayerTests.asyncTest("Video label: custom", function () {
+        jqUnit.asyncTest("Video label: custom", function () {
             var testTitle = "My Test Video Title";
             var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
                 videoTitle: testTitle,
                 listeners: {
                     onReady: function (videoPlayer) {
                         testVideoLabel(videoPlayer, testTitle);
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
@@ -179,7 +179,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
                             jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
 
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
@@ -198,7 +198,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             jqUnit.assertUndefined("The sub-component controllers has been NOT instantiated", videoPlayer.controllers);
                             jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
 
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
@@ -219,7 +219,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             jqUnit.assertNotUndefined("The sub-component playButton has been instantiated", controllers.playButton);
                             jqUnit.assertNotUndefined("The sub-component fullScreenButton has been instantiated", controllers.fullScreenButton);
 
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
@@ -242,7 +242,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
                             jqUnit.assertUndefined("The sub-component html5Captionator has NOT been instantiated", videoPlayer.captionner);
 
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
