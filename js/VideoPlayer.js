@@ -35,25 +35,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
         return isHtml5Browser ? fluid.typeTag("fluid.browser.supportsHtml5") : undefined;
     };
-    
-    var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
-
-    var setupEnvVar = function (nameToSet, names, testFn) {
-        var name = fluid.find(names, function (name) {
-            return testFn(name) ? name : undefined;
-        });
-        fluid.set(fluid.browser, nameToSet, name);
-    };
-
-    var el = $("<div />")[0];
-    setupEnvVar("requestFullScreenFnName", fullscreenFnNames, function (name) {
-        return el[name];
-    });
-    
-    
-    fluid.browser.supportsFullScreen = function () {
-        return fluid.browser.requestFullScreenFnName ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
-    };
 
     // This browser test is used in a workaround that avoids the problem by not animating the
     // show/hide of controls in Safari
@@ -65,7 +46,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
-        supportsFullScreen: fluid.browser.supportsFullScreen(),
         safari: fluid.browser.isSafari()
     };
     

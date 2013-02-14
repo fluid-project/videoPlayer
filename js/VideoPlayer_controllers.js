@@ -35,6 +35,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.locate("fullscreen").attr("disabled", !that.model.canPlay);
         });
     };
+    
+    fluid.registerNamespace("fluid.videoPlayer.controllers");
+    
+    fluid.videoPlayer.controllers.supportFullscreen = function () {
+        var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
+        
+        return fluid.find(fullscreenFnNames, function (name) {
+            return !!$("<div></div")[0][name] || undefined;
+        });
+    };
+    
+    fluid.enhance.check({"fluid.browser.supportsFullScreen": "fluid.videoPlayer.controllers.supportFullscreen"});
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent", "autoInit"], 
