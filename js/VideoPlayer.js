@@ -37,7 +37,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
-    var cancelFullscreenFnNames = ["cancelFullScreen", "mozCancelFullScreen", "webkitCancelFullScreen", "oCancelFullScreen", "msieCancelFullScreen"];
 
     var setupEnvVar = function (nameToSet, names, testFn) {
         var name = fluid.find(names, function (name) {
@@ -49,9 +48,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var el = $("<div />")[0];
     setupEnvVar("requestFullScreenFnName", fullscreenFnNames, function (name) {
         return el[name];
-    });
-    setupEnvVar("cancelFullScreenFnName", cancelFullscreenFnNames, function (name) {
-        return document[name];
     });
     
     
@@ -156,6 +152,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             // for example when exiting with "esc" instead of clicking the exit full screen button
                             listener: "{videoPlayer}.applier.requestChange",
                             args: ["fullscreen", false]
+                        },
+                        "{videoPlayer}.events.onFullscreenModelChanged": {
+                            listener: function (videoPlayer, media, model) {
+                                if (model.fullscreen) {
+                                    media.requestFullScreen(videoPlayer.locate("videoPlayer")[0]);
+                                } else {
+                                    media.cancelFullScreen();
+                                }
+                            },
+                            args: ["{videoPlayer}", "{media}", "{arguments}.0"]
                         }
                     },
                     sources: "{videoPlayer}.options.video.sources"
@@ -246,6 +252,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
+            
+            onFullscreenModelChanged: null,
 
             onReady: {
                 events: {
@@ -351,12 +359,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, {
                 modifier: that.options.keyBindings.fullscreen.modifier,
                 key: that.options.keyBindings.fullscreen.key,
-                activateHandler: function () {
-                    that.applier.fireChangeRequest({
-                        path: "fullscreen",
-                        value: !that.model.fullscreen
-                    });
-                }
+                activateHandler: that.toggleFullscreen
             }, {
                 modifier: that.options.keyBindings.captions.modifier,
                 key: that.options.keyBindings.captions.key,
@@ -454,7 +457,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var bindVideoPlayerModel = function (that) {
-        that.applier.modelChanged.addListener("fullscreen", that.fullscreen);
+        that.applier.modelChanged.addListener("fullscreen", that.events.onFullscreenModelChanged.fire);
         that.applier.modelChanged.addListener("canPlay", function () {
             that.events.onViewReady.fire();
         });
@@ -496,12 +499,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
         
-        that.fullscreen = function () {
-            if (that.model.fullscreen === true) {
-                that.locate("videoPlayer")[0][fluid.browser.requestFullScreenFnName]();
-            } else {
-                document[fluid.browser.cancelFullScreenFnName]();
-            }
+        that.toggleFullscreen = function () {
+            that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
     };
 

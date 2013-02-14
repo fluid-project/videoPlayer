@@ -257,8 +257,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.play();
         };
         
-        that.requestFullScreen = function () {
-            mejs.MediaFeatures.requestFullScreen(that.model.mediaElementVideo);
+        that.requestFullScreen = function (elm) {
+            mejs.MediaFeatures.requestFullScreen(elm || that.model.mediaElementVideo);
         };
         
         that.cancelFullScreen = function () {
