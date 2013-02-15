@@ -24,6 +24,12 @@ var fluid_1_5 = fluid_1_5 || {};
     // definitions of candidate framework functions developed during VideoPlayer development
     
     
+    // feature detection functions to be used by the progressive enhancement system
+    fluid.registerNamespace("fluid.browser");
+    fluid.browser.navtiveVideoSupport = function () {
+        return !!document.createElement('video').canPlayType;
+    };
+    
     
     // The "model relay" system - a framework sketch for a junction between an applier
     // bound to one model and another. It accepts (currently) 3 types of handler,

@@ -104,6 +104,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
 
+    fluid.enhance.check({"fluid.browser.navtiveVideoSupport": "fluid.browser.navtiveVideoSupport"});
+
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
      * 
@@ -123,8 +125,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     events: {
-                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
-                        onReady: "{videoPlayer}.events.onMediaReady"
+                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata"
                     },
                     listeners: {
                         onExitFullScreen: {
@@ -142,7 +143,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                 }
                             },
                             args: ["{videoPlayer}", "{media}", "{arguments}.0"]
-                        }
+                        },
+                        onReady: "{videoPlayer}.events.onMediaReady"
                     },
                     sources: "{videoPlayer}.options.video.sources"
                 }
@@ -194,7 +196,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     },
                     listeners: {
-                        onReady: "{videoPlayer}.events.onControllersReady",
+                        onReady: "{videoPlayer}.events.onControllersReady"
                     },
                     templates: {
                         menuButton: "{videoPlayer}.options.templates.menuButton"
@@ -202,17 +204,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             html5Captionator: {
-                type: "fluid.videoPlayer.html5Captionator",
+                type: "fluid.videoPlayer.captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onHTML5BrowserDetected",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.options.video.captions",
-                    events: {
-                        onReady: "{videoPlayer}.events.onCaptionsReady"
-                    }
-                }
+                createOnEvent: "onMediaReady"
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -251,7 +245,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onCreateControllersReady: null,
             onCreateMediaReady: null,
             onIntervalEventsConductorReady: null,
-            onHTML5BrowserDetected: null,
 
             // private events used for associating menus with what they control via ARIA
             onTranscriptsReady: null,
@@ -327,6 +320,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         invokers: {
             showControllers: "fluid.videoPlayer.showControllers",
             hideControllers: "fluid.videoPlayer.hideControllers"
+        }
+    });
+    
+    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer"], {
+        funcName: "fluid.emptySubcomponent"
+    });
+    
+    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer", "fluid.browser.navtiveVideoSupport"], {
+        funcName: "fluid.videoPlayer.html5Captionator",
+        options: {
+            model: "{videoPlayer}.model",
+            applier: "{videoPlayer}.applier",
+            captions: "{videoPlayer}.options.video.captions",
+            events: {
+                onReady: "{videoPlayer}.events.onCaptionsReady"
+            }
         }
     });
 
@@ -562,13 +571,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
                 if (that.canRenderControllers(that.options.controls)) {
                     that.events.onCreateControllersReady.fire();
-                }
-
-                // TODO: Once we have a non-html5 fall-back for captions to replace captionator,
-                // the "if" check on html5 browser can be removed. For now, caption component is
-                // only instantiated in html5 browsers.
-                if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
-                    that.events.onHTML5BrowserDetected.fire();
                 }
             }
 

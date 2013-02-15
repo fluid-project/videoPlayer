@@ -46,7 +46,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
     
-    fluid.enhance.check({"fluid.browser.supportsFullScreen": "fluid.videoPlayer.controllers.supportFullscreen"});
+    fluid.enhance.check({
+        "fluid.browser.supportsFullScreen": "fluid.videoPlayer.controllers.supportFullscreen",
+        "fluid.browser.navtiveVideoSupport": "fluid.browser.navtiveVideoSupport"
+    });
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent", "autoInit"], 
@@ -263,7 +266,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         funcName: "fluid.toggleButton",
         args: ["{controllers}.container", fullScreenButtonOptions]
     });
-    fluid.demands("captionControls", ["fluid.browser.supportsHtml5"], {
+    fluid.demands("captionControls", ["fluid.browser.navtiveVideoSupport"], {
         funcName: "fluid.videoPlayer.languageControls",
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
