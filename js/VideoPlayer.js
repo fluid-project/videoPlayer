@@ -284,6 +284,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
+            videoOverlay: ".flc-videoPlayer-video-overlay",
             videoContainer: ".flc-videoPlayer-video-container",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
@@ -298,9 +299,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoTitlePreface: "Video: "
         },
         styles: {
-            playOverlay: "fl-videoplayer-overlay-play"
+            playOverlay: "fl-videoplayer-video-play"
         },
-        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoOverlay"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -426,7 +427,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };       
 
     fluid.videoPlayer.togglePlayOverlay = function (that) {
-        var ol = that.locate("overlay");
+        var ol = that.locate("videoOverlay");
         var olstyle = that.options.styles.playOverlay;
         
         if (!that.model.play) {
@@ -438,21 +439,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
-
-        // The work-around for the IE event pass-thru issue as IE does not support css "pointer-events: none".
-        // If the mouse click is within the video area, pass mousedown event on the overlay layer to the 
-        // underneath video container.
-        if (fluid.hasFeature("fluid.browser.msie")) {
-            that.locate("overlay").mousedown(function (ev) {
-                that.play();
-            });
-
-            // Prevent the mousedown event caused by clicking the controller bar from bubbling up to the 
-            // overlay layer so the video does not respond to that.
-            that.locate("controllers").mousedown(function (ev) {
-                ev.stopPropagation();
-            });
-        }
         
         fluid.tabindex(videoContainer, 0);
 
