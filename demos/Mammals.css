@@ -197,6 +197,6 @@ footer a {
     background-color: #808080;
 }
 
-.fl-videoPlayer-video-element, .fl-videoPlayer-overlay {
+.fl-videoPlayer-video-element, .fl-videoPlayer-video-play, .fl-videoPlayer-overlay {
     width: 31.25em;
 }
