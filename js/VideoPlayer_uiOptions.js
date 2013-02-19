@@ -9,13 +9,14 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid*/
+/*global jQuery, window, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
+var fluid_1_5 = fluid_1_5 || {};
 
-(function ($) {
+(function ($, fluid) {
 
     /** A "mixin grade" for use by clients wanting to add the media panel controls
      * to a UIOptions configuration */
@@ -227,4 +228,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
 
-})(jQuery);
+})(jQuery, fluid_1_5);

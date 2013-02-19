@@ -11,13 +11,14 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid, MediaElement*/
+/*global jQuery, window, swfobject, fluid_1_5, MediaElement*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
+var fluid_1_5 = fluid_1_5 || {};
 
-(function ($) {
+(function ($, fluid) {
 
     /*********************************************************************************
      * Video Player Media                                                            *
@@ -272,4 +273,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.bindMediaDOMEvents();
     };
 
-})(jQuery);
+})(jQuery, fluid_1_5);
