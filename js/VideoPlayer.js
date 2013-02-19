@@ -64,18 +64,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
     };
 
-    // IE detection is used in a workaround to pass through the mousedown event on the overlay
-    // div to the video underneath
-    fluid.browser.msie = function () {
-        var isIE = ($.browser.msie);
-        return isIE ? fluid.typeTag("fluid.browser.msie") : undefined;
-    };
-
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
         supportsFullScreen: fluid.browser.supportsFullScreen(),
         safari: fluid.browser.isSafari(),
-        ie: fluid.browser.msie()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -284,6 +276,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
+            videoOverlay: ".flc-videoPlayer-video-overlay",
             videoContainer: ".flc-videoPlayer-video-container",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
@@ -298,9 +291,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoTitlePreface: "Video: "
         },
         styles: {
-            playOverlay: "fl-videoplayer-overlay-play"
+            playOverlay: "fl-videoplayer-video-play"
         },
-        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoOverlay"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -426,21 +419,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };       
 
     fluid.videoPlayer.togglePlayOverlay = function (that) {
+        var ol = that.locate("videoOverlay");
+        var olstyle = that.options.styles.playOverlay;
+        
         if (!that.model.play) {
-            that.locate("overlay").addClass(that.options.styles.playOverlay);
+            ol.addClass(olstyle)
         } else {
-            that.locate("overlay").removeClass(that.options.styles.playOverlay);
-        }
+            ol.removeClass(olstyle)
+        }    
     }; 
 
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
-
-        if (fluid.hasFeature("fluid.browser.msie")) {
-            that.locate("overlay").mousedown(function () {
-                videoContainer.trigger("mousedown");
-            });
-        }
         
         fluid.tabindex(videoContainer, 0);
 
@@ -450,7 +440,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
-
+        
         that.locate("videoPlayer").mouseenter(function () {
             that.showControllers(that);
         });
