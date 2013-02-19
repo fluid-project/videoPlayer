@@ -67,7 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
         supportsFullScreen: fluid.browser.supportsFullScreen(),
-        safari: fluid.browser.isSafari(),
+        safari: fluid.browser.isSafari()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
@@ -291,7 +291,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoTitlePreface: "Video: "
         },
         styles: {
-            playOverlay: "fl-videoplayer-video-play"
+            playOverlay: "fl-videoPlayer-video-play"
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoOverlay"],
         keyBindings: fluid.videoPlayer.defaultKeys,
@@ -423,9 +423,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var olstyle = that.options.styles.playOverlay;
         
         if (!that.model.play) {
-            ol.addClass(olstyle)
+            ol.addClass(olstyle);
         } else {
-            ol.removeClass(olstyle)
+            ol.removeClass(olstyle);
         }    
     }; 
 
