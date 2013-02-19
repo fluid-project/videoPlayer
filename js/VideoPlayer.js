@@ -64,18 +64,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
     };
 
-    // IE detection is used in a workaround to pass through the mousedown event on the overlay
-    // div to the video underneath
-    fluid.browser.msie = function () {
-        var isIE = ($.browser.msie);
-        return isIE ? fluid.typeTag("fluid.browser.msie") : undefined;
-    };
-
     var features = {
         supportsHtml5: fluid.browser.supportsHtml5(),
         supportsFullScreen: fluid.browser.supportsFullScreen(),
         safari: fluid.browser.isSafari(),
-        ie: fluid.browser.msie()
     };
     
     fluid.merge(null, fluid.staticEnvironment, features);
