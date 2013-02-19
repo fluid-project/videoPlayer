@@ -291,7 +291,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoTitlePreface: "Video: "
         },
         styles: {
-            playOverlay: "fl-videoplayer-video-play"
+            playOverlay: "fl-videoPlayer-video-play"
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoOverlay"],
         keyBindings: fluid.videoPlayer.defaultKeys,
