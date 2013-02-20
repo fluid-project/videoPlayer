@@ -197,7 +197,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
                     },
                     listeners: {
-                        onReady: "{videoPlayer}.events.onControllersReady",
+                        onReady: "{videoPlayer}.events.onControllersReady"
                     },
                     templates: {
                         menuButton: "{videoPlayer}.options.templates.menuButton"
@@ -276,6 +276,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
             video: ".flc-videoPlayer-video",
+            videoOverlay: ".flc-videoPlayer-video-overlay",
             videoContainer: ".flc-videoPlayer-video-container",
             caption: ".flc-videoPlayer-captionArea",
             controllers: ".flc-videoPlayer-controller",
@@ -289,7 +290,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             turnTranscriptsOff: "Turn Transcripts OFF",
             videoTitlePreface: "Video: "
         },
-        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer"],
+        styles: {
+            playOverlay: "fl-videoPlayer-video-play"
+        },
+        selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoOverlay"],
         keyBindings: fluid.videoPlayer.defaultKeys,
         produceTree: "fluid.videoPlayer.produceTree",
         controls: "custom",
@@ -316,7 +320,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fullscreen: false,
             volume: 60,
             muted: false,
-            canPlay: false
+            canPlay: false,
+            play: false
         },
         templates: {
             videoPlayer: {
@@ -411,11 +416,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.hideControllersAnimated = function (that) {
         that.locate("controllers").stop(false, true).delay(500).slideUp();
-    };
+    };       
+
+    fluid.videoPlayer.togglePlayOverlay = function (that) {
+        var ol = that.locate("videoOverlay");
+        var olstyle = that.options.styles.playOverlay;
+        
+        if (!that.model.play) {
+            ol.addClass(olstyle);
+        } else {
+            ol.removeClass(olstyle);
+        }    
+    }; 
 
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
-
+        
         fluid.tabindex(videoContainer, 0);
 
         // Using "mousedown" event rather than "click", which does not work
@@ -424,7 +440,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             ev.preventDefault();
             that.play();
         });
-
+        
         that.locate("videoPlayer").mouseenter(function () {
             that.showControllers(that);
         });
@@ -446,6 +462,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.applier.modelChanged.addListener("fullscreen", that.fullscreen);
         that.applier.modelChanged.addListener("canPlay", function () {
             that.events.onViewReady.fire();
+        });
+        that.applier.modelChanged.addListener("play", function () { 
+            fluid.videoPlayer.togglePlayOverlay(that); 
         });
     };
 
@@ -583,6 +602,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             that.locate("controllers").hide();
+            fluid.videoPlayer.togglePlayOverlay(that);
 
             // Ensure <object> element is not in tab order, for IE9
             $("object", that.locate("video")).attr("tabindex", "-1");
