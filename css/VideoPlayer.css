@@ -77,8 +77,12 @@
 .fl-videoPlayer-video-play {
 	background: url('../images/default/play_overlay.png') no-repeat center center;
 	position: absolute;
-	background-color:rgba(0,0,0,0.05);
+	background-color: rgba(0,0,0,0.05);
 }
+.fl-theme-uio-yb .fl-videoPlayer-video-play { background-image: url('../images/yellow/play_overlay.png'); background-color: rgba(0,0,0,0.05) !important; }
+.fl-theme-uio-wb .fl-videoPlayer-video-play { background-image: url('../images/white/play_overlay.png'); background-color: rgba(0,0,0,0.05) !important; }
+.fl-theme-uio-by .fl-videoPlayer-video-play { background-image: url('../images/black/play_overlay_by.png'); background-color: rgba(0,0,0,0.05) !important; }
+.fl-theme-uio-bw .fl-videoPlayer-video-play { background-image: url('../images/black/play_overlay_bw.png'); background-color: rgba(0,0,0,0.05) !important; }
 
 .fl-videoPlayer-video-element:focus,
 .fl-videoPlayer-transcript-element-selected {
@@ -661,6 +665,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
     width: 29.75em;
     pointer-events: none;
 }
+
 .fl-theme-uio-yb .fl-videoPlayer-overlay, .fl-theme-uio-yb .fl-videoPlayer-captionArea, .fl-theme-uio-yb .captionator-cue-canvas,
 .fl-theme-uio-wb .fl-videoPlayer-overlay, .fl-theme-uio-wb .fl-videoPlayer-captionArea, .fl-theme-uio-wb .captionator-cue-canvas,
 .fl-theme-uio-by .fl-videoPlayer-overlay, .fl-theme-uio-by .fl-videoPlayer-captionArea, .fl-theme-uio-by .captionator-cue-canvas,
