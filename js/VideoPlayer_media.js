@@ -48,7 +48,9 @@ var fluid_1_5 = fluid_1_5 || {};
 
             // local events to mirror the media element events
             onMediaElementCanPlay: null,
+            onMediaElementCanPlayThrough: null,
             onMediaElementLoadedMetadata: null,
+            onMediaElementLoadedData: null,
             onMediaElementVolumeChange: null,
             onMediaElementEnded: null,
             onMediaElementTimeUpdate: null,
@@ -64,15 +66,24 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         mediaEventBindings: {
             canplay: "onMediaElementCanPlay",
-            canplaythrough: "onMediaElementCanPlay",
-            loadeddata: "onMediaElementCanPlay",
+            canplaythrough: "onMediaElementCanPlayThrough",
+            loadeddata: "onMediaElementLoadedData",
             loadedmetadata: "onMediaElementLoadedMetadata",
             volumechange: "onMediaElementVolumeChange",
             ended: "onMediaElementEnded",
             timeupdate: "onMediaElementTimeUpdate"
         },
         listeners: {
-            onMediaElementCanPlay: "fluid.videoPlayer.media.handleCanPlay",
+            onMediaElementCanPlay: [
+                {
+                    listener: "{media}.applier.fireChangeRequest",
+                    args: {
+                        path: "canPlay",
+                        value: true
+                    }
+                }, 
+                "{media}.refresh"
+            ],
             onMediaElementLoadedMetadata: [{
                 listener: "{media}.applier.fireChangeRequest",
                 args: [{path: "totalTime", value: "{media}.model.mediaElementVideo.duration"}]
@@ -138,14 +149,6 @@ var fluid_1_5 = fluid_1_5 || {};
         if (!that.model.muted || mediaVolume !== 0) {
             fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
         }
-    };
-    
-    fluid.videoPlayer.media.handleCanPlay = function (that, evt) {
-        var el = that.model.mediaElementVideo;
-        that.applier.fireChangeRequest({
-            path: "canPlay",
-            value: (typeof (el.readyState) === "undefined") || (el.readyState === 4) || (el.readyState === 3) || (el.readyState === 2)
-        });
     };
     
     fluid.videoPlayer.media.handleTimeUpdate = function (that, evt) {

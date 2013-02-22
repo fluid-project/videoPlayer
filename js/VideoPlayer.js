@@ -30,13 +30,6 @@ var fluid_1_5 = fluid_1_5 || {};
     // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
     // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
 
-    fluid.browser.supportsHtml5 = function () {
-        // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
-        // Needs re-work at the integration of mediaElement.
-        var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
-        return isHtml5Browser ? fluid.typeTag("fluid.browser.supportsHtml5") : undefined;
-    };
-
     // This browser test is used in a workaround that avoids the problem by not animating the
     // show/hide of controls in Safari
     // Note: $.browser sets safari=true for both safari and chrome
@@ -46,7 +39,6 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     var features = {
-        supportsHtml5: fluid.browser.supportsHtml5(),
         safari: fluid.browser.isSafari()
     };
     
@@ -115,7 +107,7 @@ var fluid_1_5 = fluid_1_5 || {};
      */
 
     fluid.defaults("fluid.videoPlayer", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "autoInit"],
         components: {
             media: {
                 type: "fluid.videoPlayer.media",
@@ -183,7 +175,7 @@ var fluid_1_5 = fluid_1_5 || {};
             controllers: {
                 type: "fluid.videoPlayer.controllers",
                 container: "{videoPlayer}.dom.controllers",
-                createOnEvent: "onCreateControllersReady",
+                createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -216,7 +208,6 @@ var fluid_1_5 = fluid_1_5 || {};
         events: {
             onScrub: null,
             onTemplateReady: null,
-            onViewReady: null,
             onLoadedMetadata: null,
             onMediaReady: null,
             onControllersReady: null,
@@ -243,7 +234,6 @@ var fluid_1_5 = fluid_1_5 || {};
             onTimeUpdate: null,
             
             // The following events are private
-            onCreateControllersReady: null,
             onCreateMediaReady: null,
             onIntervalEventsConductorReady: null,
 
@@ -288,8 +278,6 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoOverlay"],
         keyBindings: fluid.videoPlayer.defaultKeys,
-        produceTree: "fluid.videoPlayer.produceTree",
-        controls: "custom",
         video: {
             sources: [],
             captions: [],
@@ -420,7 +408,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.videoPlayer.hideControllersAnimated = function (that) {
         that.locate("controllers").stop(false, true).delay(500).slideUp();
-    };       
+    };
 
     fluid.videoPlayer.togglePlayOverlay = function (that) {
         var ol = that.locate("videoOverlay");
@@ -464,35 +452,9 @@ var fluid_1_5 = fluid_1_5 || {};
 
     var bindVideoPlayerModel = function (that) {
         that.applier.modelChanged.addListener("fullscreen", that.events.onFullscreenModelChanged.fire);
-        that.applier.modelChanged.addListener("canPlay", function () {
-            that.events.onViewReady.fire();
-        });
         that.applier.modelChanged.addListener("play", function () { 
             fluid.videoPlayer.togglePlayOverlay(that); 
         });
-    };
-
-    fluid.videoPlayer.produceTree = function (that) {
-        var tree = {};
-        
-        if (fluid.hasFeature("fluid.browser.supportsHtml5") && that.options.controls === "native") {
-            // Use browser built-in video player
-            tree.video = {
-                decorators: [{
-                    type: "attrs",
-                    attributes: {
-                        controls: "true"
-                    }
-                }]
-            };
-        }
-        
-        // Keep the selector to render "fluid.videoPlayer.controllers"
-        if (that.canRenderControllers(that.options.controls)) {
-            that.options.selectorsToIgnore.push("controllers");
-        }
-        
-        return tree;
     };
     
     fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
@@ -518,10 +480,6 @@ var fluid_1_5 = fluid_1_5 || {};
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
         that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
-
-        that.canRenderControllers = function (controlsType) {
-            return controlsType === "custom";
-        };
 
         that.play = function (ev) {
             that.applier.fireChangeRequest({
@@ -568,7 +526,6 @@ var fluid_1_5 = fluid_1_5 || {};
                     fetchFailed = true;
                 } else if (key === "videoPlayer") {
                     that.container.append(res[key].resourceText);
-                    that.refreshView();
                     var video = that.locate("video");
                     // Setting the width and height attributes to respect the CSS API for setting the size of the video
                     // This is required for cross browser sizing of the video
@@ -589,9 +546,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 if (that.options.video.sources) {
                     that.events.onCreateMediaReady.fire();
                 }
-                if (that.canRenderControllers(that.options.controls)) {
-                    that.events.onCreateControllersReady.fire();
-                }
             }
 
             that.locate("controllers").hide();
@@ -599,12 +553,6 @@ var fluid_1_5 = fluid_1_5 || {};
 
             // Ensure <object> element is not in tab order, for IE9
             $("object", that.locate("video")).attr("tabindex", "-1");
-
-            if (that.options.controls === "native") {
-                // onReady will fire automatically when the controllers subcomponent is ready,
-                // but with native controls, we must fire it ourselves
-                that.events.onReady.fire(that);
-            }
         });
         
         return that;
@@ -643,7 +591,6 @@ var fluid_1_5 = fluid_1_5 || {};
         options: {
             listeners: {
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
-                "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeUpdate": "{media}.updateCurrentTime",
                 "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
             }
