@@ -205,7 +205,7 @@ var fluid_1_5 = fluid_1_5 || {};
             // Need to add the fullScreenEvent separately as it can be different depending on the browser
             var fullScreenEventName = fluid.get(mejs, "MediaFeatures.fullScreenEventName");
             if (fullScreenEventName) {
-                document.addEventListener(fluid.get(mejs, "MediaFeatures.fullScreenEventName"), function (evt) {
+                document.addEventListener(fullScreenEventName, function (evt) {
                     that.events[mejs.MediaFeatures.isFullScreen() ? "onFullScreen" : "onExitFullScreen"].fire(that, evt);
                 });
             }
