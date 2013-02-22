@@ -20,37 +20,6 @@ var fluid_1_5 = fluid_1_5 || {};
 
 (function ($, fluid) {
     fluid.setLogging(false);
-
-    /********************************************************************************
-     * Browser type and feature detection: html5 or non-html5, full-screen support. *
-     ********************************************************************************/
-    fluid.registerNamespace("fluid.browser");
-
-    // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
-    // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
-    // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
-
-    // This browser test is used in a workaround that avoids the problem by not animating the
-    // show/hide of controls in Safari
-    // Note: $.browser sets safari=true for both safari and chrome
-    fluid.browser.isSafari = function () {
-        var ua = navigator.userAgent.toLowerCase();
-        return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
-    };
-
-    var features = {
-        safari: fluid.browser.isSafari()
-    };
-    
-    fluid.merge(null, fluid.staticEnvironment, features);
-    
-    // TODO: This method cut and pasted from UIEnhancer.js 
-    fluid.hasFeature = function (tagName) {
-        return fluid.find(fluid.staticEnvironment, function (value) {
-            return value && value.typeName === tagName ? true : undefined;
-        });
-    };
-
     
     /*******************************************************************************
      * Video Player                                                                *
@@ -61,6 +30,15 @@ var fluid_1_5 = fluid_1_5 || {};
      *******************************************************************************/
     
     fluid.registerNamespace("fluid.videoPlayer");
+    
+    fluid.videoPlayer.isSafari = function () {
+        var ua = navigator.userAgent.toLowerCase();
+        return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
+    };
+    
+    fluid.enhance.check({
+        "fluid.browser.safari": "fluid.videoPlayer.isSafari"
+    });
     
     //This is the default key bindings
     fluid.videoPlayer.defaultKeys = {
