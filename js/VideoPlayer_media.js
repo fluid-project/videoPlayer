@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid_1_5, MediaElement*/
+/*global jQuery, window, swfobject, fluid_1_5, MediaElement, mejs*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -203,9 +203,12 @@ var fluid_1_5 = fluid_1_5 || {};
             });
             
             // Need to add the fullScreenEvent separately as it can be different depending on the browser
-            document.addEventListener(mejs.MediaFeatures.fullScreenEventName, function (evt) {
-                that.events[mejs.MediaFeatures.isFullScreen() ? "onFullScreen" : "onExitFullScreen"].fire(that, evt);
-            });
+            var fullScreenEventName = fluid.get(mejs, "MediaFeatures.fullScreenEventName");
+            if (fullScreenEventName) {
+                document.addEventListener(fluid.get(mejs, "MediaFeatures.fullScreenEventName"), function (evt) {
+                    that.events[mejs.MediaFeatures.isFullScreen() ? "onFullScreen" : "onExitFullScreen"].fire(that, evt);
+                });
+            }
 
             that.events.onEventBindingReady.fire(that);
         }});
@@ -267,7 +270,7 @@ var fluid_1_5 = fluid_1_5 || {};
         
         that.cancelFullScreen = function () {
             mejs.MediaFeatures.cancelFullScreen();
-        }
+        };
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
