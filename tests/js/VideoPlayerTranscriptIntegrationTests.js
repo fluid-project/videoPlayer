@@ -105,7 +105,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             newTime = (that.convertToMilli(that.options.transcripts[0].tracks[7].inTime) + 1) / 1000;
                             
                             vp.events.onTimeUpdate.addListener(function (currTime, buffered) {
-                                jqUnit.assertEquals("New time is same as clicked transcript", newTime, currTime);
+                                // Removing precision from the currTime as chrome returns the value with about 15 decimal places.
+                                // This comes from VideoPLayer_media.js, in the fluid.videoPlayer.media.handleTimeUpdate function.
+                                var reducedCurrTime = Math.floor(1000 * currTime) / 1000;
+                                jqUnit.assertEquals("New time is same as clicked transcript", newTime, reducedCurrTime);
                                 vp.events.onTimeUpdate.removeListener("timeChecker");
                                 jqUnit.start();
                             }, "timeChecker");
