@@ -75,7 +75,7 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     };
 
-    fluid.enhance.check({"fluid.browser.navtiveVideoSupport": "fluid.browser.navtiveVideoSupport"});
+    fluid.enhance.check({"fluid.browser.nativeVideoSupport": "fluid.browser.nativeVideoSupport"});
 
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
@@ -299,7 +299,7 @@ var fluid_1_5 = fluid_1_5 || {};
         funcName: "fluid.emptySubcomponent"
     });
     
-    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer", "fluid.browser.navtiveVideoSupport"], {
+    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer", "fluid.browser.nativeVideoSupport"], {
         funcName: "fluid.videoPlayer.html5Captionator",
         options: {
             model: "{videoPlayer}.model",

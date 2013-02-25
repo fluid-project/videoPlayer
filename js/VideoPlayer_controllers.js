@@ -49,7 +49,7 @@ var fluid_1_5 = fluid_1_5 || {};
     
     fluid.enhance.check({
         "fluid.browser.supportsFullScreen": "fluid.videoPlayer.controllers.supportFullscreen",
-        "fluid.browser.navtiveVideoSupport": "fluid.browser.navtiveVideoSupport"
+        "fluid.browser.nativeVideoSupport": "fluid.browser.nativeVideoSupport"
     });
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
@@ -282,7 +282,7 @@ var fluid_1_5 = fluid_1_5 || {};
         funcName: "fluid.toggleButton",
         args: ["{controllers}.container", fullScreenButtonOptions]
     });
-    fluid.demands("captionControls", ["fluid.browser.navtiveVideoSupport"], {
+    fluid.demands("captionControls", ["fluid.browser.nativeVideoSupport"], {
         funcName: "fluid.videoPlayer.languageControls",
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });

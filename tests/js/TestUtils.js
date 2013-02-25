@@ -71,6 +71,9 @@ fluid.registerNamespace("fluid.testUtils");
             controllers: {
                 options: {
                     templates: {
+                        controllers: {
+                            href: "../../html/videoPlayer_controllers_template.html"
+                        },
                         menuButton: {
                             href: "../../html/menuButton_template.html"
                         }
@@ -134,15 +137,21 @@ fluid.registerNamespace("fluid.testUtils");
                     testFn: the test function to run
     */
     fluid.testUtils.testCaseWithEnv = function (name, testCaseInfo, envFeatures, setupFn, teardownFn) {
+        var checkedOrg, staticOrg;
+        
         var moduleOpts = {
             setup: function () {
+                checkedOrg = fluid.copy(fluid.enhance.checked);
+                staticOrg = fluid.copy(fluid.staticEnvironment);
+                fluid.enhance.forgetAll();
                 fluid.testUtils.setStaticEnv(envFeatures);
                 if (setupFn) {
                     setupFn();
                 }
             },
             teardown: function () {
-                fluid.testUtils.clearStaticEnv(envFeatures);
+                fluid.enhance.checked = checkedOrg;
+                fluid.staticEnvironment = staticOrg;
                 if (teardownFn) {
                     teardownFn();
                 }
@@ -158,14 +167,10 @@ fluid.registerNamespace("fluid.testUtils");
     };
 
     fluid.testUtils.setStaticEnv = function (features) {
-        fluid.each(features, function (val, key) {
-            fluid.staticEnvironment[key] = val ? fluid.typeTag(val) : undefined;
-        });
-    };
-
-    fluid.testUtils.clearStaticEnv = function (features) {
-        fluid.each(features, function (val, key) {
-            delete fluid.staticEnvironment[key];
+        fluid.each(features, function (feature) {
+            var check = {};
+            check[feature] = function () {return true;};
+            fluid.enhance.check(check);
         });
     };
 

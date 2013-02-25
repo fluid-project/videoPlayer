@@ -185,25 +185,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 });
             }
         }, {
-            desc: "video player instantiation with native controller",
-            async: true,
-            testFn: function () {
-                jqUnit.expect(3);
-
-                var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
-                    controls: "native",
-                    listeners: {
-                        onReady: function (videoPlayer) {
-                            jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
-                            jqUnit.assertUndefined("The sub-component controllers has been NOT instantiated", videoPlayer.controllers);
-                            jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
-
-                            jqUnit.start();
-                        }
-                    }
-                });
-            }
-        }, {
             desc: "Controllers instantiation",
             async: true,
             testFn: function () {

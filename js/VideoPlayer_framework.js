@@ -26,7 +26,7 @@ var fluid_1_5 = fluid_1_5 || {};
     
     // feature detection functions to be used by the progressive enhancement system
     fluid.registerNamespace("fluid.browser");
-    fluid.browser.navtiveVideoSupport = function () {
+    fluid.browser.nativeVideoSupport = function () {
         return !!document.createElement('video').canPlayType;
     };
     
