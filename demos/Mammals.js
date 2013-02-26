@@ -41,7 +41,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel.withMediaPanel", {
             options: {
                 strings: {
-                    showText: "+ Show Learner Options",
+                    showText: "+ Show Learner Options"
                 }
             }
         });
@@ -198,14 +198,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     ];
     
-//    setTimeout(function() {    
-        fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, uiOptions.relay);
-//    }, 5000);
+    fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, uiOptions.relay);
     
     // Initialise one video player extremely late to show that this method still works 
-//    setTimeout(function() {
-        fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, uiOptions.relay);      
-//    }, 10000);
+    fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, uiOptions.relay);      
     
     });
     
