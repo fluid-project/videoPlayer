@@ -434,6 +434,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         
         fluid.tabindex(videoContainer, 0);
 
+        // The two mousedown listeners below are the work-around for IE9 issue that the video overlay is rendered
+        // on top of the play button overlay most of time in IE9, which causes the play button overlay don't receive
+        // any mouse events. The first listener plays/pauses video when the click is received by the video overlay.
+        // The second listener prevents the mousedown event on the controller bar from bubbling up to the video
+        // overlay so the video does not respond with playing/pausing.
+        that.locate("overlay").mousedown(function (ev) {
+            that.play();
+        });
+        
+        that.locate("controllers").mousedown(function (ev) {
+            ev.stopPropagation();
+        });
+        
         // Using "mousedown" event rather than "click", which does not work
         // with the flash fallback in IE8
         videoContainer.mousedown(function (ev) {

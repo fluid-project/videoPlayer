@@ -23,7 +23,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
       // TODO: This part currently not honoured
         uiOptionsTransform: {
             config: {
-                "*.uiOptionsLoader.*.uiOptions.*.mediaControls": "mediaControls",
+                "*.uiOptionsLoader.*.uiOptions.*.mediaControls": "mediaControls"
             }
         },
         components: {
@@ -57,7 +57,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                     }
                                 },
                                 selectors: {
-                                    mediaControls: ".flc-uiOptions-media-controls", 
+                                    mediaControls: ".flc-uiOptions-media-controls" 
                                 }
                             }
                         }
@@ -118,15 +118,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         for (var item in that.model.selections) {
             if (item === "captions" || item === "transcripts") {
                 tree[item] = "${selections." + item + "}";
-            } 
-            else if (item === "language") {
+            } else if (item === "language") {
                 tree[item] = {
                     optionnames: "${labelMap." + item + ".names}",
                     optionlist: "${labelMap." + item + ".values}",
-                    selection: "${selections.language}",
-                }
-            } 
-            else if (item === "volume") {
+                    selection: "${selections.language}"
+                };
+            } else if (item === "volume") {
                 tree[item] = fluid.uiOptions.createSliderNode(that, item, "fluid.textfieldSlider.slider");
             }
         }
@@ -141,8 +139,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     // Returns the index of a track record whose language matches the supplied - suitable for use with fluid.find
     fluid.videoPlayer.matchLanguageRecord = function (language) {
-        return function(record, index) {
-            return record.srclang === language? index : undefined;
+        return function (record, index) {
+            return record.srclang === language ? index : undefined;
         };
     };
     
@@ -220,8 +218,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         if (relay.events.bindingTrigger && !relay.options.bindingTriggered) {
             // fluid.log("Late binding instances " + instances.length);
             relay.events.bindingTrigger.addListener(lateListener);
-        }
-        else {
+        } else {
             // fluid.log("Immediate binding instances " + instances.length);
             lateListener();
         }
