@@ -9,13 +9,14 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, fluid*/
+/*global jQuery, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
+var fluid_1_5 = fluid_1_5 || {};
 
-(function ($) {
+(function ($, fluid) {
 
     /*********************************************************************************
      * fluid.videoPlayer.intervalEventsConductor                                     *
@@ -120,4 +121,4 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     };
 
-})(jQuery);
+})(jQuery, fluid_1_5);

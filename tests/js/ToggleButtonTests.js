@@ -10,7 +10,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -20,7 +20,7 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        var toggleButtonTests = new jqUnit.TestCase("Toggle Button Tests");
+        jqUnit.module("Toggle Button Tests");
 
         fluid.tests.toggleButtonDefaults = fluid.defaults("fluid.toggleButton");
 
@@ -40,7 +40,7 @@ fluid.registerNamespace("fluid.tests");
             return fluid.toggleButton("#basic-toggle-button-test", opts);
         };
 
-        toggleButtonTests.asyncTest("State change", function () {
+        jqUnit.asyncTest("State change", function () {
             jqUnit.expect(3);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
@@ -51,13 +51,13 @@ fluid.registerNamespace("fluid.tests");
                         that.requestStateChange();
                         jqUnit.assertEquals("After another request for state change, state should be 'false'", false, that.readIndirect("modelPath"));
 
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
         });
 
-        toggleButtonTests.asyncTest("onPress event", function () {
+        jqUnit.asyncTest("onPress event", function () {
             jqUnit.expect(1);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
@@ -67,13 +67,13 @@ fluid.registerNamespace("fluid.tests");
                     },
                     onPress: function () {
                         jqUnit.assertTrue("onPress event should fire", true);
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
         });
 
-        toggleButtonTests.asyncTest("Press", function () {
+        jqUnit.asyncTest("Press", function () {
             jqUnit.expect(3);
             var testComponent;
             testComponent = fluid.tests.initToggleButton({
@@ -85,13 +85,13 @@ fluid.registerNamespace("fluid.tests");
                     onPress: function (that) {
                         jqUnit.assertTrue("onPress event should fire", true);
                         jqUnit.assertEquals("State should change to be 'true'", true, that.readIndirect("modelPath"));
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
         });
 
-        toggleButtonTests.asyncTest("Default integrated functionality", function () {
+        jqUnit.asyncTest("Default integrated functionality", function () {
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onPress: fluid.tests.onPressEventHandler,
@@ -103,13 +103,13 @@ fluid.registerNamespace("fluid.tests");
                             fluid.tests.toggleButtonDefaults.strings.release,
                             fluid.tests.toggleButtonDefaults.styles.pressed);
 
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
         });
 
-        toggleButtonTests.asyncTest("Overriding strings", function () {
+        jqUnit.asyncTest("Overriding strings", function () {
             jqUnit.expect(1);
             var testStrings = {
                 press: "press me",
@@ -126,7 +126,7 @@ fluid.registerNamespace("fluid.tests");
                         toggleButton.blur().focus(); // tooltip not updated until 'requested' again
                         jqUnit.assertEquals("After click, Tooltip should contain '" + testStrings.release + "'", testStrings.release, tooltip.text());
                         toggleButton.blur();
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
@@ -137,7 +137,7 @@ fluid.registerNamespace("fluid.tests");
             return myCustomText;
         };
 
-        toggleButtonTests.asyncTest("Changing tooltipContentFunction", function () {
+        jqUnit.asyncTest("Changing tooltipContentFunction", function () {
             var testStrings = {
                     press: "press me",
                     release: "release me"
@@ -153,13 +153,13 @@ fluid.registerNamespace("fluid.tests");
                         onReady: function (that) {
                             var toggleButton = that.locate("button"),
                                 tooltip = fluid.testUtils.getTooltipCheckString(toggleButton, myCustomText);
-                            start();
+                            jqUnit.start();
                         }
                     }
                 });
         });
 
-        toggleButtonTests.asyncTest("Label text", function () {
+        jqUnit.asyncTest("Label text", function () {
             jqUnit.expect(2);
             fluid.tests.initToggleButton({
                 listeners: {
@@ -169,7 +169,7 @@ fluid.registerNamespace("fluid.tests");
                     },
                     onPress: function (that) {
                         jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("button").attr("aria-label"));
-                        start();
+                        jqUnit.start();
                     }
                 }
             });

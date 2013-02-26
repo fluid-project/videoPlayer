@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -35,9 +35,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        var videoPlayerTranscriptIntegrationTests = new jqUnit.TestCase("Video Player Transcript Integration Tests");
+        jqUnit.module("Video Player Transcript Integration Tests");
 
-        videoPlayerTranscriptIntegrationTests.asyncTest("FLUID-4812: Transcripts showing on UIO reset", function () {
+        jqUnit.asyncTest("FLUID-4812: Transcripts showing on UIO reset", function () {
             jqUnit.expect(2);
             var instance = {
                 container: ".videoPlayer-transcript",
@@ -52,7 +52,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             jqUnit.notVisible("Before UIO reset, transcripts are not visible", $(".flc-videoPlayer-transcriptArea"));
                             uiOptions.uiOptionsLoader.uiOptions.events.onUIOptionsRefresh.addListener(function () {
                                 jqUnit.notVisible("After UIO reset, transcripts are not visible", $(".flc-videoPlayer-transcriptArea"));
-                                start();
+                                jqUnit.start();
                             });
                             uiOptions.uiOptionsLoader.uiOptions.reset();
                         }
@@ -62,7 +62,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initEnhancedVideoPlayer(instance, uiOptions.relay);
         });
 
-        videoPlayerTranscriptIntegrationTests.asyncTest("Scrubbing", function () {
+        jqUnit.asyncTest("Scrubbing", function () {
             var newTime;
             var instance = {
                 container: ".videoPlayer-transcript",
@@ -105,9 +105,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             newTime = (that.convertToMilli(that.options.transcripts[0].tracks[7].inTime) + 1) / 1000;
                             
                             vp.events.onTimeUpdate.addListener(function (currTime, buffered) {
-                                jqUnit.assertEquals("New time is same as clicked transcript", newTime, currTime);
+                                // Removing precision from the currTime as chrome returns the value with about 15 decimal places.
+                                // This comes from VideoPLayer_media.js, in the fluid.videoPlayer.media.handleTimeUpdate function.
+                                var reducedCurrTime = Math.floor(1000 * currTime) / 1000;
+                                jqUnit.assertEquals("New time is same as clicked transcript", newTime, reducedCurrTime);
                                 vp.events.onTimeUpdate.removeListener("timeChecker");
-                                start();
+                                jqUnit.start();
                             }, "timeChecker");
                             
                             anElement.click();

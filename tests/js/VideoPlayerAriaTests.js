@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -21,7 +21,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         fluid.registerNamespace("fluid.tests.videoPlayer");
 
-        var videoPlayerARIATests = new jqUnit.TestCase("Video Player ARIA Tests");
+        jqUnit.module("Video Player ARIA Tests");
 
         fluid.tests.videoPlayer.checkAriaControlsAttr = function (controlsToTest) {
             fluid.each(controlsToTest, function (spec, index) {
@@ -77,10 +77,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
 
             fluid.tests.videoPlayer.checkAriaControlsAttr(controlsToTest);
-            start();
+            jqUnit.start();
         };
 
-        videoPlayerARIATests.asyncTest("aria-controls on language menus", function () {
+        jqUnit.asyncTest("aria-controls on language menus", function () {
             var testOpts = {
                 listeners: {
                     onControllersReady: "fluid.tests.videoPlayer.triggerTranscript",

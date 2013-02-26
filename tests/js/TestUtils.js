@@ -10,7 +10,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -71,6 +71,9 @@ fluid.registerNamespace("fluid.testUtils");
             controllers: {
                 options: {
                     templates: {
+                        controllers: {
+                            href: "../../html/videoPlayer_controllers_template.html"
+                        },
                         menuButton: {
                             href: "../../html/menuButton_template.html"
                         }
@@ -134,39 +137,40 @@ fluid.registerNamespace("fluid.testUtils");
                     testFn: the test function to run
     */
     fluid.testUtils.testCaseWithEnv = function (name, testCaseInfo, envFeatures, setupFn, teardownFn) {
-        var setup = function () {
-            fluid.testUtils.setStaticEnv(envFeatures);
-            if (setupFn) {
-                setupFn();
+        var checkedOrg, staticOrg;
+        
+        var moduleOpts = {
+            setup: function () {
+                checkedOrg = fluid.copy(fluid.enhance.checked);
+                staticOrg = fluid.copy(fluid.staticEnvironment);
+                fluid.enhance.forgetAll();
+                fluid.testUtils.setStaticEnv(envFeatures);
+                if (setupFn) {
+                    setupFn();
+                }
+            },
+            teardown: function () {
+                fluid.enhance.checked = checkedOrg;
+                fluid.staticEnvironment = staticOrg;
+                if (teardownFn) {
+                    teardownFn();
+                }
             }
         };
 
-        var teardown = function () {
-            fluid.testUtils.clearStaticEnv(envFeatures);
-            if (teardownFn) {
-                teardownFn();
-            }
-        };
-
-        var testCase = jqUnit.testCase(name, setup, teardown);
+        jqUnit.module(name, moduleOpts);
 
         $.each(testCaseInfo, function (index, testInfo) {
-            var test = testInfo.async ? testCase.asyncTest : testCase.test;
+            var test = testInfo.async ? jqUnit.asyncTest : jqUnit.test;
             test(testInfo.desc, testInfo.testFn);
         });
-
-        return testCase;
     };
 
     fluid.testUtils.setStaticEnv = function (features) {
-        fluid.each(features, function (val, key) {
-            fluid.staticEnvironment[key] = val ? fluid.typeTag(val) : undefined;
-        });
-    };
-
-    fluid.testUtils.clearStaticEnv = function (features) {
-        fluid.each(features, function (val, key) {
-            delete fluid.staticEnvironment[key];
+        fluid.each(features, function (feature) {
+            var check = {};
+            check[feature] = function () {return true;};
+            fluid.enhance.check(check);
         });
     };
 

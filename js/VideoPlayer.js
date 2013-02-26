@@ -11,74 +11,15 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid*/
+/*global jQuery, window, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
+var fluid_1_5 = fluid_1_5 || {};
 
-(function ($) {
+(function ($, fluid) {
     fluid.setLogging(false);
-
-    /********************************************************************************
-     * Browser type and feature detection: html5 or non-html5, full-screen support. *
-     ********************************************************************************/
-    fluid.registerNamespace("fluid.browser");
-
-    // TODO: this code has been cut and pasted from the framework and from UIOptions.js and needs to be removed as soon as possible.
-    // Most of this code is a copy-paste from the https://github.com/fluid-project/infusion/blob/master/src/webapp/framework/enhancement/js/ProgressiveEnhancement.js
-    // It should go away and the following http://issues.fluidproject.org/browse/FLUID-4794 should be the fix for the code below
-
-    fluid.browser.supportsHtml5 = function () {
-        // ToDo: The plan is to use mediaElement for the detection of the html5 browser.
-        // Needs re-work at the integration of mediaElement.
-        var isHtml5Browser = !($.browser.msie && $.browser.version < 9);
-        return isHtml5Browser ? fluid.typeTag("fluid.browser.supportsHtml5") : undefined;
-    };
-    
-    var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
-    var cancelFullscreenFnNames = ["cancelFullScreen", "mozCancelFullScreen", "webkitCancelFullScreen", "oCancelFullScreen", "msieCancelFullScreen"];
-
-    var setupFnName = function (el, fnNameToSet, fnNames) {
-        var name = fluid.find(fnNames, function (name) {
-            return el[name] ? name : undefined;
-        });
-
-        fluid.set(fluid.browser, fnNameToSet, name);
-    };
-
-    var el = $("<div />")[0];
-    setupFnName(el, "requestFullScreenFnName", fullscreenFnNames);
-    setupFnName(document, "cancelFullScreenFnName", cancelFullscreenFnNames);
-    
-    
-    fluid.browser.supportsFullScreen = function () {
-        return fluid.browser.requestFullScreenFnName ? fluid.typeTag("fluid.browser.supportsFullScreen") : undefined;
-    };
-
-    // This browser test is used in a workaround that avoids the problem by not animating the
-    // show/hide of controls in Safari
-    // Note: $.browser sets safari=true for both safari and chrome
-    fluid.browser.isSafari = function () {
-        var ua = navigator.userAgent.toLowerCase();
-        return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
-    };
-
-    var features = {
-        supportsHtml5: fluid.browser.supportsHtml5(),
-        supportsFullScreen: fluid.browser.supportsFullScreen(),
-        safari: fluid.browser.isSafari()
-    };
-    
-    fluid.merge(null, fluid.staticEnvironment, features);
-    
-    // TODO: This method cut and pasted from UIEnhancer.js 
-    fluid.hasFeature = function (tagName) {
-        return fluid.find(fluid.staticEnvironment, function (value) {
-            return value && value.typeName === tagName ? true : undefined;
-        });
-    };
-
     
     /*******************************************************************************
      * Video Player                                                                *
@@ -89,6 +30,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      *******************************************************************************/
     
     fluid.registerNamespace("fluid.videoPlayer");
+    
+    fluid.videoPlayer.isSafari = function () {
+        var ua = navigator.userAgent.toLowerCase();
+        return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
+    };
+    
+    fluid.enhance.check({
+        "fluid.browser.safari": "fluid.videoPlayer.isSafari"
+    });
     
     //This is the default key bindings
     fluid.videoPlayer.defaultKeys = {
@@ -125,6 +75,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
 
+    fluid.enhance.check({"fluid.browser.nativeVideoSupport": "fluid.browser.nativeVideoSupport"});
+
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
      * 
@@ -133,7 +85,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      */
 
     fluid.defaults("fluid.videoPlayer", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "autoInit"],
         components: {
             media: {
                 type: "fluid.videoPlayer.media",
@@ -144,7 +96,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     events: {
-                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
+                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata"
+                    },
+                    listeners: {
+                        onExitFullScreen: {
+                            // Ensures that the model is in the correct state after exiting fullscren
+                            // for example when exiting with "esc" instead of clicking the exit full screen button
+                            listener: "{videoPlayer}.applier.requestChange",
+                            args: ["fullscreen", false]
+                        },
+                        // This event should be split into two to differentiate between the setting and unsetting of fullscreen
+                        "{videoPlayer}.events.onFullscreenModelChanged": {
+                            listener: function (videoPlayer, media, model) {
+                                if (model.fullscreen) {
+                                    media.requestFullScreen(videoPlayer.locate("videoPlayer")[0]);
+                                } else {
+                                    media.cancelFullScreen();
+                                }
+                            },
+                            args: ["{videoPlayer}", "{media}", "{arguments}.0"]
+                        },
                         onReady: "{videoPlayer}.events.onMediaReady"
                     },
                     sources: "{videoPlayer}.options.video.sources"
@@ -183,7 +154,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             controllers: {
                 type: "fluid.videoPlayer.controllers",
                 container: "{videoPlayer}.dom.controllers",
-                createOnEvent: "onCreateControllersReady",
+                createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
@@ -205,17 +176,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             html5Captionator: {
-                type: "fluid.videoPlayer.html5Captionator",
+                type: "fluid.videoPlayer.captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onHTML5BrowserDetected",
-                options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
-                    captions: "{videoPlayer}.options.video.captions",
-                    events: {
-                        onReady: "{videoPlayer}.events.onCaptionsReady"
-                    }
-                }
+                createOnEvent: "onMediaReady"
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -224,7 +187,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         events: {
             onScrub: null,
             onTemplateReady: null,
-            onViewReady: null,
             onLoadedMetadata: null,
             onMediaReady: null,
             onControllersReady: null,
@@ -235,6 +197,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
+            
+            onFullscreenModelChanged: null,
 
             onReady: {
                 events: {
@@ -249,10 +213,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onTimeUpdate: null,
             
             // The following events are private
-            onCreateControllersReady: null,
             onCreateMediaReady: null,
             onIntervalEventsConductorReady: null,
-            onHTML5BrowserDetected: null,
 
             // private events used for associating menus with what they control via ARIA
             onTranscriptsReady: null,
@@ -295,8 +257,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         selectorsToIgnore: ["overlay", "caption", "videoPlayer", "transcript", "video", "videoContainer", "videoOverlay"],
         keyBindings: fluid.videoPlayer.defaultKeys,
-        produceTree: "fluid.videoPlayer.produceTree",
-        controls: "custom",
         video: {
             sources: [],
             captions: [],
@@ -335,6 +295,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             hideControllers: "fluid.videoPlayer.hideControllers"
         }
     });
+    
+    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer"], {
+        funcName: "fluid.emptySubcomponent"
+    });
+    
+    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer", "fluid.browser.nativeVideoSupport"], {
+        funcName: "fluid.videoPlayer.html5Captionator",
+        options: {
+            model: "{videoPlayer}.model",
+            applier: "{videoPlayer}.applier",
+            captions: "{videoPlayer}.options.video.captions",
+            events: {
+                onReady: "{videoPlayer}.events.onCaptionsReady"
+            }
+        }
+    });
 
     var bindKeyboardControl = function (that) {
         var opts = {
@@ -345,12 +321,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, {
                 modifier: that.options.keyBindings.fullscreen.modifier,
                 key: that.options.keyBindings.fullscreen.key,
-                activateHandler: function () {
-                    that.applier.fireChangeRequest({
-                        path: "fullscreen",
-                        value: !that.model.fullscreen
-                    });
-                }
+                activateHandler: that.toggleFullscreen
             }, {
                 modifier: that.options.keyBindings.captions.modifier,
                 key: that.options.keyBindings.captions.key,
@@ -416,7 +387,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.videoPlayer.hideControllersAnimated = function (that) {
         that.locate("controllers").stop(false, true).delay(500).slideUp();
-    };       
+    };
 
     fluid.videoPlayer.togglePlayOverlay = function (that) {
         var ol = that.locate("videoOverlay");
@@ -459,36 +430,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     var bindVideoPlayerModel = function (that) {
-        that.applier.modelChanged.addListener("fullscreen", that.fullscreen);
-        that.applier.modelChanged.addListener("canPlay", function () {
-            that.events.onViewReady.fire();
-        });
+        that.applier.modelChanged.addListener("fullscreen", that.events.onFullscreenModelChanged.fire);
         that.applier.modelChanged.addListener("play", function () { 
             fluid.videoPlayer.togglePlayOverlay(that); 
         });
-    };
-
-    fluid.videoPlayer.produceTree = function (that) {
-        var tree = {};
-        
-        if (fluid.hasFeature("fluid.browser.supportsHtml5") && that.options.controls === "native") {
-            // Use browser built-in video player
-            tree.video = {
-                decorators: [{
-                    type: "attrs",
-                    attributes: {
-                        controls: "true"
-                    }
-                }]
-            };
-        }
-        
-        // Keep the selector to render "fluid.videoPlayer.controllers"
-        if (that.canRenderControllers(that.options.controls)) {
-            that.options.selectorsToIgnore.push("controllers");
-        }
-        
-        return tree;
     };
     
     fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
@@ -504,12 +449,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
         
-        that.fullscreen = function () {
-            if (that.model.fullscreen === true) {
-                that.locate("videoPlayer")[0][fluid.browser.requestFullScreenFnName]();
-            } else {
-                document[fluid.browser.cancelFullScreenFnName]();
-            }
+        that.toggleFullscreen = function () {
+            that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
     };
 
@@ -518,10 +459,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
         that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
-
-        that.canRenderControllers = function (controlsType) {
-            return controlsType === "custom";
-        };
 
         that.play = function (ev) {
             that.applier.fireChangeRequest({
@@ -568,7 +505,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     fetchFailed = true;
                 } else if (key === "videoPlayer") {
                     that.container.append(res[key].resourceText);
-                    that.refreshView();
                     var video = that.locate("video");
                     // Setting the width and height attributes to respect the CSS API for setting the size of the video
                     // This is required for cross browser sizing of the video
@@ -589,16 +525,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 if (that.options.video.sources) {
                     that.events.onCreateMediaReady.fire();
                 }
-                if (that.canRenderControllers(that.options.controls)) {
-                    that.events.onCreateControllersReady.fire();
-                }
-
-                // TODO: Once we have a non-html5 fall-back for captions to replace captionator,
-                // the "if" check on html5 browser can be removed. For now, caption component is
-                // only instantiated in html5 browsers.
-                if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
-                    that.events.onHTML5BrowserDetected.fire();
-                }
             }
 
             that.locate("controllers").hide();
@@ -606,12 +532,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             // Ensure <object> element is not in tab order, for IE9
             $("object", that.locate("video")).attr("tabindex", "-1");
-
-            if (that.options.controls === "native") {
-                // onReady will fire automatically when the controllers subcomponent is ready,
-                // but with native controls, we must fire it ourselves
-                that.events.onReady.fire(that);
-            }
         });
         
         return that;
@@ -650,7 +570,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         options: {
             listeners: {
                 "{videoPlayer}.events.onScrub": "{media}.setTime",
-                "{videoPlayer}.events.onViewReady": "{media}.refresh",
                 "{videoPlayer}.events.onTimeUpdate": "{media}.updateCurrentTime",
                 "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
             }
@@ -742,4 +661,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
     
-})(jQuery);
+})(jQuery, fluid_1_5);
