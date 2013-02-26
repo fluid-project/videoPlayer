@@ -69,7 +69,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             initVideoPlayer(options, function (videoPlayer) {
                 // check on the typeName as only real components have a typeName, the fluid.emptySubcomponent does not.
-                assertFn(testStr, videoPlayer.html5Captionator.typeName);
+                assertFn(testStr, fluid.get(videoPlayer, "html5Captionator.typeName"));
                 jqUnit.assertEquals(domStr, hasCaptionatorMarkup ? 1 : 0, $(captionatorSelector).length);
                 jqUnit.start();
             });
