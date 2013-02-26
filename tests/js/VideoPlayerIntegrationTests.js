@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -19,7 +19,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
 
-        var videoPlayerIntegrationTests = new jqUnit.TestCase("Video Player Integration Tests");
+        jqUnit.module("Video Player Integration Tests");
 
 
         var testPlayPause = function (clickFunc) {
@@ -39,12 +39,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 setTimeout(function () {
                     var currentTimeAfterPause = video[0].currentTime;
                     jqUnit.assertEquals("The video is paused", currentTimeBeforePause, currentTimeAfterPause);
-                    start();
+                    jqUnit.start();
                 }, 500);
             }, 1500);
         };
         
-        videoPlayerIntegrationTests.asyncTest("Play button - Play/Pause", function () {
+        jqUnit.asyncTest("Play button - Play/Pause", function () {
             jqUnit.expect(2);
             
             fluid.videoPlayer.testPlayButton = function (that) {
@@ -64,7 +64,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
-        videoPlayerIntegrationTests.asyncTest("Container click - Play/Pause", function () {
+        jqUnit.asyncTest("Container click - Play/Pause", function () {
             jqUnit.expect(2);
 
             fluid.videoPlayer.testContainerClick = function (that) {
@@ -84,7 +84,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initVideoPlayer(".videoPlayer-containerClick", testOpts);
         });
 
-        videoPlayerIntegrationTests.asyncTest("Mute button", function () {
+        jqUnit.asyncTest("Mute button", function () {
             jqUnit.expect(2);
 
             fluid.videoPlayer.testMuteButton = function (that) {
@@ -95,7 +95,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 $(".flc-videoPlayer-mute").click();
                 jqUnit.assertTrue("The video is muted", video[0].muted);
                 
-                start();
+                jqUnit.start();
             };
 
             var testOpts = {
@@ -109,7 +109,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         var transcriptMenuSelector = ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu";
 
-        videoPlayerIntegrationTests.asyncTest("Show transcript button", function () {
+        jqUnit.asyncTest("Show transcript button", function () {
             jqUnit.expect(2);
 
             fluid.videoPlayer.testTranscript = function (that) {
@@ -122,7 +122,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 $(transcriptMenuSelector + " li:last").click();  // click "show transcript" button
                 jqUnit.assertTrue("The transcript panel is shown", $(".flc-videoPlayer-transcriptArea").is(":visible"));
                 
-                start();
+                jqUnit.start();
             };
 
             var testOpts = {
@@ -134,7 +134,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
 
-        videoPlayerIntegrationTests.asyncTest("Switch transcript language buttons", function () {
+        jqUnit.asyncTest("Switch transcript language buttons", function () {
             jqUnit.expect(3);
 
             var initialTranscriptText;
@@ -178,7 +178,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     // a slight time delay (100 millisec, see VideoPlayer_transcript.js), after another transcript span is clicked, 
                     // to prevent the event queuing-up.
                     setTimeout(function () {
-                        start();
+                        jqUnit.start();
                     }, 500);
                 }, 1000);
             };

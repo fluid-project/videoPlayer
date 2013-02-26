@@ -10,7 +10,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -20,7 +20,7 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        var menuButtonTests = new jqUnit.TestCase("Menu Button Tests");
+        jqUnit.module("Menu Button Tests");
 
         /*===================
          * LanguageMenu Tests
@@ -72,7 +72,7 @@ fluid.registerNamespace("fluid.tests");
             jqUnit.assertTrue(actionString + " leaves 'active' style on the active language", $(langList[activeIndex]).hasClass(that.options.styles.active));
         };
 
-        menuButtonTests.asyncTest("Language Menu: Default configuration", function () {
+        jqUnit.asyncTest("Language Menu: Default configuration", function () {
             var numLangs = baseMenuOpts.languages.length;
             jqUnit.expect(9);
             var testMenu = fluid.tests.initMenu({
@@ -109,13 +109,13 @@ fluid.registerNamespace("fluid.tests");
                         verifyActivation("Clicking a language", that, 2);
 
                         // double-check notes on interaction between keyboard selection and hover, and add tests
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
         });
 
-        menuButtonTests.asyncTest("Language Menu: Custom 'show/hide' option strings", function () {
+        jqUnit.asyncTest("Language Menu: Custom 'show/hide' option strings", function () {
             var numLangs = baseMenuOpts.languages.length;
             jqUnit.expect(2);
             var testStrings = {
@@ -131,7 +131,7 @@ fluid.registerNamespace("fluid.tests");
                         that.activate(1);
                         jqUnit.assertEquals("Activating an item changes the 'show/hide' option text to the custom text", testStrings.hideLanguage, that.locate("showHide").text());
 
-                        start();
+                        jqUnit.start();
                     }
                 }
             });
@@ -176,7 +176,7 @@ fluid.registerNamespace("fluid.tests");
             return fluid.videoPlayer.languageControls("#basic-languageControls-test", opts);
         };
 
-        menuButtonTests.asyncTest("Language Controls: default functionality", function () {
+        jqUnit.asyncTest("Language Controls: default functionality", function () {
             var numLangs = baseLanguageControlsOpts.languages.length;
             var testControls = fluid.tests.initLangControls({
                 listeners: {
@@ -219,14 +219,14 @@ fluid.registerNamespace("fluid.tests");
                             showHide.click();
                             verifyLanguageState(that.options.strings.hideLanguage, true);
 
-                            start();
+                            jqUnit.start();
                         }
                     }
                 }
             });
         });
 
-        menuButtonTests.asyncTest("Language Controls: ARIA", function () {
+        jqUnit.asyncTest("Language Controls: ARIA", function () {
             jqUnit.expect(8);
             var testControls = fluid.tests.initLangControls({
                 listeners: {
@@ -247,7 +247,7 @@ fluid.registerNamespace("fluid.tests");
 
                             that.menu.hideMenu();
                             jqUnit.assertEquals("After hide, menu should be aria-hidden", "true", that.menu.container.attr("aria-hidden"));
-                            start();                            
+                            jqUnit.start();                            
 
                         }
                     }

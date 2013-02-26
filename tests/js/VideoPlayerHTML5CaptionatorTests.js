@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start, captionator*/
+/*global fluid, jqUnit, jQuery, captionator*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -68,9 +68,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                               : "Captionator DIV is NOT present in the DOM";
 
             initVideoPlayer(options, function (videoPlayer) {
-                assertFn(testStr, videoPlayer.html5Captionator);
+                // check on the typeName as only real components have a typeName, the fluid.emptySubcomponent does not.
+                assertFn(testStr, fluid.get(videoPlayer, "html5Captionator.typeName"));
                 jqUnit.assertEquals(domStr, hasCaptionatorMarkup ? 1 : 0, $(captionatorSelector).length);
-                start();
+                jqUnit.start();
             });
         };
 
@@ -156,12 +157,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         var html5tests = [{
-            desc: "HTML5: html5Captionator was initialized but without tracks",
-            async: true,
-            testFn: function () {
-                testInit(defaultOptionsNoCaptions, true);
-            }
-        }, {
             desc: "HTML5: html5Captionator was initialized",
             async: true,
             testFn: function () {
@@ -190,7 +185,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             testTrackMode(html5Captionator, [false, false]);
                             testCaptionPresence(html5Captionator, "");
                             jqUnit.expect(1);
-                            start();
+                            jqUnit.start();
                         }, 1000);
                     }, 1000);
                 });
@@ -207,7 +202,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
                         testCaptionPresence(html5Captionator, firstEnglishCaption);
                         jqUnit.expect(1);
-                        start();
+                        jqUnit.start();
                     }, 1000);
                 });
             }
@@ -236,7 +231,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         // Check that captions are not present in the DOM
                         testCaptionPresence(html5Captionator, "");
                         jqUnit.expect(3);
-                        start();
+                        jqUnit.start();
                     });
                 });
             }
@@ -250,15 +245,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         testTrackMode(html5Captionator, [false, false]);
                         // Check that captions are not present in the DOM
                         testCaptionPresence(html5Captionator, "");
-                        start();
+                        jqUnit.start();
                     });
                 });
             }
         }];
-
-        var html5envFeatures = {
-            "supportsHtml5": "fluid.browser.supportsHtml5"
-        };
 
         // In browsers that have native support for <track>, Captionator will bow out.
         var nativeSupportTests = [{
@@ -268,15 +259,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 testInit(optionsFull, true, false);
             }
         }];
-        var envFeatures = {
-            "supportsHtml5": "fluid.browser.supportsHtml5"
-        };
 
         if (!nativeTrackSupport) {
-            fluid.testUtils.testCaseWithEnv("Video Player Old Browsers HTML5 Captionator Tests", noHTML5Tests, noHtml5envFeatures);
-            fluid.testUtils.testCaseWithEnv("Video Player HTML5 Captionator Tests", html5tests, html5envFeatures);
+            fluid.testUtils.testCaseWithEnv("Video Player Old Browsers HTML5 Captionator Tests", noHTML5Tests, []);
+            fluid.testUtils.testCaseWithEnv("Video Player HTML5 Captionator Tests", html5tests, ["fluid.browser.nativeVideoSupport"]);
         } else {
-            fluid.testUtils.testCaseWithEnv("Video Player Native-track-support HTML5 Captionator Tests", nativeSupportTests, envFeatures);
+            fluid.testUtils.testCaseWithEnv("Video Player Native-track-support HTML5 Captionator Tests", nativeSupportTests, ["fluid.browser.nativeVideoSupport"]);
         }
     });
 })(jQuery);

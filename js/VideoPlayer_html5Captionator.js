@@ -11,13 +11,13 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, window, fluid, captionator*/
+/*global jQuery, window, fluid_1_5, captionator*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 
-(function ($) {
+(function ($, fluid) {
     
     /********************************************************************
      * HTML5 Captionator                                                *
@@ -157,4 +157,4 @@ https://source.fluidproject.org/svn/LICENSE.txt
         that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
 
-})(jQuery);
+})(jQuery, fluid_1_5);

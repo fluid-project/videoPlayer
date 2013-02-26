@@ -10,7 +10,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery, start*/
+/*global fluid, jqUnit, jQuery*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -20,9 +20,9 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        var videoFrameworkTests = new jqUnit.TestCase("Video Framework Tests");
+        jqUnit.module("Video Framework Tests");
 
-        videoFrameworkTests.asyncTest("linearRangeGuard", function () {
+        jqUnit.asyncTest("linearRangeGuard", function () {
             jqUnit.expect(3);
 
             var model = {
@@ -52,7 +52,7 @@ fluid.registerNamespace("fluid.tests");
             });
             jqUnit.assertEquals("linearRangeGuard should allow a value within the range", newValue, model.volume);
 
-            start();
+            jqUnit.start();
         });
 
     });

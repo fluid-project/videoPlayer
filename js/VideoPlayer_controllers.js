@@ -11,13 +11,14 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid*/
+/*global jQuery, window, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
+var fluid_1_5 = fluid_1_5 || {};
 
-(function ($) {
+(function ($, fluid) {
 
     /**
      * controllers is a video controller containing a play button, a time scrubber, 
@@ -36,12 +37,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
     };
 
+    fluid.registerNamespace("fluid.videoPlayer.controllers");
+    
+    fluid.videoPlayer.controllers.supportFullscreen = function () {
+        var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
+        
+        return fluid.find(fullscreenFnNames, function (name) {
+            return !!$("<div></div")[0][name] || undefined;
+        });
+    };
+    
+    fluid.enhance.check({
+        "fluid.browser.supportsFullScreen": "fluid.videoPlayer.controllers.supportFullscreen",
+        "fluid.browser.nativeVideoSupport": "fluid.browser.nativeVideoSupport"
+    });
+
     fluid.defaults("fluid.videoPlayer.controllers", { 
         gradeNames: ["fluid.viewComponent", "autoInit"], 
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
                 container: "{controllers}.dom.scrubberContainer",
+                createOnEvent: "afterTemplateLoaded",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
@@ -58,6 +75,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             volumeControl: {
                 type: "fluid.videoPlayer.volumeControls",
                 container: "{controllers}.dom.volumeContainer",
+                createOnEvent: "afterTemplateLoaded",
                 options: {
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
@@ -68,6 +86,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             captionControls: {
                 type: "fluid.emptyEventedSubcomponent",
+                createOnEvent: "afterTemplateLoaded",
                 options: {
                     listeners: {
                         onReady: "{controllers}.events.onCaptionControlsReady"
@@ -77,6 +96,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcriptControls: {
                 type: "fluid.videoPlayer.languageControls",
                 container: "{controllers}.dom.transcriptControlsContainer",
+                createOnEvent: "afterTemplateLoaded",
                 options: {
                     languages: "{controllers}.options.transcripts",
                     model: "{controllers}.model",
@@ -107,6 +127,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             playButton: {
                 type: "fluid.toggleButton",
                 container: "{controllers}.container",
+                createOnEvent: "afterTemplateLoaded",
                 options: {
                     selectors: {
                         button: ".flc-videoPlayer-play",
@@ -132,6 +153,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             fullScreenButton: {
                 type: "fluid.emptyEventedSubcomponent",
+                createOnEvent: "afterTemplateLoaded",
                 options: {
                     listeners: {
                         onReady: "{controllers}.events.onFullScreenReady"
@@ -141,6 +163,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
+            afterTemplateLoaded: null,
             onStartTimeChange: null,
             afterTimeChange: null,
             onMarkupReady: null,
@@ -161,6 +184,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             onFullScreenReady: null,
             onReady: {
                 events: {
+                    templateLoaded: "afterTemplateLoaded",
                     playReady: "onPlayReady",
                     volumeReady: "onVolumeReady",
                     scrubReady: "onScrubberReady",
@@ -193,6 +217,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             showHideScrubberHandle: { 
                 funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
                 args: ["{controllers}", "{controllers}.model.totalTime"]
+            }
+        },
+        
+        templates: {
+            controllers: {
+                forceCache: true,
+                href: "../html/videoPlayer_controllers_template.html"
             }
         }
     });
@@ -251,18 +282,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         funcName: "fluid.toggleButton",
         args: ["{controllers}.container", fullScreenButtonOptions]
     });
-    fluid.demands("captionControls", ["fluid.browser.supportsHtml5"], {
+    fluid.demands("captionControls", ["fluid.browser.nativeVideoSupport"], {
         funcName: "fluid.videoPlayer.languageControls",
         args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
     });
-
+    
     fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
         that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
     };
     
     fluid.videoPlayer.controllers.finalInit = function (that) {
-        bindControllerModel(that);
-        that.showHideScrubberHandle();
+        var templates = that.options.templates;
+        fluid.fetchResources(templates, function () {
+            var resourceSpec = templates.controllers;
+            
+            if (!resourceSpec.fetchError) {
+                that.container.append(resourceSpec.resourceText);
+                that.events.afterTemplateLoaded.fire();
+                
+                //TODO: Move to event listeners
+                bindControllerModel(that);
+                that.showHideScrubberHandle();
+            }
+        });
         
         that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
     };
@@ -298,22 +340,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // TODO: This function is inherited. Consider making this public
     var bindScrubberModel = function (that) {
-        // Setup the scrubber when we know the duration of the video.
+
         that.applier.modelChanged.addListener("startTime", that.updateMin);
         that.applier.modelChanged.addListener("totalTime", that.updateMax);
 
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         that.applier.modelChanged.addListener("currentTime", that.updateCurrent);
         that.applier.modelChanged.addListener("bufferEnd", that.updateBuffered);
+        
+        that.applier.modelChanged.addListener("canPlay", that.syncState);
 
-        that.applier.modelChanged.addListener("canPlay", function () {
-            var scrubber = that.locate("scrubber");
-            if (that.model.canPlay === true) {
-                scrubber.slider("enable");
-            } else {
-                scrubber.slider("disable");
-            }
-        });
     };
 
     // TODO: Privacy is inherited. Consider making this public
@@ -445,13 +481,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
             });
         };
-
+        
+        that.syncState = function () {
+            var scrubber = that.locate("scrubber");
+            if (that.model.canPlay === true) {
+                scrubber.slider("enable");
+            } else {
+                scrubber.slider("disable");
+            }
+        };
+        
+        that.refresh = function () {
+            that.updateMin();
+            that.updateMax();
+            that.updateCurrent();
+            that.syncState();
+        };
     };
 
     fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
         bindScrubberModel(that);
+        that.refresh();
     };
     
 
@@ -680,4 +732,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-})(jQuery);
+})(jQuery, fluid_1_5);

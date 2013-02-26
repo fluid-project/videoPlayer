@@ -11,13 +11,14 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid, MediaElement*/
+/*global jQuery, window, swfobject, fluid_1_5, MediaElement, mejs*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
+var fluid_1_5 = fluid_1_5 || {};
 
-(function ($) {
+(function ($, fluid) {
 
     /*********************************************************************************
      * Video Player Media                                                            *
@@ -47,10 +48,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             // local events to mirror the media element events
             onMediaElementCanPlay: null,
+            onMediaElementCanPlayThrough: null,
             onMediaElementLoadedMetadata: null,
+            onMediaElementLoadedData: null,
             onMediaElementVolumeChange: null,
             onMediaElementEnded: null,
             onMediaElementTimeUpdate: null,
+            onFullScreen: null,
+            onExitFullScreen: null,
             
             onLoadedMetadata: null
         },
@@ -61,15 +66,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         mediaEventBindings: {
             canplay: "onMediaElementCanPlay",
-            canplaythrough: "onMediaElementCanPlay",
-            loadeddata: "onMediaElementCanPlay",
+            canplaythrough: "onMediaElementCanPlayThrough",
+            loadeddata: "onMediaElementLoadedData",
             loadedmetadata: "onMediaElementLoadedMetadata",
             volumechange: "onMediaElementVolumeChange",
             ended: "onMediaElementEnded",
             timeupdate: "onMediaElementTimeUpdate"
         },
         listeners: {
-            onMediaElementCanPlay: "fluid.videoPlayer.media.handleCanPlay",
+            onMediaElementCanPlay: [
+                {
+                    listener: "{media}.applier.fireChangeRequest",
+                    args: {
+                        path: "canPlay",
+                        value: true
+                    }
+                }, 
+                "{media}.refresh"
+            ],
             onMediaElementLoadedMetadata: [{
                 listener: "{media}.applier.fireChangeRequest",
                 args: [{path: "totalTime", value: "{media}.model.mediaElementVideo.duration"}]
@@ -137,14 +151,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     };
     
-    fluid.videoPlayer.media.handleCanPlay = function (that, evt) {
-        var el = that.model.mediaElementVideo;
-        that.applier.fireChangeRequest({
-            path: "canPlay",
-            value: (typeof (el.readyState) === "undefined") || (el.readyState === 4) || (el.readyState === 3) || (el.readyState === 2)
-        });
-    };
-    
     fluid.videoPlayer.media.handleTimeUpdate = function (that, evt) {
         // With youtube videos, "loadedmetadata" event is not triggered at the initial load,
         // so the video duration is not set but the duration does get returned when the video is at play.
@@ -195,6 +201,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     that.events[localEvtName].fire(that, evt);
                 });
             });
+            
+            // Need to add the fullScreenEvent separately as it can be different depending on the browser
+            var fullScreenEventName = fluid.get(mejs, "MediaFeatures.fullScreenEventName");
+            if (fullScreenEventName) {
+                document.addEventListener(fullScreenEventName, function (evt) {
+                    that.events[mejs.MediaFeatures.isFullScreen() ? "onFullScreen" : "onExitFullScreen"].fire(that, evt);
+                });
+            }
 
             that.events.onEventBindingReady.fire(that);
         }});
@@ -249,6 +263,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.updateVolume();
             that.play();
         };
+        
+        that.requestFullScreen = function (elm) {
+            mejs.MediaFeatures.requestFullScreen(elm || that.model.mediaElementVideo);
+        };
+        
+        that.cancelFullScreen = function () {
+            mejs.MediaFeatures.cancelFullScreen();
+        };
     };
 
     fluid.videoPlayer.media.finalInit = function (that) {
@@ -257,4 +279,4 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.bindMediaDOMEvents();
     };
 
-})(jQuery);
+})(jQuery, fluid_1_5);
