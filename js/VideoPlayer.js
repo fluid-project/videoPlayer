@@ -105,6 +105,7 @@ var fluid_1_5 = fluid_1_5 || {};
                             listener: "{videoPlayer}.applier.requestChange",
                             args: ["fullscreen", false]
                         },
+                        // This event should be split into two to differentiate between the setting and unsetting of fullscreen
                         "{videoPlayer}.events.onFullscreenModelChanged": {
                             listener: function (videoPlayer, media, model) {
                                 if (model.fullscreen) {
