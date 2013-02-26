@@ -187,9 +187,9 @@ fluid.registerNamespace("fluid.tests");
                 });
             }
         }];
-        if (fluid.browser.supportsFullScreen()) {
+        if (fluid.videoPlayer.controllers.supportFullscreen()) {
             // No longer need the environment but didn't convert back yet, as we will modify this when we upgrade to the new jqUnit from Infusion
-            fluid.testUtils.testCaseWithEnv("Video Player Controls Integration Tests: Full-screen", fullScreenTests, {});
+            fluid.testUtils.testCaseWithEnv("Video Player Controls Integration Tests: Full-screen", fullScreenTests, ["fluid.browser.supportsFullScreen", "fluid.browser.nativeVideoSupport"]);
         }
 
         var envFeatures = {"supportsFullScreen": false};
