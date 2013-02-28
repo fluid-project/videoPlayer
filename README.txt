@@ -52,7 +52,7 @@ categorized by license:
 MIT License:
     * jQuery UI css v1.8.14 http://ui.jquery.com/
     * html5shiv v3.6.1 http://code.google.com/p/html5shiv/
-    * MeadiaElement.js v2.9.1 http://mediaelementjs.com
+    * MediaElement.js v2.9.1 http://mediaelementjs.com
   
 BSD License:
     * Fluid Infusion 1.5 Snapshot (http://fluidproject.org)
