@@ -165,7 +165,9 @@ var fluid_1_5 = fluid_1_5 || {};
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
-                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
+                        onCaptionControlsRendered: "{videoPlayer}.events.onCaptionControlsRendered",
+                        onCaptionListUpdated: "{videoPlayer}.events.onCaptionListUpdated"
                     },
                     listeners: {
                         onReady: "{videoPlayer}.events.onControllersReady"
@@ -179,6 +181,19 @@ var fluid_1_5 = fluid_1_5 || {};
                 type: "fluid.videoPlayer.captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
                 createOnEvent: "onMediaReady"
+            },
+            amara: {
+                type: "fluid.unisubComponent",
+                createOnEvent: "onReady",
+                options: {
+                    urls: {
+                        video: "{videoPlayer}.options.video.sources"
+                    },
+                    events: {
+                        modelReady: "{videoPlayer}.events.onAmaraCaptionsReady"
+                    },
+                    queryAmaraForCaptions: "{videoPlayer}.options.queryAmaraForCaptions"
+                }
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -207,6 +222,19 @@ var fluid_1_5 = fluid_1_5 || {};
                     onCreate: "onCreate"
                 },
                 args: ["{videoPlayer}"]
+            },
+            
+            onCaptionListUpdated: null,
+            onAmaraCaptionsReady: null,
+            onAmaraCaptionsReadyBoiled: {
+                event: "onAmaraCaptionsReady",
+                args: ["{videoPlayer}", "{arguments}.0"]
+            },
+            // private events used for testing
+            onCaptionControlsRendered: null,
+            onCaptionControlsRenderedBoiled: {
+                event: "onCaptionControlsRendered",
+                args: ["{videoPlayer}", "{arguments}.0"]
             },
             
             // public, time events
@@ -281,7 +309,8 @@ var fluid_1_5 = fluid_1_5 || {};
             volume: 60,
             muted: false,
             canPlay: false,
-            play: false
+            play: false,
+            languageList: []
         },
         templates: {
             videoPlayer: {
@@ -290,6 +319,7 @@ var fluid_1_5 = fluid_1_5 || {};
             }
         },
         videoTitle: "unnamed video",
+        queryAmaraForCaptions: true,
         invokers: {
             showControllers: "fluid.videoPlayer.showControllers",
             hideControllers: "fluid.videoPlayer.hideControllers"
@@ -465,6 +495,8 @@ var fluid_1_5 = fluid_1_5 || {};
         that.toggleFullscreen = function () {
             that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
+        
+        that.model.languageList = that.options.video.captions;
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -503,6 +535,30 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.videoPlayer.finalInit = function (that) {
         that.container.attr("role", "application");
 
+        that.applier.modelChanged.addListener("languageList", function (newModel, oldModel, requestSpec) {
+            that.events.onCaptionListUpdated.fire();
+        });
+        that.events.onAmaraCaptionsReadyBoiled.addListener(function (that, captionData) {
+
+/*
+            var capList = fluid.copy(that.model.languageList);
+            fluid.each(captionData, function (cap, index) {
+                var lang = fluid.copy(cap);
+                capList.push({
+                    href: fluid.stringTemplate("http://www.universalsubtitles.org/en/videos/g2QoNQgjJd5y/%lang/%subtitleId/", {
+                        lang: cap.code,
+                        subtitleId: cap.id
+                    }),
+                    type: "text/amarajson",
+                    srclang: cap.code,
+                    label: cap.name
+                });
+            });
+*/
+            var capList = fluid.copy(that.model.languageList).concat(captionData);
+            that.applier.requestChange("languageList", capList);
+        });
+        
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller, captions or transcripts.
 

@@ -115,7 +115,9 @@ var fluid_1_5 = fluid_1_5 || {};
                     },
                     events: {
                         onControlledElementReady: "{controllers}.events.onTranscriptsReady",
-                        onReady: "{controllers}.events.onTranscriptControlsReady"
+                        onReady: "{controllers}.events.onTranscriptControlsReady",
+                        afterMenuRender: "{controllers}.events.onCaptionControlsRendered",
+                        onLanguageListUpdated: "{controllers}.events.onCaptionListUpdated"
                     },
                     templates: {
                         menuButton: {
@@ -167,6 +169,11 @@ var fluid_1_5 = fluid_1_5 || {};
             onStartTimeChange: null,
             afterTimeChange: null,
             onMarkupReady: null,
+            onCaptionListUpdated: null,
+            
+            // private event used for testing
+            onCaptionControlsRendered: null,
+            
             onScrub: null,
             onStartScrub: null,
             afterScrub: null,
@@ -269,7 +276,9 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         events: {
             onControlledElementReady: "{controllers}.events.onCaptionsReady",
-            onReady: "{controllers}.events.onCaptionControlsReady"
+            onReady: "{controllers}.events.onCaptionControlsReady",
+            afterMenuRender: "{controllers}.events.onCaptionControlsReady",
+            onLanguageListUpdated: "{controllers}.events.onCaptionListUpdated"
         },
         templates: {
             menuButton: {

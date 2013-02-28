@@ -34,7 +34,6 @@ var fluid_1_5 = fluid_1_5 || {};
         postInitFunction: "fluid.videoPlayer.languageMenu.postInit",
         finalInitFunction: "fluid.videoPlayer.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.languageMenu.produceTree",
-        languages: [],
         currentLanguagePath: "activeLanguages",
         showHidePath: "showLanguage",
         model: {},
@@ -48,7 +47,8 @@ var fluid_1_5 = fluid_1_5 || {};
             },
             activated: null,
             hiddenByKeyboard: null,
-            onControlledElementReady: null
+            onControlledElementReady: null,
+            onLanguageListUpdated: null
         },
         listeners: {
             onControlledElementReady: {
@@ -80,14 +80,12 @@ var fluid_1_5 = fluid_1_5 || {};
     // TODO: Could this be specified declaratively, in a "protoTree" option?
     // Ans: not very effectively... the renderer still needs to be burned to the ground
     fluid.videoPlayer.languageMenu.produceTree = function (that) {
-        // Silly damn renderer with its crazy JSON idiolect!
-        that.model.languages = that.options.languages;
         var tree = {
             // create a menu item for each language in the model
             expander: {
                 type: "fluid.renderer.repeat",
                 repeatID: "language",
-                controlledBy: "languages",
+                controlledBy: "languageList",
                 pathAs: "lang",
                 tree: {
                     value: "${{lang}.label}",
@@ -216,6 +214,12 @@ var fluid_1_5 = fluid_1_5 || {};
         fluid.videoPlayer.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
 
+        that.events.onLanguageListUpdated.addListener(function () {
+            that.refreshView();
+            fluid.videoPlayer.languageMenu.bindEventListeners(that);
+            fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
+        });
+
         that.container.attr("role", "menu");
         that.container.css("z-index", 9999);
         that.hideMenu();
@@ -243,6 +247,10 @@ var fluid_1_5 = fluid_1_5 || {};
             onReady: null,
             onRenderingComplete: null,
             onControlledElementReady: null,
+            onLanguageListUpdated: null,
+            // private event for testing
+            afterMenuRender: null,
+            
             afterFetchResources: null
         },
         listeners: {
@@ -251,7 +259,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 priority: "last"
             }
         },
-        languages: [],
         currentLanguagePath: "",
         showHidePath: "",
         strings: {
@@ -286,13 +293,13 @@ var fluid_1_5 = fluid_1_5 || {};
                 container: "{languageControls}.dom.menu",
                 options: {
                     model: "{languageControls}.model",
-                    languages: "{languageControls}.options.languages",
                     applier: "{languageControls}.applier",
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
                     strings: "{languageControls}.options.strings",
                     events: {
-                        onControlledElementReady: "{languageControls}.events.onControlledElementReady"
+                        onControlledElementReady: "{languageControls}.events.onControlledElementReady",
+                        onLanguageListUpdated: "{languageControls}.events.onLanguageListUpdated"
                     }
                 }
             },
@@ -394,7 +401,8 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.defaults("fluid.videoPlayer.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         listeners: {
-            "{button}.events.onPress": "{menu}.toggleView"
+            "{button}.events.onPress": "{menu}.toggleView",
+            "{menu}.events.afterRender": "{languageControls}.events.afterMenuRender.fire"
         }
     });
 })(jQuery, fluid_1_5);
