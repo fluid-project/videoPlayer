@@ -167,7 +167,8 @@ var fluid_1_5 = fluid_1_5 || {};
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
                         onCaptionControlsRendered: "{videoPlayer}.events.onCaptionControlsRendered",
-                        onCaptionListUpdated: "{videoPlayer}.events.onCaptionListUpdated"
+                        onCaptionListUpdated: "{videoPlayer}.events.onCaptionListUpdated",
+                        onTranscriptListUpdated: "{videoPlayer}.events.onTranscriptListUpdated"
                     },
                     listeners: {
                         onReady: "{videoPlayer}.events.onControllersReady"
@@ -225,6 +226,8 @@ var fluid_1_5 = fluid_1_5 || {};
             },
             
             onCaptionListUpdated: null,
+            onTranscriptListUpdated: null,
+            
             onAmaraCaptionsReady: null,
             onAmaraCaptionsReadyBoiled: {
                 event: "onAmaraCaptionsReady",
@@ -310,7 +313,8 @@ var fluid_1_5 = fluid_1_5 || {};
             muted: false,
             canPlay: false,
             play: false,
-            languageList: []
+            captionsLanguageList: [],
+            transcriptsLanguageList: []
         },
         templates: {
             videoPlayer: {
@@ -496,7 +500,8 @@ var fluid_1_5 = fluid_1_5 || {};
             that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
         
-        that.model.languageList = that.options.video.captions;
+        that.model.captionsLanguageList = that.options.video.captions;
+        that.model.transcriptsLanguageList = that.options.video.transcripts;
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -535,28 +540,35 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.videoPlayer.finalInit = function (that) {
         that.container.attr("role", "application");
 
-        that.applier.modelChanged.addListener("languageList", function (newModel, oldModel, requestSpec) {
+        that.applier.modelChanged.addListener("captionsLanguageList", function () {
             that.events.onCaptionListUpdated.fire();
         });
+        that.applier.modelChanged.addListener("transcriptsLanguageList", function () {
+            that.events.onTranscriptListUpdated.fire();
+        });
         that.events.onAmaraCaptionsReadyBoiled.addListener(function (that, captionData) {
-
-/*
-            var capList = fluid.copy(that.model.languageList);
-            fluid.each(captionData, function (cap, index) {
-                var lang = fluid.copy(cap);
-                capList.push({
-                    href: fluid.stringTemplate("http://www.universalsubtitles.org/en/videos/g2QoNQgjJd5y/%lang/%subtitleId/", {
-                        lang: cap.code,
-                        subtitleId: cap.id
-                    }),
-                    type: "text/amarajson",
-                    srclang: cap.code,
-                    label: cap.name
+            var capList = [];
+            var filterLanguages = function (firstArray, secondArray) {
+                var languageArray = [], i;
+                firstArray = firstArray || [];
+                secondArray = secondArray || [];
+                
+                var result = firstArray.concat(secondArray);
+                result = fluid.remove_if(result, function (elem) {
+                    if (languageArray.indexOf(elem.srclang) > -1) {
+                        return elem;
+                    }
+                    languageArray.push(elem.srclang);
                 });
-            });
-*/
-            var capList = fluid.copy(that.model.languageList).concat(captionData);
-            that.applier.requestChange("languageList", capList);
+                
+                return result;
+            };
+
+            capList = filterLanguages(that.model.captionsLanguageList, captionData);
+            that.applier.requestChange("captionsLanguageList", capList);
+            
+            capList = filterLanguages(that.model.transcriptsLanguageList, captionData);
+            that.applier.requestChange("transcriptsLanguageList", capList);
         });
         
         // Render each media source with its custom renderer, registered by type.

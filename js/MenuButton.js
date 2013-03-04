@@ -85,7 +85,7 @@ var fluid_1_5 = fluid_1_5 || {};
             expander: {
                 type: "fluid.renderer.repeat",
                 repeatID: "language",
-                controlledBy: "languageList",
+                controlledBy: that.options.languageListPath,
                 pathAs: "lang",
                 tree: {
                     value: "${{lang}.label}",
@@ -261,6 +261,7 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         currentLanguagePath: "",
         showHidePath: "",
+        languageListPath: "",
         strings: {
             showLanguage: "Show Language",
             hideLanguage: "Hide Language"
@@ -296,6 +297,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     applier: "{languageControls}.applier",
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
+                    languageListPath: "{languageControls}.options.languageListPath",
                     strings: "{languageControls}.options.strings",
                     events: {
                         onControlledElementReady: "{languageControls}.events.onControlledElementReady",

@@ -102,6 +102,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
+                    languageListPath: "transcriptsLanguageList",
                     currentLanguagePath: "currentTracks.transcripts",
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
@@ -117,7 +118,7 @@ var fluid_1_5 = fluid_1_5 || {};
                         onControlledElementReady: "{controllers}.events.onTranscriptsReady",
                         onReady: "{controllers}.events.onTranscriptControlsReady",
                         afterMenuRender: "{controllers}.events.onCaptionControlsRendered",
-                        onLanguageListUpdated: "{controllers}.events.onCaptionListUpdated"
+                        onLanguageListUpdated: "{controllers}.events.onTranscriptListUpdated"
                     },
                     templates: {
                         menuButton: {
@@ -170,6 +171,7 @@ var fluid_1_5 = fluid_1_5 || {};
             afterTimeChange: null,
             onMarkupReady: null,
             onCaptionListUpdated: null,
+            onTranscriptListUpdated: null,
             
             // private event used for testing
             onCaptionControlsRendered: null,
@@ -264,6 +266,7 @@ var fluid_1_5 = fluid_1_5 || {};
         applier: "{controllers}.applier",
         showHidePath: "displayCaptions",
         currentLanguagePath: "currentTracks.captions",
+        languageListPath: "captionsLanguageList",
         styles: {
             button: "fl-videoPlayer-captions-button",
             buttonWithShowing: "fl-videoPlayer-captions-button-on"
