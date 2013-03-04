@@ -89,9 +89,17 @@ Captions:
 Full Screen:
     VP-258: YouTube videos break in full screen mode
     VP-191: Implement fullscreen functionality for Opera and IE
+    VP-279: In IE8, invisible full screen button is tab focusable. Going full screen removes video player from tab order upon returning to normal mode.
     
 UIO Integration:
     VP-269: Transcript language is incorrect in the language drop down after specifying a language in UIO
     VP-88:  UIO inputs preferences not being correctly applied on load
     VP-280: Contrast styles don't apply to captions
     VP-107: Changing text size with UIO does not change Video Player size until refresh for Flash videos
+    VP-278: In IE8, focus appears on video player container, but activates UIO instead
+    
+Playback:
+    VP-277: Pressing space on the video container does not start the video in IE9 and IE8.
+    
+Scrubbing:
+    VP-284: In IE8, keyboard scrubbing stops working after attempting to scrub
