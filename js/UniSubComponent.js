@@ -22,74 +22,48 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         finalInitFunction: "fluid.unisubComponent.finalInit",
         preInitFunction: "fluid.unisubComponent.preInit",
-        model: {
-            languages: []
-        },
         events: {
             onReady: null,
-            modelReady: null,
-            onVideo: null
+            modelReady: null
         },
-        listeners: {
-            onVideo: "{fluid.unisubComponent}.onVideoHandler"
-        },
-        "api-key": "0c01f5ca0ec8d1dc4e9e0f320a4d1afb1a50273d",
-        "api-password": "idrcunisub",
-        "api-username": "idrc",
         urls: {
-            //api: "https://www.universalsubtitles.org/api2/partners/videos",
-            apiLanguages: "http://www.universalsubtitles.org/api/1.0/subtitles/languages/",
-            apiVideo: "http://www.universalsubtitles.org/api/1.0/video/",
-            video: null
+            captionsUrl: null,
+            videoUrl: null
         },
-        hrefTemplate: "http://www.universalsubtitles.org/en/videos/g2QoNQgjJd5y/%lang/%subtitleId/",
-        queryAmaraForCaptions: true,
-        videoUrl: ""
+        languagesPath: "",
+        queryAmaraForCaptions: true
     });
     
     fluid.unisubComponent.preInit = function (that) {
-        that.languageList = [];
-        that.videoCount = 0;
-        that.onVideoHandler = function (options) {
+        that.loadCaptionsData = function (options) {
             $.ajax({
                 dataType: "jsonp",
                 url: options.url
             }).done(function (data) {
-//                that.languageList = that.languageList.concat(data);
-
-                fluid.each(data, function (capSpec, index) {
-                    that.languageList = that.languageList.concat({
-                        // BROKEN: this is the wrong url: this is the url to the actual subtitles,
-                        // but the video player just needs the right url to the video itself
-                        src: fluid.stringTemplate(that.options.hrefTemplate, {
-                            lang: capSpec.code,
-                            subtitleId: capSpec.id
-                        }),
+                if (!data) {
+                    return;
+                }
+                var languages = fluid.get(data, that.options.languagesPath),
+                    videoUrl = that.options.urls.videoUrl;
+                if (!languages) {
+                    return;
+                }
+                languages = fluid.transform(languages, function (language) {
+                    return {
+                        // This is to comply with current VP caption format
+                        src: [videoUrl, "?", $.param( {"language": language.code} )].join(""),
+                        // Amara 2.0 caption link
+                        // src: language.subtitles_uri
                         type: "text/amarajson",
-                        srclang: capSpec.code,
-                        label: capSpec.name
-                    });
+                        srclang: language.code,
+                        label: language.name
+                    };
                 });
-
-                if (--that.videoCount <= 0) {
-                    that.applier.requestChange("languages", that.languageList);
-                    that.events.modelReady.fire(that.languageList);
+                
+                if (languages.length > 0) {
+                    that.events.modelReady.fire(languages);
                     that.events.onReady.fire(that);
                 }
-            });
-        };
-
-        that.loadVideoMetaData = function (options) {
-            $.ajax({
-                dataType: "jsonp",
-                url: options.url
-            }).done(function (data) {
-                that.applier.requestChange("video", data);
-                that.events.onVideo.fire({
-                    url: that.buildUrl(that.options.urls.apiLanguages, {
-                        video_url: data.video_url
-                    })
-                });
             });
         };
         
@@ -99,33 +73,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.unisubComponent.finalInit = function (that) {
-        var videoUrlsArray = [];
-        if (typeof that.options.urls.video[0] === "string") {
-            videoUrlsArray = fluid.makeArray(that.options.urls.video);
-        } else {
-            fluid.each(that.options.urls.video, function (vid, index) {
-                videoUrlsArray[index] = vid.src;
-            });
-        }
-
-        that.videoCount = videoUrlsArray.length;
-        fluid.each(videoUrlsArray, function (vidUrl, index) {
-            if (vidUrl.substr(0, 7) === "http://") {
-                that.loadVideoMetaData({
-                    url: that.buildUrl(that.options.urls.apiVideo, {
-                        username: that.options["api-username"],
-                        password: that.options["api-password"],
-                        video_url: vidUrl
-                    })
-                });
-            } else {
-                that.videoCount--;
-            }
+        var urls = that.options.urls;
+        
+        // Grab captions data from Amara for the video
+        that.loadCaptionsData({
+            url: that.buildUrl(urls.captionsUrl, {
+                video_url: urls.videoUrl
+            })
         });
-        if (that.videoCount <= 0) {
-            that.events.modelReady.fire(that.languageList);
-            that.events.onReady.fire(that);
-        }
     };
 
 })(jQuery);

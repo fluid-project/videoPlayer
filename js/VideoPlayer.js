@@ -188,8 +188,9 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onUniSubReadyToCreate",
                 options: {
                     urls: {
-                        video: "{videoPlayer}.options.video.sources"
+                        captionsUrl: "https://www.universalsubtitles.org/api2/partners/videos/"
                     },
+                    languagesPath: "objects.0.languages",
                     events: {
                         modelReady: "{videoPlayer}.events.onAmaraCaptionsReady"
                     },
@@ -646,7 +647,7 @@ var fluid_1_5 = fluid_1_5 || {};
         if (!that.options.queryAmaraForCaptions || !url) {
             return;
         }
-        that.options.components.amara.options.videoUrl = url;
+        that.options.components.amara.options.urls.videoUrl = url;
         that.events.onAmaraAvailable.fire();
     };
         
