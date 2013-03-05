@@ -43,7 +43,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             video: null
         },
         hrefTemplate: "http://www.universalsubtitles.org/en/videos/g2QoNQgjJd5y/%lang/%subtitleId/",
-        queryAmaraForCaptions: true
+        queryAmaraForCaptions: true,
+        videoUrl: ""
     });
     
     fluid.unisubComponent.preInit = function (that) {
@@ -98,10 +99,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     fluid.unisubComponent.finalInit = function (that) {
-        if (!that.options.queryAmaraForCaptions || !that.options.urls.video) {
-            return;
-        }
-
         var videoUrlsArray = [];
         if (typeof that.options.urls.video[0] === "string") {
             videoUrlsArray = fluid.makeArray(that.options.urls.video);
