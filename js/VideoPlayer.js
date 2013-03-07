@@ -185,16 +185,16 @@ var fluid_1_5 = fluid_1_5 || {};
             },
             amara: {
                 type: "fluid.unisubComponent",
-                createOnEvent: "onUniSubReadyToCreate",
+                createOnEvent: "onReady",
                 options: {
+                    sources: "{videoPlayer}.options.video.sources",
                     urls: {
                         captionsUrl: "https://www.universalsubtitles.org/api2/partners/videos/"
                     },
                     languagesPath: "objects.0.languages",
                     events: {
                         modelReady: "{videoPlayer}.events.onAmaraCaptionsReady"
-                    },
-                    queryAmaraForCaptions: "{videoPlayer}.options.queryAmaraForCaptions"
+                    }
                 }
             }
         },
@@ -225,14 +225,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 },
                 args: ["{videoPlayer}"]
             },
-            
-            onUniSubReadyToCreate: {
-                events: {
-                    onReady: "onReady",
-                    onAmaraAvailable: "onAmaraAvailable"
-                }  
-            },
-            onAmaraAvailable: null,
             
             onCaptionListUpdated: null,
             onTranscriptListUpdated: null,
@@ -332,11 +324,9 @@ var fluid_1_5 = fluid_1_5 || {};
             }
         },
         videoTitle: "unnamed video",
-        queryAmaraForCaptions: true,
         invokers: {
             showControllers: "fluid.videoPlayer.showControllers",
-            hideControllers: "fluid.videoPlayer.hideControllers",
-            pullCaptionsOnline: "fluid.videoPlayer.pullCaptionsOnline"
+            hideControllers: "fluid.videoPlayer.hideControllers"
         }
     });
     
@@ -625,30 +615,7 @@ var fluid_1_5 = fluid_1_5 || {};
             $("object", that.locate("video")).attr("tabindex", "-1");
         });
         
-        that.pullCaptionsOnline(that);
-        
         return that;
-    };
-    
-    fluid.videoPlayer.pullCaptionsOnline = function (that) {
-        var checkSourceForYoutube = function (sources) {
-            var url = null;
-            fluid.each(sources, function(source) {
-                var src = source.src;
-                if (src.match(/youtube\.com/)) {
-                    url = src;
-                }
-            });
-            
-            return url;
-        };
-        
-        var url = checkSourceForYoutube(that.options.video.sources);
-        if (!that.options.queryAmaraForCaptions || !url) {
-            return;
-        }
-        that.options.components.amara.options.urls.videoUrl = url;
-        that.events.onAmaraAvailable.fire();
     };
         
     //returns the time in format hh:mm:ss from a time in seconds 

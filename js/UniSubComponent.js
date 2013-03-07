@@ -21,65 +21,82 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.unisubComponent", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
         finalInitFunction: "fluid.unisubComponent.finalInit",
-        preInitFunction: "fluid.unisubComponent.preInit",
+        sources: [],
         events: {
             onReady: null,
             modelReady: null
         },
         urls: {
-            captionsUrl: null,
-            videoUrl: null
+            captionsUrl: null
         },
         languagesPath: "",
-        queryAmaraForCaptions: true
+        queryAmaraForCaptions: true,
+        invokers: {
+            buildUrl: "fluid.unisubComponent.buildUrl",
+            loadCaptionsData: {
+                funcName: "fluid.unisubComponent.loadCaptionsData",
+                args: ["{that}", "{arguments}.0"]
+            }
+        }
     });
     
-    fluid.unisubComponent.preInit = function (that) {
-        that.loadCaptionsData = function (options) {
-            $.ajax({
-                dataType: "jsonp",
-                url: options.url
-            }).done(function (data) {
-                if (!data) {
-                    return;
-                }
-                var languages = fluid.get(data, that.options.languagesPath),
-                    videoUrl = that.options.urls.videoUrl;
-                if (!languages) {
-                    return;
-                }
-                languages = fluid.transform(languages, function (language) {
-                    return {
-                        // This is to comply with current VP caption format
-                        src: [videoUrl, "?", $.param( {"language": language.code} )].join(""),
-                        // Amara 2.0 caption link
-                        // src: language.subtitles_uri
-                        type: "text/amarajson",
-                        srclang: language.code,
-                        label: language.name
-                    };
-                });
-                
-                if (languages.length > 0) {
-                    that.events.modelReady.fire(languages);
-                    that.events.onReady.fire(that);
-                }
-            });
-        };
-        
-        that.buildUrl = function (baseURL, params) {
-            return [baseURL, "?", $.param(params)].join("");
-        };
-    };
-    
     fluid.unisubComponent.finalInit = function (that) {
-        var urls = that.options.urls;
+        var sources = that.options.sources;
+        if (!sources || sources.length === 0) {
+            that.events.modelReady.fire();
+            that.events.onReady.fire(that);
+            return;
+        }
         
         // Grab captions data from Amara for the video
         that.loadCaptionsData({
-            url: that.buildUrl(urls.captionsUrl, {
-                video_url: urls.videoUrl
+            url: that.buildUrl(that.options.urls.captionsUrl, {
+                video_url: sources[0].src
             })
+        });
+    };
+    
+    //// Invokers ////
+    
+    fluid.unisubComponent.buildUrl = function (baseURL, params) {
+        return [baseURL, "?", $.param(params)].join("");
+    };
+    
+    fluid.unisubComponent.loadCaptionsData = function (that, options) {
+        $.ajax({
+            dataType: "jsonp",
+            url: options.url
+        }).done(function (data) {
+            if (!data) {
+                that.events.modelReady.fire();
+                that.events.onReady.fire(that);
+                return;
+            }
+            
+            var languages = fluid.get(data, that.options.languagesPath),
+                videoUrl = that.options.urls.videoUrl;
+            
+            if (!languages) {
+                that.events.modelReady.fire();
+                that.events.onReady.fire(that);
+                return;
+            }
+            languages = fluid.transform(languages, function (language) {
+                return {
+                    // This is to comply with current VP caption format
+                    src: [videoUrl, "?", $.param( {"language": language.code} )].join(""),
+                    // Amara 2.0 caption link
+                    // src: language.subtitles_uri
+                    type: "text/amarajson",
+                    srclang: language.code,
+                    label: language.name
+                };
+            });
+            
+            if (languages.length > 0) {
+                that.events.modelReady.fire(languages);
+                that.events.onReady.fire(that);
+            }
         });
     };
 
