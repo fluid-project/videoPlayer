@@ -43,7 +43,7 @@ var fluid_1_5 = fluid_1_5 || {};
         var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
         
         return fluid.find(fullscreenFnNames, function (name) {
-            return !!$("<div></div")[0][name] || undefined;
+            return !!$("<div></div>")[0][name] || undefined;
         });
     };
     
