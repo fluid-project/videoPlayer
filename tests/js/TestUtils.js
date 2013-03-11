@@ -79,6 +79,12 @@ fluid.registerNamespace("fluid.testUtils");
                         }
                     }
                 }
+            },
+            amara: {
+                type: "fluid.emptySubcomponent"
+            },
+            html5Captionator: {
+                createOnEvent: "onMediaReady"
             }
         }
     };

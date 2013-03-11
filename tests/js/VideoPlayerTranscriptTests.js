@@ -147,28 +147,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         // Load transcript files from universal subtitles
         var universalSubsOpts = {
-                transcripts: [
-                    {
-                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
-                        type: "text/amarajson",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
-                        type: "text/amarajson",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ]
-            };
+            transcripts: [
+                {
+                    src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                    type: "text/amarajson",
+                    srclang: "en",
+                    label: "English"
+                },
+                {
+                    src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=fr",
+                    type: "text/amarajson",
+                    srclang: "fr",
+                    label: "French"
+                }
+            ]
+        };
         
         testProcess(localTranscriptOpts, "Local transcript files");
         
-        // Wait a second for the previous test process to complete
+        // Wait two seconds for the previous test process to complete
+        // TODO: It should be changed to use promises instead
         setTimeout(function () {
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
-        }, 500);
+        }, 2000);
 
         jqUnit.asyncTest("Drop-down aria-controls text area", function () {
             var testOpts = {

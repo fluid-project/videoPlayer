@@ -82,6 +82,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         jqUnit.asyncTest("aria-controls on language menus", function () {
             var testOpts = {
+                components: {
+                    amara: {
+                        type: "fluid.emptySubcomponent"
+                    }
+                },
                 listeners: {
                     onControllersReady: "fluid.tests.videoPlayer.triggerTranscript",
                     onTranscriptsLoaded: "fluid.tests.videoPlayer.testAriaControlsAttrs"

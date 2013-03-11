@@ -29,6 +29,7 @@ fluid.registerNamespace("fluid.tests");
         fluid.tests.languageMenuDefaults = fluid.defaults("fluid.videoPlayer.languageMenu");
 
         var baseMenuOpts = {
+            languageListPath: "languages",
             model: {
                 activeLanguages: [0],
                 showLanguage: false,
@@ -142,6 +143,7 @@ fluid.registerNamespace("fluid.tests");
          *=======================*/
 
         var baseLanguageControlsOpts = {
+            languageListPath: "languages",
             model: {
                 currentTracks: {
                     captions: [0]

@@ -43,7 +43,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.unisubComponent.finalInit = function (that) {
         var sources = that.options.sources;
         if (!sources || sources.length === 0) {
-            that.events.modelReady.fire([]);
+            that.events.modelReady.fire();
             that.events.onReady.fire(that);
             return;
         }
@@ -72,7 +72,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             url: options.url
         }).done(function (data) {
             if (!data) {
-                that.events.modelReady.fire([]);
+                that.events.modelReady.fire();
                 that.events.onReady.fire(that);
                 return;
             }
@@ -81,7 +81,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 videoUrl = that.options.urls.videoUrl;
             
             if (!languages) {
-                that.events.modelReady.fire([]);
+                that.events.modelReady.fire();
                 that.events.onReady.fire(that);
                 return;
             }
@@ -101,6 +101,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 that.events.modelReady.fire(languages);
                 that.events.onReady.fire(that);
             }
+        }).fail(function (data) {
+            that.events.modelReady.fire();
+            that.events.onReady.fire(that);
         });
     };
 
