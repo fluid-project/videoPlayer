@@ -181,11 +181,11 @@ var fluid_1_5 = fluid_1_5 || {};
             html5Captionator: {
                 type: "fluid.videoPlayer.captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onMediaReady"
+                createOnEvent: "onAmaraCaptionsReady"
             },
             amara: {
                 type: "fluid.unisubComponent",
-                createOnEvent: "onReady",
+                createOnEvent: "onMediaReady",
                 options: {
                     sources: "{videoPlayer}.options.video.sources",
                     urls: {
@@ -314,8 +314,8 @@ var fluid_1_5 = fluid_1_5 || {};
             muted: false,
             canPlay: false,
             play: false,
-            captionsLanguageList: [],
-            transcriptsLanguageList: []
+            captions: [],
+            transcripts: []
         },
         templates: {
             videoPlayer: {
@@ -500,8 +500,8 @@ var fluid_1_5 = fluid_1_5 || {};
             that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
         
-        that.model.captionsLanguageList = that.options.video.captions;
-        that.model.transcriptsLanguageList = that.options.video.transcripts;
+        that.model.captions = fluid.copy(that.options.video.captions);
+        that.model.transcripts = fluid.copy(that.options.video.transcripts);
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -540,10 +540,10 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.videoPlayer.finalInit = function (that) {
         that.container.attr("role", "application");
 
-        that.applier.modelChanged.addListener("captionsLanguageList", function () {
+        that.applier.modelChanged.addListener("captions", function () {
             that.events.onCaptionListUpdated.fire();
         });
-        that.applier.modelChanged.addListener("transcriptsLanguageList", function () {
+        that.applier.modelChanged.addListener("transcripts", function () {
             that.events.onTranscriptListUpdated.fire();
         });
         that.events.onAmaraCaptionsReadyBoiled.addListener(function (that, captionData) {
@@ -564,11 +564,15 @@ var fluid_1_5 = fluid_1_5 || {};
                 return result;
             };
 
-            capList = filterLanguages(that.model.captionsLanguageList, captionData);
-            that.applier.requestChange("captionsLanguageList", capList);
+            capList = filterLanguages(that.model.captions, captionData);
+            that.applier.requestChange("captions", capList);
             
-            capList = filterLanguages(that.model.transcriptsLanguageList, captionData);
-            that.applier.requestChange("transcriptsLanguageList", capList);
+            capList = filterLanguages(that.model.transcripts, captionData);
+            that.applier.requestChange("transcripts", capList);
+            
+            fluid.each(that.options.defaultKinds, function (defaultKind, index) {
+                fluid.videoPlayer.addDefaultKind(fluid.get(that.options.model, index), defaultKind);
+            });
         });
         
         // Render each media source with its custom renderer, registered by type.

@@ -83,7 +83,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var display = that.readIndirect("elPaths.displayCaptions");
             if (display) {
                 fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
-                    tracks, that.options.captions);
+                    tracks, that.options.model.captions);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
             }
@@ -92,7 +92,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var captions = that.options.captions;
+        var captions = that.options.model.captions;
         
         // Need to know when all the tracks have been created so we can trigger captionator
         that.tracksToCreate = captions.length;

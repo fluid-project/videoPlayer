@@ -102,7 +102,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
-                    languageListPath: "transcriptsLanguageList",
+                    languageListPath: "transcripts",
                     currentLanguagePath: "currentTracks.transcripts",
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
@@ -266,7 +266,7 @@ var fluid_1_5 = fluid_1_5 || {};
         applier: "{controllers}.applier",
         showHidePath: "displayCaptions",
         currentLanguagePath: "currentTracks.captions",
-        languageListPath: "captionsLanguageList",
+        languageListPath: "captions",
         styles: {
             button: "fl-videoPlayer-captions-button",
             buttonWithShowing: "fl-videoPlayer-captions-button-on"

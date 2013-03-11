@@ -27,10 +27,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             modelReady: null
         },
         urls: {
-            captionsUrl: null
+            captionsUrl: null,
+            videoUrl: null
         },
         languagesPath: "",
-        queryAmaraForCaptions: true,
         invokers: {
             buildUrl: "fluid.unisubComponent.buildUrl",
             loadCaptionsData: {
@@ -48,10 +48,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             return;
         }
         
+        var videoUrl = sources[0].src;
+        
+        that.options.urls.videoUrl = videoUrl;
+        
         // Grab captions data from Amara for the video
         that.loadCaptionsData({
             url: that.buildUrl(that.options.urls.captionsUrl, {
-                video_url: sources[0].src
+                video_url: videoUrl
             })
         });
     };
@@ -84,7 +88,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             languages = fluid.transform(languages, function (language) {
                 return {
                     // This is to comply with current VP caption format
-                    src: [videoUrl, "?", $.param( {"language": language.code} )].join(""),
+                    src: [videoUrl, "&", $.param( {"language": language.code} )].join(""),
                     // Amara 2.0 caption link
                     // src: language.subtitles_uri
                     type: "text/amarajson",
