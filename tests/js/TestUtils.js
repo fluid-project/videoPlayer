@@ -80,8 +80,7 @@ fluid.registerNamespace("fluid.testUtils");
                     }
                 }
             }
-        },
-        queryAmaraForCaptions: false
+        }
     };
 
     fluid.testUtils.initVideoPlayer = function (container, options) {

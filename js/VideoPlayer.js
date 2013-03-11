@@ -547,6 +547,11 @@ var fluid_1_5 = fluid_1_5 || {};
             that.events.onTranscriptListUpdated.fire();
         });
         that.events.onAmaraCaptionsReadyBoiled.addListener(function (that, captionData) {
+            captionData = captionData || [];
+            if (captionData.length === 0) {
+                return;
+            }
+            
             var capList = [];
             var filterLanguages = function (firstArray, secondArray) {
                 var languageArray = [], i;

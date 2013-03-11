@@ -218,8 +218,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         src: "http://www.youtube.com/v/_VxQEPw1x9E",
                         type: "youtube"
                     }]
-                },
-                queryAmaraForCaptions: false
+                }
             };
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
@@ -246,8 +245,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         src: "http://www.youtube.com/v/_VxQEPw1x9E",
                         type: "youtube"
                     }]
-                },
-                queryAmaraForCaptions: true
+                }
             };
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
