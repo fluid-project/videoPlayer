@@ -33,7 +33,7 @@ fluid.registerNamespace("fluid.tests");
                         },
                         languagesPath: "objects.0.languages",
                         listeners: {
-                            modelReady: function (data) {
+                            onReady: function (data) {
                                 data = data || [];
                                 if (config.exact) {
                                     jqUnit.assertEquals(config.assertMsg, config.assertExpect, data.length);

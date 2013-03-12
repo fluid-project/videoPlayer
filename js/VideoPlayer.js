@@ -193,7 +193,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     },
                     languagesPath: "objects.0.languages",
                     events: {
-                        modelReady: "{videoPlayer}.events.onAmaraCaptionsReady"
+                        onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
                     }
                 }
             }
@@ -537,48 +537,43 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
     
+    fluid.videoPlayer.uniqueMergeArray = function(firstArray, secondArray, elPath) {
+        var languageArray = [], i;
+        firstArray = firstArray || [];
+        secondArray = secondArray || [];
+        
+        var result = firstArray.concat(secondArray);
+        result = fluid.remove_if(result, function (elem) {
+            var srclang = fluid.get(elem, elPath);
+            if (languageArray.indexOf(srclang) > -1) {
+                return elem;
+            }
+            languageArray.push(srclang);
+        });
+        
+        return result;
+    };
+    
+    fluid.videoPlayer.extendLanguages = function(that, captionData) {
+        captionData = captionData || [];
+        if (captionData.length === 0) {
+            return;
+        }
+        
+        fluid.each(["captions", "transcripts"], function (type) {
+            var tempData = fluid.copy(captionData);
+            fluid.videoPlayer.addDefaultKind(tempData, fluid.get(that.options.defaultKinds, type));
+            tempData = fluid.videoPlayer.uniqueMergeArray(fluid.get(that.model, type), tempData, "srclang");
+            that.applier.requestChange(type, tempData);
+        });
+    };
+    
     fluid.videoPlayer.finalInit = function (that) {
         that.container.attr("role", "application");
 
-        that.applier.modelChanged.addListener("captions", function () {
-            that.events.onCaptionListUpdated.fire();
-        });
-        that.applier.modelChanged.addListener("transcripts", function () {
-            that.events.onTranscriptListUpdated.fire();
-        });
-        that.events.onAmaraCaptionsReadyBoiled.addListener(function (that, captionData) {
-            captionData = captionData || [];
-            if (captionData.length === 0) {
-                return;
-            }
-            
-            var capList = [];
-            var filterLanguages = function (firstArray, secondArray) {
-                var languageArray = [], i;
-                firstArray = firstArray || [];
-                secondArray = secondArray || [];
-                
-                var result = firstArray.concat(secondArray);
-                result = fluid.remove_if(result, function (elem) {
-                    if (languageArray.indexOf(elem.srclang) > -1) {
-                        return elem;
-                    }
-                    languageArray.push(elem.srclang);
-                });
-                
-                return result;
-            };
-
-            capList = filterLanguages(that.model.captions, captionData);
-            that.applier.requestChange("captions", capList);
-            
-            capList = filterLanguages(that.model.transcripts, captionData);
-            that.applier.requestChange("transcripts", capList);
-            
-            fluid.each(that.options.defaultKinds, function (defaultKind, index) {
-                fluid.videoPlayer.addDefaultKind(fluid.get(that.options.model, index), defaultKind);
-            });
-        });
+        that.applier.modelChanged.addListener("captions", that.events.onCaptionListUpdated.fire);
+        that.applier.modelChanged.addListener("transcripts", that.events.onTranscriptListUpdated.fire);
+        that.events.onAmaraCaptionsReadyBoiled.addListener(fluid.videoPlayer.extendLanguages);
         
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller, captions or transcripts.

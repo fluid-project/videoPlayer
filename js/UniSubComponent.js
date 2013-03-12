@@ -23,8 +23,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.unisubComponent.finalInit",
         sources: [],
         events: {
-            onReady: null,
-            modelReady: null
+            onReady: null
         },
         urls: {
             captionsUrl: null,
@@ -43,8 +42,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.unisubComponent.finalInit = function (that) {
         var sources = that.options.sources;
         if (!sources || sources.length === 0) {
-            that.events.modelReady.fire();
-            that.events.onReady.fire(that);
+            that.events.onReady.fire();
             return;
         }
         
@@ -58,6 +56,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 video_url: videoUrl
             })
         });
+        
+        // This function should possibly be a member in a ginger framework
+        that.createLanguageObject = function (language) {
+            return {
+                // This is to comply with current VP caption format
+                src: [videoUrl, "&", $.param( {"language": language.code} )].join(""),
+                // Amara 2.0 caption link
+                // src: language.subtitles_uri
+                type: "text/amarajson",
+                srclang: language.code,
+                label: language.name
+            };
+        };
     };
     
     //// Invokers ////
@@ -72,38 +83,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             url: options.url
         }).done(function (data) {
             if (!data) {
-                that.events.modelReady.fire();
-                that.events.onReady.fire(that);
+                that.events.onReady.fire();
                 return;
             }
             
-            var languages = fluid.get(data, that.options.languagesPath),
-                videoUrl = that.options.urls.videoUrl;
-            
+            var languages = fluid.get(data, that.options.languagesPath);
             if (!languages) {
-                that.events.modelReady.fire();
-                that.events.onReady.fire(that);
+                that.events.onReady.fire();
                 return;
             }
-            languages = fluid.transform(languages, function (language) {
-                return {
-                    // This is to comply with current VP caption format
-                    src: [videoUrl, "&", $.param( {"language": language.code} )].join(""),
-                    // Amara 2.0 caption link
-                    // src: language.subtitles_uri
-                    type: "text/amarajson",
-                    srclang: language.code,
-                    label: language.name
-                };
-            });
             
+            languages = fluid.transform(languages, that.createLanguageObject);
             if (languages.length > 0) {
-                that.events.modelReady.fire(languages);
-                that.events.onReady.fire(that);
+                that.events.onReady.fire(languages);
             }
         }).fail(function (data) {
-            that.events.modelReady.fire();
-            that.events.onReady.fire(that);
+            that.events.onReady.fire();
         });
     };
 

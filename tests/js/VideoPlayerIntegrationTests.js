@@ -254,7 +254,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             },
                             languagesPath: "objects.0.languages",
                             events: {
-                                modelReady: "{videoPlayer}.events.onAmaraCaptionsReady"
+                                onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
                             }
                         }
                     },
