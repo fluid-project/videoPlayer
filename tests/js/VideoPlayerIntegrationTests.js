@@ -44,8 +44,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, 1500);
         };
         
-        /*
-jqUnit.asyncTest("Play button - Play/Pause", function () {
+/*
+        jqUnit.asyncTest("Play button - Play/Pause", function () {
             jqUnit.expect(2);
             
             fluid.videoPlayer.testPlayButton = function (that) {
@@ -203,50 +203,61 @@ jqUnit.asyncTest("Play button - Play/Pause", function () {
         });
 */
         
-/*
-        var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5"};
-        var UniSubOpts = [{
-            desc: "Caption and Transcript menu re-rendering after fetching languages from Amara",
-            async: true,
-            testFn: function () {
-                jqUnit.expect(2);
-
-                var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
-                    controls: "custom",
-                    listeners: {
-                        onReady: function (videoPlayer) {
-                            jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
-                            jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
-                            jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
-
-                            jqUnit.start();
-                        }
-                    }
-                });
-            }
-        }];
-        fluid.testUtils.testCaseWithEnv("UniSub integration tests", UniSubOpts, envFeatures);
-*/
-        
         fluid.unisubComponent.testLoadCaptionsData = function (that) {
-            that.events.onReady.fire([{
-                // going to put a real working link for now
-                src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
-                type: "text/amarajson",
-                srclang: "rs",
-                label: "Rastafarian"
-            }]);
+            setTimeout(function () {
+                that.events.onReady.fire([{
+                    // going to put a real working link for now
+                    src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                    type: "text/amarajson",
+                    srclang: "rs",
+                    label: "Rastafarian"
+                }]);
+            }, 2000);
         };
         
-        var integrationUniSub = function () {
+        var integrationUniSubDelayedService = function () {
+            jqUnit.expect(4);
+            
             var initialLanguageMenuLength = fluid.testUtils.baseOpts.video.transcripts.length;
+            var newLanguageMenuLength = initialLanguageMenuLength + 1;  // Initial plus our Rastafarian language
             
-            var transcriptSecondRender = false;
-            var transcriptMenuLanguagesLengths = [];
+            var stateHelper = {
+                captions: {
+                    secondRenderFlag: false,
+                    endEventName: "onCaptionsUpdateEnd",
+                    controlsContainerSelector: ".flc-videoPlayer-captionControls-container"
+                },
+                transcripts: {
+                    secondRenderFlag: false,
+                    endEventName: "onTranscriptUpdateEnd",
+                    controlsContainerSelector: ".flc-videoPlayer-transcriptControls-container"
+                }
+            };
             
-            var captionsSecondRender = false;
-            var captionsMenuLanguagesLengths = [];
-            jqUnit.expect(2);
+            var testLanguageMenu = function (that, type) {
+                var state = stateHelper[type];
+                var secondRenderFlag = state.secondRenderFlag;
+                var endEventName = state.endEventName;
+                var controlsContainerSelector = state.controlsContainerSelector;
+                        
+                // push number of items in the language menu into array. We will check those array values at the end to see if values are set to the proper ones
+                var languages = $(controlsContainerSelector + " .flc-menuButton-languageMenu").find(".flc-videoPlayer-language");
+                var languagesLength = languages.length;
+                
+                // If it is the second time we call afterRender then we want to fire an event saying that Transcript Language Menu was updated
+                if (secondRenderFlag) {
+                    jqUnit.assertTrue("Updated number of languages is bigger", (languagesLength === newLanguageMenuLength));
+                    that.events[endEventName].fire();
+                } else {
+                    
+                    // VP-294
+                    // TODO: We want to have some checks to see that loading indicator for language retreival is present in the DOM
+                    
+                    jqUnit.assertTrue("Initial number of languages is the same", (languagesLength === initialLanguageMenuLength));
+                    stateHelper[type].secondRenderFlag = true;
+                }
+            };
+
             var testOpts = {
                 events: {
                     onCaptionatorReady: null,
@@ -266,72 +277,13 @@ jqUnit.asyncTest("Play button - Play/Pause", function () {
                     }
                 },
                 listeners: {
-                    onCaptionListUpdated: function () {
-                        console.log('Im actually changed my caption model here');
-                    },
-                    
-                    onCaptionsAfterRender: function (that) {
-                        console.log('captions after render');
-                        
-                        // push number of items in the language menu into array. We will check those array values at the end to see if values are set to the proper ones
-                        var languages = $(".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu").find(".flc-videoPlayer-language");
-                        captionsMenuLanguagesLengths.push(languages.length);
-                        
-                        // If it is the second time we call afterRender then we want to fire an event saying that Transcript Language Menu was updated
-                        if (captionsSecondRender) {
-                            that.events.onCaptionsUpdateEnd.fire();
-                        } else {
-                            captionsSecondRender = true;
-                        }
-                    },
-                    onCaptionsUpdateEnd: {
-                        listener: function (that) {
-                            var initialLength = captionsMenuLanguagesLengths.shift();
-                            jqUnit.assertTrue("Initial number of languages is the same", (initialLength === initialLanguageMenuLength));
-                            
-                            var updatedLength = captionsMenuLanguagesLengths.shift();
-                            jqUnit.assertTrue("Updated number of languages is bigger", (updatedLength > initialLanguageMenuLength));
-                        },
-                        args: "{videoPlayer}"
-                    },
-                    
-                    onTranscriptAfterRender: function (that) {
-                        console.log('transcripts after render');
-                        
-                        // push number of items in the language menu into array. We will check those array values at the end to see if values are set to the proper ones
-                        var languages = $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu").find(".flc-videoPlayer-language");
-                        transcriptMenuLanguagesLengths.push(languages.length);
-                        
-                        // If it is the second time we call afterRender then we want to fire an event saying that Transcript Language Menu was updated
-                        if (transcriptSecondRender) {
-                            that.events.onTranscriptUpdateEnd.fire();
-                        } else {
-                            transcriptSecondRender = true;
-                        }
-                    },
-                    onTranscriptUpdateEnd: {
-                        listener: function (that) {
-                            var initialLength = transcriptMenuLanguagesLengths.shift();
-                            jqUnit.assertTrue("Initial number of languages is the same", (initialLength === initialLanguageMenuLength));
-                            
-                            var updatedLength = transcriptMenuLanguagesLengths.shift();
-                            jqUnit.assertTrue("Updated number of languages is bigger", (updatedLength > initialLanguageMenuLength));
-                        },
-                        args: "{videoPlayer}"
-                    },
-                    
+                    onCaptionsAfterRender: testLanguageMenu,
+                    onTranscriptAfterRender: testLanguageMenu,
                     onTestEnd: function () {
                         // We require to start our test here to ensure that captionator did its work before test has finished to avoid an error.
                         // An error due to the asynchronous calls for captionator to create tracks after test is done.
                         jqUnit.start();
                     }
-                },
-                video: {
-                    sources: [{
-                        // This is a link to a video with multiple languages for test purposes
-                        src: "http://www.youtube.com/watch?v=Xxj0jWQo6ao",
-                        type: "video/youtube"
-                    }]
                 },
                 components: {
                     controllers: {
@@ -346,9 +298,9 @@ jqUnit.asyncTest("Play button - Play/Pause", function () {
                                                         onCaptionsUpdateEnd: "{videoPlayer}.events.onCaptionsUpdateEnd"
                                                     },
                                                     listeners: {
-                                                        afterRender: "{videoPlayer}.events.onCaptionsAfterRender",
-                                                        onLanguageListUpdated: function () {
-                                                            console.log('Im a child captionControls and I see that the language was updated');
+                                                        afterRender: {
+                                                            listener: "{videoPlayer}.events.onCaptionsAfterRender",
+                                                            args: ["{menu}", "captions"]
                                                         }
                                                     }
                                                 }
@@ -365,9 +317,9 @@ jqUnit.asyncTest("Play button - Play/Pause", function () {
                                                         onTranscriptUpdateEnd: "{videoPlayer}.events.onTranscriptUpdateEnd"
                                                     },
                                                     listeners: {
-                                                        afterRender: "{videoPlayer}.events.onTranscriptAfterRender",
-                                                        onLanguageListUpdated: function () {
-                                                            console.log('Im a child transcriptControls and I see that the language was updated');
+                                                        afterRender: {
+                                                            listener: "{videoPlayer}.events.onTranscriptAfterRender",
+                                                            args: ["{menu}", "transcripts"]
                                                         }
                                                     }
                                                 }
@@ -383,21 +335,16 @@ jqUnit.asyncTest("Play button - Play/Pause", function () {
                         createOnEvent: "onMediaReady",
                         options: {
                             sources: "{videoPlayer}.options.video.sources",
-                            urls: {
-                                captionsUrl: "https://www.universalsubtitles.org/api2/partners/videos/"
-                            },
-                            languagesPath: "objects.0.languages",
                             events: {
                                 onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
-                            }/*
-,
+                            },
+                            // We are going to overwrite an invoker so that we know how many new languages are got returned by UniSub for testing purposes
                             invokers: {
                                 loadCaptionsData: {
                                     funcName: "fluid.unisubComponent.testLoadCaptionsData",
                                     args: ["{that}"]
                                 }
                             }
-*/
                         }
                     },
                     html5Captionator: {
@@ -414,9 +361,9 @@ jqUnit.asyncTest("Play button - Play/Pause", function () {
         };
         
         var UniSubOpts = [{
-           desc: "Check that menus are updated after UniSub updates language list",
+           desc: "Check that menus are updated after UniSub updates language list with a delayed service which happens after menu was rendered",
            async: true,
-           testFn: integrationUniSub
+           testFn: integrationUniSubDelayedService
         }];
         fluid.testUtils.testCaseWithEnv("Video Player UniSub integration test. ", UniSubOpts, ["fluid.browser.nativeVideoSupport"]);
 
