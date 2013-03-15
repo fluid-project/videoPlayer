@@ -268,8 +268,7 @@ var fluid_1_5 = fluid_1_5 || {};
             release: "Captions"
         },
         events: {
-            onControlledElementReady: "{controllers}.events.onCaptionsReady",
-            onReady: "{controllers}.events.onCaptionControlsReady"
+            onControlledElementReady: "{controllers}.events.onCaptionsReady"
         },
         templates: {
             menuButton: {
@@ -280,11 +279,14 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.demands("fullScreenButton", ["fluid.browser.supportsFullScreen"], {
         funcName: "fluid.toggleButton",
-        args: ["{controllers}.container", fullScreenButtonOptions]
+        container: "{controllers}.container",
+        options: fullScreenButtonOptions
     });
+    
     fluid.demands("captionControls", ["fluid.browser.nativeVideoSupport"], {
         funcName: "fluid.videoPlayer.languageControls",
-        args: ["{controllers}.dom.captionControlsContainer", captionControlsOptions]
+        container: "{controllers}.dom.captionControlsContainer",
+        options: captionControlsOptions
     });
     
     fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
