@@ -545,6 +545,10 @@ var fluid_1_5 = fluid_1_5 || {};
         var result = firstArray.concat(secondArray);
         result = fluid.remove_if(result, function (elem) {
             var srclang = fluid.get(elem, elPath);
+            if (srclang === undefined) {
+                return;
+            }
+            
             if (languageArray.indexOf(srclang) > -1) {
                 return elem;
             }
@@ -560,6 +564,7 @@ var fluid_1_5 = fluid_1_5 || {};
             return;
         }
         
+        // Apply uniqueMergeArray for captions and transcripts based on the captionData returned from the UniSub component
         fluid.each(["captions", "transcripts"], function (type) {
             var tempData = fluid.copy(captionData);
             fluid.videoPlayer.addDefaultKind(tempData, fluid.get(that.options.defaultKinds, type));

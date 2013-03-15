@@ -18,7 +18,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
     $(document).ready(function () {
-
+        
         jqUnit.module("Video Player Integration Tests");
 
 
@@ -44,7 +44,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, 1500);
         };
         
-        jqUnit.asyncTest("Play button - Play/Pause", function () {
+        /*
+jqUnit.asyncTest("Play button - Play/Pause", function () {
             jqUnit.expect(2);
             
             fluid.videoPlayer.testPlayButton = function (that) {
@@ -200,50 +201,183 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
+*/
         
-        jqUnit.asyncTest("Auto-fetch of amara captions disabled", function () {
-            jqUnit.expect(1);
-            var testOpts = {
-                listeners: {
-                    onReady: function (vp, languageMenu) {
-                        jqUnit.assertEquals("Language menu doesn't contain amara captions",
-                            fluid.testUtils.baseOpts.video.captions.length,
-                            $(".videoPlayer-transcript .flc-videoPlayer-captionControls-container .flc-videoPlayer-language").length);
-                        jqUnit.start();
+/*
+        var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5"};
+        var UniSubOpts = [{
+            desc: "Caption and Transcript menu re-rendering after fetching languages from Amara",
+            async: true,
+            testFn: function () {
+                jqUnit.expect(2);
+
+                var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                    controls: "custom",
+                    listeners: {
+                        onReady: function (videoPlayer) {
+                            jqUnit.assertNotUndefined("The sub-component media has been instantiated", videoPlayer.media);
+                            jqUnit.assertNotUndefined("The sub-component controllers has been instantiated", videoPlayer.controllers);
+                            jqUnit.assertNotUndefined("The sub-component html5Captionator has been instantiated", videoPlayer.html5Captionator);
+
+                            jqUnit.start();
+                        }
                     }
-                },
-                video: {
-                    sources: [{
-                        // this caption is known to have two amara captions: French and English
-                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E",
-                        type: "video/youtube"
-                    }]
-                }
-            };
-            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
-        });
+                });
+            }
+        }];
+        fluid.testUtils.testCaseWithEnv("UniSub integration tests", UniSubOpts, envFeatures);
+*/
         
-        // TODO: This test should be done properly to check if menu rendered and if there are proper transcripts and captions
-        jqUnit.asyncTest("Auto-fetch of amara captions enabled", function () {
+        fluid.unisubComponent.testLoadCaptionsData = function (that) {
+            that.events.onReady.fire([{
+                // going to put a real working link for now
+                src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                type: "text/amarajson",
+                srclang: "rs",
+                label: "Rastafarian"
+            }]);
+        };
+        
+        var integrationUniSub = function () {
+            var initialLanguageMenuLength = fluid.testUtils.baseOpts.video.transcripts.length;
+            
+            var transcriptSecondRender = false;
+            var transcriptMenuLanguagesLengths = [];
+            
+            var captionsSecondRender = false;
+            var captionsMenuLanguagesLengths = [];
             jqUnit.expect(2);
             var testOpts = {
+                events: {
+                    onCaptionatorReady: null,
+                    
+                    onTranscriptUpdateEnd: null,
+                    onTranscriptAfterRender: null,
+                    
+                    onCaptionsUpdateEnd: null,
+                    onCaptionsAfterRender: null,
+                    
+                    onTestEnd: {
+                        events: {
+                            onTranscriptUpdateEnd: "onTranscriptUpdateEnd",
+                            onCaptionsUpdateEnd: "onCaptionsUpdateEnd",
+                            onCaptionatorReady: "onCaptionatorReady"
+                        }
+                    }
+                },
                 listeners: {
-                    onReady: function (vp, languageMenu) {
-                        jqUnit.assertTrue("Video player initialized", true);
+                    onCaptionListUpdated: function () {
+                        console.log('Im actually changed my caption model here');
                     },
-                    onCaptionListUpdated: function (vp, languageMenu) {
-                        jqUnit.assertTrue("Got non empty array of languages from Amara. Language menus will be updated", true);
+                    
+                    onCaptionsAfterRender: function (that) {
+                        console.log('captions after render');
+                        
+                        // push number of items in the language menu into array. We will check those array values at the end to see if values are set to the proper ones
+                        var languages = $(".flc-videoPlayer-captionControls-container .flc-menuButton-languageMenu").find(".flc-videoPlayer-language");
+                        captionsMenuLanguagesLengths.push(languages.length);
+                        
+                        // If it is the second time we call afterRender then we want to fire an event saying that Transcript Language Menu was updated
+                        if (captionsSecondRender) {
+                            that.events.onCaptionsUpdateEnd.fire();
+                        } else {
+                            captionsSecondRender = true;
+                        }
+                    },
+                    onCaptionsUpdateEnd: {
+                        listener: function (that) {
+                            var initialLength = captionsMenuLanguagesLengths.shift();
+                            jqUnit.assertTrue("Initial number of languages is the same", (initialLength === initialLanguageMenuLength));
+                            
+                            var updatedLength = captionsMenuLanguagesLengths.shift();
+                            jqUnit.assertTrue("Updated number of languages is bigger", (updatedLength > initialLanguageMenuLength));
+                        },
+                        args: "{videoPlayer}"
+                    },
+                    
+                    onTranscriptAfterRender: function (that) {
+                        console.log('transcripts after render');
+                        
+                        // push number of items in the language menu into array. We will check those array values at the end to see if values are set to the proper ones
+                        var languages = $(".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu").find(".flc-videoPlayer-language");
+                        transcriptMenuLanguagesLengths.push(languages.length);
+                        
+                        // If it is the second time we call afterRender then we want to fire an event saying that Transcript Language Menu was updated
+                        if (transcriptSecondRender) {
+                            that.events.onTranscriptUpdateEnd.fire();
+                        } else {
+                            transcriptSecondRender = true;
+                        }
+                    },
+                    onTranscriptUpdateEnd: {
+                        listener: function (that) {
+                            var initialLength = transcriptMenuLanguagesLengths.shift();
+                            jqUnit.assertTrue("Initial number of languages is the same", (initialLength === initialLanguageMenuLength));
+                            
+                            var updatedLength = transcriptMenuLanguagesLengths.shift();
+                            jqUnit.assertTrue("Updated number of languages is bigger", (updatedLength > initialLanguageMenuLength));
+                        },
+                        args: "{videoPlayer}"
+                    },
+                    
+                    onTestEnd: function () {
+                        // We require to start our test here to ensure that captionator did its work before test has finished to avoid an error.
+                        // An error due to the asynchronous calls for captionator to create tracks after test is done.
                         jqUnit.start();
                     }
                 },
                 video: {
                     sources: [{
-                        // this caption is known to have two amara captions: French and English
-                        src: "http://www.youtube.com/watch?v=_VxQEPw1x9E",
+                        // This is a link to a video with multiple languages for test purposes
+                        src: "http://www.youtube.com/watch?v=Xxj0jWQo6ao",
                         type: "video/youtube"
                     }]
                 },
                 components: {
+                    controllers: {
+                        options: {
+                            components: {
+                                captionControls: {
+                                    options: {
+                                        components: {
+                                            menu: {
+                                                options: {
+                                                    events: {
+                                                        onCaptionsUpdateEnd: "{videoPlayer}.events.onCaptionsUpdateEnd"
+                                                    },
+                                                    listeners: {
+                                                        afterRender: "{videoPlayer}.events.onCaptionsAfterRender",
+                                                        onLanguageListUpdated: function () {
+                                                            console.log('Im a child captionControls and I see that the language was updated');
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                transcriptControls: {
+                                    options: {
+                                        components: {
+                                            menu: {
+                                                options: {
+                                                    events: {
+                                                        onTranscriptUpdateEnd: "{videoPlayer}.events.onTranscriptUpdateEnd"
+                                                    },
+                                                    listeners: {
+                                                        afterRender: "{videoPlayer}.events.onTranscriptAfterRender",
+                                                        onLanguageListUpdated: function () {
+                                                            console.log('Im a child transcriptControls and I see that the language was updated');
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     amara: {
                         type: "fluid.unisubComponent",
                         createOnEvent: "onMediaReady",
@@ -255,16 +389,36 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             languagesPath: "objects.0.languages",
                             events: {
                                 onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
+                            }/*
+,
+                            invokers: {
+                                loadCaptionsData: {
+                                    funcName: "fluid.unisubComponent.testLoadCaptionsData",
+                                    args: ["{that}"]
+                                }
                             }
+*/
                         }
                     },
                     html5Captionator: {
-                        createOnEvent: "onAmaraCaptionsReady"
+                        createOnEvent: "onAmaraCaptionsReady",
+                        options: {
+                            listeners: {
+                                onReady: "{videoPlayer}.events.onCaptionatorReady.fire"
+                            }
+                        }
                     }
                 }
             };
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
-        });
+        };
+        
+        var UniSubOpts = [{
+           desc: "Check that menus are updated after UniSub updates language list",
+           async: true,
+           testFn: integrationUniSub
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player UniSub integration test. ", UniSubOpts, ["fluid.browser.nativeVideoSupport"]);
 
     });
 })(jQuery);

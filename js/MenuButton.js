@@ -248,8 +248,6 @@ var fluid_1_5 = fluid_1_5 || {};
             onRenderingComplete: null,
             onControlledElementReady: null,
             onLanguageListUpdated: null,
-            // private event for testing
-            afterMenuRender: null,
             
             afterFetchResources: null
         },
@@ -403,8 +401,7 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.defaults("fluid.videoPlayer.languageControls.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         listeners: {
-            "{button}.events.onPress": "{menu}.toggleView",
-            "{menu}.events.afterRender": "{languageControls}.events.afterMenuRender.fire"
+            "{button}.events.onPress": "{menu}.toggleView"
         }
     });
 })(jQuery, fluid_1_5);

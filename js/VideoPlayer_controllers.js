@@ -117,7 +117,6 @@ var fluid_1_5 = fluid_1_5 || {};
                     events: {
                         onControlledElementReady: "{controllers}.events.onTranscriptsReady",
                         onReady: "{controllers}.events.onTranscriptControlsReady",
-                        afterMenuRender: "{controllers}.events.onCaptionControlsRendered",
                         onLanguageListUpdated: "{controllers}.events.onTranscriptListUpdated"
                     },
                     templates: {
@@ -280,7 +279,6 @@ var fluid_1_5 = fluid_1_5 || {};
         events: {
             onControlledElementReady: "{controllers}.events.onCaptionsReady",
             onReady: "{controllers}.events.onCaptionControlsReady",
-            afterMenuRender: "{controllers}.events.onCaptionControlsReady",
             onLanguageListUpdated: "{controllers}.events.onCaptionListUpdated"
         },
         templates: {
