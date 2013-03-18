@@ -83,7 +83,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.asyncTest("aria-controls on language menus", function () {
             var testOpts = {
                 components: {
-                    amara: {
+                    subtitlesFinder: {
                         type: "fluid.emptySubcomponent"
                     }
                 },

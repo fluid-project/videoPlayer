@@ -183,8 +183,8 @@ var fluid_1_5 = fluid_1_5 || {};
                 container: "{videoPlayer}.dom.videoPlayer",
                 createOnEvent: "onAmaraCaptionsReady"
             },
-            amara: {
-                type: "fluid.unisubComponent",
+            subtitlesFinder: {
+                type: "fluid.subtitlesFinder",
                 createOnEvent: "onMediaReady",
                 options: {
                     sources: "{videoPlayer}.options.video.sources",
@@ -564,7 +564,7 @@ var fluid_1_5 = fluid_1_5 || {};
             return;
         }
         
-        // Apply uniqueMergeArray for captions and transcripts based on the captionData returned from the UniSub component
+        // Apply uniqueMergeArray for captions and transcripts based on the captionData returned from the subtitlesFinder component
         fluid.each(["captions", "transcripts"], function (type) {
             var tempData = fluid.copy(captionData);
             fluid.videoPlayer.addDefaultKind(tempData, fluid.get(that.options.defaultKinds, type));

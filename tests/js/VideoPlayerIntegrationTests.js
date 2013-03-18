@@ -203,7 +203,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 */
         
-        fluid.unisubComponent.fetchDataMock = function (that) {
+        fluid.subtitlesFinder.fetchDataMock = function (that) {
             that.events.onReady.fire([{
                 // going to put a real working link for now since html5Captionator will stop execution if src is not valid.
                 src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
@@ -213,7 +213,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }]);
         };
         
-        var integrationUniSubDelayedService = function () {
+        var integrationSubtitlesFinderDelayedService = function () {
             jqUnit.expect(4);
             
             var initialLanguageMenuLength = fluid.testUtils.baseOpts.video.transcripts.length;
@@ -328,10 +328,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             }
                         }
                     },
-                    amara: {
-                        type: "fluid.unisubComponent",
+                    subtitlesFinder: {
+                        type: "fluid.subtitlesFinder",
                         // We are going to create amara subcomponent on videoPlayer ready event so that we have the following execution flow:
-                        // Menu Render -> VideoPlayer Ready -> UniSub Ready with languages -> Menu Render
+                        // Menu Render -> VideoPlayer Ready -> subtitlesFinder Ready with languages -> Menu Render
                         createOnEvent: "onReady",
                         options: {
                             sources: "{videoPlayer}.options.video.sources",
@@ -341,8 +341,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             // We are going to overwrite an invoker so that we know exact languages returned for the testing purposes
                             invokers: {
                                 fetchData: {
-                                    funcName: "fluid.unisubComponent.fetchDataMock",
-                                    args: ["{unisubComponent}"]
+                                    funcName: "fluid.subtitlesFinder.fetchDataMock",
+                                    args: ["{subtitlesFinder}"]
                                 }
                             }
                         }
@@ -360,12 +360,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         };
         
-        var UniSubOpts = [{
-           desc: "Check that menus are updated after UniSub updates language list with a delayed service which happens after menu was rendered",
+        var subtitlesFinderOpts = [{
+           desc: "Check that menus are updated after subtitlesFinder updates language list with a delayed service which happens after menu was rendered",
            async: true,
-           testFn: integrationUniSubDelayedService
+           testFn: integrationSubtitlesFinderDelayedService
         }];
-        fluid.testUtils.testCaseWithEnv("Video Player UniSub integration test. ", UniSubOpts, ["fluid.browser.nativeVideoSupport"]);
+        fluid.testUtils.testCaseWithEnv("Video Player SubtitlesFinder integration test. ", subtitlesFinderOpts, ["fluid.browser.nativeVideoSupport"]);
 
     });
 })(jQuery);

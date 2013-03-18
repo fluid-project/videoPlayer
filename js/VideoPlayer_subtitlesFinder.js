@@ -18,9 +18,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     "use strict";
 
-    fluid.defaults("fluid.unisubComponent", {
+    fluid.defaults("fluid.subtitlesFinder", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
-        finalInitFunction: "fluid.unisubComponent.finalInit",
+        finalInitFunction: "fluid.subtitlesFinder.finalInit",
         sources: [],
         events: {
             onReady: null,
@@ -33,30 +33,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         languagesPath: "",
         listeners: {
             fetchedData: {
-                listener: "fluid.unisubComponent.fetchedData",
-                args: ["{arguments}.0", "{unisubComponent}"]
+                listener: "fluid.subtitlesFinder.fetchedData",
+                args: ["{arguments}.0", "{subtitlesFinder}"]
             }
         },
         invokers: {
-            buildUrl: "fluid.unisubComponent.buildUrl",
-            generateAbsolutePath: "fluid.unisubComponent.generateAbsolutePath",
+            buildUrl: "fluid.subtitlesFinder.buildUrl",
+            generateAbsolutePath: "fluid.subtitlesFinder.generateAbsolutePath",
             loadCaptionsData: {
-                funcName: "fluid.unisubComponent.loadCaptionsData",
-                args: ["{unisubComponent}", "{arguments}.0"]
+                funcName: "fluid.subtitlesFinder.loadCaptionsData",
+                args: ["{subtitlesFinder}", "{arguments}.0"]
             },
             createLanguageObject: {
-                funcName: "fluid.unisubComponent.createLanguageObject",
-                args: ["{arguments}.0", "{unisubComponent}.options.urls.videoUrl"]
+                funcName: "fluid.subtitlesFinder.createLanguageObject",
+                args: ["{arguments}.0", "{subtitlesFinder}.options.urls.videoUrl"]
             },
             
             fetchData: {
-                funcName: "fluid.unisubComponent.fetchData",
-                args: ["{arguments}.0", "{unisubComponent}"]
+                funcName: "fluid.subtitlesFinder.fetchData",
+                args: ["{arguments}.0", "{subtitlesFinder}"]
             }
         }
     });
     
-    fluid.unisubComponent.finalInit = function (that) {
+    fluid.subtitlesFinder.finalInit = function (that) {
         that.options.urls = that.options.urls || {};
         var captionsUrl = that.options.urls.captionsUrl;
         
@@ -84,7 +84,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }));
     };
     
-    fluid.unisubComponent.fetchedData = function (data, that) {
+    fluid.subtitlesFinder.fetchedData = function (data, that) {
         // If there is not data then stop immediately
         if (!data) {
             that.events.onReady.fire();
@@ -106,7 +106,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     //// Invokers ////
     
-    fluid.unisubComponent.fetchData = function (url, that) {
+    fluid.subtitlesFinder.fetchData = function (url, that) {
         $.ajax({
             dataType: "jsonp",
             url: url
@@ -119,7 +119,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
     
     // Function to convert each object of the retreived language array into the object format supported by our videoPlayer (listed in captions, transcripts, ... options)
-    fluid.unisubComponent.createLanguageObject = function (language, videoUrl) {
+    fluid.subtitlesFinder.createLanguageObject = function (language, videoUrl) {
         return {
             // This is to comply with current VP caption format
             src: [videoUrl, "&", $.param( {"language": language.code} )].join(""),
@@ -131,11 +131,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
     
-    fluid.unisubComponent.buildUrl = function (baseURL, params) {
+    fluid.subtitlesFinder.buildUrl = function (baseURL, params) {
         return [baseURL, "?", $.param(params)].join("");
     };
     
-    fluid.unisubComponent.generateAbsolutePath = function (url) {
+    fluid.subtitlesFinder.generateAbsolutePath = function (url) {
         var pathSegments = window.location.href.split("/");
         pathSegments.pop();
         return [pathSegments.join("/"), url].join("/");

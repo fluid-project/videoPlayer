@@ -20,15 +20,15 @@ fluid.registerNamespace("fluid.tests");
 (function ($) {
     $(document).ready(function () {
 
-        jqUnit.module("UniSubComponent Tests");
+        jqUnit.module("SubtitlesFinderComponent Tests");
 
         var note = " PLEASE NOTE: This test relies on Amara service being up as well as video URLs, API and Data returned back to be compliant with the component at the time when this test was written";
         
-        fluid.tests.testUniSubComponent = function (testConfigs) {
+        fluid.tests.testSubtitlesFinderComponent = function (testConfigs) {
             fluid.each(testConfigs, function (config, index) {
                 jqUnit.asyncTest(config.desc + note, function () {
                     jqUnit.expect(1);
-                    fluid.unisubComponent({
+                    fluid.subtitlesFinder({
                         sources: config.sources,
                         urls: {
                             captionsUrl: "https://www.universalsubtitles.org/api2/partners/videos/"
@@ -50,16 +50,16 @@ fluid.registerNamespace("fluid.tests");
             });
         };
         
-        fluid.unisubComponent.fetchDataTest = function (data, that) {
+        fluid.subtitlesFinder.fetchDataTest = function (data, that) {
             that.events.fetchedData.fire(data);
         };
         
-        fluid.unisubComponent.fetchDataCheckUrlTest = function (url, compareUrl) {
+        fluid.subtitlesFinder.fetchDataCheckUrlTest = function (url, compareUrl) {
             jqUnit.assertEquals("url is set properly", compareUrl, url);
             jqUnit.start();
         };
         
-        fluid.unisubComponent.createLanguageObjectTest = function (language, path) {
+        fluid.subtitlesFinder.createLanguageObjectTest = function (language, path) {
             return {
                 language: language.code,
                 src: "http://some_weird_source/" + language.name
@@ -68,14 +68,14 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.test("generateAbsolutePath tests", function () {
             jqUnit.expect(3);
-            jqUnit.assertEquals("myFile.html", fluid.unisubComponent.generateAbsolutePath("myFile.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/myFile.html");
-            jqUnit.assertEquals("../test.html", fluid.unisubComponent.generateAbsolutePath("../test.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/../test.html");
-            jqUnit.assertEquals("path/path_again/test.html", fluid.unisubComponent.generateAbsolutePath("path/path_again/test.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/path/path_again/test.html");
+            jqUnit.assertEquals("myFile.html", fluid.subtitlesFinder.generateAbsolutePath("myFile.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/myFile.html");
+            jqUnit.assertEquals("../test.html", fluid.subtitlesFinder.generateAbsolutePath("../test.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/../test.html");
+            jqUnit.assertEquals("path/path_again/test.html", fluid.subtitlesFinder.generateAbsolutePath("path/path_again/test.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/path/path_again/test.html");
         });
         
         jqUnit.asyncTest("No captions URL provided", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [],
                 urls: {},
                 languagesPath: "objects.0.languages",
@@ -90,7 +90,7 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.asyncTest("No sources provided", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [],
                 urls: {
                     captionsUrl: "some url here"
@@ -107,7 +107,7 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.asyncTest("No data is returned back from the service", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [
                     {
                         src: "http://some_source_here"
@@ -119,8 +119,8 @@ fluid.registerNamespace("fluid.tests");
                 languagesPath: "objects.0.languages",
                 invokers: {
                     fetchData: {
-                        funcName: "fluid.unisubComponent.fetchDataTest",
-                        args: [{}, "{unisubComponent}"]
+                        funcName: "fluid.subtitlesFinder.fetchDataTest",
+                        args: [{}, "{subtitlesFinder}"]
                     } 
                 },
                 listeners: {
@@ -134,7 +134,7 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.asyncTest("Component with an absolute source path", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [
                     {
                         src: "http://my_video.com"
@@ -146,7 +146,7 @@ fluid.registerNamespace("fluid.tests");
                 languagesPath: "languages",
                 invokers: {
                     fetchData: {
-                        funcName: "fluid.unisubComponent.fetchDataCheckUrlTest",
+                        funcName: "fluid.subtitlesFinder.fetchDataCheckUrlTest",
                         args: ["{arguments}.0", "http://my_api_service.com?video_url=http%3A%2F%2Fmy_video.com"]
                     } 
                 }
@@ -155,7 +155,7 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.asyncTest("Component with a relative source path", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [
                     {
                         src: "my_video.mp4"
@@ -167,7 +167,7 @@ fluid.registerNamespace("fluid.tests");
                 languagesPath: "languages",
                 invokers: {
                     fetchData: {
-                        funcName: "fluid.unisubComponent.fetchDataCheckUrlTest",
+                        funcName: "fluid.subtitlesFinder.fetchDataCheckUrlTest",
                         args: ["{arguments}.0", "http://my_api_service.com?video_url=file%3A%2F%2F%2FUsers%2Falexn%2FDocuments%2Fgithub%2FvideoPlayer%2Ftests%2Fhtml%2Fmy_video.mp4"]
                     } 
                 }
@@ -176,7 +176,7 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.asyncTest("2 extra languages are returned back from the service", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [
                     {
                         src: "http://some_source_here"
@@ -188,7 +188,7 @@ fluid.registerNamespace("fluid.tests");
                 languagesPath: "languages",
                 invokers: {
                     fetchData: {
-                        funcName: "fluid.unisubComponent.fetchDataTest",
+                        funcName: "fluid.subtitlesFinder.fetchDataTest",
                         args: [{
                             languages: [
                                 {
@@ -200,7 +200,7 @@ fluid.registerNamespace("fluid.tests");
                                     name: "Mordorian"
                                 }
                             ]
-                        }, "{unisubComponent}"]
+                        }, "{subtitlesFinder}"]
                     } 
                 },
                 listeners: {
@@ -227,7 +227,7 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.asyncTest("2 extra languages are returned back from the service. Different languagesPath", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [
                     {
                         src: "http://some_source_here"
@@ -239,7 +239,7 @@ fluid.registerNamespace("fluid.tests");
                 languagesPath: "other.languages",
                 invokers: {
                     fetchData: {
-                        funcName: "fluid.unisubComponent.fetchDataTest",
+                        funcName: "fluid.subtitlesFinder.fetchDataTest",
                         args: [{
                             languages: [
                                 {
@@ -259,7 +259,7 @@ fluid.registerNamespace("fluid.tests");
                                     }
                                 ]
                             }
-                        }, "{unisubComponent}"]
+                        }, "{subtitlesFinder}"]
                     } 
                 },
                 listeners: {
@@ -280,7 +280,7 @@ fluid.registerNamespace("fluid.tests");
         
         jqUnit.asyncTest("2 extra languages are returned back from the service. Changed function to create other captions object format", function () {
             jqUnit.expect(1);
-            fluid.unisubComponent({
+            fluid.subtitlesFinder({
                 sources: [
                     {
                         src: "http://some_source_here"
@@ -292,11 +292,11 @@ fluid.registerNamespace("fluid.tests");
                 languagesPath: "languages",
                 invokers: {
                     createLanguageObject: {
-                        funcName: "fluid.unisubComponent.createLanguageObjectTest",
-                        args: ["{arguments}.0", "{unisubComponent}"]
+                        funcName: "fluid.subtitlesFinder.createLanguageObjectTest",
+                        args: ["{arguments}.0", "{subtitlesFinder}"]
                     },
                     fetchData: {
-                        funcName: "fluid.unisubComponent.fetchDataTest",
+                        funcName: "fluid.subtitlesFinder.fetchDataTest",
                         args: [{
                             languages: [
                                 {
@@ -308,7 +308,7 @@ fluid.registerNamespace("fluid.tests");
                                     name: "Mordorian"
                                 }
                             ]
-                        }, "{unisubComponent}"]
+                        }, "{subtitlesFinder}"]
                     } 
                 },
                 listeners: {
@@ -330,7 +330,7 @@ fluid.registerNamespace("fluid.tests");
         });
         
         // Amara tests go here. These tests are VERY brittle. They are heavily relying on video URLs and Amara service as well as Amara API.
-        fluid.tests.testUniSubComponent([{
+        fluid.tests.testSubtitlesFinderComponent([{
             desc: "No video, no captions",
             sources: [],
             exact: true,
