@@ -23,18 +23,34 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         finalInitFunction: "fluid.unisubComponent.finalInit",
         sources: [],
         events: {
-            onReady: null
+            onReady: null,
+            fetchedData: null
         },
         urls: {
-            captionsUrl: null,
-            videoUrl: null
+            captionsUrl: null
+            //videoUrl: null
         },
         languagesPath: "",
+        listeners: {
+            fetchedData: {
+                listener: "fluid.unisubComponent.fetchedData",
+                args: ["{arguments}.0", "{unisubComponent}"]
+            }
+        },
         invokers: {
             buildUrl: "fluid.unisubComponent.buildUrl",
             loadCaptionsData: {
                 funcName: "fluid.unisubComponent.loadCaptionsData",
-                args: ["{that}", "{arguments}.0"]
+                args: ["{unisubComponent}", "{arguments}.0"]
+            },
+            createLanguageObject: {
+                funcName: "fluid.unisubComponent.createLanguageObject",
+                args: ["{arguments}.0", "{unisubComponent}.options.urls.videoUrl"]
+            },
+            
+            fetchData: {
+                funcName: "fluid.unisubComponent.fetchData",
+                args: ["{arguments}.0", "{unisubComponent}"]
             }
         }
     });
@@ -45,61 +61,65 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.events.onReady.fire();
             return;
         }
-        
         var videoUrl = sources[0].src;
         
         that.options.urls.videoUrl = videoUrl;
         
-        // Grab captions data from Amara for the video
-        that.loadCaptionsData({
-            url: that.buildUrl(that.options.urls.captionsUrl, {
-                video_url: videoUrl
-            })
-        });
+        // Start our component by trying to get the data for the specified videoUrl
+        var data = that.fetchData(that.buildUrl(that.options.urls.captionsUrl, {
+            video_url: videoUrl
+        }));
+    };
+    
+    fluid.unisubComponent.fetchedData = function (data, that) {
+        // If there is not data then stop immediately
+        if (!data) {
+            that.events.onReady.fire();
+            return;
+        }
         
-        // This function should possibly be a member in a ginger framework
-        that.createLanguageObject = function (language) {
-            return {
-                // This is to comply with current VP caption format
-                src: [videoUrl, "&", $.param( {"language": language.code} )].join(""),
-                // Amara 2.0 caption link
-                // src: language.subtitles_uri
-                type: "text/amarajson",
-                srclang: language.code,
-                label: language.name
-            };
-        };
+        // If there is data then get the language array in the returned data
+        var languages = fluid.get(data, that.options.languagesPath);
+        if (!languages) {
+            that.events.onReady.fire();
+            return;
+        }
+        
+        // Convert each object array into supported format
+        languages = fluid.transform(languages, that.createLanguageObject);
+        
+        that.events.onReady.fire(languages);
     };
     
     //// Invokers ////
     
-    fluid.unisubComponent.buildUrl = function (baseURL, params) {
-        return [baseURL, "?", $.param(params)].join("");
-    };
-    
-    fluid.unisubComponent.loadCaptionsData = function (that, options) {
+    fluid.unisubComponent.fetchData = function (url, that) {
         $.ajax({
             dataType: "jsonp",
-            url: options.url
+            url: url
         }).done(function (data) {
-            if (!data) {
-                that.events.onReady.fire();
-                return;
-            }
-            
-            var languages = fluid.get(data, that.options.languagesPath);
-            if (!languages) {
-                that.events.onReady.fire();
-                return;
-            }
-            
-            languages = fluid.transform(languages, that.createLanguageObject);
-            if (languages.length > 0) {
-                that.events.onReady.fire(languages);
-            }
+            that.events.fetchedData.fire(data);
+            return data;
         }).fail(function (data) {
-            that.events.onReady.fire();
+            that.events.fetchedData.fire();
         });
+    };
+    
+    // Function to convert each object of the retreived language array into the object format supported by our videoPlayer (listed in captions, transcripts, ... options)
+    fluid.unisubComponent.createLanguageObject = function (language, videoUrl) {
+        return {
+            // This is to comply with current VP caption format
+            src: [videoUrl, "&", $.param( {"language": language.code} )].join(""),
+            // Amara 2.0 caption link
+            // src: language.subtitles_uri
+            type: "text/amarajson",
+            srclang: language.code,
+            label: language.name
+        };
+    };
+    
+    fluid.unisubComponent.buildUrl = function (baseURL, params) {
+        return [baseURL, "?", $.param(params)].join("");
     };
 
 })(jQuery);

@@ -203,23 +203,21 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 */
         
-        fluid.unisubComponent.testLoadCaptionsData = function (that) {
-            setTimeout(function () {
-                that.events.onReady.fire([{
-                    // going to put a real working link for now
-                    src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
-                    type: "text/amarajson",
-                    srclang: "rs",
-                    label: "Rastafarian"
-                }]);
-            }, 2000);
+        fluid.unisubComponent.fetchDataMock = function (that) {
+            that.events.onReady.fire([{
+                // going to put a real working link for now since html5Captionator will stop execution if src is not valid.
+                src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                type: "text/amarajson",
+                srclang: "rs",
+                label: "Rastafarian"
+            }]);
         };
         
         var integrationUniSubDelayedService = function () {
             jqUnit.expect(4);
             
             var initialLanguageMenuLength = fluid.testUtils.baseOpts.video.transcripts.length;
-            var newLanguageMenuLength = initialLanguageMenuLength + 1;  // Initial plus our Rastafarian language
+            var newLanguageMenuLength = initialLanguageMenuLength + 1;  // Initial plus our new Rastafarian language
             
             var stateHelper = {
                 captions: {
@@ -332,17 +330,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     amara: {
                         type: "fluid.unisubComponent",
-                        createOnEvent: "onMediaReady",
+                        // We are going to create amara subcomponent on videoPlayer ready event so that we have the following execution flow:
+                        // Menu Render -> VideoPlayer Ready -> UniSub Ready with languages -> Menu Render
+                        createOnEvent: "onReady",
                         options: {
                             sources: "{videoPlayer}.options.video.sources",
                             events: {
                                 onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
                             },
-                            // We are going to overwrite an invoker so that we know how many new languages are got returned by UniSub for testing purposes
+                            // We are going to overwrite an invoker so that we know exact languages returned for the testing purposes
                             invokers: {
-                                loadCaptionsData: {
-                                    funcName: "fluid.unisubComponent.testLoadCaptionsData",
-                                    args: ["{that}"]
+                                fetchData: {
+                                    funcName: "fluid.unisubComponent.fetchDataMock",
+                                    args: ["{unisubComponent}"]
                                 }
                             }
                         }
