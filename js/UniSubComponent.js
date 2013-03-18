@@ -39,6 +39,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         invokers: {
             buildUrl: "fluid.unisubComponent.buildUrl",
+            generateAbsolutePath: "fluid.unisubComponent.generateAbsolutePath",
             loadCaptionsData: {
                 funcName: "fluid.unisubComponent.loadCaptionsData",
                 args: ["{unisubComponent}", "{arguments}.0"]
@@ -56,6 +57,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
     
     fluid.unisubComponent.finalInit = function (that) {
+        that.options.urls = that.options.urls || {};
+        var captionsUrl = that.options.urls.captionsUrl;
+        
+        if (!captionsUrl) {
+            that.events.onReady.fire();
+            return;
+        }
+        
         var sources = that.options.sources;
         if (!sources || sources.length === 0) {
             that.events.onReady.fire();
@@ -63,10 +72,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
         var videoUrl = sources[0].src;
         
+        if (!fluid.url.isAbsoluteUrl(videoUrl)) {
+            videoUrl = that.generateAbsolutePath(videoUrl);
+        }
+        
         that.options.urls.videoUrl = videoUrl;
         
         // Start our component by trying to get the data for the specified videoUrl
-        var data = that.fetchData(that.buildUrl(that.options.urls.captionsUrl, {
+        var data = that.fetchData(that.buildUrl(captionsUrl, {
             video_url: videoUrl
         }));
     };
@@ -120,6 +133,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
     fluid.unisubComponent.buildUrl = function (baseURL, params) {
         return [baseURL, "?", $.param(params)].join("");
+    };
+    
+    fluid.unisubComponent.generateAbsolutePath = function (url) {
+        var pathSegments = window.location.href.split("/");
+        pathSegments.pop();
+        return [pathSegments.join("/"), url].join("/");
     };
 
 })(jQuery);
