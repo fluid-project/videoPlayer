@@ -44,7 +44,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }, 1500);
         };
         
-/*
         jqUnit.asyncTest("Play button - Play/Pause", function () {
             jqUnit.expect(2);
             
@@ -201,7 +200,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
-*/
         
         fluid.subtitlesFinder.fetchDataMock = function (that) {
             that.events.onReady.fire([{
@@ -357,7 +355,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
+            fluid.testUtils.initVideoPlayer(".videoPlayer-subtitlesFinder", testOpts);
         };
         
         var subtitlesFinderOpts = [{

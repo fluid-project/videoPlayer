@@ -96,7 +96,8 @@ var fluid_1_5 = fluid_1_5 || {};
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     events: {
-                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata"
+                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
+                        onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
                     },
                     listeners: {
                         onExitFullScreen: {
@@ -738,17 +739,6 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
         funcName: "fluid.videoPlayer.hideControllersSimple",
         args: ["{videoPlayer}"]
-    });
-
-    /***************************************************************************************************
-     * The wiring up of the onTimeUpdate event btw timer component "media" and intervalEventsConductor *
-     ***************************************************************************************************/
-    fluid.demands("fluid.videoPlayer.media", ["fluid.videoPlayer.intervalEventsConductor", "fluid.videoPlayer"], {
-        options: {
-            events: {
-                onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
-            }
-        }
     });
     
 })(jQuery, fluid_1_5);
