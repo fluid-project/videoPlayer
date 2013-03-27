@@ -20,102 +20,70 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.defaults("fluid.subtitlesFinder", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
-        finalInitFunction: "fluid.subtitlesFinder.finalInit",
         sources: [],
         events: {
-            onReady: null,
-            fetchedData: null
+            onReady: null
         },
         urls: {
             captionsUrl: null
-            //videoUrl: null
         },
         languagesPath: "",
-        listeners: {
-            fetchedData: {
-                listener: "fluid.subtitlesFinder.fetchedData",
-                args: ["{arguments}.0", "{subtitlesFinder}"]
-            }
-        },
         invokers: {
-            buildUrl: "fluid.subtitlesFinder.buildUrl",
             generateAbsolutePath: "fluid.subtitlesFinder.generateAbsolutePath",
-            loadCaptionsData: {
-                funcName: "fluid.subtitlesFinder.loadCaptionsData",
-                args: ["{subtitlesFinder}", "{arguments}.0"]
-            },
             createLanguageObject: {
                 funcName: "fluid.subtitlesFinder.createLanguageObject",
-                args: ["{arguments}.0", "{subtitlesFinder}.options.urls.videoUrl"]
-            },
-            
-            fetchData: {
-                funcName: "fluid.subtitlesFinder.fetchData",
-                args: ["{arguments}.0", "{subtitlesFinder}"]
+                args: ["{arguments}.0", "{dataSource}.options.params.video_url"]
+            }
+        },
+        components: {
+            dataSource: {
+                type: "fluid.dataSource",
+                options: {
+                    baseURL: "{subtitlesFinder}.options.urls.captionsUrl",
+                    params: {
+                        video_url: "{subtitlesFinder}.options.sources.0.src"
+                    },
+                    invokers: {
+                        modelParse: {
+                            funcName: "fluid.subtitlesFinder.modelParse",
+                            args: ["{subtitlesFinder}", "{arguments}.0"]
+                        },
+                        buildUrl: {
+                            funcName: "fluid.subtitlesFinder.buildUrl",
+                            args: ["{dataSource}.options.baseURL", "{dataSource}.options.params", "{subtitlesFinder}.generateAbsolutePath"]
+                        }
+                    },
+                    listeners: {
+                        onCreate: "{that}.get",
+                        onSuccess: "{subtitlesFinder}.events.onReady",
+                        onError: "{subtitlesFinder}.events.onReady"
+                    }
+                }
             }
         }
     });
     
-    fluid.subtitlesFinder.finalInit = function (that) {
-        that.options.urls = that.options.urls || {};
-        var captionsUrl = that.options.urls.captionsUrl;
-        
-        if (!captionsUrl) {
-            that.events.onReady.fire();
-            return;
-        }
-        
-        var sources = that.options.sources;
-        if (!sources || sources.length === 0) {
-            that.events.onReady.fire();
-            return;
-        }
-        var videoUrl = sources[0].src;
-        
-        if (!fluid.url.isAbsoluteUrl(videoUrl)) {
-            videoUrl = that.generateAbsolutePath(videoUrl);
-        }
-        
-        that.options.urls.videoUrl = videoUrl;
-        
-        // Start our component by trying to get the data for the specified videoUrl
-        var data = that.fetchData(that.buildUrl(captionsUrl, {
-            video_url: videoUrl
-        }));
-    };
-    
-    fluid.subtitlesFinder.fetchedData = function (data, that) {
-        // If there is not data then stop immediately
-        if (!data) {
-            that.events.onReady.fire();
-            return;
-        }
-        
+    fluid.subtitlesFinder.modelParse = function (that, data) {
         // If there is data then get the language array in the returned data
         var languages = fluid.get(data, that.options.languagesPath);
         if (!languages) {
-            that.events.onReady.fire();
             return;
         }
         
-        // Convert each object array into supported format
-        languages = fluid.transform(languages, that.createLanguageObject);
-        
-        that.events.onReady.fire(languages);
+        return fluid.transform(languages, that.createLanguageObject);
     };
     
     //// Invokers ////
     
-    fluid.subtitlesFinder.fetchData = function (url, that) {
-        $.ajax({
-            dataType: "jsonp",
-            url: url
-        }).done(function (data) {
-            that.events.fetchedData.fire(data);
-            return data;
-        }).fail(function (data) {
-            that.events.fetchedData.fire();
-        });
+    fluid.subtitlesFinder.buildUrl = function (baseURL, params, generateAbsolutePath) {
+        var url = [baseURL, "?", $.param(params)].join("");
+        
+        // Change URL for locally hosted subtitles
+        if (!fluid.url.isAbsoluteUrl(url)) {
+            url = that.generateAbsolutePath(url);
+        }
+        
+        return url;
     };
     
     // Function to convert each object of the retreived language array into the object format supported by our videoPlayer (listed in captions, transcripts, ... options)
@@ -129,10 +97,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             srclang: language.code,
             label: language.name
         };
-    };
-    
-    fluid.subtitlesFinder.buildUrl = function (baseURL, params) {
-        return [baseURL, "?", $.param(params)].join("");
     };
     
     fluid.subtitlesFinder.generateAbsolutePath = function (url) {
