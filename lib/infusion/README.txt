@@ -1,4 +1,4 @@
-MyInfusion was built from an unreleased version of Infusion master branch (585ae84e652099a9f944d0bd8dd3fe342bff411e) using the following command:
+MyInfusion was built from an unreleased version of Infusion master branch (6e727b6d38fd9091e1fe914d8f0d21823c0cc7aa) using the following command:
 
 Build the minified Infusion:
 ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino

@@ -49,7 +49,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 args: ["{fluid.videoPlayer.intervalEventsConductor}", "{arguments}.0"]
             }  
         },
-        preInitFunction: "fluid.videoPlayer.intervalEventsConductor.preInit",
         // An array of the time intervals with all the begin and end time in millisecond
         // Example: Array[intervalID] = {begin: beginTimeInMilli, end: endTimeInMilli}
         intervalList: [],
@@ -59,17 +58,6 @@ var fluid_1_5 = fluid_1_5 || {};
             previousIntervalId: null
         }
     });
-    
-    fluid.videoPlayer.intervalEventsConductor.preInit = function (that) {
-        /*
-         * Work around for FLUID-4709
-         * These methods are overwritten by the framework after initComponent executes.
-         * This preInit function guarantees that functions which forward to the overwritten versions are available during the event binding phase.
-         */
-        that.setIntervalList = function (intervalList) {
-            that.setIntervalList(intervalList);
-        };
-    };
     
     fluid.videoPlayer.intervalEventsConductor.setIntervalList = function (that, intervalList) {
         that.options.intervalList = intervalList;
