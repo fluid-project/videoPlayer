@@ -15,54 +15,46 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function () {
-
-    "use strict";
     
     fluid.defaults("fluid.dataSource", {
-        gradeNames: ["autoInit", "fluid.eventedComponent"],
+        gradeNames: ["autoInit", "fluid.eventedComponent", "fluid.modelComponent"],
         events: {
             onError: null,
             onSuccess: null
         },
         invokers: {
-            buildUrl: {
-                funcName: "fluid.dataSource.buildUrl",
-                args: ["{dataSource}.options.baseURL", "{dataSource}.options.params"]
-            },
             get: "fluid.dataSource.get",
-            modelParse: {
-                funcName: "fluid.dataSource.modelParse",
+            dataParse: {
+                funcName: "fluid.dataSource.dataParse",
                 args: ["{arguments}.0"]
             }
         },
         model: {
-            url: null       // URL which will be used to create a jsonp request in order to return data
+            dataType: "jsonp",  // Default ajax data type    
+            params: {},         // parameters which will be added to the url
+            baseURL: null       // url where the call will be made
         },
-        dataType: "jsonp",  // Default ajax data type    
-        params: {},         // parameters which will be added to the url
-        baseURL: null       // url where the call will be made
+        timeout: 10000          // do not allow jsonp to halt. max timeout request
     });
     
-    fluid.dataSource.buildUrl = function (baseURL, params) {
-        return [baseURL, "?", $.param(params)].join("");
-    };
-    
-    fluid.dataSource.modelParse = function (data) {
+    fluid.dataSource.dataParse = function (data) {
         return data;
     };
     
     fluid.dataSource.get = function (that) {
-        var url = that.buildUrl(),
-            events = that.events;
+        var events = that.events,
+            model = that.model;
         
         $.ajax({
-            dataType: that.options.dataType,
-            url: url
+            dataType: /* "jsonp", */model.dataType,
+            url: model.baseURL,
+            data: model.params,
+            timeout : that.options.timeout
         }).done(function (data) {
-            events.onSuccess.fire(that.modelParse(data));
+            events.onSuccess.fire(that.dataParse(data));
         }).fail(function () {
             events.onError.fire();
-        });  
+        });
     };
     
 })();

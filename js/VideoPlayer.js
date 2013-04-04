@@ -189,9 +189,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onMediaReady",
                 options: {
                     sources: "{videoPlayer}.options.video.sources",
-                    urls: {
-                        captionsUrl: "https://www.universalsubtitles.org/api2/partners/videos/"
-                    },
+                    serviceURL: "https://www.universalsubtitles.org/api2/partners/videos/",
                     languagesPath: "objects.0.languages",
                     events: {
                         onReady: "{videoPlayer}.events.onAmaraCaptionsReady"

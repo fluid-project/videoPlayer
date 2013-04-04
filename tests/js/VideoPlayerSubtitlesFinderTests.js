@@ -30,9 +30,7 @@ fluid.registerNamespace("fluid.tests");
                     jqUnit.expect(1);
                     fluid.subtitlesFinder({
                         sources: config.sources,
-                        urls: {
-                            captionsUrl: "https://www.universalsubtitles.org/api2/partners/videos/"
-                        },
+                        serviceURL: "https://www.universalsubtitles.org/api2/partners/videos/",
                         languagesPath: "objects.0.languages",
                         listeners: {
                             onReady: function (data) {
@@ -50,8 +48,9 @@ fluid.registerNamespace("fluid.tests");
             });
         };
         
-        fluid.subtitlesFinder.fetchDataTest = function (data, that) {
-            that.events.fetchedData.fire(data);
+        fluid.subtitlesFinder.mockGet = function (data, that) {
+            // We need to execute dataParse here so that subtitlesFinder dataParse() function is executed on the returned data
+            that.events.onSuccess.fire(that.dataParse(data));
         };
         
         fluid.subtitlesFinder.fetchDataCheckUrlTest = function (url, compareUrl) {
@@ -66,18 +65,45 @@ fluid.registerNamespace("fluid.tests");
             };
         };
         
-        jqUnit.test("generateAbsolutePath tests", function () {
-            jqUnit.expect(3);
-            jqUnit.assertEquals("myFile.html", fluid.subtitlesFinder.generateAbsolutePath("myFile.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/myFile.html");
-            jqUnit.assertEquals("../test.html", fluid.subtitlesFinder.generateAbsolutePath("../test.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/../test.html");
-            jqUnit.assertEquals("path/path_again/test.html", fluid.subtitlesFinder.generateAbsolutePath("path/path_again/test.html"), "file:///Users/alexn/Documents/github/videoPlayer/tests/html/path/path_again/test.html");
+        jqUnit.test("generateAbsolutePath url tests", function () {
+            jqUnit.expect(6);
+            var testUrlProtocol = function (url) {
+                    var protocol = window.location.protocol;
+                    return (url.indexOf(protocol) === 0);
+                },
+                getUrlEnd = function (url) {
+                    return url.split("/").pop();
+                };
+            
+            fluid.each(["myFile.html", "../test.html", "path/path_again/test.html"], function (relUrl) {
+                var absoluteUrl = fluid.subtitlesFinder.generateAbsolutePath(relUrl);
+                jqUnit.assertTrue(relUrl, testUrlProtocol(absoluteUrl));
+                jqUnit.assertEquals(relUrl, getUrlEnd(absoluteUrl), getUrlEnd(relUrl));
+            });
         });
         
-        jqUnit.asyncTest("No captions URL provided", function () {
+        jqUnit.asyncTest("generateAbsolutePath tests with real files", function () {
+            jqUnit.expect(1);
+            var testData = { "someData": 1 },
+                absoluteUrl = fluid.subtitlesFinder.generateAbsolutePath("../data/generateAbsolutePathTest.json");
+            $.ajax({
+                dataType: "json",
+                url: absoluteUrl,
+                success: function (data) {
+                    jqUnit.assertDeepEq("The retreived data is correct", data, testData);
+                    jqUnit.start();
+                },
+                error: function () {
+                    jqUnit.start();
+                }
+            });
+        });
+        
+        jqUnit.asyncTest("Component without any useful options", function () {
             jqUnit.expect(1);
             fluid.subtitlesFinder({
                 sources: [],
-                urls: {},
+                serviceURL: null,
                 languagesPath: "objects.0.languages",
                 listeners: {
                     onReady: function (data) {
@@ -88,13 +114,11 @@ fluid.registerNamespace("fluid.tests");
             });
         });
         
-        jqUnit.asyncTest("No sources provided", function () {
+        jqUnit.asyncTest("Component is set properly but no sources were provided", function () {
             jqUnit.expect(1);
             fluid.subtitlesFinder({
                 sources: [],
-                urls: {
-                    captionsUrl: "some url here"
-                },
+                serviceURL: "some funky url here but since nothing to look up then component simply does not do anything",
                 languagesPath: "objects.0.languages",
                 listeners: {
                     onReady: function (data) {
@@ -105,71 +129,116 @@ fluid.registerNamespace("fluid.tests");
             });
         });
         
-        jqUnit.asyncTest("No data is returned back from the service", function () {
-            jqUnit.expect(1);
+        jqUnit.asyncTest("Invalid web-service URL", function () {
+            jqUnit.expect(2);
             fluid.subtitlesFinder({
-                sources: [
-                    {
-                        src: "http://some_source_here"
-                    }
-                ],
-                urls: {
-                    captionsUrl: "some url here"
-                },
+                sources: [{
+                    src: "http://some_source_here"
+                }],
+                serviceURL: "http://i_do_not_exist.org/",
                 languagesPath: "objects.0.languages",
-                invokers: {
-                    fetchData: {
-                        funcName: "fluid.subtitlesFinder.fetchDataTest",
-                        args: [{}, "{subtitlesFinder}"]
-                    } 
+                components: {
+                    dataSource: {
+                        options: {
+                            // We are overwriting default timeout setting so that we do not need to wait long for a request to timeout
+                            timeout: 1
+                        }
+                    }
                 },
                 listeners: {
+                    onError: {
+                        listener: function () {
+                            jqUnit.assert("We got here.");
+                        },
+                        priority: "first"
+                    },
                     onReady: function (data) {
-                        jqUnit.assertUndefined("there is no data", data);
+                        jqUnit.assertUndefined("Since URL was invalid, nothing is returned", data);
                         jqUnit.start();
                     }
                 }
             });
         });
         
-        jqUnit.asyncTest("Component with an absolute source path", function () {
+        jqUnit.asyncTest("Empty data is returned back from the web-service", function () {
             jqUnit.expect(1);
             fluid.subtitlesFinder({
-                sources: [
-                    {
-                        src: "http://my_video.com"
+                sources: [{
+                    src: "http://some_source_here"
+                }],
+                serviceURL: "http://fluidproject.org/",
+                languagesPath: "objects.0.languages",
+                components: {
+                    dataSource: {
+                        options: {
+                            invokers: {
+                                get: {
+                                    funcName: "fluid.subtitlesFinder.mockGet",
+                                    args: [{}, "{dataSource}"]
+                                }
+                            }
+                        }
                     }
-                ],
-                urls: {
-                    captionsUrl: "http://my_api_service.com"
                 },
-                languagesPath: "languages",
-                invokers: {
-                    fetchData: {
-                        funcName: "fluid.subtitlesFinder.fetchDataCheckUrlTest",
-                        args: ["{arguments}.0", "http://my_api_service.com?video_url=http%3A%2F%2Fmy_video.com"]
-                    } 
+                listeners: {
+                    onReady: function (data) {
+                        jqUnit.assertUndefined("Since it was empty data, parsing did not get us anything useful -> nothing is returned", data);
+                        jqUnit.start();
+                    }
                 }
             });
         });
         
-        jqUnit.asyncTest("Component with a relative source path", function () {
+        jqUnit.asyncTest("Integration test. Video has a URL source path", function () {
             jqUnit.expect(1);
             fluid.subtitlesFinder({
-                sources: [
-                    {
-                        src: "my_video.mp4"
-                    }
-                ],
-                urls: {
-                    captionsUrl: "http://my_api_service.com"
-                },
+                sources: [{
+                    src: "http://my_video.com"
+                }],
+                serviceURL: "http://i_do_not_exist.org/",
                 languagesPath: "languages",
-                invokers: {
-                    fetchData: {
-                        funcName: "fluid.subtitlesFinder.fetchDataCheckUrlTest",
-                        args: ["{arguments}.0", "http://my_api_service.com?video_url=file%3A%2F%2F%2FUsers%2Falexn%2FDocuments%2Fgithub%2FvideoPlayer%2Ftests%2Fhtml%2Fmy_video.mp4"]
-                    } 
+                components: {
+                    dataSource: {
+                        options: {
+                            // We are overwriting default timeout setting so that we do not need to wait long for a request to timeout
+                            timeout: 1
+                        }
+                    }
+                },
+                listeners: {
+                    onCreate: function (that) {
+                        var urlPath = "params.video_url",
+                            url = fluid.get(that.dataSource.model, urlPath);
+                        jqUnit.assertEquals("Url is proper", url, "http://my_video.com");
+                        jqUnit.start();
+                    }
+                }
+            });
+        });
+        
+        jqUnit.asyncTest("Integration test. Video has a relative source path", function () {
+            jqUnit.expect(1);
+            fluid.subtitlesFinder({
+                sources: [{
+                    src: "my_video.mp4"
+                }],
+                serviceURL: "http://i_do_not_exist.org/",
+                languagesPath: "languages",
+                components: {
+                    dataSource: {
+                        options: {
+                            // We are overwriting default timeout setting so that we do not need to wait long for a request to timeout
+                            timeout: 1
+                        }
+                    }
+                },
+                listeners: {
+                    onCreate: function (that) {
+                        var urlPath = "params.video_url",
+                            url = fluid.get(that.dataSource.model, urlPath);
+                        jqUnit.assertEquals("Url is proper", url, "file:///Users/alexn/Documents/github/videoPlayer/tests/html/my_video.mp4");
+                        jqUnit.start();
+                    }
                 }
             });
         });
@@ -177,31 +246,33 @@ fluid.registerNamespace("fluid.tests");
         jqUnit.asyncTest("2 extra languages are returned back from the service", function () {
             jqUnit.expect(1);
             fluid.subtitlesFinder({
-                sources: [
-                    {
-                        src: "http://some_source_here"
-                    }
-                ],
-                urls: {
-                    captionsUrl: "some_url_here"
-                },
+                sources: [{
+                    src: "http://some_source_here"
+                }],
+                serviceURL: "http://i_do_not_exist.org/",
                 languagesPath: "languages",
-                invokers: {
-                    fetchData: {
-                        funcName: "fluid.subtitlesFinder.fetchDataTest",
-                        args: [{
-                            languages: [
-                                {
-                                    code: "rs",
-                                    name: "Rastafarian"
-                                },
-                                {
-                                    code: "mr",
-                                    name: "Mordorian"
+                components: {
+                    dataSource: {
+                        options: {
+                            invokers: {
+                                get: {
+                                    funcName: "fluid.subtitlesFinder.mockGet",
+                                    args: [{
+                                        languages: [
+                                            {
+                                                code: "rs",
+                                                name: "Rastafarian"
+                                            },
+                                            {
+                                                code: "mr",
+                                                name: "Mordorian"
+                                            }
+                                        ]
+                                    }, "{dataSource}"]
                                 }
-                            ]
-                        }, "{subtitlesFinder}"]
-                    } 
+                            }
+                        }
+                    }
                 },
                 listeners: {
                     onReady: function (data) {
@@ -228,39 +299,41 @@ fluid.registerNamespace("fluid.tests");
         jqUnit.asyncTest("2 extra languages are returned back from the service. Different languagesPath", function () {
             jqUnit.expect(1);
             fluid.subtitlesFinder({
-                sources: [
-                    {
-                        src: "http://some_source_here"
-                    }
-                ],
-                urls: {
-                    captionsUrl: "some_url_here"
-                },
+                sources: [{
+                    src: "http://some_source_here"
+                }],
+                serviceURL: "http://i_do_not_exist.org/",
                 languagesPath: "other.languages",
-                invokers: {
-                    fetchData: {
-                        funcName: "fluid.subtitlesFinder.fetchDataTest",
-                        args: [{
-                            languages: [
-                                {
-                                    code: "rs",
-                                    name: "Rastafarian"
-                                },
-                                {
-                                    code: "mr",
-                                    name: "Mordorian"
+                components: {
+                    dataSource: {
+                        options: {
+                            invokers: {
+                                get: {
+                                    funcName: "fluid.subtitlesFinder.mockGet",
+                                    args: [{
+                                        languages: [
+                                            {
+                                                code: "rs",
+                                                name: "Rastafarian"
+                                            },
+                                            {
+                                                code: "mr",
+                                                name: "Mordorian"
+                                            }
+                                        ],
+                                        other: {
+                                            languages: [
+                                                {
+                                                    code: "el",
+                                                    name: "Elvish"
+                                                }
+                                            ]
+                                        }
+                                    }, "{dataSource}"]
                                 }
-                            ],
-                            other: {
-                                languages: [
-                                    {
-                                        code: "el",
-                                        name: "Elvish"
-                                    }
-                                ]
                             }
-                        }, "{subtitlesFinder}"]
-                    } 
+                        }
+                    }
                 },
                 listeners: {
                     onReady: function (data) {
@@ -281,35 +354,39 @@ fluid.registerNamespace("fluid.tests");
         jqUnit.asyncTest("2 extra languages are returned back from the service. Changed function to create other captions object format", function () {
             jqUnit.expect(1);
             fluid.subtitlesFinder({
-                sources: [
-                    {
-                        src: "http://some_source_here"
-                    }
-                ],
-                urls: {
-                    captionsUrl: "some_url_here"
-                },
+                sources: [{
+                    src: "http://some_source_here"
+                }],
+                serviceURL: "http://i_do_not_exist.org/",
                 languagesPath: "languages",
+                components: {
+                    dataSource: {
+                        options: {
+                            invokers: {
+                                get: {
+                                    funcName: "fluid.subtitlesFinder.mockGet",
+                                    args: [{
+                                        languages: [
+                                            {
+                                                code: "rs",
+                                                name: "Rastafarian"
+                                            },
+                                            {
+                                                code: "mr",
+                                                name: "Mordorian"
+                                            }
+                                        ]
+                                    }, "{dataSource}"]
+                                }
+                            }
+                        }
+                    }
+                },
                 invokers: {
                     createLanguageObject: {
                         funcName: "fluid.subtitlesFinder.createLanguageObjectTest",
                         args: ["{arguments}.0", "{subtitlesFinder}"]
-                    },
-                    fetchData: {
-                        funcName: "fluid.subtitlesFinder.fetchDataTest",
-                        args: [{
-                            languages: [
-                                {
-                                    code: "rs",
-                                    name: "Rastafarian"
-                                },
-                                {
-                                    code: "mr",
-                                    name: "Mordorian"
-                                }
-                            ]
-                        }, "{subtitlesFinder}"]
-                    } 
+                    }
                 },
                 listeners: {
                     onReady: function (data) {
