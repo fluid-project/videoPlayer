@@ -21,7 +21,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         jqUnit.module("Video Player Integration Tests");
 
-
         var testPlayPause = function (clickFunc) {
             var video = $(".flc-videoPlayer-video");
             
@@ -201,8 +200,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
         
-        fluid.subtitlesFinder.fetchDataMock = function (that) {
-            that.events.onReady.fire([{
+        fluid.subtitlesFinder.mockGet = function (that) {
+            // Mocking the preparsed data by DataSource for subtitlesFinder
+            that.events.onSuccess.fire([{
                 // going to put a real working link for now since html5Captionator will stop execution if src is not valid.
                 src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
                 type: "text/amarajson",
@@ -336,11 +336,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             events: {
                                 onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
                             },
-                            // We are going to overwrite an invoker so that we know exact languages returned for the testing purposes
-                            invokers: {
-                                fetchData: {
-                                    funcName: "fluid.subtitlesFinder.fetchDataMock",
-                                    args: ["{subtitlesFinder}"]
+                            components: {
+                                dataSource: {
+                                    options: {
+                                        invokers: {
+                                            // We are going to overwrite an invoker so that we know exact languages returned for the testing purposes
+                                            get: {
+                                                funcName: "fluid.subtitlesFinder.mockGet",
+                                                args: ["{dataSource}"]
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
