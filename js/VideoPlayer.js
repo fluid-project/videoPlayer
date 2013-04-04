@@ -167,7 +167,6 @@ var fluid_1_5 = fluid_1_5 || {};
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
                         onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
-                        onCaptionControlsRendered: "{videoPlayer}.events.onCaptionControlsRendered",
                         onCaptionListUpdated: "{videoPlayer}.events.onCaptionListUpdated",
                         onTranscriptListUpdated: "{videoPlayer}.events.onTranscriptListUpdated"
                     },
@@ -182,7 +181,7 @@ var fluid_1_5 = fluid_1_5 || {};
             html5Captionator: {
                 type: "fluid.videoPlayer.captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onAmaraCaptionsReady"
+                createOnEvent: "onSubtitlesFinderReady"
             },
             subtitlesFinder: {
                 type: "fluid.subtitlesFinder",
@@ -192,7 +191,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     serviceURL: "https://www.universalsubtitles.org/api2/partners/videos/",
                     languagesPath: "objects.0.languages",
                     events: {
-                        onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
+                        onReady: "{videoPlayer}.events.onSubtitlesFinderReady"
                     }
                 }
             }
@@ -228,15 +227,9 @@ var fluid_1_5 = fluid_1_5 || {};
             onCaptionListUpdated: null,
             onTranscriptListUpdated: null,
             
-            onAmaraCaptionsReady: null,
-            onAmaraCaptionsReadyBoiled: {
-                event: "onAmaraCaptionsReady",
-                args: ["{videoPlayer}", "{arguments}.0"]
-            },
-            // private events used for testing
-            onCaptionControlsRendered: null,
-            onCaptionControlsRenderedBoiled: {
-                event: "onCaptionControlsRendered",
+            onSubtitlesFinderReady: null,
+            onSubtitlesFinderReadyBoiled: {
+                event: "onSubtitlesFinderReady",
                 args: ["{videoPlayer}", "{arguments}.0"]
             },
             
@@ -499,6 +492,9 @@ var fluid_1_5 = fluid_1_5 || {};
             that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
         
+        // This is the place when we move integrator specified captions and transcripts into the model of a VideoPlayer
+        // This model could be potentially extended by some other components like subtitlesFinder
+        // Also we agreed on keeping things simple for an integrator where an integrator lists options without touching videoPlayer model.
         that.model.captions = fluid.copy(that.options.video.captions);
         that.model.transcripts = fluid.copy(that.options.video.transcripts);
     };
@@ -577,7 +573,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
         that.applier.modelChanged.addListener("captions", that.events.onCaptionListUpdated.fire);
         that.applier.modelChanged.addListener("transcripts", that.events.onTranscriptListUpdated.fire);
-        that.events.onAmaraCaptionsReadyBoiled.addListener(fluid.videoPlayer.extendLanguages);
+        that.events.onSubtitlesFinderReadyBoiled.addListener(fluid.videoPlayer.extendLanguages);
         
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller, captions or transcripts.

@@ -334,7 +334,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         options: {
                             sources: "{videoPlayer}.options.video.sources",
                             events: {
-                                onReady: "{videoPlayer}.events.onAmaraCaptionsReady"
+                                onReady: "{videoPlayer}.events.onSubtitlesFinderReady"
                             },
                             components: {
                                 dataSource: {
@@ -352,7 +352,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         }
                     },
                     html5Captionator: {
-                        createOnEvent: "onAmaraCaptionsReady",
+                        createOnEvent: "onSubtitlesFinderReady",
                         options: {
                             listeners: {
                                 onReady: "{videoPlayer}.events.onCaptionatorReady.fire"

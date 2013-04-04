@@ -172,9 +172,6 @@ var fluid_1_5 = fluid_1_5 || {};
             onCaptionListUpdated: null,
             onTranscriptListUpdated: null,
             
-            // private event used for testing
-            onCaptionControlsRendered: null,
-            
             onScrub: null,
             onStartScrub: null,
             afterScrub: null,

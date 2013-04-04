@@ -83,6 +83,8 @@ fluid.registerNamespace("fluid.testUtils");
             // Not to ruin other tests since Amara fetch is an asychronous call and would finish after the test is completed.
             // To avoid modifying every single test to be an aggregated event waiting for Amara,
             // We will resolve this component when we want to test its functionality or integration into a videoPlayer
+            
+            // This is also an example for an integrator on how to (by pass/remove) subtitlesFinder
             subtitlesFinder: {
                 type: "fluid.emptySubcomponent"
             },
