@@ -14,11 +14,11 @@ How Do I Build VideoPlayer?
 ===========================
 
 VideoPlayer can be used as is, by linking in all of the necessary dependencies into the <head>. 
-However you may want to minimize on round trips to the server and on file size. With this in mind, 
-you will likely want to create source and minified versions of the concatenated JavaScript files. 
-Note that this only includes, the js files, the other files will be included in the packages and must be
-linked in independently. The ony js file which isn't included is the optional "lib/html5shiv/js/html5shiv.js".
-If you need to  support older versions of IE you should inlucde this file with a conditional comment.
+However, you may want to minimize on round trips to the server and on file size. With this in mind, 
+you will likely want to create source and minified versions of the concatenated JavaScript files by using
+the grunt build described below. This will only minify and concatenate the js files, the other files will need
+to be linked in independently. "lib/html5shiv/js/html5shiv.js" is the only JavaScript file which isn't included.
+If you need to support older versions of IE you should include this file with a conditional comment.
 
         <!--[if lt IE 9]>
             <script type="text/javascript" src="../lib/html5shiv/js/html5shiv.js"></script>
