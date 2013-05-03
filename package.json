@@ -1,0 +1,30 @@
+{
+    "name": "fluid-videoPlayer",
+    "version": "0.1.0",
+    "description": "HTML5 video player built atop Fluid Infusion",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:fluid-project/videoPlayer.git"
+    },
+    "keywords": [
+        "HTML5",
+        "video",
+        "player",
+        "infusion",
+        "transcripts",
+        "captions",
+        "video"
+    ],
+    "author": "Fluid Project",
+    "license": [
+        {
+            "type": "BSD-3-Clause",
+            "url": "http://www.opensource.org/licenses/BSD-3-Clause"
+        },
+        {
+            "type": "ECL-2.0",
+            "url":  "http://www.opensource.org/licenses/ECL-2.0"
+        }
+    ],
+    "readmeFilename": "README.txt"
+}
