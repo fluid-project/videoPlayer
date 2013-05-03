@@ -35,7 +35,7 @@ module.exports = function (grunt) {
                     "lib/infusion/MyInfusion.js",
                     "lib/jqeury-ui/js/jquery.ui.button.js",
                     "lib/captionator/js/captionator.js",
-                    "lib/mediaelement.js",
+                    "lib/mediaelement/js/mediaelement.js",
                     "js/VideoPlayer_framework.js",
                     "js/VideoPlayer_showHide.js",
                     "js/VideoPlayer.js",
@@ -44,7 +44,7 @@ module.exports = function (grunt) {
                     "js/ToggleButton.js",
                     "js/MenuButton.js",
                     "js/VideoPlayer_media.js",
-                    "js/VideoPlayer_trascript.js",
+                    "js/VideoPlayer_transcript.js",
                     "js/VideoPlayer_intervalEventsConductor.js",
                     "js/VideoPlayer_uiOptions.js"
                 ],
