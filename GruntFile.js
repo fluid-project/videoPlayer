@@ -12,6 +12,7 @@ module.exports = function (grunt) {
                 files: [
                     // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
                     {src: ["build/videoPlayer-all.js"], dest: "./", expand: true, cwd: "./", flatten: true},
+                    {src: ["./ReleaseNotes.txt"], dest: "./"},
                     {src: ["css/**", "demos/**", "docs/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
                 ]
             },
@@ -22,6 +23,7 @@ module.exports = function (grunt) {
                 files: [
                     // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
                     {src: ["build/videoPlayer-all-min.js"], dest: "./", expand: true, cwd: "./", flatten: true},
+                    {src: ["./ReleaseNotes.txt"], dest: "./"},
                     {src: ["css/**", "demos/**", "docs/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
                 ]
             }
