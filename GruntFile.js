@@ -1,7 +1,30 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         clean: {
-            build: "build"
+            build: "build",
+            products: "products"
+        },
+        compress: {
+            src: {
+                options: {
+                    archive: "products/videoPlayer-all.zip"
+                },
+                files: [
+                    // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
+                    {src: ["build/videoPlayer-all.js"], dest: "./", expand: true, cwd: "./", flatten: true},
+                    {src: ["css/**", "demos/**", "docs/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
+                ]
+            },
+            min: {
+                options: {
+                    archive: "products/videoPlayer-all-min.zip"
+                },
+                files: [
+                    // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
+                    {src: ["build/videoPlayer-all-min.js"], dest: "./", expand: true, cwd: "./", flatten: true},
+                    {src: ["css/**", "demos/**", "docs/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
+                ]
+            }
         },
         concat: {
             all: {
@@ -39,9 +62,11 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks("grunt-contrib-compress");
     grunt.loadNpmTasks("grunt-contrib-uglify");
 
     grunt.registerTask("build-src", ["clean", "concat"]);
     grunt.registerTask("build-min", ["build-src", "uglify"]);
-    grunt.registerTask("default", ["build-min"]);
+    grunt.registerTask("build", ["build-min", "compress", "clean:build"]);
+    grunt.registerTask("default", ["build"]);
 };
