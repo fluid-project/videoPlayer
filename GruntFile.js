@@ -1,5 +1,6 @@
 module.exports = function (grunt) {
     grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
         clean: {
             build: "build",
             products: "products"
@@ -7,7 +8,7 @@ module.exports = function (grunt) {
         compress: {
             src: {
                 options: {
-                    archive: "products/videoPlayer-all.zip"
+                    archive: "products/videoPlayer-all-<%= pkg.version %>.zip"
                 },
                 files: [
                     // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
@@ -18,7 +19,7 @@ module.exports = function (grunt) {
             },
             min: {
                 options: {
-                    archive: "products/videoPlayer-all-min.zip"
+                    archive: "products/videoPlayer-all-min-<%= pkg.version %>.zip"
                 },
                 files: [
                     // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory

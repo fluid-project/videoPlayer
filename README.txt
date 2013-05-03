@@ -34,8 +34,8 @@ Build:
     npm install 
 
     # runs the build and creates
-    # products/videoPlayer-all.zip
-    # products/videoPlayer-all-min.zip
+    # products/videoPlayer-all-VERSION.zip
+    # products/videoPlayer-all-min-VERSION.zip
     grunt
 
 Other build tasks:
