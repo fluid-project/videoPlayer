@@ -10,17 +10,17 @@ module.exports = function (grunt) {
                     "lib/jqeury-ui/js/jquery.ui.button.js",
                     "lib/captionator/js/captionator.js",
                     "lib/mediaelement.js",
-                    "videoPlayer/js/VideoPlayer_framework.js",
-                    "videoPlayer/js/VideoPlayer_showHide.js",
-                    "videoPlayer/js/VideoPlayer.js",
-                    "videoPlayer/js/VideoPlayer_html5Captionator.js",
-                    "videoPlayer/js/VideoPlayer_controllers.js",
-                    "videoPlayer/js/ToggleButton.js",
-                    "videoPlayer/js/MenuButton.js",
-                    "videoPlayer/js/VideoPlayer_media.js",
-                    "videoPlayer/js/VideoPlayer_trascript.js",
-                    "videoPlayer/js/VideoPlayer_intervalEventsConductor.js",
-                    "videoPlayer/js/VideoPlayer_uiOptions.js"
+                    "js/VideoPlayer_framework.js",
+                    "js/VideoPlayer_showHide.js",
+                    "js/VideoPlayer.js",
+                    "js/VideoPlayer_html5Captionator.js",
+                    "js/VideoPlayer_controllers.js",
+                    "js/ToggleButton.js",
+                    "js/MenuButton.js",
+                    "js/VideoPlayer_media.js",
+                    "js/VideoPlayer_trascript.js",
+                    "js/VideoPlayer_intervalEventsConductor.js",
+                    "js/VideoPlayer_uiOptions.js"
                 ],
                 dest: "build/videoPlayer-all.js"
             }
