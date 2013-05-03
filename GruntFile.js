@@ -24,12 +24,24 @@ module.exports = function (grunt) {
                 ],
                 dest: "build/videoPlayer-all.js"
             }
+        },
+        uglify: {
+            options: {
+                mangle: false
+            },
+            my_target: {
+                files: {
+                    "build/videoPlayer-all-min.js": ["build/videoPlayer-all.js"]
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks("grunt-contrib-uglify");
 
-    grunt.registerTask("build", ["clean", "concat"]);
-    grunt.registerTask("default", ["build"]);
+    grunt.registerTask("build-src", ["clean", "concat"]);
+    grunt.registerTask("build-min", ["build-src", "uglify"]);
+    grunt.registerTask("default", ["build-min"]);
 };
