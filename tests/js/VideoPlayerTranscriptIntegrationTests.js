@@ -17,9 +17,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
+    fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
+
+    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.addMediaPanels", "fluid.tests.videoPlayer"], {
+        options: {
+            templates: {
+                uiOptions: "../../html/FatPanelUIOptions.html",
+                captionsSettings: "../../html/CaptionsPanelTemplate.html",
+                transcriptsSettings: "../../html/TranscriptsPanelTemplate.html"
+             }
+        }
+    });
+
     $(document).ready(function () {
 
-        var uiOptions = fluid.uiOptions.fatPanel.withMediaPanel(".flc-uiOptions", {
+        var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+            gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
             prefix: "../../lib/infusion/components/uiOptions/html/",
             components: {
                 relay: {
@@ -28,9 +41,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             templateLoader: {
                 options: {
-                    templates: {
-                        mediaControls: "../../html/UIOptionsTemplate-media.html"
-                    }
+                    gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
+                }
+            },
+            uiOptions: {
+                options: {
+                    gradeNames: ["fluid.uiOptions.defaultSettingsPanels"]
                 }
             }
         });

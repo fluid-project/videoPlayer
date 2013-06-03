@@ -19,25 +19,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     $(document).ready(function () {
         fluid.pageEnhancer({
+            gradeNames: ["fluid.uiEnhancer.defaultActions"],
             tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
         });
 
-        var uiOptions = fluid.uiOptions.fatPanel.withMediaPanel(".flc-uiOptions", {
+        var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+            gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
             prefix: "../lib/infusion/components/uiOptions/html/",
             components: {
                 relay: {
                     type: "fluid.videoPlayer.relay"
-                },
-                templateLoader: {
-                    options: {
-                        templates: {
-                            mediaControls: "../html/UIOptionsTemplate-media.html"
-                        }
-                    }
+                }
+            },
+            templateLoader: {
+                options: {
+                    gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
+                }
+            },
+            uiOptions: {
+                options: {
+                    gradeNames: ["fluid.uiOptions.defaultSettingsPanels"]
                 }
             }
         });
-        
+
         fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel.withMediaPanel", {
             options: {
                 strings: {
