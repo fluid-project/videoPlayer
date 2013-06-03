@@ -1,4 +1,4 @@
-MyInfusion was built from an unreleased version of Infusion master branch (6e727b6d38fd9091e1fe914d8f0d21823c0cc7aa) using the following command:
+MyInfusion was built from an unreleased version of Infusion master branch (b6ea32a4b4c91b0c2b8bf1ac16d81bca9e2760e8) using the following command:
 
 Build the minified Infusion:
 ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino
@@ -14,26 +14,18 @@ Customizations of UI Options
 The following edits have been made to the UI Options HTML files:
 
 FatPanelUIOptions.html:
-9a10
->             <li><a href="#tab4" class="fl-tab-media">Audio + Video</a></li>
-14c15,16
-<         <div id="tab3" class="flc-uiOptions-links-controls fl-uiOptions-links"></div>
----
->         <div id="tab3" class="flc-uiOptions-links-controls fl-uiOptions-links"></div>
->         <div id="tab4" class="flc-uiOptions-media-controls fl-uiOptions-media"></div>
+9a10,11
+>             <li class="fl-uiOptions-panel"><div class="flc-uiOptions-captions"></div></li>         
+>             <li class="fl-uiOptions-panel"><div class="flc-uiOptions-transcripts"></div></li>         
 
 FatPanelUIOptionsFrame.html:
-24a25,26
->         <!-- Note that this line differs from the framework version -->
->         <link rel="stylesheet" type="text/css" href="../../../../../css/UIOptions-media.css" />
-28,35c30
+32,38c32
 <         <script type="text/javascript" src="../../../lib/jquery/core/js/jquery.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.core.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.widget.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.mouse.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.slider.js"></script>
-<         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.tabs.js"></script>
-<         <script type="text/javascript" src="../../../lib/jquery/plugins/ariaTabs/js/ui.ariaTabs.js"></script>          
+<         <script type="text/javascript" src="../../../lib/jquery/plugins/touchPunch/js/jquery.ui.touch-punch.js"></script>
 <         <script type="text/javascript" src="../../../lib/json/js/json2.js"></script>
 ---
->         <script type="text/javascript" src="../../../MyInfusion.js"></script>
+>          <script type="text/javascript" src="../../../MyInfusion.js"></script>

@@ -15,12 +15,14 @@
         <link type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
         <link type="text/css" href="../lib/captionator/css/captions.css" rel="stylesheet" />
+        <link type="text/css" href="UIOptions.css" rel="stylesheet" />
         <!--[if lt IE 9]>
             <link type="text/css" href="../css/ltie9.css" rel="stylesheet" />
         <![endif]-->
 
         <!-- Fluid and jQuery Dependencies -->
         <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
+        <script type="text/javascript" src="../js/MediaSettings.js"></script>
         <!-- Utils -->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../lib/captionator/js/captionator.js"></script>
@@ -45,6 +47,7 @@
     <body>
         <script>
             fluid.pageEnhancer({
+                gradeNames: ["fluid.uiEnhancer.defaultActions"], 
                 tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
             });
         </script>
@@ -52,8 +55,11 @@
         <div class="flc-uiOptions fl-uiOptions-fatPanel">
             <div class="flc-slidingPanel-panel flc-uiOptions-iframe"></div>
             <div class="fl-panelBar">
-                <button class="flc-slidingPanel-toggleButton fl-toggleButton">Show/Hide</button>
-            </div>
+                 <span class="fl-uio-tabs">
+                    <button class="flc-uiOptions-reset fl-uiOptions-reset">Reset</button>
+                    <button class="flc-slidingPanel-toggleButton fl-uiOptions-showHide">Show/Hide</button>
+                </span>
+             </div>
         </div>
         <div class="flc-toc-tocContainer"> </div>
 
@@ -63,7 +69,8 @@
         </div>
 
         <script>
-            var uiOptions = fluid.uiOptions.fatPanel.withMediaPanel(".flc-uiOptions", {
+            var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+                gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"], 
                 prefix: "../lib/infusion/components/uiOptions/html/",
                 components: {
                     relay: {
@@ -72,9 +79,12 @@
                 },
                 templateLoader: {
                     options: {
-                        templates: {
-                            mediaControls: "../html/UIOptionsTemplate-media.html"
-                        }
+                        gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
+                    }
+                },
+                uiOptions: {
+                    options: {
+                        gradeNames: ["fluid.uiOptions.defaultSettingsPanels"]
                     }
                 }
             });

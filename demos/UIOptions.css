@@ -1,0 +1,10 @@
+.fl-uiOptions-fatPanel .fl-panelBar .fl-uio-tabs {
+    min-height: auto;
+}
+.fl-uiOptions-fatPanel .fl-panelBar button {
+    text-transform: uppercase;
+    font-size: 0.8em;
+}
+.fl-uiOptions-fatPanel .fl-panelBar .fl-uiOptions-reset {
+    border-right: 1px solid #CCCCCC;
+}
