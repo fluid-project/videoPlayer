@@ -72,11 +72,6 @@
             var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
                 gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"], 
                 prefix: "../lib/infusion/components/uiOptions/html/",
-                components: {
-                    relay: {
-                        type: "fluid.videoPlayer.relay"
-                    }
-                },
                 templateLoader: {
                     options: {
                         gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
@@ -141,7 +136,7 @@
                 },
                 videoTitle: "A chance to reorganize our future?"
             }};
-            fluid.videoPlayer.makeEnhancedInstances(videoOptions, uiOptions.relay);
+            fluid.videoPlayer.makeEnhancedInstances(videoOptions, fluid.staticEnvironment.uiEnhancer.relay);
         </script>
     </body>
 </html>

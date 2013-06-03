@@ -197,6 +197,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         transcripts: false,
         transcriptLanguage: "en"
     };
+    fluid.defaults("fluid.relayGrade", {
+        gradeNames: ["fluid.littleComponent", "autoInit"],
+        components: {
+            relay: {
+                type: "fluid.videoPlayer.relay"
+            }
+        }
+    });
+
+    fluid.demands("fluid.uiEnhancer", ["fluid.addMediaPanels"], {
+        options: {
+            gradeNames: ["fluid.relayGrade", "autoInit"],
+            defaultSiteSettings: extraSettings
+        }
+    });
+
     fluid.demands("fluid.uiEnhancer", ["fluid.addMediaPanels"], {
         options: {
             gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.uiEnhancer.vpEnactors"],

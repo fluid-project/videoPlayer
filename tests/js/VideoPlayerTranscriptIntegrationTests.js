@@ -34,11 +34,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
             gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
             prefix: "../../lib/infusion/components/uiOptions/html/",
-            components: {
-                relay: {
-                    type: "fluid.videoPlayer.relay"
-                }
-            },
             templateLoader: {
                 options: {
                     gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
@@ -75,7 +70,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-            fluid.testUtils.initEnhancedVideoPlayer(instance, uiOptions.relay);
+            fluid.testUtils.initEnhancedVideoPlayer(instance, fluid.staticEnvironment.uiEnhancer.relay);
         });
 
         jqUnit.asyncTest("Scrubbing", function () {
@@ -134,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-            fluid.testUtils.initEnhancedVideoPlayer(instance, uiOptions.relay);
+            fluid.testUtils.initEnhancedVideoPlayer(instance, fluid.staticEnvironment.uiEnhancer.relay);
         });
 
     });

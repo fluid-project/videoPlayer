@@ -26,11 +26,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
             gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
             prefix: "../lib/infusion/components/uiOptions/html/",
-            components: {
-                relay: {
-                    type: "fluid.videoPlayer.relay"
-                }
-            },
             templateLoader: {
                 options: {
                     gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
@@ -203,10 +198,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     ];
     
-    fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, uiOptions.relay);
+    fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, fluid.staticEnvironment.uiEnhancer.relay);
     
     // Initialise one video player extremely late to show that this method still works 
-    fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, uiOptions.relay);      
+    fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, fluid.staticEnvironment.uiEnhancer.relay);      
     
     });
     

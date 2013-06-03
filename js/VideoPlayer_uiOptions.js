@@ -56,17 +56,17 @@ var fluid_1_5 = fluid_1_5 || {};
         // (fetch is called in finalInit function) TODO: make a proper API for this, although
         // better to implement "model events system"
         // Must use "short nickname" here because of FLUID-4636/FLUID-4392
-        sourceApplier: "{fatPanel}.applier",
+        sourceApplier: "{uiEnhancer}.applier",
         events: {
             // This is rather late - the settings store actually executes on "onUIOptionsComponentReady" but
             // this is an implementation detail that the relayer may as well not be aware of
-            bindingTrigger: "{fatPanel}.events.onReady"
+            bindingTrigger: "{uiEnhancer}.events.onCreate"
         },
         rules: {
-            "selections.captions": "displayCaptions",
-            "selections.transcripts": "displayTranscripts",
-            "selections.captionLanguage": {func: "fluid.videoPlayer.transformLanguageChange"},
-            "selections.transcriptLanguage": {func: "fluid.videoPlayer.transformLanguageChange"}
+            "captions": "displayCaptions",
+            "transcripts": "displayTranscripts",
+            "captionLanguage": {func: "fluid.videoPlayer.transformLanguageChange"},
+            "transcriptLanguage": {func: "fluid.videoPlayer.transformLanguageChange"}
         }
     });
     
