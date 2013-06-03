@@ -65,8 +65,8 @@ var fluid_1_5 = fluid_1_5 || {};
         rules: {
             "selections.captions": "displayCaptions",
             "selections.transcripts": "displayTranscripts",
-            "selections.volume": "volume",
-            "selections.language": {func: "fluid.videoPlayer.transformLanguageChange"}
+            "selections.captionLanguage": {func: "fluid.videoPlayer.transformLanguageChange"},
+            "selections.transcriptLanguage": {func: "fluid.videoPlayer.transformLanguageChange"}
         }
     });
     
