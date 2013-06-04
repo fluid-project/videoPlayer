@@ -30,6 +30,8 @@ var fluid_1_5 = fluid_1_5 || {};
     // Transforms a language change request as output from UIOptions into a changeApplier stream
     // capable of modifying the target videoPlayer model to match it
     fluid.videoPlayer.transformLanguageChange = function (value, valuePath, videoPlayer) {
+
+// valuePath is the enhancer path i.e. captionLanguage or  transcriptLanguage
         var ml = fluid.videoPlayer.matchLanguageRecord(value);
         var togo = [];
         function pushRecord(sourcePath, targetPath) {
@@ -42,8 +44,11 @@ var fluid_1_5 = fluid_1_5 || {};
                 });
             }
         }
-        pushRecord("options.video.captions",    "currentTracks.captions");
-        pushRecord("options.video.transcripts", "currentTracks.transcripts");
+        if (valuePath === "captionLanguage") {
+            pushRecord("options.video.captions",    "currentTracks.captions");
+        } else {
+            pushRecord("options.video.transcripts", "currentTracks.transcripts");
+        }
         return togo;
     }; 
     
