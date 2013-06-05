@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -53,11 +53,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var instance = {
                 container: ".videoPlayer-transcript",
                 options: {
-                    templates: {
-                        videoPlayer: {
-                            href: "../../html/videoPlayer_template.html"
-                        }
-                    },
                     listeners: {
                         onReady: function (that) {
                             jqUnit.notVisible("Before UIO reset, transcripts are not visible", $(".flc-videoPlayer-transcriptArea"));
@@ -96,11 +91,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             label: "French"
                         }]
                     },
-                    templates: {
-                        videoPlayer: {
-                            href: "../../html/videoPlayer_template.html"
-                        }
-                    },
                     events: {
                         onVideoAndTranscriptsLoaded: {
                             events: {
@@ -108,6 +98,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                                 loadedMetadata: "onLoadedMetadata"
                             },
                             args: ["{videoPlayer}", "{transcript}"]
+                        }
+                    },
+                    model: {
+                        currentTracks: {
+                            transcripts: [0] // ensure that the test transcript is selected so it loads
                         }
                     },
                     listeners: {

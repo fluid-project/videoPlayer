@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -30,8 +30,6 @@ var fluid_1_5 = fluid_1_5 || {};
     // Transforms a language change request as output from UIOptions into a changeApplier stream
     // capable of modifying the target videoPlayer model to match it
     fluid.videoPlayer.transformLanguageChange = function (value, valuePath, videoPlayer) {
-
-// valuePath is the enhancer path i.e. captionLanguage or  transcriptLanguage
         var ml = fluid.videoPlayer.matchLanguageRecord(value);
         var togo = [];
         function pushRecord(sourcePath, targetPath) {
@@ -81,34 +79,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 captions: [0],
                 transcripts: [0]
             }
-        }
-    };
-    
-    fluid.videoPlayer.makeEnhancedInstances = function (instances, relay, callback) {
-        callback = callback || fluid.identity;
-        instances = fluid.makeArray(instances);
-        
-        var listener = function () {
-            var players = fluid.transform(instances, function (instance) {
-                var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, {model: relay.model}, instance.options);
-                var player = fluid.videoPlayer(instance.container, mergedOptions);
-                relay.addTarget(player);
-                return player;
-            });
-            callback(players);
-        };
-        var lateListener = function () {
-            // fluid.log("Listener for " + instances.length);
-            // awful workaround for FLUID-4192, "broken trees"
-            setTimeout(listener, 1);
-        };
-        
-        if (relay.events.bindingTrigger && !relay.options.bindingTriggered) {
-            // fluid.log("Late binding instances " + instances.length);
-            relay.events.bindingTrigger.addListener(lateListener);
-        } else {
-            // fluid.log("Immediate binding instances " + instances.length);
-            lateListener();
         }
     };
 

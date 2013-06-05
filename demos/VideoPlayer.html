@@ -83,8 +83,7 @@
                     }
                 }
             });
-
-            var videoOptions = {container: ".videoPlayer", options: {
+            var vpOptions = {
                 video: {
                     sources: [
                         {
@@ -135,8 +134,8 @@
                     ]
                 },
                 videoTitle: "A chance to reorganize our future?"
-            }};
-            fluid.videoPlayer.makeEnhancedInstances(videoOptions, fluid.staticEnvironment.uiEnhancer.relay);
+            };
+            fluid.invoke("fluid.videoPlayer", [".videoPlayer", vpOptions]);
         </script>
     </body>
 </html>

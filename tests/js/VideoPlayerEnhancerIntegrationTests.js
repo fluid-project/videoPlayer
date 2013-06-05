@@ -19,30 +19,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
-    fluid.defaults("fluid.tests.vpWrapper", {
-        gradeNames: ["fluid.eventedComponent", "autoInit"],
-        events: {
-            onReady: null,
-            vpModelChanged: null
-        }
-    });
-
-    fluid.tests.vpWrapper.finalInit = function (that) {
-        var instances = [{
-            container: ".videoPlayer-enhancer",
-            options: fluid.testUtils.baseOpts
-        }];
-        fluid.videoPlayer.makeEnhancedInstances(instances, fluid.staticEnvironment.uiEnhancer.relay, function (players) {
-            players[0].applier.modelChanged.addListener("*", function (newModel, oldModel, request) {
-                that.events.vpModelChanged.fire(newModel, oldModel, request);
-            });
-            players[0].events.onReady.addListener(function () {
-                that.events.onReady.fire(that);
-            });
-            that.players = players;
-        })
-    };
-
     fluid.defaults("fluid.tests.videoPlayerEnhancer", {
         gradeNames: ["fluid.test.testEnvironment", "autoInit"],
         components: {
@@ -53,15 +29,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     gradeNames: ["fluid.uiEnhancer.defaultActions"]
                 }
             },
-            vpWrapper: {
-                type: "fluid.tests.vpWrapper"
-            },
-/*
             videoPlayer: {
                 type: "fluid.videoPlayer",
-                container: ".videoPlayer-enhancer"
+                container: ".videoPlayer-enhancer",
+                options: fluid.testUtils.baseOpts
             },
-*/
             tester: {
                 type: "fluid.tests.videoPlayerEnhancerTester"
             }
@@ -91,7 +63,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 name: "Video Player initialised",
                 sequence: [{
                     listener: "fluid.tests.assert",
-                    event: "{vpWrapper}.events.onReady"
+                    event: "{videoPlayer}.events.onReady"
                 }]
             }]
         }, {
@@ -104,32 +76,36 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     args: ["transcripts", true]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["displayTranscripts", true]
                 }, {
                     func: "fluid.tests.changeEnhancerModel",
                     args: ["transcripts", false]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["displayTranscripts", false]
                 }, {
                     func: "fluid.tests.changeEnhancerModel",
                     args: ["transcriptLanguage", "fr"]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["currentTracks.transcripts.0", 1]
                 }, {
                     func: "fluid.tests.changeEnhancerModel",
                     args: ["transcriptLanguage", "en"]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["currentTracks.transcripts.0", 0]
                 }]
             }]
-        },{
+        }, {
             name: "Captions",
             tests: [{
                 expect: 4,
@@ -139,28 +115,32 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     args: ["captions", true]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["displayCaptions", true]
                 }, {
                     func: "fluid.tests.changeEnhancerModel",
                     args: ["captions", false]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["displayCaptions", false]
                 }, {
                     func: "fluid.tests.changeEnhancerModel",
                     args: ["captionLanguage", "fr"]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["currentTracks.captions.0", 1]
                 }, {
                     func: "fluid.tests.changeEnhancerModel",
                     args: ["captionLanguage", "en"]
                 }, {
                     listenerMaker: "fluid.tests.checkPlayerModel",
-                    event: "{vpWrapper}.events.vpModelChanged",
+                    changeEvent: "{videoPlayer}.applier.modelChanged",
+                    spec: {path: "*", priority: "last"},
                     makerArgs: ["currentTracks.captions.0", 0]
                 }]
             }]

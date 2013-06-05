@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -94,7 +94,9 @@ var fluid_1_5 = fluid_1_5 || {};
                     var synthChange = {type: "ADD", path: key, value: newValue};
                     // fluid.log("Replaying pent change ", synthChange, " to target ", target);
                     var changes = value.func(newValue, key, target, [synthChange]);
-                    fluid.requestChanges(target.applier, changes);
+                    if (changes.length > 0) {
+                        fluid.requestChanges(target.applier, changes);
+                    }
                 }
             });
         }

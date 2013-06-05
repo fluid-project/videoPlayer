@@ -1,6 +1,6 @@
 /*
 
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -38,7 +38,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel.withMediaPanel", {
+        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel", {
             options: {
                 strings: {
                     showText: "+ Show Learner Options"
@@ -198,11 +198,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     ];
     
-    fluid.videoPlayer.makeEnhancedInstances(earlyVideoPlayerInstances, fluid.staticEnvironment.uiEnhancer.relay);
-    
+    // TODO: This still needs cleaning up
+    fluid.transform(earlyVideoPlayerInstances, function (instance) {
+        var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, instance.options);
+        fluid.invoke("fluid.videoPlayer", [instance.container, instance.options]);
+    });
+
     // Initialise one video player extremely late to show that this method still works 
-    fluid.videoPlayer.makeEnhancedInstances(lateVideoPlayerInstances, fluid.staticEnvironment.uiEnhancer.relay);      
-    
+    var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, lateVideoPlayerInstances.options);
+    fluid.invoke("fluid.videoPlayer", [lateVideoPlayerInstances[0].container, lateVideoPlayerInstances[0].options]);
     });
     
 })(jQuery);

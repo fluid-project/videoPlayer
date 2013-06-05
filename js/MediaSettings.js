@@ -240,4 +240,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
+
+    fluid.bindRelay = function (that, callback) {
+        callback = callback || fluid.identity;
+        fluid.staticEnvironment.uiEnhancer.relay.addTarget(that);
+        callback(that);
+    };
+
+    fluid.defaults("fluid.videoPlayer.enhancerBinder", {
+        gradeNames: ["fluid.littleComponent", "autoInit"],
+        listeners: {
+            onCreate: "fluid.bindRelay"
+        }
+    });
+
+    fluid.demands("fluid.videoPlayer", ["fluid.addMediaPanels", "fluid.uiEnhancer"], {
+        options: {
+            gradeNames: ["fluid.videoPlayer.enhancerBinder"]
+        }
+    });
+
 })(jQuery);
