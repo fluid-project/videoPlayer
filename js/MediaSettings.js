@@ -16,12 +16,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
-//    fluid.setLogging(fluid.logLevel.TRACE);
+    fluid.staticEnvironment["fluid--videoPlayer--addMediaPanels"] = fluid.typeTag("fluid.videoPlayer.addMediaPanels");
 
     /**
      * Captions settings panel.
      */
-    fluid.defaults("fluid.uiOptions.captionsSettings", {
+    fluid.defaults("fluid.videoPlayer.captionsSettings", {
         gradeNames: ["fluid.uiOptions.settingsPanel", "autoInit"],
         model: {
             captions: false,
@@ -37,7 +37,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             captions: ".flc-uiOptions-captions",
             language: ".flc-uiOptions-caption-language"
         },
-        produceTree: "fluid.uiOptions.captionsSettings.produceTree",
+        produceTree: "fluid.videoPlayer.captionsSettings.produceTree",
         resources: {
             template: {
                 url: "../html/CaptionsPanelTemplate.html"
@@ -48,7 +48,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Transcripts settings panel.
      */
-    fluid.defaults("fluid.uiOptions.transcriptsSettings", {
+    fluid.defaults("fluid.videoPlayer.transcriptsSettings", {
         gradeNames: ["fluid.uiOptions.settingsPanel", "autoInit"],
         model: {
             transcripts: false,
@@ -64,7 +64,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             transcripts: ".flc-uiOptions-transcripts",
             language: ".flc-uiOptions-transcript-language"
         },
-        produceTree: "fluid.uiOptions.transcriptsSettings.produceTree",
+        produceTree: "fluid.videoPlayer.transcriptsSettings.produceTree",
         resources: {
             template: {
                 url: "../html/TranscriptsPanelTemplate.html"
@@ -72,7 +72,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.uiOptions.captionsSettings.produceTree = function (that) {
+    fluid.videoPlayer.captionsSettings.produceTree = function (that) {
         return {
             captions: "${captions}",
             language: {
@@ -87,7 +87,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.uiOptions.transcriptsSettings.produceTree = function (that) {
+    fluid.videoPlayer.transcriptsSettings.produceTree = function (that) {
         return {
             transcripts: "${transcripts}",
             language: {
@@ -102,15 +102,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.defaults("fluid.uiOptions.vpPanels", {
+    // Grade for adding the media panels to uiOptions
+    fluid.defaults("fluid.videoPlayer.mediaPanels", {
         gradeNames: ["fluid.uiOptions", "autoInit"],
         selectors: {
-             captionsSettings: ".flc-uiOptions-captions-settings",
-             transcriptsSettings: ".flc-uiOptions-transcripts-settings"
+            captionsSettings: ".flc-uiOptions-captions-settings",
+            transcriptsSettings: ".flc-uiOptions-transcripts-settings"
         },
         components: {
             captionsSettings: {
-                type: "fluid.uiOptions.captionsSettings",
+                type: "fluid.videoPlayer.captionsSettings",
                 container: "{uiOptions}.dom.captionsSettings",
                 createOnEvent: "onUIOptionsMarkupReady",
                 options: {
@@ -128,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             transcriptsSettings: {
-                type: "fluid.uiOptions.transcriptsSettings",
+                type: "fluid.videoPlayer.transcriptsSettings",
                 container: "{uiOptions}.dom.transcriptsSettings",
                 createOnEvent: "onUIOptionsMarkupReady",
                 options: {
@@ -148,25 +149,36 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.defaults("fluid.uiOptions.enactors.captionsSettingsEnactor", {
+    fluid.defaults("fluid.videoPlayer.captionsSettingsEnactor", {
         gradeNames: ["fluid.viewComponent", "fluid.uiOptions.enactor", "autoInit"],
         model: {
             captions: false,
             language: "en"
         }
     });
-    fluid.defaults("fluid.uiOptions.enactors.transcriptsSettingsEnactor", {
+    fluid.defaults("fluid.videoPlayer.transcriptsSettingsEnactor", {
         gradeNames: ["fluid.viewComponent", "fluid.uiOptions.enactor", "autoInit"],
         model: {
             transcript: false,
             language: "en"
         }
     });
-    fluid.defaults("fluid.uiEnhancer.vpEnactors", {
+    var extraSettings = {
+        captions: false,
+        captionLanguage: "en",
+        transcripts: false,
+        transcriptLanguage: "fr"
+    };
+
+    /**
+     * Grade for adding the media enactors to the UIEnhancer
+     */
+    fluid.defaults("fluid.videoPlayer.mediaEnactors", {
         gradeNames: ["fluid.uiEnhancer", "autoInit"],
+        defaultSiteSettings: extraSettings,
         components: {
             captionsSettingsEnactor: {
-                type: "fluid.uiOptions.enactors.captionsSettingsEnactor",
+                type: "fluid.videoPlayer.captionsSettingsEnactor",
                 container: "{uiEnhancer}.container",
                 options: {
                     sourceApplier: "{uiEnhancer}.applier",
@@ -177,7 +189,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             },
             transcriptsSettingsEnactor: {
-                type: "fluid.uiOptions.enactors.transcriptsSettingsEnactor",
+                type: "fluid.videoPlayer.transcriptsSettingsEnactor",
                 container: "{uiEnhancer}.container",
                 options: {
                     sourceApplier: "{uiEnhancer}.applier",
@@ -190,14 +202,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.staticEnvironment.addMediaPanels = fluid.typeTag("fluid.addMediaPanels");
-    var extraSettings = {
-        captions: false,
-        captionLanguage: "en",
-        transcripts: false,
-        transcriptLanguage: "en"
-    };
-    fluid.defaults("fluid.relayGrade", {
+    /**
+     * A grade used to add the relay subcomponent to uiEnhancer
+     */
+    fluid.defaults("fluid.videoPlayer.vpRelay", {
         gradeNames: ["fluid.littleComponent", "autoInit"],
         components: {
             relay: {
@@ -206,34 +214,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.demands("fluid.uiEnhancer", ["fluid.addMediaPanels"], {
+    // Add the media enactors, relay and extra settings to UIEnhancer
+    fluid.demands("fluid.uiEnhancer", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
-            gradeNames: ["fluid.relayGrade", "autoInit"],
-            defaultSiteSettings: extraSettings
+            gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.videoPlayer.vpRelay", "fluid.videoPlayer.mediaEnactors"]
         }
     });
 
-    fluid.demands("fluid.uiEnhancer", ["fluid.addMediaPanels"], {
-        options: {
-            gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.uiEnhancer.vpEnactors"],
-            defaultSiteSettings: extraSettings
-        }
-    });
-    fluid.demands("fluid.uiOptions", ["fluid.addMediaPanels"], {
-        options: {
-            gradeNames: ["fluid.uiOptions.defaultSettingsPanels", "fluid.uiOptions.vpPanels"]
-        }
-    });
-    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.addMediaPanels"], {
-        options: {
-            templates: {
-                uiOptions: "../html/FatPanelUIOptions.html",
-                captionsSettings: "../html/CaptionsPanelTemplate.html",
-                transcriptsSettings: "../html/TranscriptsPanelTemplate.html"
-             }
-        }
-    });
-    fluid.demands("fluid.uiOptions.fatPanel", ["fluid.addMediaPanels"], {
+    // Add the extra settings to the outer enhancer
+    fluid.demands("fluid.uiOptions.fatPanel", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
             outerEnhancerOptions: {
                 defaultSiteSettings: extraSettings
@@ -241,20 +230,45 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.bindRelay = function (that, callback) {
-        callback = callback || fluid.identity;
-        fluid.staticEnvironment.uiEnhancer.relay.addTarget(that);
-        callback(that);
-    };
-
-    fluid.defaults("fluid.videoPlayer.enhancerBinder", {
-        gradeNames: ["fluid.littleComponent", "autoInit"],
-        listeners: {
-            onCreate: "fluid.bindRelay"
+    // Add the media panels to UIOptions
+    fluid.demands("fluid.uiOptions", ["fluid.videoPlayer.addMediaPanels"], {
+        options: {
+            gradeNames: ["fluid.uiOptions.defaultSettingsPanels", "fluid.videoPlayer.mediaPanels"]
         }
     });
 
-    fluid.demands("fluid.videoPlayer", ["fluid.addMediaPanels", "fluid.uiEnhancer"], {
+    // Tell uiOptions where to find the templates for the media panels
+    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels"], {
+        options: {
+            templates: {
+                uiOptions: "../html/FatPanelUIOptions.html",
+                captionsSettings: "../html/CaptionsPanelTemplate.html",
+                transcriptsSettings: "../html/TranscriptsPanelTemplate.html"
+            }
+        }
+    });
+
+    /**
+     * A grade responsible for binding the UIEnhancer relay to the VideoPlayer
+     */
+    fluid.defaults("fluid.videoPlayer.enhancerBinder", {
+        gradeNames: ["fluid.littleComponent", "autoInit"],
+        listeners: {
+            onCreate: "fluid.videoPlayer.enhancerBinder.bindRelay"
+        }
+    });
+
+    fluid.videoPlayer.enhancerBinder.bindRelay = function (that, callback) {
+        callback = callback || fluid.identity;
+        // TODO: We need a way to wait for UIE if necessary (see FLUID-5016)
+        if (fluid.staticEnvironment.uiEnhancer) {
+            fluid.staticEnvironment.uiEnhancer.relay.addTarget(that);
+        }
+        callback(that);
+    };
+
+    // Add the grade to the video player
+    fluid.demands("fluid.videoPlayer", ["fluid.videoPlayer.addMediaPanels", "fluid.uiEnhancer"], {
         options: {
             gradeNames: ["fluid.videoPlayer.enhancerBinder"]
         }
