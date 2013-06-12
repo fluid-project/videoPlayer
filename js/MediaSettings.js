@@ -149,58 +149,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.defaults("fluid.videoPlayer.captionsSettingsEnactor", {
-        gradeNames: ["fluid.viewComponent", "fluid.uiOptions.enactor", "autoInit"],
-        model: {
-            captions: false,
-            language: "en"
-        }
-    });
-    fluid.defaults("fluid.videoPlayer.transcriptsSettingsEnactor", {
-        gradeNames: ["fluid.viewComponent", "fluid.uiOptions.enactor", "autoInit"],
-        model: {
-            transcript: false,
-            language: "en"
-        }
-    });
     var extraSettings = {
         captions: false,
         captionLanguage: "en",
         transcripts: false,
         transcriptLanguage: "fr"
     };
-
-    /**
-     * Grade for adding the media enactors to the UIEnhancer
-     */
-    fluid.defaults("fluid.videoPlayer.mediaEnactors", {
-        gradeNames: ["fluid.uiEnhancer", "autoInit"],
-        defaultSiteSettings: extraSettings,
-        components: {
-            captionsSettingsEnactor: {
-                type: "fluid.videoPlayer.captionsSettingsEnactor",
-                container: "{uiEnhancer}.container",
-                options: {
-                    sourceApplier: "{uiEnhancer}.applier",
-                    rules: {
-                        "captions": "captions",
-                        "language": "language"
-                    }
-                }
-            },
-            transcriptsSettingsEnactor: {
-                type: "fluid.videoPlayer.transcriptsSettingsEnactor",
-                container: "{uiEnhancer}.container",
-                options: {
-                    sourceApplier: "{uiEnhancer}.applier",
-                    rules: {
-                        "transcripts": "transcripts",
-                        "language": "language"
-                    }
-                }
-            }
-        }
-    });
 
     /**
      * A grade used to add the relay subcomponent to uiEnhancer
@@ -214,10 +168,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    // Add the media enactors, relay and extra settings to UIEnhancer
+    // Add the relay to UIEnhancer
     fluid.demands("fluid.uiEnhancer", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
-            gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.videoPlayer.vpRelay", "fluid.videoPlayer.mediaEnactors"]
+            gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.videoPlayer.vpRelay"]
         }
     });
 
