@@ -171,7 +171,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // Add the relay to UIEnhancer
     fluid.demands("fluid.uiEnhancer", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
-            gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.videoPlayer.vpRelay"]
+            gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.videoPlayer.vpRelay"],
+            defaultSiteSettings: extraSettings
         }
     });
 
