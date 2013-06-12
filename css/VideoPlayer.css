@@ -31,6 +31,7 @@
     height: 100%;
     width: 100%;
     position: absolute;
+    top: 0;
 }
 :-webkit-full-screen .fl-videoPlayer-video,
 :-webkit-full-screen .fl-videoPlayer-video-play {
@@ -44,7 +45,9 @@
     width: 80%;
 }
 :-webkit-full-screen .fl-videoPlayer-transcriptArea {
-    width: 19.8%;
+    position: absolute;    
+    left: 80%;
+    width: 20%;
     max-width: 25em;
 }
 
