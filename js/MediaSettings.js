@@ -19,88 +19,64 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.staticEnvironment["fluid--videoPlayer--addMediaPanels"] = fluid.typeTag("fluid.videoPlayer.addMediaPanels");
 
     /**
+     * Shared grade for both settings panels
+     */
+    fluid.defaults("fluid.videoPlayer.mediaSettings", {
+        gradeNames: ["fluid.uiOptions.settingsPanel", "autoInit"],
+        model: {
+            show: false,
+            foo: false,
+            language: "en",
+            type: "media"
+        },
+        strings: {
+            language: ["English", "French"]
+        },
+        controlValues: { 
+            language: ["en", "fr"]
+        },
+        selectors: {
+            type: ".flc-videoPlayer-media-type",
+            show: ".flc-videoPlayer-media-show",
+            foo: ".flc-videoPlayer-media-foo",
+            language: ".flc-videoPlayer-media-language"
+        },
+        produceTree: "fluid.videoPlayer.mediaSettings.produceTree"
+    });
+    fluid.videoPlayer.mediaSettings.produceTree = function (that) {
+        return {
+            type: "${type}",
+            show: "${show}",
+            language: {
+                optionnames: that.options.strings.language,
+                optionlist: that.options.controlValues.language,
+                selection: "${language}",
+                decorators: {
+                    type: "fluid",
+                    func: "fluid.uiOptions.selectDecorator"
+                }
+            }
+        };
+    };
+    /**
      * Captions settings panel.
      */
     fluid.defaults("fluid.videoPlayer.captionsSettings", {
-        gradeNames: ["fluid.uiOptions.settingsPanel", "autoInit"],
+        gradeNames: ["fluid.videoPlayer.mediaSettings", "autoInit"],
         model: {
-            captions: false,
-            language: "en"
-        },
-        strings: {
-            language: ["English", "French", "Klingon"]
-        },
-        controlValues: { 
-            language: ["en", "fr", "kg"]
-        },
-        selectors: {
-            captions: ".flc-uiOptions-captions",
-            language: ".flc-uiOptions-caption-language"
-        },
-        produceTree: "fluid.videoPlayer.captionsSettings.produceTree",
-        resources: {
-            template: {
-                url: "../html/CaptionsPanelTemplate.html"
-            }
+            type: "captions"
         }
     });
-
     /**
      * Transcripts settings panel.
      */
     fluid.defaults("fluid.videoPlayer.transcriptsSettings", {
-        gradeNames: ["fluid.uiOptions.settingsPanel", "autoInit"],
+        gradeNames: ["fluid.videoPlayer.mediaSettings", "autoInit"],
         model: {
-            transcripts: false,
-            language: "en"
-        },
-        strings: {
-            language: ["English", "French", "Klingon"]
-        },
-        controlValues: { 
-            language: ["en", "fr", "kg"]
-        },
-        selectors: {
-            transcripts: ".flc-uiOptions-transcripts",
-            language: ".flc-uiOptions-transcript-language"
-        },
-        produceTree: "fluid.videoPlayer.transcriptsSettings.produceTree",
-        resources: {
-            template: {
-                url: "../html/TranscriptsPanelTemplate.html"
-            }
+            type: "transcripts"
         }
     });
 
-    fluid.videoPlayer.captionsSettings.produceTree = function (that) {
-        return {
-            captions: "${captions}",
-            language: {
-                optionnames: that.options.strings.language,
-                optionlist: that.options.controlValues.language,
-                selection: "${language}",
-                decorators: {
-                    type: "fluid",
-                    func: "fluid.uiOptions.selectDecorator"
-                }
-            }
-        };
-    };
-
-    fluid.videoPlayer.transcriptsSettings.produceTree = function (that) {
-        return {
-            transcripts: "${transcripts}",
-            language: {
-                optionnames: that.options.strings.language,
-                optionlist: that.options.controlValues.language,
-                selection: "${language}",
-                decorators: {
-                    type: "fluid",
-                    func: "fluid.uiOptions.selectDecorator"
-                }
-            }
-        };
-    };
 
     // Grade for adding the media panels to uiOptions
     fluid.defaults("fluid.videoPlayer.mediaPanels", {
@@ -115,13 +91,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{uiOptions}.dom.captionsSettings",
                 createOnEvent: "onUIOptionsMarkupReady",
                 options: {
-                    sourceApplier: "{uiOptions}.applier",
+                    gradeNames: "fluid.uiOptions.defaultSettingsPanel",
                     rules: {
-                        "selections.captions": "captions",
+                        "selections.captions": "show",
                         "selections.captionLanguage": "language"
-                    },
-                    listeners: {
-                        "{uiOptions}.events.onUIOptionsRefresh": "{that}.refreshView"
                     },
                     resources: {
                         template: "{templateLoader}.resources.captionsSettings"
@@ -133,13 +106,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 container: "{uiOptions}.dom.transcriptsSettings",
                 createOnEvent: "onUIOptionsMarkupReady",
                 options: {
-                    sourceApplier: "{uiOptions}.applier",
+                    gradeNames: "fluid.uiOptions.defaultSettingsPanel",
                     rules: {
-                        "selections.transcripts": "transcripts",
+                        "selections.transcripts": "show",
                         "selections.transcriptLanguage": "language"
-                    },
-                    listeners: {
-                        "{uiOptions}.events.onUIOptionsRefresh": "{that}.refreshView"
                     },
                     resources: {
                         template: "{templateLoader}.resources.transcriptsSettings"
@@ -153,7 +123,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         captions: false,
         captionLanguage: "en",
         transcripts: false,
-        transcriptLanguage: "fr"
+        transcriptLanguage: "en"
     };
 
     /**
@@ -197,8 +167,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         options: {
             templates: {
                 uiOptions: "../html/FatPanelUIOptions.html",
-                captionsSettings: "../html/CaptionsPanelTemplate.html",
-                transcriptsSettings: "../html/TranscriptsPanelTemplate.html"
+                captionsSettings: "../html/MediaPanelTemplate.html",
+                transcriptsSettings: "../html/MediaPanelTemplate.html"
             }
         }
     });

@@ -19,12 +19,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
-    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.addMediaPanels", "fluid.tests.videoPlayer"], {
+    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
                 uiOptions: "../../html/FatPanelUIOptions.html",
-                captionsSettings: "../../html/CaptionsPanelTemplate.html",
-                transcriptsSettings: "../../html/TranscriptsPanelTemplate.html"
+                captionsSettings: "../../html/MediaPanelTemplate.html",
+                transcriptsSettings: "../../html/MediaPanelTemplate.html"
              }
         }
     });
