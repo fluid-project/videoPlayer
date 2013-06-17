@@ -56,7 +56,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     listeners: {
                         onReady: function (that) {
                             jqUnit.notVisible("Before UIO reset, transcripts are not visible", $(".flc-videoPlayer-transcriptArea"));
-                            uiOptions.uiOptionsLoader.uiOptions.events.onUIOptionsRefresh.addListener(function () {
+                            uiOptions.uiOptionsLoader.uiOptions.events.onReset.addListener(function () {
                                 jqUnit.notVisible("After UIO reset, transcripts are not visible", $(".flc-videoPlayer-transcriptArea"));
                                 jqUnit.start();
                             });

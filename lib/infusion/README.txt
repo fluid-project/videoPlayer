@@ -1,4 +1,4 @@
-MyInfusion was built from an unreleased version of Infusion master branch (b6ea32a4b4c91b0c2b8bf1ac16d81bca9e2760e8) using the following command:
+MyInfusion was built from an unreleased version of Infusion master branch (f364026444ef1babfde31d115b1797d35b11691e) using the following command:
 
 Build the minified Infusion:
 ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino
@@ -12,11 +12,6 @@ Customizations of UI Options
 ============================
 
 The following edits have been made to the UI Options HTML files:
-
-FatPanelUIOptions.html:
-9a10,11
->             <li class="fl-uiOptions-panel"><div class="flc-uiOptions-captions"></div></li>         
->             <li class="fl-uiOptions-panel"><div class="flc-uiOptions-transcripts"></div></li>         
 
 FatPanelUIOptionsFrame.html:
 32,38c32

@@ -19,6 +19,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
+    fluid.globalSettingsStore();
+
     fluid.defaults("fluid.tests.videoPlayerEnhancer", {
         gradeNames: ["fluid.test.testEnvironment", "autoInit"],
         components: {

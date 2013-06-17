@@ -18,8 +18,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 (function ($) {
     $(document).ready(function () {
+        fluid.globalSettingsStore();
         fluid.pageEnhancer({
-            gradeNames: ["fluid.uiEnhancer.defaultActions"],
+            gradeNames: ["fluid.uiEnhancer.starterActions"],
             tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
         });
 
@@ -28,12 +29,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             prefix: "../lib/infusion/components/uiOptions/html/",
             templateLoader: {
                 options: {
-                    gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
+                    gradeNames: ["fluid.uiOptions.starterTemplateLoader"]
                 }
             },
             uiOptions: {
                 options: {
-                    gradeNames: ["fluid.uiOptions.defaultSettingsPanels"]
+                    gradeNames: ["fluid.uiOptions.starterSettingsPanels", "fluid.uiOptions.initialModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
                 }
             }
         });
