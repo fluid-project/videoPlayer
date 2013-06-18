@@ -2,25 +2,32 @@
 /*
  * UI Options Panels styles
  */
-.fl-icon-captions, .fl-icon-transcripts
- {
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: inline-block;
-    float: left;
-    height: 2em;
-    width: 2.5em;
+@font-face {
+    font-family: 'InfusionIcons-VP';
+    src: url('../fonts/InfusionIcons-VideoPlayer.ttf'),
+         url('../fonts/InfusionIcons-VideoPlayer.eot');
 }
-.fl-icon-captions {
-    background-image: url("../images/default/captions.png");
+.fl-uiOptions .fl-icon-captions,
+.fl-uiOptions .fl-icon-transcripts {
+    font-family: 'InfusionIcons-VP' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    float:left;
+    margin: 0.2em 0.3em 0 0;
+    font-size: 2em;
 }
-.fl-icon-transcripts {
-    background-image: url("../images/default/transcript.png");
+.fl-uiOptions .fl-icon-captions:before {
+    content: "\e000";
+}
+.fl-uiOptions .fl-icon-transcripts:before {
+    content: "\e001";
 }
 .fl-uiOptions-caption-language,
 .fl-uiOptions-transcript-language {
     margin-left: 7em;
-    width: 10em;
+    width: 12em;
 }
-
-

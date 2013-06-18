@@ -25,7 +25,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.uiOptions.settingsPanel", "autoInit"],
         model: {
             show: false,
-            foo: false,
             language: "en",
             type: "media"
         },
@@ -35,16 +34,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         controlValues: { 
             language: ["en", "fr"]
         },
+        styles: {
+            icon: "fl-icon"
+        },
         selectors: {
             type: ".flc-videoPlayer-media-type",
+            icon: ".flc-videoPlayer-media-icon",
             show: ".flc-videoPlayer-media-show",
-            foo: ".flc-videoPlayer-media-foo",
             language: ".flc-videoPlayer-media-language"
         },
         produceTree: "fluid.videoPlayer.mediaSettings.produceTree"
     });
     fluid.videoPlayer.mediaSettings.produceTree = function (that) {
         return {
+            icon: {
+                decorators: [{
+                    type: "addClass",
+                    classes: that.options.styles.icon
+                }]
+            },
             type: "${type}",
             show: "${show}",
             language: {
@@ -65,6 +73,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.videoPlayer.mediaSettings", "autoInit"],
         model: {
             type: "captions"
+        },
+        styles: {
+            icon: "fl-icon-captions"
         }
     });
     /**
@@ -74,6 +85,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         gradeNames: ["fluid.videoPlayer.mediaSettings", "autoInit"],
         model: {
             type: "transcripts"
+        },
+        styles: {
+            icon: "fl-icon-transcripts"
         }
     });
 
