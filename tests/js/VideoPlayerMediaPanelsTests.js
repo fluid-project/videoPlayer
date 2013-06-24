@@ -19,6 +19,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
+    fluid.demands("fluid.uiOptions.store", ["fluid.globalSettingsStore", "fluid.tests.videoPlayer"], {
+        funcName: "fluid.tempStore"
+    });
+
     fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
@@ -63,6 +67,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    fluid.tests.capitaliseFirstLetter = function (string)
+    {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
     fluid.tests.assertUIOReady = function (uioLoader, uio) {
         jqUnit.assertEquals("IFrame is present and invisible", false, uio.iframeRenderer.iframe.is(":visible"));
     };
@@ -75,14 +84,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals("Transcripts panel is present", 1, transPanel.length);
     };
 
-    fluid.tests.checkLanguageControlState = function (fatPanel, panel, expectedState, scenario) {
-        var uio = fatPanel.uiOptionsLoader.uiOptions;
-        var state = uio[panel].locate("language").prop("disabled");
-        jqUnit.assertEquals(scenario + panel + " language dropdown is " + (expectedState ? " " : " not ") + "disabled", expectedState, state);
+    var mediaControlsSelectors = {
+        captions: ".flc-videoPlayer-captionControls-container button",
+        transcripts: ".flc-videoPlayer-transcriptControls-container button"
     };
-    fluid.tests.languageControlStateListener = function (fatPanel, panel, expectedState, scenario) {
+    fluid.tests.checkLanguageControlState = function (fatPanel, videoPlayer, media, expectedState, scenario) {
+        var uio = fatPanel.uiOptionsLoader.uiOptions;
+        var langCtrlsEnabled = !uio[media + "Settings"].locate("language").prop("disabled");
+        var mediaEnabled = videoPlayer.model["display" + fluid.tests.capitaliseFirstLetter(media)];
+        var mediaMenuButtonOn = $(mediaControlsSelectors[media]).hasClass("fl-videoPlayer-" + media + "-button-on");
+        jqUnit.assertEquals(scenario + media + " language dropdown is " + (expectedState ? " " : " not ") + "enabled", expectedState, langCtrlsEnabled);
+        jqUnit.assertEquals(scenario + media + " are " + (expectedState ? "on" : "off"), expectedState, mediaEnabled);
+        jqUnit.assertEquals(scenario + media + " button is " + (expectedState ? "on" : "off"), expectedState, mediaMenuButtonOn);
+    };
+    fluid.tests.languageControlStateListener = function (fatPanel, videoPlayer, media, expectedState, scenario) {
         return function (newModel, oldModel, requests) {
-            fluid.tests.checkLanguageControlState(fatPanel, panel, expectedState, scenario);
+            fluid.tests.checkLanguageControlState(fatPanel, videoPlayer, media, expectedState, scenario);
         };
     };
     fluid.tests.changeModel = function (fatPanel, panel, path, value) {
@@ -104,7 +121,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     args: ["{fatPanel}"]
                 }, {
                     func: "fluid.tests.checkLanguageControlState",
-                    args: ["{fatPanel}", "captionsSettings", true, "Initially, "]
+                    args: ["{fatPanel}", "{videoPlayer}", "captions", false, "Initially, "]
                 }, {
                     func: "fluid.tests.changeModel",
                     args: ["{fatPanel}", "captionsSettings", "show", true]
@@ -112,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     listenerMaker: "fluid.tests.languageControlStateListener",
                     changeEvent: "{fatPanel}.applier.modelChanged",
                     spec: {path: "selections.captions", priority: "last"},
-                    makerArgs: ["{fatPanel}", "captionsSettings", false, "After enabling captions, "]
+                    makerArgs: ["{fatPanel}", "{videoPlayer}", "captions", true, "After enabling captions, "]
                 }, {
                     func: "fluid.tests.changeModel",
                     args: ["{fatPanel}", "captionsSettings", "show", false]
@@ -120,26 +137,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     listenerMaker: "fluid.tests.languageControlStateListener",
                     changeEvent: "{fatPanel}.applier.modelChanged",
                     spec: {path: "selections.captions", priority: "last"},
-                    makerArgs: ["{fatPanel}", "captionsSettings", true, "After disabling captions, "]
-                }, {
-                    func: "fluid.tests.checkLanguageControlState",
-                    args: ["{fatPanel}", "transcriptsSettings", true, "Initially, "]
-                }, {
-                    func: "fluid.tests.changeModel",
-                    args: ["{fatPanel}", "transcriptsSettings", "show", true]
-                }, {
-                    listenerMaker: "fluid.tests.languageControlStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.transcripts", priority: "last"},
-                    makerArgs: ["{fatPanel}", "transcriptsSettings", false, "After enabling transcripts, "]
-                }, {
-                    func: "fluid.tests.changeModel",
-                    args: ["{fatPanel}", "transcriptsSettings", "show", false]
-                }, {
-                    listenerMaker: "fluid.tests.languageControlStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.transcripts", priority: "last"},
-                    makerArgs: ["{fatPanel}", "transcriptsSettings", true, "After disabling transcripts, "]
+                    makerArgs: ["{fatPanel}", "{videoPlayer}", "captions", false, "After disabling captions, "]
                 }]
             }]
         }]
