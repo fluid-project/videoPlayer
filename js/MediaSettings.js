@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 /*global jQuery, fluid*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 
@@ -28,10 +28,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             language: "en",
             type: "media"
         },
+        listeners: {
+            onCreate: "fluid.videoPlayer.mediaSettings.toggleLanguageOnShow"
+        },
         strings: {
             language: ["English", "French"]
         },
-        controlValues: { 
+        controlValues: {
             language: ["en", "fr"]
         },
         styles: {
@@ -59,13 +62,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 optionnames: that.options.strings.language,
                 optionlist: that.options.controlValues.language,
                 selection: "${language}",
-                decorators: {
-                    type: "fluid",
-                    func: "fluid.uiOptions.selectDecorator"
-                }
+                decorators: [{
+                    type: "jQuery",
+                    func: "prop",
+                    args: ["disabled", !that.model.show]
+                }]
             }
         };
     };
+    fluid.videoPlayer.mediaSettings.toggleLanguageOnShow = function (that) {
+        that.applier.modelChanged.addListener("show", function (newModel, oldModel, request) {
+            that.locate("language").prop("disabled", !that.model.show);
+        });
+    };
+
     /**
      * Captions settings panel.
      */

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Video Player Media Panels Test Suite</title>
+
+        <link rel="stylesheet" type="text/css" media="screen" href="../lib/qunit/css/qunit.css" />
+
+        <script type="text/javascript" src="../../lib/infusion/MyInfusion.js"></script>
+        <script type="text/javascript" src="../../js/MediaSettings.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_framework.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_showHide.js"></script>
+        <script type="text/javascript" src="../../lib/jquery-ui/js/jquery.ui.button.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_html5Captionator.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_controllers.js"></script>
+        <script type="text/javascript" src="../../js/ToggleButton.js"></script>
+        <script type="text/javascript" src="../../js/MenuButton.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_media.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_transcript.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_intervalEventsConductor.js"></script>
+        <script type="text/javascript" src="../../js/HTML5-backcompat.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_uiOptions.js"></script>
+
+        <!--  jqUnit test framework js files -->
+        <script type="text/javascript" src="../lib/qunit/js/qunit.js"></script>
+        <script type="text/javascript" src="../lib/jqUnit/js/jqUnit.js"></script>
+        <script type="text/javascript" src="../lib/utils/js/IoCTestUtils.js"></script>
+        <script type="text/javascript" src="../lib/jqUnit/js/jqUnit-browser.js"></script>
+
+        <!--  These are tests that have been written using this page as data and test supports -->
+        <script type="text/javascript" src="../js/TestUtils.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayerMediaPanelsTests.js"></script>
+
+        <!-- Utils -->
+        <script type="text/javascript" src="../../lib/captionator/js/captionator.js"></script>
+        <script type="text/javascript" src="../../lib/mediaelement/js/mediaelement.js"></script>
+
+    </head>
+    <body id="body">
+
+        <script type="text/javascript">
+            // fluid.globalSettingsStore();
+            // fluid.pageEnhancer({
+            //     gradeNames: ["fluid.uiEnhancer.starterActions"],
+            //     tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+            // });
+        </script>
+
+        <div class="flc-uiOptions fl-uiOptions-fatPanel">
+            <div class="flc-slidingPanel-panel flc-uiOptions-iframe"></div>
+            <div class="fl-panelBar">
+                <button class="flc-slidingPanel-toggleButton fl-toggleButton">Show/Hide</button>
+            </div>
+        </div>
+        <div class="flc-toc-tocContainer"> </div>
+
+      <!-- This is the markup that jqUnit will look for when running tests and displaying the results -->
+      <h1 id="qunit-header">Video Player Media Panels Test Suite</h1>
+      <h2 id="qunit-banner"></h2>
+      <div id="qunit-testrunner-toolbar"></div>
+      <h2 id="qunit-userAgent"></h2>
+      <ol id="qunit-tests"></ol>
+      <div id="qunit-fixture">
+
+        <div class="videoPlayer-test fl-videoPlayer"></div>
+
+      </div> <!-- /main -->
+
+      <script>
+      </script>
+    </body>
+</html>

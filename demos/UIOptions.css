@@ -1,5 +1,5 @@
 .fl-uiOptions-fatPanel .fl-panelBar .fl-uio-tabs {
-    min-height: auto;
+    min-height: 1em;
 }
 .fl-uiOptions-fatPanel .fl-panelBar button {
     text-transform: uppercase;
