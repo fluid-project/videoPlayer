@@ -364,8 +364,8 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.languageControls.refreshButtonClass = function (that) {
-        var showHide = that.readIndirect("showHidePath");
-        that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
+        var showHide = that.readIndirect("showHidePath"); // may be undefined if never set
+        that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, !!showHide);
     };
 
     fluid.videoPlayer.languageControls.setUpControls = function (that) {

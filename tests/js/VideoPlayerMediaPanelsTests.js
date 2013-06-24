@@ -58,7 +58,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             videoPlayer: {
                 type: "fluid.videoPlayer",
                 container: ".videoPlayer-test",
-//                createOnEvent: "{tester}.events.onTestCaseStart",
                 options: fluid.testUtils.baseOpts
             },
             tester: {
@@ -91,7 +90,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.tests.checkLanguageControlState = function (fatPanel, videoPlayer, media, expectedState, scenario) {
         var uio = fatPanel.uiOptionsLoader.uiOptions;
         var langCtrlsEnabled = !uio[media + "Settings"].locate("language").prop("disabled");
-        var mediaEnabled = videoPlayer.model["display" + fluid.tests.capitaliseFirstLetter(media)];
+        var mediaEnabled = !!videoPlayer.model["display" + fluid.tests.capitaliseFirstLetter(media)];
         var mediaMenuButtonOn = $(mediaControlsSelectors[media]).hasClass("fl-videoPlayer-" + media + "-button-on");
         jqUnit.assertEquals(scenario + media + " language dropdown is " + (expectedState ? " " : " not ") + "enabled", expectedState, langCtrlsEnabled);
         jqUnit.assertEquals(scenario + media + " are " + (expectedState ? "on" : "off"), expectedState, mediaEnabled);
