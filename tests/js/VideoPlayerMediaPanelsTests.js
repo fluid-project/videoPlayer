@@ -120,7 +120,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         modules: [{
             name: "Media Panels",
             tests: [{
-                expect: 13,
+                expect: 23,
                 name: "Video player responds to changes in UIO model",
                 sequence: [{
                     listener: "fluid.tests.assertUIOReady",
@@ -146,7 +146,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     listenerMaker: "fluid.tests.mediaLanguageListener",
                     changeEvent: "{fatPanel}.applier.modelChanged",
                     spec: {path: "selections.captionLanguage", priority: "last"},
-                    makerArgs: ["{videoPlayer}", "captions", "fr", "After setting lang to 'fr', "]
+                    makerArgs: ["{videoPlayer}", "captions", "fr", "After setting caption lang to 'fr', "]
                 }, {
                     func: "fluid.tests.changeUIOModel",
                     args: ["{fatPanel}", "captionsSettings", "show", false]
@@ -155,6 +155,33 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     changeEvent: "{fatPanel}.applier.modelChanged",
                     spec: {path: "selections.captions", priority: "last"},
                     makerArgs: ["{fatPanel}", "{videoPlayer}", "captions", false, "After disabling captions, "]
+                }, {
+                    func: "fluid.tests.checkMediaState",
+                    args: ["{fatPanel}", "{videoPlayer}", "transcripts", false, "Initially, "]
+                }, {
+                    func: "fluid.tests.changeUIOModel",
+                    args: ["{fatPanel}", "transcriptsSettings", "show", true]
+                }, {
+                    listenerMaker: "fluid.tests.mediaStateListener",
+                    changeEvent: "{fatPanel}.applier.modelChanged",
+                    spec: {path: "selections.transcripts", priority: "last"},
+                    makerArgs: ["{fatPanel}", "{videoPlayer}", "transcripts", true, "After enabling transcripts, "]
+                }, {
+                    func: "fluid.tests.changeUIOModel",
+                    args: ["{fatPanel}", "transcriptsSettings", "language", "fr"]
+                }, {
+                    listenerMaker: "fluid.tests.mediaLanguageListener",
+                    changeEvent: "{fatPanel}.applier.modelChanged",
+                    spec: {path: "selections.transcriptLanguage", priority: "last"},
+                    makerArgs: ["{videoPlayer}", "transcripts", "fr", "After setting transcript lang to 'fr', "]
+                }, {
+                    func: "fluid.tests.changeUIOModel",
+                    args: ["{fatPanel}", "transcriptsSettings", "show", false]
+                }, {
+                    listenerMaker: "fluid.tests.mediaStateListener",
+                    changeEvent: "{fatPanel}.applier.modelChanged",
+                    spec: {path: "selections.transcripts", priority: "last"},
+                    makerArgs: ["{fatPanel}", "{videoPlayer}", "transcripts", false, "After disabling captions, "]
                 }]
             }]
         }]
