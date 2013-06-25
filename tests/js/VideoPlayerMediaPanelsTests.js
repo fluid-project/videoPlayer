@@ -66,9 +66,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    fluid.tests.capitaliseFirstLetter = function (string)
-    {
+    var mediaControlsSelectors = {
+        captions: ".flc-videoPlayer-captionControls-container button",
+        transcripts: ".flc-videoPlayer-transcriptControls-container button"
+    };
+    fluid.tests.languageCodes = ["en", "fr"];
+
+    fluid.tests.capitaliseFirstLetter = function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
+    fluid.tests.changeUIOModel = function (fatPanel, panel, path, value) {
+        fatPanel.uiOptionsLoader.uiOptions[panel].applier.requestChange(path, value);
     };
 
     fluid.tests.assertUIOReady = function (uioLoader, uio) {
@@ -83,11 +92,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals("Transcripts panel is present", 1, transPanel.length);
     };
 
-    var mediaControlsSelectors = {
-        captions: ".flc-videoPlayer-captionControls-container button",
-        transcripts: ".flc-videoPlayer-transcriptControls-container button"
-    };
-    fluid.tests.checkLanguageControlState = function (fatPanel, videoPlayer, media, expectedState, scenario) {
+    fluid.tests.checkMediaState = function (fatPanel, videoPlayer, media, expectedState, scenario) {
         var uio = fatPanel.uiOptionsLoader.uiOptions;
         var langCtrlsEnabled = !uio[media + "Settings"].locate("language").prop("disabled");
         var mediaEnabled = !!videoPlayer.model["display" + fluid.tests.capitaliseFirstLetter(media)];
@@ -96,22 +101,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals(scenario + media + " are " + (expectedState ? "on" : "off"), expectedState, mediaEnabled);
         jqUnit.assertEquals(scenario + media + " button is " + (expectedState ? "on" : "off"), expectedState, mediaMenuButtonOn);
     };
-    fluid.tests.languageControlStateListener = function (fatPanel, videoPlayer, media, expectedState, scenario) {
+
+    fluid.tests.mediaStateListener = function (fatPanel, videoPlayer, media, expectedState, scenario) {
         return function (newModel, oldModel, requests) {
-            fluid.tests.checkLanguageControlState(fatPanel, videoPlayer, media, expectedState, scenario);
+            fluid.tests.checkMediaState(fatPanel, videoPlayer, media, expectedState, scenario);
         };
     };
-    fluid.tests.changeModel = function (fatPanel, panel, path, value) {
-        fatPanel.uiOptionsLoader.uiOptions[panel].applier.requestChange(path, value);
+
+    fluid.tests.mediaLanguageListener = function (videoPlayer, media, expectedLang, scenario) {
+        return function (newModel, oldModel, requests) {
+            var actualLang = fluid.tests.languageCodes[videoPlayer.model.currentTracks[media][0]];
+            jqUnit.assertEquals(scenario + media + " language is set to " + expectedLang, expectedLang, actualLang);
+        };
     };
 
     fluid.defaults("fluid.tests.videoPlayerMediaPanelsTester", {
         gradeNames: ["fluid.test.testCaseHolder", "autoInit"],
         modules: [{
-            name: "Basics",
+            name: "Media Panels",
             tests: [{
-//                expect: 2,
-                name: "Media settings panels initialized correctly",
+                expect: 13,
+                name: "Video player responds to changes in UIO model",
                 sequence: [{
                     listener: "fluid.tests.assertUIOReady",
                     event: "{videoPlayerMediaPanels fatPanel uiOptionsLoader}.events.onReady"
@@ -119,21 +129,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     func: "fluid.tests.checkPanelsPresent",
                     args: ["{fatPanel}"]
                 }, {
-                    func: "fluid.tests.checkLanguageControlState",
+                    func: "fluid.tests.checkMediaState",
                     args: ["{fatPanel}", "{videoPlayer}", "captions", false, "Initially, "]
                 }, {
-                    func: "fluid.tests.changeModel",
+                    func: "fluid.tests.changeUIOModel",
                     args: ["{fatPanel}", "captionsSettings", "show", true]
                 }, {
-                    listenerMaker: "fluid.tests.languageControlStateListener",
+                    listenerMaker: "fluid.tests.mediaStateListener",
                     changeEvent: "{fatPanel}.applier.modelChanged",
                     spec: {path: "selections.captions", priority: "last"},
                     makerArgs: ["{fatPanel}", "{videoPlayer}", "captions", true, "After enabling captions, "]
                 }, {
-                    func: "fluid.tests.changeModel",
+                    func: "fluid.tests.changeUIOModel",
+                    args: ["{fatPanel}", "captionsSettings", "language", "fr"]
+                }, {
+                    listenerMaker: "fluid.tests.mediaLanguageListener",
+                    changeEvent: "{fatPanel}.applier.modelChanged",
+                    spec: {path: "selections.captionLanguage", priority: "last"},
+                    makerArgs: ["{videoPlayer}", "captions", "fr", "After setting lang to 'fr', "]
+                }, {
+                    func: "fluid.tests.changeUIOModel",
                     args: ["{fatPanel}", "captionsSettings", "show", false]
                 }, {
-                    listenerMaker: "fluid.tests.languageControlStateListener",
+                    listenerMaker: "fluid.tests.mediaStateListener",
                     changeEvent: "{fatPanel}.applier.modelChanged",
                     spec: {path: "selections.captions", priority: "last"},
                     makerArgs: ["{fatPanel}", "{videoPlayer}", "captions", false, "After disabling captions, "]
