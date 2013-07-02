@@ -84,11 +84,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals("IFrame is present and invisible", false, uio.iframeRenderer.iframe.is(":visible"));
     };
 
+    fluid.tests.runBasedOnVideoSupport = function (nativeSupportFunc, noNativeSupportFunc, args) {
+        if (fluid.browser.nativeVideoSupport()) {
+            return nativeSupportFunc.apply(null, args || []);
+        } else {
+            return noNativeSupportFunc.apply(null, args || []);
+        }
+    };
+
+    fluid.tests.checkCaptionPanelPresent = function (fatPanel, capsPanel) {
+        jqUnit.assertEquals("Captions panel is present", 1, capsPanel.length);
+    };
+    fluid.tests.checkCaptionPanelNotPresent = function (fatPanel, capsPanel) {
+        jqUnit.assertEquals("Captions panel is not present", 0, capsPanel.length);
+    };
     fluid.tests.checkPanelsPresent = function (fatPanel) {
         var defs = fluid.defaults("fluid.videoPlayer.mediaPanels");
         var capsPanel = $(defs.selectors.captionsSettings, fatPanel.iframeRenderer.iframeDocument);
         var transPanel = $(defs.selectors.transcriptsSettings, fatPanel.iframeRenderer.iframeDocument);
-        jqUnit.assertEquals("Captions panel is present", 1, capsPanel.length);
+        fluid.tests.runBasedOnVideoSupport(fluid.tests.checkCaptionPanelPresent, fluid.tests.checkCaptionPanelNotPresent, [fatPanel, capsPanel]);
         jqUnit.assertEquals("Transcripts panel is present", 1, transPanel.length);
     };
 
@@ -104,7 +118,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.tests.mediaStateListener = function (fatPanel, videoPlayer, media, expectedState, scenario) {
         return function (newModel, oldModel, requests) {
-            fluid.tests.checkMediaState(fatPanel, videoPlayer, media, expectedState, scenario);
+            fluid.tests.runBasedOnVideoSupport(fluid.tests.checkMediaState, fluid.identity, [fatPanel, videoPlayer, media, expectedState, scenario]);
         };
     };
 
@@ -129,8 +143,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     func: "fluid.tests.checkPanelsPresent",
                     args: ["{fatPanel}"]
                 }, {
-                    func: "fluid.tests.checkMediaState",
-                    args: ["{fatPanel}", "{videoPlayer}", "captions", false, "Initially, "]
+                    func: "fluid.tests.runBasedOnVideoSupport",
+                    args: [fluid.tests.checkMediaState, fluid.identity, ["{fatPanel}", "{videoPlayer}", "captions", false, "Initially, "]]
                 }, {
                     func: "fluid.tests.changeUIOModel",
                     args: ["{fatPanel}", "captionsSettings", "show", true]
