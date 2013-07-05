@@ -43,6 +43,7 @@ module.exports = function (grunt) {
                     "js/VideoPlayer_controllers.js",
                     "js/ToggleButton.js",
                     "js/MenuButton.js",
+                    "js/MediaSettings.js",
                     "js/VideoPlayer_media.js",
                     "js/VideoPlayer_transcript.js",
                     "js/VideoPlayer_intervalEventsConductor.js",
