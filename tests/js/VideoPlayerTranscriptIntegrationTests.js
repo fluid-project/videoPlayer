@@ -22,10 +22,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
-                uiOptions: "../../html/FatPanelUIOptions.html",
+                uiOptions: "../../html/FatPanelUIOptionsNoNativeVideo.html",
                 captionsSettings: "../../html/MediaPanelTemplate.html",
                 transcriptsSettings: "../../html/MediaPanelTemplate.html"
              }
+        }
+    });
+    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.browser.nativeVideoSupport", "fluid.tests.videoPlayer"], {
+        options: {
+            templates: {
+                uiOptions: "../../html/FatPanelUIOptions.html"
+            }
         }
     });
 
@@ -41,7 +48,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             uiOptions: {
                 options: {
-                    gradeNames: ["fluid.uiOptions.defaultSettingsPanels"]
+                    gradeNames: ["fluid.uiOptions.defaultPanels"]
                 }
             }
         });
