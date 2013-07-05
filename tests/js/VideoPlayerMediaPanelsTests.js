@@ -84,25 +84,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals("IFrame is present and invisible", false, uio.iframeRenderer.iframe.is(":visible"));
     };
 
-    fluid.tests.runBasedOnVideoSupport = function (nativeSupportFunc, noNativeSupportFunc, args) {
-        if (fluid.browser.nativeVideoSupport()) {
-            return nativeSupportFunc.apply(null, args || []);
-        } else {
-            return noNativeSupportFunc.apply(null, args || []);
-        }
-    };
-
-    fluid.tests.checkCaptionPanelPresent = function (fatPanel, capsPanel) {
-        jqUnit.assertEquals("Captions panel is present", 1, capsPanel.length);
-    };
-    fluid.tests.checkCaptionPanelNotPresent = function (fatPanel, capsPanel) {
-        jqUnit.assertEquals("Captions panel is not present", 0, capsPanel.length);
-    };
     fluid.tests.checkPanelsPresent = function (fatPanel) {
         var defs = fluid.defaults("fluid.videoPlayer.mediaPanels");
         var capsPanel = $(defs.selectors.captionsSettings, fatPanel.iframeRenderer.iframeDocument);
         var transPanel = $(defs.selectors.transcriptsSettings, fatPanel.iframeRenderer.iframeDocument);
-        fluid.tests.runBasedOnVideoSupport(fluid.tests.checkCaptionPanelPresent, fluid.tests.checkCaptionPanelNotPresent, [fatPanel, capsPanel]);
+        if (fluid.browser.nativeVideoSupport()) {
+            jqUnit.assertEquals("Captions panel is present", 1, capsPanel.length);
+        } else {
+            jqUnit.assertEquals("Captions panel is not present", 0, capsPanel.length);
+        }
         jqUnit.assertEquals("Transcripts panel is present", 1, transPanel.length);
     };
 
@@ -118,7 +108,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.tests.mediaStateListener = function (fatPanel, videoPlayer, media, expectedState, scenario) {
         return function (newModel, oldModel, requests) {
-            fluid.tests.runBasedOnVideoSupport(fluid.tests.checkMediaState, fluid.identity, [fatPanel, videoPlayer, media, expectedState, scenario]);
+            fluid.tests.checkMediaState(fatPanel, videoPlayer, media, expectedState, scenario);
         };
     };
 
@@ -129,76 +119,66 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.defaults("fluid.tests.videoPlayerMediaPanelsTester", {
-        gradeNames: ["fluid.test.testCaseHolder", "autoInit"],
-        modules: [{
-            name: "Media Panels",
-            tests: [{
-                expect: 23,
-                name: "Video player responds to changes in UIO model",
-                sequence: [{
-                    listener: "fluid.tests.assertUIOReady",
-                    event: "{videoPlayerMediaPanels fatPanel uiOptionsLoader}.events.onReady"
-                }, {
-                    func: "fluid.tests.checkPanelsPresent",
-                    args: ["{fatPanel}"]
-                }, {
-                    func: "fluid.tests.runBasedOnVideoSupport",
-                    args: [fluid.tests.checkMediaState, fluid.identity, ["{fatPanel}", "{videoPlayer}", "captions", false, "Initially, "]]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", "captionsSettings", "show", true]
-                }, {
-                    listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.captions", priority: "last"},
-                    makerArgs: ["{fatPanel}", "{videoPlayer}", "captions", true, "After enabling captions, "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", "captionsSettings", "language", "fr"]
-                }, {
-                    listenerMaker: "fluid.tests.mediaLanguageListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.captionLanguage", priority: "last"},
-                    makerArgs: ["{videoPlayer}", "captions", "fr", "After setting caption lang to 'fr', "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", "captionsSettings", "show", false]
-                }, {
-                    listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.captions", priority: "last"},
-                    makerArgs: ["{fatPanel}", "{videoPlayer}", "captions", false, "After disabling captions, "]
-                }, {
-                    func: "fluid.tests.checkMediaState",
-                    args: ["{fatPanel}", "{videoPlayer}", "transcripts", false, "Initially, "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", "transcriptsSettings", "show", true]
-                }, {
-                    listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.transcripts", priority: "last"},
-                    makerArgs: ["{fatPanel}", "{videoPlayer}", "transcripts", true, "After enabling transcripts, "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", "transcriptsSettings", "language", "fr"]
-                }, {
-                    listenerMaker: "fluid.tests.mediaLanguageListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.transcriptLanguage", priority: "last"},
-                    makerArgs: ["{videoPlayer}", "transcripts", "fr", "After setting transcript lang to 'fr', "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", "transcriptsSettings", "show", false]
-                }, {
-                    listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections.transcripts", priority: "last"},
-                    makerArgs: ["{fatPanel}", "{videoPlayer}", "transcripts", false, "After disabling captions, "]
-                }]
+    var setupModule = {
+        name: "Setup",
+        tests: [{
+            expect: 3,
+            name: "UI Options Ready",
+            sequence: [{
+                listener: "fluid.tests.assertUIOReady",
+                event: "{videoPlayerMediaPanels fatPanel uiOptionsLoader}.events.onReady"
+            }, {
+                func: "fluid.tests.checkPanelsPresent",
+                args: ["{fatPanel}"]
             }]
         }]
+    };
+
+    fluid.tests.makeModule = function (media) {
+        return {
+            name: media + " Panel",
+            tests: [{
+                expect: 10,
+                name: "Video player responds to changes in UIO " + media + " settings model",
+                sequence: [{
+                    func: "fluid.tests.checkMediaState",
+                    args: ["{fatPanel}", "{videoPlayer}", media, false, "Initially, "]
+                }, {
+                    func: "fluid.tests.changeUIOModel",
+                    args: ["{fatPanel}", media + "Settings", "show", true]
+                }, {
+                    listenerMaker: "fluid.tests.mediaStateListener",
+                    changeEvent: "{fatPanel}.applier.modelChanged",
+                    spec: {path: "selections." + media, priority: "last"},
+                    makerArgs: ["{fatPanel}", "{videoPlayer}", media, true, "After enabling " + media + ", "]
+                }, {
+                    func: "fluid.tests.changeUIOModel",
+                    args: ["{fatPanel}", media + "Settings", "language", "fr"]
+                }, {
+                    listenerMaker: "fluid.tests.mediaLanguageListener",
+                    changeEvent: "{fatPanel}.applier.modelChanged",
+                    spec: {path: "selections." + media.slice(0, -1) + "Language", priority: "last"},
+                    makerArgs: ["{videoPlayer}", media, "fr", "After setting " + media + " lang to 'fr', "]
+                }, {
+                    func: "fluid.tests.changeUIOModel",
+                    args: ["{fatPanel}", media + "Settings", "show", false]
+                }, {
+                    listenerMaker: "fluid.tests.mediaStateListener",
+                    changeEvent: "{fatPanel}.applier.modelChanged",
+                    spec: {path: "selections." + media, priority: "last"},
+                    makerArgs: ["{fatPanel}", "{videoPlayer}", media, false, "After disabling " + media + ", "]
+                }]
+            }]
+        };
+    };
+
+    var modules = [setupModule, fluid.tests.makeModule("transcripts")];
+    if (fluid.browser.nativeVideoSupport()) {
+        modules.push(fluid.tests.makeModule("captions"));
+    }
+    fluid.defaults("fluid.tests.videoPlayerMediaPanelsTester", {
+        gradeNames: ["fluid.test.testCaseHolder", "autoInit"],
+        modules: modules
     });
 
     $(document).ready(function () {
