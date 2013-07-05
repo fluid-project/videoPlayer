@@ -111,19 +111,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         },
         components: {
             captionsSettings: {
-                type: "fluid.videoPlayer.captionsSettings",
-                container: "{uiOptions}.dom.captionsSettings",
-                createOnEvent: "onUIOptionsMarkupReady",
-                options: {
-                    gradeNames: "fluid.uiOptions.defaultSettingsPanel",
-                    rules: {
-                        "selections.captions": "show",
-                        "selections.captionLanguage": "language"
-                    },
-                    resources: {
-                        template: "{templateLoader}.resources.captionsSettings"
-                    }
-                }
+                type: "fluid.emptyEventedSubcomponent",
+                createOnEvent: "onUIOptionsMarkupReady"
             },
             transcriptsSettings: {
                 type: "fluid.videoPlayer.transcriptsSettings",
@@ -139,6 +128,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         template: "{templateLoader}.resources.transcriptsSettings"
                     }
                 }
+            }
+        }
+    });
+
+    // Captions are only supported in browsers wtih native video support
+    fluid.demands("captionsSettings", ["fluid.browser.nativeVideoSupport"], {
+        funcName: "fluid.videoPlayer.captionsSettings",
+        container: "{uiOptions}.dom.captionsSettings",
+//        createOnEvent: "onUIOptionsMarkupReady",
+        options: {
+            gradeNames: "fluid.uiOptions.defaultSettingsPanel",
+            rules: {
+                "selections.captions": "show",
+                "selections.captionLanguage": "language"
+            },
+            resources: {
+                template: "{templateLoader}.resources.captionsSettings"
             }
         }
     });
@@ -190,9 +196,22 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
             templates: {
-                uiOptions: "../html/FatPanelUIOptions.html",
                 captionsSettings: "../html/MediaPanelTemplate.html",
                 transcriptsSettings: "../html/MediaPanelTemplate.html"
+            }
+        }
+    });
+    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels"], {
+        options: {
+            templates: {
+                uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html"
+            }
+        }
+    });
+    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.browser.nativeVideoSupport"], {
+        options: {
+            templates: {
+                uiOptions: "../html/FatPanelUIOptions.html"
             }
         }
     });
