@@ -48,8 +48,13 @@
         <script>
             fluid.globalSettingsStore();
             fluid.pageEnhancer({
-                gradeNames: ["fluid.uiEnhancer.starterActions"], 
-                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+                gradeNames: ["fluid.uiEnhancer.starterEnactors"],
+                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+                classnameMap: {
+                    theme: {
+                        "default": null
+                    }
+                }
             });
         </script>
 
@@ -80,7 +85,15 @@
                 },
                 uiOptions: {
                     options: {
-                        gradeNames: ["fluid.uiOptions.starterSettingsPanels", "fluid.uiOptions.initialModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
+                        gradeNames: ["fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"],
+                        members: {
+                            rootModel: {
+                                captions: false,
+                                captionLanguage: "en",
+                                transcripts: false,
+                                transcriptLanguage: "en"
+                            }
+                        }
                     }
                 }
             });

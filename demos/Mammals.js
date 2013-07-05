@@ -20,8 +20,13 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     $(document).ready(function () {
         fluid.globalSettingsStore();
         fluid.pageEnhancer({
-            gradeNames: ["fluid.uiEnhancer.starterActions"],
-            tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+            gradeNames: ["fluid.uiEnhancer.starterEnactors"],
+            tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+            classnameMap: {
+                theme: {
+                    "default": "fl-videoPlayer-theme"
+                }
+            }
         });
 
         var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
@@ -34,7 +39,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             uiOptions: {
                 options: {
-                    gradeNames: ["fluid.uiOptions.starterSettingsPanels", "fluid.uiOptions.initialModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
+                    gradeNames: ["fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"],
+                    members: {
+                        rootModel: {
+                            captions: false,
+                            captionLanguage: "en",
+                            transcripts: false,
+                            transcriptLanguage: "en"
+                        }
+                    }
                 }
             }
         });
@@ -196,18 +209,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     ]
                 }
             }
-        }
-    ];
+        }];
     
-    // TODO: This still needs cleaning up
-    fluid.transform(earlyVideoPlayerInstances, function (instance) {
-        var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, instance.options);
-        fluid.invoke("fluid.videoPlayer", [instance.container, instance.options]);
-    });
+        // TODO: This still needs cleaning up
+        fluid.transform(earlyVideoPlayerInstances, function (instance) {
+            fluid.invoke("fluid.videoPlayer", [instance.container, instance.options]);
+        });
 
-    // Initialise one video player extremely late to show that this method still works 
-    var mergedOptions = $.extend(true, {}, fluid.videoPlayer.defaultModel, lateVideoPlayerInstances.options);
-    fluid.invoke("fluid.videoPlayer", [lateVideoPlayerInstances[0].container, lateVideoPlayerInstances[0].options]);
+        // Initialise one video player extremely late to show that this method still works 
+        fluid.invoke("fluid.videoPlayer", [lateVideoPlayerInstances[0].container, lateVideoPlayerInstances[0].options]);
     });
     
 })(jQuery);

@@ -11,12 +11,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
  */
 
 // Declare dependencies
-/*global fluid, jqUnit, jQuery*/
+/*global fluid, jqUnit, QUnit, jQuery*/
 
 // JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
+    QUnit.config.reorder = false;
+
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
     fluid.demands("fluid.uiOptions.store", ["fluid.globalSettingsStore", "fluid.tests.videoPlayer"], {
@@ -57,7 +59,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     },
                     uiOptions: {
                         options: {
-                            gradeNames: ["fluid.uiOptions.starterSettingsPanels", "fluid.uiOptions.initialModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
+                            gradeNames: ["fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
                         }
                     }
                 }
@@ -155,8 +157,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     args: ["{fatPanel}", media + "Settings", "show", true]
                 }, {
                     listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections." + media, priority: "last"},
+                    changeEvent: "{fatPanel}.uiOptionsLoader.uiOptions." + media + "Settings.applier.modelChanged",
+                    spec: {path: "show", priority: "last"},
                     makerArgs: ["{fatPanel}", "{videoPlayer}", media, true, "After enabling " + media + ", "]
                 }, {
                     func: "fluid.tests.changeUIOModel",
@@ -171,8 +173,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     args: ["{fatPanel}", media + "Settings", "show", false]
                 }, {
                     listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections." + media, priority: "last"},
+                    changeEvent: "{fatPanel}.uiOptionsLoader.uiOptions." + media + "Settings.applier.modelChanged",
+                    spec: {path: "show", priority: "last"},
                     makerArgs: ["{fatPanel}", "{videoPlayer}", media, false, "After disabling " + media + ", "]
                 }]
             }]
@@ -192,7 +194,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.globalSettingsStore();
         fluid.pageEnhancer({
             gradeNames: ["fluid.uiEnhancer.starterActions"],
-            tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+            tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+            classnameMap: {
+                theme: {
+                    "default": null
+                }
+            }
         });
         fluid.test.runTests([
             "fluid.tests.videoPlayerMediaPanels"

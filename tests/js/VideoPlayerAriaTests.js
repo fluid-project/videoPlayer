@@ -58,7 +58,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 });
             }
 
-            if (fluid.hasFeature("fluid.browser.supportsHtml5")) {
+            if (fluid.browser.nativeVideoSupport()) {
                 controlsToTest.push({
                     controlName: "Caption menu",
                     control: captionLangMenuSelector,

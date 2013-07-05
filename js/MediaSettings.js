@@ -21,15 +21,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Shared grade for both settings panels
      */
-    fluid.defaults("fluid.videoPlayer.mediaSettings", {
-        gradeNames: ["fluid.uiOptions.settingsPanel", "autoInit"],
+    fluid.defaults("fluid.videoPlayer.panels.mediaSettings", {
+        gradeNames: ["fluid.uiOptions.panels", "autoInit"],
         model: {
             show: false,
             language: "en",
             type: "media"
         },
         listeners: {
-            onCreate: "fluid.videoPlayer.mediaSettings.toggleLanguageOnShow"
+            onCreate: "fluid.videoPlayer.panels.mediaSettings.toggleLanguageOnShow"
         },
         strings: {
             language: ["English", "French"]
@@ -46,9 +46,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             show: ".flc-videoPlayer-media-show",
             language: ".flc-videoPlayer-media-language"
         },
-        produceTree: "fluid.videoPlayer.mediaSettings.produceTree"
+        produceTree: "fluid.videoPlayer.panels.mediaSettings.produceTree"
     });
-    fluid.videoPlayer.mediaSettings.produceTree = function (that) {
+    fluid.videoPlayer.panels.mediaSettings.produceTree = function (that) {
         return {
             icon: {
                 decorators: [{
@@ -56,6 +56,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     classes: that.options.styles.icon
                 }]
             },
+            // might be able to use IOC to reference a regular option instead of putting type in model
             type: "${type}",
             show: "${show}",
             language: {
@@ -70,7 +71,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         };
     };
-    fluid.videoPlayer.mediaSettings.toggleLanguageOnShow = function (that) {
+    fluid.videoPlayer.panels.mediaSettings.toggleLanguageOnShow = function (that) {
         that.applier.modelChanged.addListener("show", function (newModel, oldModel, request) {
             that.locate("language").prop("disabled", !that.model.show);
         });
@@ -79,8 +80,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Captions settings panel.
      */
-    fluid.defaults("fluid.videoPlayer.captionsSettings", {
-        gradeNames: ["fluid.videoPlayer.mediaSettings", "autoInit"],
+    fluid.defaults("fluid.videoPlayer.panels.captionsSettings", {
+        gradeNames: ["fluid.videoPlayer.panels.mediaSettings", "autoInit"],
         model: {
             type: "captions"
         },
@@ -91,8 +92,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Transcripts settings panel.
      */
-    fluid.defaults("fluid.videoPlayer.transcriptsSettings", {
-        gradeNames: ["fluid.videoPlayer.mediaSettings", "autoInit"],
+    fluid.defaults("fluid.videoPlayer.panels.transcriptsSettings", {
+        gradeNames: ["fluid.videoPlayer.panels.mediaSettings", "autoInit"],
         model: {
             type: "transcripts"
         },
@@ -115,14 +116,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 createOnEvent: "onUIOptionsMarkupReady"
             },
             transcriptsSettings: {
-                type: "fluid.videoPlayer.transcriptsSettings",
+                type: "fluid.videoPlayer.panels.transcriptsSettings",
                 container: "{uiOptions}.dom.transcriptsSettings",
                 createOnEvent: "onUIOptionsMarkupReady",
                 options: {
-                    gradeNames: "fluid.uiOptions.defaultSettingsPanel",
+                    gradeNames: "fluid.uiOptions.defaultPanel",
                     rules: {
                         "selections.transcripts": "show",
                         "selections.transcriptLanguage": "language"
+                    },
+                    model: {
+                        show: "{fluid.uiOptions.rootModel}.rootModel.transcripts",
+                        language: "{fluid.uiOptions.rootModel}.rootModel.transcriptLanguage"
                     },
                     resources: {
                         template: "{templateLoader}.resources.transcriptsSettings"
@@ -134,27 +139,23 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // Captions are only supported in browsers wtih native video support
     fluid.demands("captionsSettings", ["fluid.browser.nativeVideoSupport"], {
-        funcName: "fluid.videoPlayer.captionsSettings",
+        funcName: "fluid.videoPlayer.panels.captionsSettings",
         container: "{uiOptions}.dom.captionsSettings",
-//        createOnEvent: "onUIOptionsMarkupReady",
         options: {
-            gradeNames: "fluid.uiOptions.defaultSettingsPanel",
+            gradeNames: "fluid.uiOptions.defaultPanel",
             rules: {
                 "selections.captions": "show",
                 "selections.captionLanguage": "language"
+            },
+            model: {
+                show: "{fluid.uiOptions.rootModel}.rootModel.captions",
+                language: "{fluid.uiOptions.rootModel}.rootModel.captionLanguage"
             },
             resources: {
                 template: "{templateLoader}.resources.captionsSettings"
             }
         }
     });
-
-    var extraSettings = {
-        captions: false,
-        captionLanguage: "en",
-        transcripts: false,
-        transcriptLanguage: "en"
-    };
 
     /**
      * A grade used to add the relay subcomponent to uiEnhancer
@@ -168,31 +169,31 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+/*
+    var extraSettings = {
+        captions: false,
+        captionLanguage: "en",
+        transcripts: false,
+        transcriptLanguage: "en"
+    };
+*/
+
     // Add the relay to UIEnhancer
     fluid.demands("fluid.uiEnhancer", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
-            gradeNames: ["fluid.uiEnhancer.defaultActions", "fluid.videoPlayer.vpRelay"],
-            defaultSiteSettings: extraSettings
-        }
-    });
-
-    // Add the extra settings to the outer enhancer
-    fluid.demands("fluid.uiOptions.fatPanel", ["fluid.videoPlayer.addMediaPanels"], {
-        options: {
-            outerEnhancerOptions: {
-                defaultSiteSettings: extraSettings
-            }
+            gradeNames: ["fluid.videoPlayer.vpRelay"]
         }
     });
 
     // Add the media panels to UIOptions
     fluid.demands("fluid.uiOptions", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
-            gradeNames: ["fluid.uiOptions.defaultSettingsPanels", "fluid.videoPlayer.mediaPanels"]
+            gradeNames: ["fluid.uiOptions.defaultPanels", "fluid.videoPlayer.mediaPanels"]
         }
     });
 
     // Tell uiOptions where to find the templates for the media panels
+    // TODO: These paths will all have to be overridden by integrators. Need a better way, through a prefix?
     fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels"], {
         options: {
             templates: {
