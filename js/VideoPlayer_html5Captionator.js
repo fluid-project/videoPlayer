@@ -124,7 +124,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
                 return;
             }
 
-            var vtt = fluid.videoPlayer.amaraJsonToVTT(data);
+            var vtt = fluid.videoPlayer.amaraJsonToVTT(data.subtitles);
             var dataUrl = "data:text/vtt," + encodeURIComponent(vtt);
             trackEl.attr("src", dataUrl);
             that.events.afterTrackElCreated.fire(that);
