@@ -627,16 +627,20 @@ var fluid_1_5 = fluid_1_5 || {};
         return vtt;
     };
 
-    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, callback) {
+    fluid.videoPlayer.fetchAmaraJson = function (videoUrl, lang, callback) {
         // No point continuing because we can't get a useful JSONP response without the url and a callback
         if (!videoUrl || !callback) {
             return;
         }
 
-        // Hard coded URL to amara here 
-        var url = encodeURI("http://www.universalsubtitles.org/api/1.0/subtitles/?video_url=" + videoUrl + "&callback=?");
-
-        $.getJSON(url, callback);
+        // Hard coded URL to amara here         
+        var url = encodeURI("http://www.universalsubtitles.org/api2/partners/videos/?video_url=" + videoUrl + "&callback=?");        
+        $.getJSON(url, function( data ) {
+            //var captionUrl = encodeURI("http://www.universalsubtitles.org/api2/partners/videos/" + data.objects[0].id + "/languages/" + lang + "/subtitles/?callback=?");        
+            var captionUrl = encodeURI("http://www.universalsubtitles.org/api2/partners/videos/" + data.objects[0].id + "/languages/?callback=?");                    
+            $.getJSON(captionUrl, callback );            
+        });
+        
     };
 
     /*********

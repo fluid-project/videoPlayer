@@ -130,7 +130,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             that.events.afterTrackElCreated.fire(that);
         };
 
-        fluid.videoPlayer.fetchAmaraJson(opts.src, afterFetch);
+        fluid.videoPlayer.fetchAmaraJson(opts.src, opts.srclang, afterFetch);
     };
 
     fluid.videoPlayer.html5Captionator.createVttTrack = function (that, key, opts) {
