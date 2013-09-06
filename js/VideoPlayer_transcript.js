@@ -261,7 +261,7 @@ var fluid_1_5 = fluid_1_5 || {};
             // Handle Universal Subtitles JSON files for transcripts
             if (transcriptSource.type === "text/amarajson") {
                 fluid.videoPlayer.fetchAmaraJson(transcriptSource.src, transcriptSource.srclang, function (data) {
-                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data.subtitles, currentIndex, fluid.identity, "text", "start_time", "end_time");
+                    fluid.videoPlayer.transcript.parseTranscriptFile(that, data.subtitles, currentIndex, fluid.identity, "text", "start", "end");
                 });
             } else {
                 var opts = {
