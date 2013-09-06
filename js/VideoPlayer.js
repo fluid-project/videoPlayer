@@ -619,8 +619,8 @@ var fluid_1_5 = fluid_1_5 || {};
         var vtt = "WEBVTT";
 
         for (var i = 0; i < json.length; i++) {
-            var startTime = fluid.videoPlayer.millisToHmsm(json[i].start_time);
-            var endTime = fluid.videoPlayer.millisToHmsm(json[i].end_time);
+            var startTime = fluid.videoPlayer.millisToHmsm(json[i].start);
+            var endTime = fluid.videoPlayer.millisToHmsm(json[i].end);
             vtt = vtt.concat("\n\n", startTime, " --> ", endTime, "\n", json[i].text);
         }
 
