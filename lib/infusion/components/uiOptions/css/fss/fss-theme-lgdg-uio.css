@@ -91,7 +91,7 @@
 .fl-theme-uio-lgdg .fl-focus:focus, .fl-theme-uio-lgdg .fl-focus :focus, .fl-theme-uio-lgdg.fl-focus :focus, .fl-theme-uio-lgdg .selectable, .fl-theme-uio-dglg .fl-inverted-color .fl-focus:focus, .fl-theme-uio-dglg .fl-inverted-color .fl-focus :focus, .fl-theme-uio-dglg.fl-inverted-color.fl-focus :focus, .fl-theme-uio-dglg .fl-inverted-color .selectable {
   outline-width: 0.2em;
   outline-style: solid;
-  outline-color: #00AAFF;
+  outline-color: #bdbdbb;
 }
 .fl-theme-uio-lgdg .fl-knockout, .fl-theme-uio-dglg .fl-inverted-color .fl-knockout {
   background-color: transparent !important;

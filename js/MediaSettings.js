@@ -200,13 +200,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    // Add the media panels to UIOptions
-    fluid.demands("fluid.uiOptions", ["fluid.videoPlayer.addMediaPanels"], {
-        options: {
-            gradeNames: ["fluid.uiOptions.defaultPanels", "fluid.videoPlayer.mediaPanels"]
-        }
-    });
-
     // Tell uiOptions where to find the templates for the media panels
     // TODO: These paths will all have to be overridden by integrators. Need a better way, through a prefix?
     fluid.defaults("fluid.videoPlayer.mediaPanelTemplateLoader", {

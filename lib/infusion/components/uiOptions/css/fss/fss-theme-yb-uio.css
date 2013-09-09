@@ -85,7 +85,7 @@
 .fl-theme-uio-yb .fl-focus:focus, .fl-theme-uio-yb .fl-focus :focus, .fl-theme-uio-yb.fl-focus :focus, .fl-theme-uio-yb .selectable, .fl-theme-uio-by .fl-inverted-color .fl-focus:focus, .fl-theme-uio-by .fl-inverted-color .fl-focus :focus, .fl-theme-uio-by.fl-inverted-color.fl-focus :focus, .fl-theme-uio-by .fl-inverted-color .selectable {
   outline-width: 0.2em;
   outline-style: solid;
-  outline-color: #00AAFF;
+  outline-color: #ffff00;
 }
 .fl-theme-uio-yb .fl-knockout, .fl-theme-uio-by .fl-inverted-color .fl-knockout {
   background-color: transparent !important;

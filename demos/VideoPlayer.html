@@ -48,11 +48,13 @@
         <script>
             fluid.globalSettingsStore();
             fluid.pageEnhancer({
-                gradeNames: ["fluid.uiEnhancer.starterEnactors"],
-                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
-                classnameMap: {
-                    theme: {
-                        "default": null
+                uiEnhancer: {
+                    gradeNames: ["fluid.uiEnhancer.starterEnactors"],
+                    tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+                    classnameMap: {
+                        theme: {
+                            "default": null
+                        }
                     }
                 }
             });
@@ -76,27 +78,29 @@
 
         <script>
             var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
-                gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"], 
-                prefix: "../lib/infusion/components/uiOptions/html/",
+                gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
+                templatePrefix: "../lib/infusion/components/uiOptions/html/",
+                messagePrefix: "../lib/infusion/components/uiOptions/messages/",
                 templateLoader: {
-                    options: {
-                        gradeNames: ["fluid.uiOptions.starterTemplateLoader"]
-                    }
+                    gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.uiOptions.starterTemplateLoader"]
+                },
+                messageLoader: {
+                    // gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.uiOptions.starterMessageLoader"]
+                    gradeNames: ["fluid.uiOptions.starterMessageLoader"]
                 },
                 uiOptions: {
-                    options: {
-                        gradeNames: ["fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"],
-                        members: {
-                            rootModel: {
-                                captions: false,
-                                captionLanguage: "en",
-                                transcripts: false,
-                                transcriptLanguage: "en"
-                            }
+                    gradeNames: ["fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"],
+                    members: {
+                        rootModel: {
+                            captions: false,
+                            captionLanguage: "en",
+                            transcripts: false,
+                            transcriptLanguage: "en"
                         }
                     }
                 }
             });
+
             var vpOptions = {
                 video: {
                     sources: [
