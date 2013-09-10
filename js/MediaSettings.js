@@ -61,8 +61,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             },
             show: "${show}",
             language: {
-                optionnames: that.options.strings.language,
-                optionlist: that.options.controlValues.language,
+                optionnames: "${{that}.options.strings.language}",
+                optionlist: "${{that}.options.controlValues.language}",
                 selection: "${language}",
                 decorators: [{
                     type: "jQuery",
@@ -129,7 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // Grade for adding the media panels to uiOptions
     fluid.defaults("fluid.videoPlayer.mediaPanels", {
-        gradeNames: ["fluid.uiOptions", "autoInit"],
+        gradeNames: [/*"fluid.uiOptions",*/"fluid.viewComponent", "autoInit"],
         selectors: {
             captionsSettings: ".flc-uiOptions-captions-settings",
             transcriptsSettings: ".flc-uiOptions-transcripts-settings"
