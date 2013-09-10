@@ -1,4 +1,46 @@
 module.exports = function (grunt) {
+    // Dependency file
+    var moduleDependencies = grunt.file.readJSON("moduleDependencies.json");
+
+    // paths to concatenated files
+    var srcConcatenatedPath = "build/videoPlayer-all.js";
+    var minConcatenatedPath = "build/videoPlayer-all-min.js";
+
+    // command line arguments
+    var inclusions = grunt.option("include") || Object.keys(moduleDependencies);
+    var exclusions = grunt.option("exclude") || [];
+
+    // helper functions
+    var buildFiles = function (concatenatedFilePath) {
+        return [
+            // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
+            {src: [concatenatedFilePath], dest: "./", expand: true, cwd: "./", flatten: true},
+            {src: ["ReleaseNotes.txt", "README.txt", "css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
+        ];
+    };
+
+    var getModulesImp = function (moduleDependencies, module, exclusions) {
+        var dependencies = grunt.util._.difference(module.dependencies, exclusions);
+        var paths = [];
+        grunt.util._.forEach(dependencies, function (dependency) {
+            paths = grunt.util._.union(paths, getModulesImp(moduleDependencies, moduleDependencies[dependency], exclusions));
+        });
+        paths = grunt.util._.union(paths, module.files);
+        return paths;
+    };
+
+    var getModules = function (moduleDependencies, inclusions, exclusions) {
+        inclusions = grunt.util._.isArray(inclusions) ? inclusions : inclusions.split(",");
+        exclusions = grunt.util._.isArray(exclusions) ? exclusions : exclusions.split(",");
+        var paths = [];
+        var selectedModules = grunt.util._.difference(inclusions, exclusions);
+        grunt.util._.forEach(selectedModules, function (module) {
+            var modulePaths = getModulesImp(moduleDependencies, moduleDependencies[module], exclusions);
+            paths = grunt.util._.union(paths, modulePaths);
+        });
+        return paths;
+    };
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         clean: {
@@ -10,45 +52,19 @@ module.exports = function (grunt) {
                 options: {
                     archive: "products/videoPlayer-all-<%= pkg.version %>.zip"
                 },
-                files: [
-                    // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
-                    {src: ["build/videoPlayer-all.js"], dest: "./", expand: true, cwd: "./", flatten: true},
-                    {src: ["./ReleaseNotes.txt"], dest: "./"},
-                    {src: ["css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
-                ]
+                files: buildFiles(srcConcatenatedPath)
             },
             min: {
                 options: {
                     archive: "products/videoPlayer-all-min-<%= pkg.version %>.zip"
                 },
-                files: [
-                    // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
-                    {src: ["build/videoPlayer-all-min.js"], dest: "./", expand: true, cwd: "./", flatten: true},
-                    {src: ["./ReleaseNotes.txt"], dest: "./"},
-                    {src: ["css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
-                ]
+                files: buildFiles(minConcatenatedPath)
             }
         },
         concat: {
             all: {
-                src: [
-                    "lib/infusion/MyInfusion.js",
-                    "lib/jqeury-ui/js/jquery.ui.button.js",
-                    "lib/captionator/js/captionator.js",
-                    "lib/mediaelement/js/mediaelement.js",
-                    "js/VideoPlayer_framework.js",
-                    "js/VideoPlayer_showHide.js",
-                    "js/VideoPlayer.js",
-                    "js/VideoPlayer_html5Captionator.js",
-                    "js/VideoPlayer_controllers.js",
-                    "js/ToggleButton.js",
-                    "js/MenuButton.js",
-                    "js/VideoPlayer_media.js",
-                    "js/VideoPlayer_transcript.js",
-                    "js/VideoPlayer_intervalEventsConductor.js",
-                    "js/VideoPlayer_uiOptions.js"
-                ],
-                dest: "build/videoPlayer-all.js"
+                src: getModules(moduleDependencies, inclusions, exclusions),
+                dest: srcConcatenatedPath
             }
         },
         uglify: {
@@ -56,9 +72,8 @@ module.exports = function (grunt) {
                 mangle: false
             },
             my_target: {
-                files: {
-                    "build/videoPlayer-all-min.js": ["build/videoPlayer-all.js"]
-                }
+                src: [srcConcatenatedPath],
+                dest: minConcatenatedPath
             }
         }
     });

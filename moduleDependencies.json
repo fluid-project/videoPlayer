@@ -1,0 +1,34 @@
+{
+    "core": {
+        "files": [
+            "js/VideoPlayer_framework.js",
+            "js/VideoPlayer_showHide.js",
+            "js/VideoPlayer.js",
+            "js/VideoPlayer_html5Captionator.js",
+            "js/VideoPlayer_controllers.js",
+            "js/ToggleButton.js",
+            "js/MenuButton.js",
+            "js/VideoPlayer_media.js",
+            "js/VideoPlayer_transcript.js",
+            "js/VideoPlayer_intervalEventsConductor.js",
+            "js/VideoPlayer_uiOptions.js"
+        ],
+        "dependencies": ["infusion", "jQueryUI", "captionator", "mediaelement"]
+    },
+    "infusion": {
+        "files": ["lib/infusion/MyInfusion.js"],
+        "dependencies": []
+    },
+    "jQueryUI": {
+        "files": ["lib/jquery-ui/js/jquery.ui.button.js"],
+        "dependencies": ["infusion"]
+    },
+    "captionator": {
+        "files": ["lib/captionator/js/captionator.js"],
+        "dependencies": []
+    },
+    "mediaelement": {
+        "files": ["lib/mediaelement/jsmediaelement.js"],
+        "dependencies": []
+    }
+}
