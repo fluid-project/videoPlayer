@@ -14,21 +14,5 @@
             "js/VideoPlayer_uiOptions.js"
         ],
         "dependencies": ["infusion", "jQueryUI", "captionator", "mediaelement"]
-    },
-    "infusion": {
-        "files": ["lib/infusion/MyInfusion.js"],
-        "dependencies": []
-    },
-    "jQueryUI": {
-        "files": ["lib/jquery-ui/js/jquery.ui.button.js"],
-        "dependencies": ["infusion"]
-    },
-    "captionator": {
-        "files": ["lib/captionator/js/captionator.js"],
-        "dependencies": []
-    },
-    "mediaelement": {
-        "files": ["lib/mediaelement/jsmediaelement.js"],
-        "dependencies": []
     }
 }

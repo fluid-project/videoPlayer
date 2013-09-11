@@ -1,6 +1,12 @@
 module.exports = function (grunt) {
-    // Dependency file
-    var moduleDependencies = grunt.file.readJSON("moduleDependencies.json");
+
+    // load dependency files
+    var dependencyFiles = grunt.file.expand("**/*Dependencies.json");
+    var moduleDependencies = {};
+    grunt.util._.forEach(dependencyFiles, function (dependencyFile) {
+        var dependencyObj = grunt.file.readJSON(dependencyFile);
+        grunt.util._.merge(moduleDependencies, dependencyObj);
+    });
 
     // paths to concatenated files
     var srcConcatenatedPath = "build/videoPlayer-all.js";
