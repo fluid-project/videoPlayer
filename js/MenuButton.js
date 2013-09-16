@@ -32,7 +32,6 @@ var fluid_1_5 = fluid_1_5 || {};
         renderOnInit: true,
         preInitFunction: "fluid.videoPlayer.languageMenu.preInit",
         postInitFunction: "fluid.videoPlayer.languageMenu.postInit",
-        finalInitFunction: "fluid.videoPlayer.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.languageMenu.produceTree",
         languages: [],
         currentLanguagePath: "activeLanguages",
@@ -54,7 +53,8 @@ var fluid_1_5 = fluid_1_5 || {};
             onControlledElementReady: {
                 listener: "fluid.videoPlayer.languageMenu.setAriaControlsAttr",
                 args: ["{languageMenu}", "{arguments}.0"]
-            }
+            },
+            afterRender: "fluid.videoPlayer.languageMenu.init"
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",
@@ -212,7 +212,7 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
 
-    fluid.videoPlayer.languageMenu.finalInit = function (that) {
+    fluid.videoPlayer.languageMenu.init = function (that) {
         fluid.videoPlayer.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
 

@@ -129,6 +129,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // Grade for adding the media panels to uiOptions
     fluid.defaults("fluid.videoPlayer.mediaPanels", {
+        // The ideal grade list is to include "fluid.uiOptions" so that the "mediaPanels" can be
+        // used independently without specifying "fluid.uiOptinos" explicitly in API. However,
+        // applying it in the grade list causing uiOptions rendered twice. Needs to find out where
+        // the problem is.
         gradeNames: [/*"fluid.uiOptions",*/"fluid.viewComponent", "autoInit"],
         selectors: {
             captionsSettings: ".flc-uiOptions-captions-settings",
@@ -190,13 +194,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             relay: {
                 type: "fluid.videoPlayer.relay"
             }
-        }
-    });
-
-    // Add the relay to UIEnhancer
-    fluid.demands("fluid.uiEnhancer", ["fluid.videoPlayer.addMediaPanels"], {
-        options: {
-            gradeNames: ["fluid.videoPlayer.vpRelay"]
         }
     });
 
