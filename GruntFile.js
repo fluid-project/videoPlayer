@@ -1,12 +1,11 @@
 module.exports = function (grunt) {
-
-    // paths to concatenated files
-    var srcConcatenatedPath = "build/videoPlayer-all.js";
-    var minConcatenatedPath = "build/videoPlayer-all-min.js";
-
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        vpFiles: {src: ["ReleaseNotes.txt", "README.txt", "css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"},
+        packageName: grunt.option("packageName") || "videoPlayer-all",
+        srcConcatenatedPath: "build/<%= packageName %>.js",
+        minConcatenatedPath: "build/<%= packageName %>-min.js",
+        vpFiles: {
+            src: ["ReleaseNotes.txt", "README.txt", "css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"},
         clean: {
             build: "build",
             products: "products"
@@ -14,19 +13,19 @@ module.exports = function (grunt) {
         compress: {
             src: {
                 options: {
-                    archive: "products/videoPlayer-all-<%= pkg.version %>.zip"
+                    archive: "products/<%= packageName %>-<%= pkg.version %>.zip"
                 },
                 files: [
-                    {src: [srcConcatenatedPath], dest: "./", expand: true, cwd: "./", flatten: true},
+                    {src: ["<%= srcConcatenatedPath %>"], dest: "./", expand: true, cwd: "./", flatten: true},
                     "<%= vpFiles %>"
                 ]
             },
             min: {
                 options: {
-                    archive: "products/videoPlayer-all-min-<%= pkg.version %>.zip"
+                    archive: "products/<%= packageName %>-min-<%= pkg.version %>.zip"
                 },
                 files: [
-                    {src: [minConcatenatedPath], dest: "./", expand: true, cwd: "./", flatten: true},
+                    {src: ["<%= minConcatenatedPath %>"], dest: "./", expand: true, cwd: "./", flatten: true},
                     "<%= vpFiles %>"
                 ]
             }
@@ -34,16 +33,15 @@ module.exports = function (grunt) {
         concat: {
             main: {
                 src: "<%= modulefiles.main.output %>",
-                dest: srcConcatenatedPath
-            }
+                dest: "<%= srcConcatenatedPath %>"}
         },
         uglify: {
             options: {
                 mangle: false
             },
             my_target: {
-                src: [srcConcatenatedPath],
-                dest: minConcatenatedPath
+                src: ["<%= srcConcatenatedPath %>"],
+                dest: "<%= minConcatenatedPath %>"
             }
         },
         modulefiles: {
@@ -56,6 +54,8 @@ module.exports = function (grunt) {
             }
         }
     });
+
+    console.log("src path: " + grunt.config.get("srcConcatenatedPath"));
 
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
