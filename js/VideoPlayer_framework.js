@@ -167,8 +167,7 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
     
-
-// TODO: move into DataBinding
+    // TODO: move into DataBinding
     fluid.linearRangeGuard = function(min, max) {
         return function (model, changeRequest, applier) {
             var newValue = changeRequest.value;
@@ -182,9 +181,6 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     };
 
-
-    
-    
     // A "mini-grade" to ease the work of dealing with "modelPath" idiom components - this
     // is only desirable until changeApplier relay gets into the core framework
     fluid.defaults("fluid.videoPlayer.indirectReader", {

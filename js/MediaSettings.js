@@ -16,8 +16,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
-    fluid.staticEnvironment["fluid--videoPlayer--addMediaPanels"] = fluid.typeTag("fluid.videoPlayer.addMediaPanels");
-
     /**
      * Shared grade for both settings panels
      */
@@ -130,7 +128,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // Grade for adding the media panels to uiOptions
     fluid.defaults("fluid.videoPlayer.mediaPanels", {
         // The ideal grade list is to include "fluid.uiOptions" so that the "mediaPanels" can be
-        // used independently without specifying "fluid.uiOptinos" explicitly in API. However,
+        // used independently without the need to specify "fluid.uiOptinos" explicitly. However,
         // applying it in the grade list causing uiOptions rendered twice. Needs to find out where
         // the problem is.
         gradeNames: [/*"fluid.uiOptions",*/"fluid.viewComponent", "autoInit"],
@@ -150,8 +148,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 options: {
                     gradeNames: "fluid.uiOptions.defaultPanel",
                     rules: {
-                        "selections.transcripts": "show",
-                        "selections.transcriptLanguage": "language"
+                        "transcripts": "show",
+                        "transcriptLanguage": "language"
                     },
                     model: {
                         show: "{fluid.uiOptions.rootModel}.rootModel.transcripts",
@@ -172,8 +170,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         options: {
             gradeNames: "fluid.uiOptions.defaultPanel",
             rules: {
-                "selections.captions": "show",
-                "selections.captionLanguage": "language"
+                "captions": "show",
+                "captionLanguage": "language"
             },
             model: {
                 show: "{fluid.uiOptions.rootModel}.rootModel.captions",
@@ -199,32 +197,59 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // Tell uiOptions where to find the templates for the media panels
     // TODO: These paths will all have to be overridden by integrators. Need a better way, through a prefix?
-    fluid.defaults("fluid.videoPlayer.mediaPanelTemplateLoader", {
+    fluid.defaults("fluid.videoPlayer.templatesForNativeVideo", {
         gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
         templates: {
-            // XXX Still need to handle no-native-video case; demands block not working
-            uiOptions: "../html/FatPanelUIOptions.html",
-            captionsSettings: "../html/MediaPanelTemplate.html",
-            transcriptsSettings: "../html/MediaPanelTemplate.html"
+            uiOptions: "../html/FatPanelUIOptions.html"
         }
     });
 
-/*
-    fluid.demands("fluid.videoPlayer.mediaPanelTemplateLoader", ["fluid.videoPlayer.addMediaPanels"], {
-        options: {
-            templates: {
-                uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html"
-            }
+    fluid.defaults("fluid.videoPlayer.templatesForNonNativeVideo", {
+        gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
+        templates: {
+            uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html"
         }
     });
-    fluid.demands("fluid.videoPlayer.mediaPanelTemplateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.browser.nativeVideoSupport"], {
-        options: {
-            templates: {
-                uiOptions: "../html/FatPanelUIOptions.html"
-            }
+
+    fluid.defaults("fluid.videoPlayer.mediaPanelTemplateLoader", {
+        gradeNames: ["fluid.littleComponent", "autoInit", "{that}.getTemplateLoaderGrade"],
+        // gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit", "{that}.getTemplateLoaderGrade"],
+        templates: {
+            // uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html",
+            // uiOptions: "../html/FatPanelUIOptions.html",
+            captionsSettings: "../html/MediaPanelTemplate.html",
+            transcriptsSettings: "../html/MediaPanelTemplate.html"
+        },
+        invokers: {
+            getTemplateLoaderGrade: "fluid.videoPlayer.getTemplateLoaderGrade"
+            // getTemplateLoaderGrade: {
+            //     funcName: "console.log",
+            //     args: "in here"
+            // }
+        },
+        listeners: {
+            onCreate: "console.log"
         }
     });
-*/
+
+    fluid.videoPlayer.getTemplateLoaderGrade = function () {
+        console.log("in dynamic grade");
+        var supportNativeVideo = fluid.get(fluid.staticEnvironment, "fluid--browser--nativeVideoSupport");
+
+        if (supportNativeVideo) {
+            return "fluid.videoPlayer.templatesForNativeVideo";
+        } else {
+            return "fluid.videoPlayer.templatesForNonNativeVideo";
+        }
+    };
+
+    // fluid.demands("fluid.videoPlayer.mediaPanelTemplateLoader", ["fluid.browser.nativeVideoSupport"], {
+    //     options: {
+    //         templates: {
+    //             uiOptions: "../html/FatPanelUIOptions.html"
+    //         }
+    //     }
+    // });
 
     /**
      * A grade responsible for binding the UIEnhancer relay to the VideoPlayer
@@ -245,18 +270,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         callback(that);
     };
 
-    // Add the grade to the video player
-    fluid.demands("fluid.videoPlayer", ["fluid.videoPlayer.addMediaPanels", "fluid.uiEnhancer"], {
-        options: {
-            gradeNames: ["fluid.videoPlayer.enhancerBinder"]
-        }
-    });
-
     fluid.defaults("fluid.videoPlayer.mediaPanelMessageLoader", {
         gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
         templates: {
             captionSettings: "../messages/captions.json",
-            transcriptSettings: "../messages/transcripts.json",
+            transcriptSettings: "../messages/transcripts.json"
         }
     });
 })(jQuery);
