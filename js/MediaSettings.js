@@ -197,35 +197,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     // Define templates for UIO with media settings
-    fluid.defaults("fluid.videoPlayer.templatesForNativeVideo", {
-        gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
-        templates: {
-            uiOptions: "../html/FatPanelUIOptions.html"
-        }
-    });
-
-    fluid.defaults("fluid.videoPlayer.templatesForNonNativeVideo", {
-        gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
-        templates: {
-            uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html"
-        }
-    });
-
     fluid.defaults("fluid.videoPlayer.mediaPanelTemplateLoader", {
-        gradeNames: [/*"fluid.progressiveCheckerForComponent", */"fluid.uiOptions.resourceLoader", "autoInit"],
+        gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
         templates: {
             captionsSettings: "../html/MediaPanelTemplate.html",
             transcriptsSettings: "../html/MediaPanelTemplate.html"
-        }//,
-        // progressiveCheckerOptions: {
-        //     checks: [
-        //         {
-        //             feature: "{fluid.browser.nativeVideoSupport}",
-        //             contextName: "fluid.videoPlayer.templatesForNativeVideo"
-        //         }
-        //     ],
-        //     defaultContextName: "fluid.videoPlayer.templatesForNonNativeVideo"
-        // }
+        }
     });
 
     // Replace two demands blocks below with progressive checker once FLUID-5155 is resolved.
@@ -233,13 +210,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // doesn't get resolved when being passed down via IoCSS.
     fluid.demands("templateLoader", ["fluid.uiOptions.fatPanel"], {
         options: {
-            gradeNames: ["fluid.videoPlayer.templatesForNonNativeVideo"]
+            templates: {
+                uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html"
+            }
         }
     });
 
     fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.uiOptions.fatPanel"], {
         options: {
-            gradeNames: ["fluid.videoPlayer.templatesForNativeVideo"]
+            templates: {
+                uiOptions: "../html/FatPanelUIOptions.html"
+            }
         }
     });
 
