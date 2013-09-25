@@ -54,7 +54,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 listener: "fluid.videoPlayer.languageMenu.setAriaControlsAttr",
                 args: ["{languageMenu}", "{arguments}.0"]
             },
-            afterRender: "fluid.videoPlayer.languageMenu.init"
+            afterRender: {
+                listener: "fluid.videoPlayer.languageMenu.init",
+                priority: "first"
+            }
         },
         selectors: {
             menuItem: ".flc-videoPlayer-menuItem",

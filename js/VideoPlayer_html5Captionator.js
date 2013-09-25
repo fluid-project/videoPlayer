@@ -80,8 +80,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.html5Captionator.bindCaptionatorModel = function (that) {
         var elPaths = that.options.elPaths;
-        that.applier.modelChanged.addListener(elPaths.displayCaptions, that.events.onCaptionChanged.fire);
-        that.applier.modelChanged.addListener(elPaths.currentCaptions, that.events.onCaptionChanged.fire);
+
+        // Wrapping the event firing in a wrapper function is a work-around for FLUID-5151
+        that.applier.modelChanged.addListener(elPaths.displayCaptions, function () {
+            that.events.onCaptionChanged.fire();
+        });
+        that.applier.modelChanged.addListener(elPaths.currentCaptions, function () {
+            that.events.onCaptionChanged.fire();
+        });
     };
     
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {

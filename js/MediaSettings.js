@@ -16,8 +16,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 
 (function ($) {
+
     /**
-     * Shared grade for both settings panels
+     * Shared grade for media settings panels
      */
     fluid.defaults("fluid.videoPlayer.panels.mediaSettings", {
         gradeNames: ["fluid.uiOptions.panels", "autoInit"],
@@ -129,8 +130,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.videoPlayer.mediaPanels", {
         // The ideal grade list is to include "fluid.uiOptions" so that the "mediaPanels" can be
         // used independently without the need to specify "fluid.uiOptinos" explicitly. However,
-        // applying it in the grade list causing uiOptions rendered twice. Needs to find out where
-        // the problem is.
+        // applying it in the grade list causing uiOptions rendered twice. Needs to find out the
+        // cause.
         gradeNames: [/*"fluid.uiOptions",*/"fluid.viewComponent", "autoInit"],
         selectors: {
             captionsSettings: ".flc-uiOptions-captions-settings",
@@ -195,8 +196,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    // Tell uiOptions where to find the templates for the media panels
-    // TODO: These paths will all have to be overridden by integrators. Need a better way, through a prefix?
+    // Define templates for UIO with media settings
     fluid.defaults("fluid.videoPlayer.templatesForNativeVideo", {
         gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
         templates: {
@@ -212,44 +212,36 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     fluid.defaults("fluid.videoPlayer.mediaPanelTemplateLoader", {
-        gradeNames: ["fluid.littleComponent", "autoInit", "{that}.getTemplateLoaderGrade"],
-        // gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit", "{that}.getTemplateLoaderGrade"],
+        gradeNames: [/*"fluid.progressiveCheckerForComponent", */"fluid.uiOptions.resourceLoader", "autoInit"],
         templates: {
-            // uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html",
-            // uiOptions: "../html/FatPanelUIOptions.html",
             captionsSettings: "../html/MediaPanelTemplate.html",
             transcriptsSettings: "../html/MediaPanelTemplate.html"
-        },
-        invokers: {
-            getTemplateLoaderGrade: "fluid.videoPlayer.getTemplateLoaderGrade"
-            // getTemplateLoaderGrade: {
-            //     funcName: "console.log",
-            //     args: "in here"
-            // }
-        },
-        listeners: {
-            onCreate: "console.log"
+        }//,
+        // progressiveCheckerOptions: {
+        //     checks: [
+        //         {
+        //             feature: "{fluid.browser.nativeVideoSupport}",
+        //             contextName: "fluid.videoPlayer.templatesForNativeVideo"
+        //         }
+        //     ],
+        //     defaultContextName: "fluid.videoPlayer.templatesForNonNativeVideo"
+        // }
+    });
+
+    // Replace two demands blocks below with progressive checker once FLUID-5155 is resolved.
+    // Right now, the dynamic grade "{that}.check" applied by fluid.progressiveCheckerForComponent
+    // doesn't get resolved when being passed down via IoCSS.
+    fluid.demands("templateLoader", ["fluid.uiOptions.fatPanel"], {
+        options: {
+            gradeNames: ["fluid.videoPlayer.templatesForNonNativeVideo"]
         }
     });
 
-    fluid.videoPlayer.getTemplateLoaderGrade = function () {
-        console.log("in dynamic grade");
-        var supportNativeVideo = fluid.get(fluid.staticEnvironment, "fluid--browser--nativeVideoSupport");
-
-        if (supportNativeVideo) {
-            return "fluid.videoPlayer.templatesForNativeVideo";
-        } else {
-            return "fluid.videoPlayer.templatesForNonNativeVideo";
+    fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.uiOptions.fatPanel"], {
+        options: {
+            gradeNames: ["fluid.videoPlayer.templatesForNativeVideo"]
         }
-    };
-
-    // fluid.demands("fluid.videoPlayer.mediaPanelTemplateLoader", ["fluid.browser.nativeVideoSupport"], {
-    //     options: {
-    //         templates: {
-    //             uiOptions: "../html/FatPanelUIOptions.html"
-    //         }
-    //     }
-    // });
+    });
 
     /**
      * A grade responsible for binding the UIEnhancer relay to the VideoPlayer
