@@ -33,7 +33,8 @@ module.exports = function (grunt) {
         concat: {
             main: {
                 src: "<%= modulefiles.main.output %>",
-                dest: "<%= srcConcatenatedPath %>"}
+                dest: "<%= srcConcatenatedPath %>"
+            }
         },
         uglify: {
             options: {
