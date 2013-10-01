@@ -216,7 +216,7 @@ var fluid_1_5 = fluid_1_5 || {};
         invokers: {
             showHideScrubberHandle: { 
                 funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
-                args: ["{controllers}", "{controllers}.model.totalTime"]
+                args: ["{controllers}", "{arguments}.0.totalTime"]
             }
         },
         
@@ -304,11 +304,13 @@ var fluid_1_5 = fluid_1_5 || {};
                 
                 //TODO: Move to event listeners
                 bindControllerModel(that);
-                that.showHideScrubberHandle();
+                that.showHideScrubberHandle(that.model);
             }
         });
         
-        that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
+        that.applier.modelChanged.addListener("totalTime", function (newModel) {
+            that.showHideScrubberHandle(newModel);
+        });
     };
     
     /********************************************

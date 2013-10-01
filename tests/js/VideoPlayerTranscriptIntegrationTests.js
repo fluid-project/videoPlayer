@@ -19,36 +19,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 (function ($) {
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
-    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.tests.videoPlayer"], {
-        options: {
-            templates: {
-                uiOptions: "../../html/FatPanelUIOptionsNoNativeVideo.html",
-                captionsSettings: "../../html/MediaPanelTemplate.html",
-                transcriptsSettings: "../../html/MediaPanelTemplate.html"
-             }
-        }
-    });
-    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.browser.nativeVideoSupport", "fluid.tests.videoPlayer"], {
-        options: {
-            templates: {
-                uiOptions: "../../html/FatPanelUIOptions.html"
-            }
-        }
-    });
-
     $(document).ready(function () {
 
-        var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
+        var fatPanel = fluid.uiOptions.fatPanel(".flc-uiOptions", {
             gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
-            prefix: "../../lib/infusion/components/uiOptions/html/",
+            templatePrefix: "../../lib/infusion/components/uiOptions/html/",
             templateLoader: {
                 options: {
-                    gradeNames: ["fluid.uiOptions.defaultTemplateLoader"]
+                    gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.uiOptions.defaultTemplateLoader"]
                 }
             },
             uiOptions: {
                 options: {
-                    gradeNames: ["fluid.uiOptions.defaultPanels"]
+                    gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
                 }
             }
         });
@@ -63,16 +46,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     listeners: {
                         onReady: function (that) {
                             jqUnit.notVisible("Before UIO reset, transcripts are not visible", $(".flc-videoPlayer-transcriptArea"));
-                            uiOptions.uiOptionsLoader.uiOptions.events.onReset.addListener(function () {
+                            fatPanel.uiOptions.events.onReset.addListener(function () {
                                 jqUnit.notVisible("After UIO reset, transcripts are not visible", $(".flc-videoPlayer-transcriptArea"));
                                 jqUnit.start();
                             });
-                            uiOptions.uiOptionsLoader.uiOptions.reset();
+                            fatPanel.uiOptions.reset();
                         }
                     }
                 }
             };
-            fluid.testUtils.initEnhancedVideoPlayer(instance, fluid.staticEnvironment.uiEnhancer.relay);
+            fluid.testUtils.initEnhancedVideoPlayer(instance);
         });
 
         jqUnit.asyncTest("Scrubbing", function () {
@@ -131,7 +114,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-            fluid.testUtils.initEnhancedVideoPlayer(instance, fluid.staticEnvironment.uiEnhancer.relay);
+            fluid.testUtils.initEnhancedVideoPlayer(instance);
         });
 
     });

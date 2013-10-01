@@ -40,8 +40,10 @@
         <script>
             fluid.globalSettingsStore();
             fluid.pageEnhancer({
-                gradeNames: ["fluid.uiEnhancer.defaultActions"],
-                tocTemplate: "../../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+                uiEnhancer: {
+                    gradeNames: ["fluid.uiEnhancer.starterEnactors", "fluid.videoPlayer.vpRelay"],
+                    tocTemplate: "../../lib/infusion/components/tableOfContents/html/TableOfContents.html"
+                }
             });
         </script>
 

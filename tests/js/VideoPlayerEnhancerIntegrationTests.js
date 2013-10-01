@@ -26,9 +26,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         components: {
             pageEnhancer: {
                 type: "fluid.pageEnhancer",
-                container: "body",
                 options: {
-                    gradeNames: ["fluid.uiEnhancer.defaultActions"]
+                    uiEnhancer: {
+                        gradeNames: ["fluid.uiEnhancer.starterEnactors", "fluid.videoPlayer.vpRelay"]
+                    }
                 }
             },
             videoPlayer: {

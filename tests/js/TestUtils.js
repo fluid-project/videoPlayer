@@ -21,6 +21,7 @@ fluid.registerNamespace("fluid.testUtils");
 
 (function ($) {
     fluid.testUtils.baseOpts = {
+        gradeNames: ["fluid.videoPlayer.enhancerBinder"],
         video: {
             sources: [
                 {
@@ -90,7 +91,7 @@ fluid.registerNamespace("fluid.testUtils");
         return fluid.videoPlayer(container, opts);
     };
 
-    fluid.testUtils.initEnhancedVideoPlayer = function (instance, relay) {
+    fluid.testUtils.initEnhancedVideoPlayer = function (instance) {
         var opts = fluid.copy(fluid.testUtils.baseOpts);
         $.extend(true, opts, instance.options);
         instance.options = opts;

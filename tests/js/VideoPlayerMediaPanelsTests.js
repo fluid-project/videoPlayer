@@ -21,11 +21,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
+    /*******************************************************************************
+     * set up test environment
+     *******************************************************************************/
+
     fluid.demands("fluid.uiOptions.store", ["fluid.globalSettingsStore", "fluid.tests.videoPlayer"], {
         funcName: "fluid.tempStore"
     });
 
-    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.tests.videoPlayer"], {
+    fluid.demands("templateLoader", ["fluid.uiOptions.fatPanel", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
                 uiOptions: "../../html/FatPanelUIOptionsNoNativeVideo.html",
@@ -34,7 +38,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-    fluid.demands("fluid.uiOptions.templateLoader", ["fluid.videoPlayer.addMediaPanels", "fluid.browser.nativeVideoSupport", "fluid.tests.videoPlayer"], {
+
+    fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.uiOptions.fatPanel", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
                 uiOptions: "../../html/FatPanelUIOptions.html"
@@ -42,38 +47,112 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
+    fluid.demands("messageLoader", ["fluid.uiOptions.fatPanel", "fluid.tests.videoPlayer"], {
+        options: {
+            templates: {
+                captionSettings: "../../messages/captions.json",
+                transcriptSettings: "../../messages/transcripts.json"
+            }
+        }
+    });
+
+    var vpEventsOpts = {
+        listeners: {
+            onReady: "{fluid.tests.videoPlayerMediaPanels}.events.onVPReady"
+        }
+    };
+    var opts = fluid.copy(fluid.testUtils.baseOpts);
+    $.extend(true, opts, vpEventsOpts);
+
+    /*******************************************************************************
+     * The to-be-tested component that contains UIO and video player
+     *******************************************************************************/
+
     fluid.defaults("fluid.tests.videoPlayerMediaPanels", {
-        gradeNames: ["fluid.test.testEnvironment", "autoInit"],
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
         components: {
             fatPanel: {
                 type: "fluid.uiOptions.fatPanel",
                 container: ".flc-uiOptions",
-                createOnEvent: "{tester}.events.onTestCaseStart",
                 options: {
                     gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
-                    prefix: "../../lib/infusion/components/uiOptions/html/",
+                    templatePrefix: "../../lib/infusion/components/uiOptions/html/",
+                    messagePrefix: "../../lib/infusion/components/uiOptions/messages/",
                     templateLoader: {
-                        options: {
-                            gradeNames: ["fluid.uiOptions.starterTemplateLoader"]
-                        }
+                        gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.uiOptions.starterTemplateLoader"]
+                    },
+                    messageLoader: {
+                        gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.uiOptions.starterMessageLoader"]
                     },
                     uiOptions: {
-                        options: {
-                            gradeNames: ["fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
-                        }
+                        gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
+                    },
+                    listeners: {
+                        onReady: "{fluid.tests.videoPlayerMediaPanels}.events.onUIOReady"
                     }
                 }
             },
             videoPlayer: {
                 type: "fluid.videoPlayer",
                 container: ".videoPlayer-test",
-                options: fluid.testUtils.baseOpts
-            },
-            tester: {
-                type: "fluid.tests.videoPlayerMediaPanelsTester"
+                options: opts
+            }
+        },
+        distributeOptions: {
+            source: "{that}.options.vpContainer",
+            removeSource: true,
+            target: "{that > videoPlayer}.container"
+        },
+        events: {
+            onUIOReady: null,
+            onVPReady: null,
+            onReady: {
+                events: {
+                    onUIOReady: "onUIOReady",
+                    onVPReady: "onVPReady"
+                },
+                args: ["{fatPanel}", "{videoPlayer}"]
             }
         }
     });
+
+    /*******************************************************************************
+     * Unit test for initial setup
+     *******************************************************************************/
+
+    fluid.tests.checkPanelsPresent = function (fatPanel, videoPlayer) {
+        var defs = fluid.defaults("fluid.videoPlayer.mediaPanels");
+        var capsPanel = $(defs.selectors.captionsSettings, fatPanel.iframeRenderer.iframeDocument);
+        var transPanel = $(defs.selectors.transcriptsSettings, fatPanel.iframeRenderer.iframeDocument);
+
+        jqUnit.assertEquals("IFrame is present and invisible", false, fatPanel.iframeRenderer.iframe.is(":visible"));
+
+        if (fluid.browser.nativeVideoSupport()) {
+            jqUnit.assertEquals("Captions panel is present", 1, capsPanel.length);
+        } else {
+            jqUnit.assertEquals("Captions panel is not present", 0, capsPanel.length);
+        }
+        jqUnit.assertEquals("Transcripts panel is present", 1, transPanel.length);
+
+        jqUnit.assertNotUndefined("Video player has been instantiated", videoPlayer);
+
+        jqUnit.start();
+    };
+
+    jqUnit.asyncTest("UIO setup", function () {
+        var options = {
+            listeners: {
+                onReady: "fluid.tests.checkPanelsPresent"
+            },
+            vpContainer: ".videoPlayer-test-setup"
+        };
+
+        fluid.tests.videoPlayerMediaPanels(options);
+    });
+
+    /*******************************************************************************
+     * Unit tests for transcripts and captions
+     *******************************************************************************/
 
     var mediaControlsSelectors = {
         captions: ".flc-videoPlayer-captionControls-container button",
@@ -85,28 +164,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
+    fluid.tests.checkTopComponents = function (fatPanel, videoPlayer) {
+        jqUnit.assertNotUndefined("UIO has been instantiated", fatPanel);
+        jqUnit.assertNotUndefined("Video player has been instantiated", videoPlayer);
+    };
+
     fluid.tests.changeUIOModel = function (fatPanel, panel, path, value) {
-        fatPanel.uiOptionsLoader.uiOptions[panel].applier.requestChange(path, value);
-    };
-
-    fluid.tests.assertUIOReady = function (uioLoader, uio) {
-        jqUnit.assertEquals("IFrame is present and invisible", false, uio.iframeRenderer.iframe.is(":visible"));
-    };
-
-    fluid.tests.checkPanelsPresent = function (fatPanel) {
-        var defs = fluid.defaults("fluid.videoPlayer.mediaPanels");
-        var capsPanel = $(defs.selectors.captionsSettings, fatPanel.iframeRenderer.iframeDocument);
-        var transPanel = $(defs.selectors.transcriptsSettings, fatPanel.iframeRenderer.iframeDocument);
-        if (fluid.browser.nativeVideoSupport()) {
-            jqUnit.assertEquals("Captions panel is present", 1, capsPanel.length);
-        } else {
-            jqUnit.assertEquals("Captions panel is not present", 0, capsPanel.length);
-        }
-        jqUnit.assertEquals("Transcripts panel is present", 1, transPanel.length);
+        fatPanel.uiOptions[panel].applier.requestChange(path, value);
     };
 
     fluid.tests.checkMediaState = function (fatPanel, videoPlayer, media, expectedState, scenario) {
-        var uio = fatPanel.uiOptionsLoader.uiOptions;
+        var uio = fatPanel.uiOptions;
         var langCtrlsEnabled = !uio[media + "Settings"].locate("language").prop("disabled");
         var mediaEnabled = !!videoPlayer.model["display" + fluid.tests.capitaliseFirstLetter(media)];
         var mediaMenuButtonOn = $(mediaControlsSelectors[media]).hasClass("fl-videoPlayer-" + media + "-button-on");
@@ -115,95 +183,57 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals(scenario + media + " button is " + (expectedState ? "on" : "off"), expectedState, mediaMenuButtonOn);
     };
 
-    fluid.tests.mediaStateListener = function (fatPanel, videoPlayer, media, expectedState, scenario) {
-        return function (newModel, oldModel, requests) {
-            fluid.tests.checkMediaState(fatPanel, videoPlayer, media, expectedState, scenario);
-        };
+    fluid.tests.verifyMedia = function (fatPanel, videoPlayer, media) {
+        fluid.tests.checkMediaState(fatPanel, videoPlayer, media, false, "Initially, ");
+
+        fluid.tests.changeUIOModel(fatPanel, media + "Settings", "show", true);
+        fluid.tests.checkMediaState(fatPanel, videoPlayer, media, true, "After enabling " + media + ", ");
+
+        fluid.tests.changeUIOModel(fatPanel, media + "Settings", "language", "fr");
+        var actualLang = fluid.tests.languageCodes[videoPlayer.model.currentTracks[media][0]];
+        jqUnit.assertEquals(media + " language is set to fr", "fr", actualLang);
+
+        fluid.tests.changeUIOModel(fatPanel, media + "Settings", "show", false);
+        fluid.tests.checkMediaState(fatPanel, videoPlayer, media, false, "After disabling " + media + ", ");
+
+        jqUnit.start();
     };
 
-    fluid.tests.mediaLanguageListener = function (videoPlayer, media, expectedLang, scenario) {
-        return function (newModel, oldModel, requests) {
-            var actualLang = fluid.tests.languageCodes[videoPlayer.model.currentTracks[media][0]];
-            jqUnit.assertEquals(scenario + media + " language is set to " + expectedLang, expectedLang, actualLang);
-        };
+    fluid.tests.testMedia = function (media, vpContainer) {
+        jqUnit.asyncTest("Video player responds to changes in UIO " + media + " settings model", function () {
+            var options = {
+                listeners: {
+                    onReady: {
+                        listener: "fluid.tests.verifyMedia",
+                        args: ["{arguments}.0", "{arguments}.1", media]
+                    }
+                },
+                vpContainer: vpContainer
+            };
+
+            fluid.tests.videoPlayerMediaPanels(options);
+        });
     };
 
-    var setupModule = {
-        name: "Setup",
-        tests: [{
-            expect: 3,
-            name: "UI Options Ready",
-            sequence: [{
-                listener: "fluid.tests.assertUIOReady",
-                event: "{videoPlayerMediaPanels fatPanel uiOptionsLoader}.events.onReady"
-            }, {
-                func: "fluid.tests.checkPanelsPresent",
-                args: ["{fatPanel}"]
-            }]
-        }]
-    };
+    fluid.tests.testMedia("transcripts", ".videoPlayer-test-transcripts");
 
-    fluid.tests.makeModule = function (media) {
-        return {
-            name: media + " Panel",
-            tests: [{
-                expect: 10,
-                name: "Video player responds to changes in UIO " + media + " settings model",
-                sequence: [{
-                    func: "fluid.tests.checkMediaState",
-                    args: ["{fatPanel}", "{videoPlayer}", media, false, "Initially, "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", media + "Settings", "show", true]
-                }, {
-                    listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.uiOptionsLoader.uiOptions." + media + "Settings.applier.modelChanged",
-                    spec: {path: "show", priority: "last"},
-                    makerArgs: ["{fatPanel}", "{videoPlayer}", media, true, "After enabling " + media + ", "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", media + "Settings", "language", "fr"]
-                }, {
-                    listenerMaker: "fluid.tests.mediaLanguageListener",
-                    changeEvent: "{fatPanel}.applier.modelChanged",
-                    spec: {path: "selections." + media.slice(0, -1) + "Language", priority: "last"},
-                    makerArgs: ["{videoPlayer}", media, "fr", "After setting " + media + " lang to 'fr', "]
-                }, {
-                    func: "fluid.tests.changeUIOModel",
-                    args: ["{fatPanel}", media + "Settings", "show", false]
-                }, {
-                    listenerMaker: "fluid.tests.mediaStateListener",
-                    changeEvent: "{fatPanel}.uiOptionsLoader.uiOptions." + media + "Settings.applier.modelChanged",
-                    spec: {path: "show", priority: "last"},
-                    makerArgs: ["{fatPanel}", "{videoPlayer}", media, false, "After disabling " + media + ", "]
-                }]
-            }]
-        };
-    };
-
-    var modules = [setupModule, fluid.tests.makeModule("transcripts")];
     if (fluid.browser.nativeVideoSupport()) {
-        modules.push(fluid.tests.makeModule("captions"));
+        fluid.tests.testMedia("captions", ".videoPlayer-test-captions");
     }
-    fluid.defaults("fluid.tests.videoPlayerMediaPanelsTester", {
-        gradeNames: ["fluid.test.testCaseHolder", "autoInit"],
-        modules: modules
-    });
 
     $(document).ready(function () {
         fluid.globalSettingsStore();
         fluid.pageEnhancer({
-            gradeNames: ["fluid.uiEnhancer.starterActions"],
-            tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
-            classnameMap: {
-                theme: {
-                    "default": null
+            uiEnhancer: {
+                gradeNames: ["fluid.uiEnhancer.starterEnactors", "fluid.videoPlayer.vpRelay"],
+                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+                classnameMap: {
+                    theme: {
+                        "default": null
+                    }
                 }
             }
         });
-        fluid.test.runTests([
-            "fluid.tests.videoPlayerMediaPanels"
-        ]);
     });
 
 })(jQuery);
