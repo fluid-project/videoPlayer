@@ -1,0 +1,18 @@
+{
+    "core": {
+        "files": [
+            "js/VideoPlayer_framework.js",
+            "js/VideoPlayer_showHide.js",
+            "js/VideoPlayer.js",
+            "js/VideoPlayer_html5Captionator.js",
+            "js/VideoPlayer_controllers.js",
+            "js/ToggleButton.js",
+            "js/MenuButton.js",
+            "js/VideoPlayer_media.js",
+            "js/VideoPlayer_transcript.js",
+            "js/VideoPlayer_intervalEventsConductor.js",
+            "js/VideoPlayer_uiOptions.js"
+        ],
+        "dependencies": ["infusion", "jQueryUI", "captionator", "mediaelement"]
+    }
+}

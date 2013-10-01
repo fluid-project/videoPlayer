@@ -1,0 +1,6 @@
+{
+    "captionator": {
+        "files": ["lib/captionator/js/captionator.js"],
+        "dependencies": []
+    }
+}
