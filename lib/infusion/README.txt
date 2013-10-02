@@ -1,4 +1,4 @@
-MyInfusion was built from Infusion master branch https://github.com/fluid-project/infusion/, commit=2eb984ef7a7973fb8b74c62674d9026145c5fbc5 using the following command:
+MyInfusion was built from Infusion master branch https://github.com/fluid-project/infusion/, commit=3a1c9b7b65159a39f35d9d9deb2d2ac2e17c4819 using the following command:
 
 Build the minified Infusion:
 ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino
