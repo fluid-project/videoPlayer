@@ -20,49 +20,49 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     $(document).ready(function () {
         fluid.globalSettingsStore();
         fluid.pageEnhancer({
-            gradeNames: ["fluid.uiEnhancer.starterEnactors"],
-            tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
-            classnameMap: {
-                theme: {
-                    "default": "fl-videoPlayer-theme"
+            uiEnhancer: {
+                gradeNames: ["fluid.uiEnhancer.starterEnactors", "fluid.videoPlayer.vpRelay"],
+                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+                classnameMap: {
+                    theme: {
+                        "default": "fl-videoPlayer-theme"
+                    }
                 }
             }
         });
 
         var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
             gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
-            prefix: "../lib/infusion/components/uiOptions/html/",
+            templatePrefix: "../lib/infusion/components/uiOptions/html/",
+            messagePrefix: "../lib/infusion/components/uiOptions/messages/",
             templateLoader: {
-                options: {
-                    gradeNames: ["fluid.uiOptions.starterTemplateLoader"]
-                }
+                gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.uiOptions.starterTemplateLoader"]
+            },
+            messageLoader: {
+                gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.uiOptions.starterMessageLoader"]
             },
             uiOptions: {
-                options: {
-                    gradeNames: ["fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"],
-                    members: {
-                        rootModel: {
-                            captions: false,
-                            captionLanguage: "en",
-                            transcripts: false,
-                            transcriptLanguage: "en"
-                        }
+                gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"],
+                members: {
+                    rootModel: {
+                        captions: false,
+                        captionLanguage: "en",
+                        transcripts: false,
+                        transcriptLanguage: "en"
                     }
                 }
-            }
-        });
-
-        fluid.demands("fluid.slidingPanel", "fluid.uiOptions.fatPanel", {
-            options: {
+            },
+            slidingPanel: {
                 strings: {
                     showText: "+ Show Learner Options"
                 }
             }
         });
-        
+
         var earlyVideoPlayerInstances = [ {
             container: ".mammals-video", 
             options: {
+                gradeNames: ["fluid.videoPlayer.enhancerBinder"],
                 videoTitle: "Mammals",
                 video: {
                     sources: [
@@ -112,6 +112,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }, {
             container: ".polar-mammals-video", 
             options: {
+                gradeNames: ["fluid.videoPlayer.enhancerBinder"],
                 videoTitle: "Polar Mammals",
                 video: {
                     sources: [
@@ -163,6 +164,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var lateVideoPlayerInstances = [{
             container: ".polar-adapt-video", 
             options: {
+                gradeNames: ["fluid.videoPlayer.enhancerBinder"],
                 videoTitle: "Polar Mammal Adaptation",
                 video: {
                     sources: [
