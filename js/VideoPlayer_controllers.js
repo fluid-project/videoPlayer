@@ -53,7 +53,7 @@ var fluid_1_5 = fluid_1_5 || {};
     });
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
-        gradeNames: ["fluid.viewComponent", "autoInit"], 
+        gradeNames: ["fluid.viewComponent", "autoInit", "{that}.getCaptionGrade", "{that}.getFullScreenGrade"], 
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
@@ -217,6 +217,12 @@ var fluid_1_5 = fluid_1_5 || {};
             showHideScrubberHandle: { 
                 funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
                 args: ["{controllers}", "{arguments}.0.totalTime"]
+            },
+            getCaptionGrade: {
+                funcName: "fluid.videoPlayer.controllers.getCaptionGrade"
+            },
+            getFullScreenGrade: {
+                funcName: "fluid.videoPlayer.controllers.getFullScreenGrade"
             }
         },
         
@@ -228,67 +234,90 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     });
 
-    var fullScreenButtonOptions = {
-        selectors: {
-            button: ".flc-videoPlayer-fullscreen",
-            label: ".flc-videoPlayer-fullscreen-label"
-        },
-        styles: {
-            init: "fl-videoPlayer-fullscreen",
-            pressed: "fl-videoPlayer-fullscreen-on"
-        },
-        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-        strings: {
-            press: "Full screen",
-            release: "Exit full screen mode"
-        },
-        model: "{controllers}.model",
-        modelPath: "fullscreen",
-        ownModel: false,
-        applier: "{controllers}.applier",
-        listeners: {
-            onReady: "{controllers}.events.onFullScreenReady"
-        }
-    };
-
-    var captionControlsOptions = {
-        languages: "{controllers}.options.captions",
-        model: "{controllers}.model",
-        applier: "{controllers}.applier",
-        showHidePath: "displayCaptions",
-        currentLanguagePath: "currentTracks.captions",
-        styles: {
-            button: "fl-videoPlayer-captions-button",
-            buttonWithShowing: "fl-videoPlayer-captions-button-on"
-        },
-        strings: {
-            showLanguage: "Show Captions",
-            hideLanguage: "Hide Captions",
-            press: "Captions",
-            release: "Captions"
-        },
-        events: {
-            onControlledElementReady: "{controllers}.events.onCaptionsReady"
-        },
-        templates: {
-            menuButton: {
-                href: "{controllers}.options.templates.menuButton.href"
+    fluid.defaults("fluid.videoPlayer.controllers.fullScreenButton", {
+        gradeNames: ["fluid.littleComponent", "autoInit"],
+        components: {
+            fullScreenButton: {
+                type: "fluid.toggleButton",
+                container: "{controllers}.container",
+                createOnEvent: "afterTemplateLoaded",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-fullscreen",
+                        label: ".flc-videoPlayer-fullscreen-label"
+                    },
+                    styles: {
+                        init: "fl-videoPlayer-fullscreen",
+                        pressed: "fl-videoPlayer-fullscreen-on"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: {
+                        press: "Full screen",
+                        release: "Exit full screen mode"
+                    },
+                    model: "{controllers}.model",
+                    modelPath: "fullscreen",
+                    ownModel: false,
+                    applier: "{controllers}.applier",
+                    listeners: {
+                        onReady: "{controllers}.events.onFullScreenReady"
+                    }
+                }
             }
         }
+    });
+
+    fluid.defaults("fluid.videoPlayer.controllers.captionControls", {
+        gradeNames: ["fluid.littleComponent", "autoInit"],
+        components: {
+            captionControls: {
+                type: "fluid.videoPlayer.languageControls",
+                container: "{controllers}.dom.captionControlsContainer",
+                createOnEvent: "afterTemplateLoaded",
+                options: {
+                    languages: "{controllers}.options.captions",
+                    model: "{controllers}.model",
+                    applier: "{controllers}.applier",
+                    showHidePath: "displayCaptions",
+                    currentLanguagePath: "currentTracks.captions",
+                    styles: {
+                        button: "fl-videoPlayer-captions-button",
+                        buttonWithShowing: "fl-videoPlayer-captions-button-on"
+                    },
+                    strings: {
+                        showLanguage: "Show Captions",
+                        hideLanguage: "Hide Captions",
+                        press: "Captions",
+                        release: "Captions"
+                    },
+                    events: {
+                        onControlledElementReady: "{controllers}.events.onCaptionsReady"
+                    },
+                    templates: {
+                        menuButton: {
+                            href: "{controllers}.options.templates.menuButton.href"
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Check if fluid static environment contains the given context featuer. 
+    // If yes, returns the grade. Otherwise, returns an empty string.
+    fluid.videoPlayer.controllers.getGrade = function (envFeature, grade) {
+        var toReplace = new RegExp('\\.', 'g');
+        return !!fluid.get(fluid.staticEnvironment, envFeature.replace(toReplace, "--")) ? grade : "";
     };
 
-    fluid.demands("fullScreenButton", ["fluid.browser.supportsFullScreen"], {
-        funcName: "fluid.toggleButton",
-        container: "{controllers}.container",
-        options: fullScreenButtonOptions
-    });
-    
-    fluid.demands("captionControls", ["fluid.browser.nativeVideoSupport"], {
-        funcName: "fluid.videoPlayer.languageControls",
-        container: "{controllers}.dom.captionControlsContainer",
-        options: captionControlsOptions
-    });
-    
+    fluid.videoPlayer.controllers.getFullScreenGrade = function () {
+        return fluid.videoPlayer.controllers.getGrade("fluid.browser.supportsFullScreen", "fluid.videoPlayer.controllers.fullScreenButton");
+    };
+
+    fluid.videoPlayer.controllers.getCaptionGrade = function () {
+        return fluid.videoPlayer.controllers.getGrade("fluid.browser.nativeVideoSupport", "fluid.videoPlayer.controllers.captionControls");
+    };
+
     fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
         that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
     };
