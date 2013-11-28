@@ -47,7 +47,7 @@ module.exports = function (grunt) {
                     "js/VideoPlayer_media.js",
                     "js/VideoPlayer_transcript.js",
                     "js/VideoPlayer_intervalEventsConductor.js",
-                    "js/VideoPlayer_uiOptions.js"
+                    "js/VideoPlayer_prefsEditor.js"
                 ],
                 dest: "build/videoPlayer-all.js"
             }

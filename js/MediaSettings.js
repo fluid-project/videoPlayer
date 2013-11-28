@@ -20,15 +20,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Shared grade for media settings panels
      */
-    fluid.defaults("fluid.videoPlayer.panels.mediaSettings", {
-        gradeNames: ["fluid.uiOptions.panels", "autoInit"],
+    fluid.defaults("fluid.videoPlayer.panel.mediaSettings", {
+        gradeNames: ["fluid.prefs.panel", "autoInit"],
         model: {
             show: false,
             language: "en",
             type: "media"
         },
         listeners: {
-            onCreate: "fluid.videoPlayer.panels.mediaSettings.toggleLanguageOnShow"
+            onCreate: "fluid.videoPlayer.panel.mediaSettings.toggleLanguageOnShow"
         },
         strings: {
             language: ["English", "French"]
@@ -45,10 +45,10 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             choiceLabel: ".flc-videoPlayer-media-choice-label",
             language: ".flc-videoPlayer-media-language"
         },
-        produceTree: "fluid.videoPlayer.panels.mediaSettings.produceTree"
+        produceTree: "fluid.videoPlayer.panel.mediaSettings.produceTree"
     });
 
-    fluid.videoPlayer.panels.mediaSettings.produceTree = function (that) {
+    fluid.videoPlayer.panel.mediaSettings.produceTree = function (that) {
         return {
             label: {messagekey: that.mediaType + "Label"},
             choiceLabel: {messagekey: that.mediaType + "ChoiceLabel"},
@@ -72,7 +72,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
     };
 
-    fluid.videoPlayer.panels.mediaSettings.toggleLanguageOnShow = function (that) {
+    fluid.videoPlayer.panel.mediaSettings.toggleLanguageOnShow = function (that) {
         that.applier.modelChanged.addListener("show", function (newModel, oldModel, request) {
             that.locate("language").prop("disabled", !that.model.show);
         });
@@ -81,8 +81,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Captions settings panel.
      */
-    fluid.defaults("fluid.videoPlayer.panels.captionsSettings", {
-        gradeNames: ["fluid.videoPlayer.panels.mediaSettings", "autoInit"],
+    fluid.defaults("fluid.videoPlayer.panel.captionsSettings", {
+        gradeNames: ["fluid.videoPlayer.panel.mediaSettings", "autoInit"],
         preferenceMap: {
             "fluid.videoPlayer.displayCaptions": {
                 "model.show": "default"
@@ -104,8 +104,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     /**
      * Transcripts settings panel.
      */
-    fluid.defaults("fluid.videoPlayer.panels.transcriptsSettings", {
-        gradeNames: ["fluid.videoPlayer.panels.mediaSettings", "autoInit"],
+    fluid.defaults("fluid.videoPlayer.panel.transcriptsSettings", {
+        gradeNames: ["fluid.videoPlayer.panel.mediaSettings", "autoInit"],
         preferenceMap: {
             "fluid.videoPlayer.displayTranscripts": {
                 "model.show": "default"
@@ -126,35 +126,35 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
 
-    // Grade for adding the media panels to uiOptions
+    // Grade for adding the media panels to prefsEditor
     fluid.defaults("fluid.videoPlayer.mediaPanels", {
-        // The ideal grade list is to include "fluid.uiOptions" so that the "mediaPanels" can be
-        // used independently without the need to specify "fluid.uiOptinos" explicitly. However,
-        // applying it in the grade list causing uiOptions rendered twice. Needs to find out the
+        // The ideal grade list is to include "fluid.prefs.prefsEditor" so that the "mediaPanels" can be
+        // used independently without the need to specify "fluid.prefs.prefsEditor" explicitly. However,
+        // applying it in the grade list causing prefsEditor rendered twice. Needs to find out the
         // cause.
-        gradeNames: [/*"fluid.uiOptions",*/"fluid.viewComponent", "autoInit"],
+        gradeNames: [/*"fluid.prefs",*/"fluid.viewComponent", "autoInit"],
         selectors: {
-            captionsSettings: ".flc-uiOptions-captions-settings",
-            transcriptsSettings: ".flc-uiOptions-transcripts-settings"
+            captionsSettings: ".flc-prefsEditor-captions-settings",
+            transcriptsSettings: ".flc-prefsEditor-transcripts-settings"
         },
         components: {
             captionsSettings: {
                 type: "fluid.emptyEventedSubcomponent",
-                createOnEvent: "onUIOptionsMarkupReady"
+                createOnEvent: "onPrefsEditorMarkupReady"
             },
             transcriptsSettings: {
-                type: "fluid.videoPlayer.panels.transcriptsSettings",
-                container: "{uiOptions}.dom.transcriptsSettings",
-                createOnEvent: "onUIOptionsMarkupReady",
+                type: "fluid.videoPlayer.panel.transcriptsSettings",
+                container: "{prefsEditor}.dom.transcriptsSettings",
+                createOnEvent: "onPrefsEditorMarkupReady",
                 options: {
-                    gradeNames: "fluid.uiOptions.defaultPanel",
+                    gradeNames: "fluid.prefs.prefsEditorConnections",
                     rules: {
                         "transcripts": "show",
                         "transcriptLanguage": "language"
                     },
                     model: {
-                        show: "{fluid.uiOptions.rootModel}.rootModel.transcripts",
-                        language: "{fluid.uiOptions.rootModel}.rootModel.transcriptLanguage"
+                        show: "{fluid.prefs.rootModel}.rootModel.transcripts",
+                        language: "{fluid.prefs.rootModel}.rootModel.transcriptLanguage"
                     },
                     resources: {
                         template: "{templateLoader}.resources.transcriptsSettings"
@@ -166,17 +166,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // Captions are only supported in browsers wtih native video support
     fluid.demands("captionsSettings", ["fluid.browser.nativeVideoSupport"], {
-        funcName: "fluid.videoPlayer.panels.captionsSettings",
-        container: "{uiOptions}.dom.captionsSettings",
+        funcName: "fluid.videoPlayer.panel.captionsSettings",
+        container: "{prefsEditor}.dom.captionsSettings",
         options: {
-            gradeNames: "fluid.uiOptions.defaultPanel",
+            gradeNames: "fluid.prefs.prefsEditorConnections",
             rules: {
                 "captions": "show",
                 "captionLanguage": "language"
             },
             model: {
-                show: "{fluid.uiOptions.rootModel}.rootModel.captions",
-                language: "{fluid.uiOptions.rootModel}.rootModel.captionLanguage"
+                show: "{fluid.prefs.rootModel}.rootModel.captions",
+                language: "{fluid.prefs.rootModel}.rootModel.captionLanguage"
             },
             resources: {
                 template: "{templateLoader}.resources.captionsSettings"
@@ -196,9 +196,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    // Define templates for UIO with media settings
+    // Define templates for PrefsEditor with media settings
     fluid.defaults("fluid.videoPlayer.mediaPanelTemplateLoader", {
-        gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
+        gradeNames: ["fluid.prefs.resourceLoader", "autoInit"],
         templates: {
             captionsSettings: "../html/MediaPanelTemplate.html",
             transcriptsSettings: "../html/MediaPanelTemplate.html"
@@ -208,18 +208,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     // Replace two demands blocks below with progressive checker once FLUID-5155 is resolved.
     // Right now, the dynamic grade "{that}.check" applied by fluid.progressiveCheckerForComponent
     // doesn't get resolved when being passed down via IoCSS.
-    fluid.demands("templateLoader", ["fluid.uiOptions.fatPanel"], {
+    fluid.demands("templateLoader", ["fluid.prefs.separatedPanel"], {
         options: {
             templates: {
-                uiOptions: "../html/FatPanelUIOptionsNoNativeVideo.html"
+                prefsEditor: "../html/SeparatedPanelNoNativeVideo.html"
             }
         }
     });
 
-    fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.uiOptions.fatPanel"], {
+    fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.prefs.separatedPanel"], {
         options: {
             templates: {
-                uiOptions: "../html/FatPanelUIOptions.html"
+                prefsEditor: "../html/SeparatedPanel.html"
             }
         }
     });
@@ -244,7 +244,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     };
 
     fluid.defaults("fluid.videoPlayer.mediaPanelMessageLoader", {
-        gradeNames: ["fluid.uiOptions.resourceLoader", "autoInit"],
+        gradeNames: ["fluid.prefs.resourceLoader", "autoInit"],
         templates: {
             captionSettings: "../messages/captions.json",
             transcriptSettings: "../messages/transcripts.json"

@@ -1,19 +1,38 @@
-MyInfusion was built from Infusion master branch https://github.com/fluid-project/infusion/, commit=3a1c9b7b65159a39f35d9d9deb2d2ac2e17c4819 using the following command:
+MyInfusion was built from Infusion master branch https://github.com/fluid-project/infusion/, commit=73889463d799973a3a858c921d7bd2f9361c5906 using the following command:
 
 Build the minified Infusion:
-ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino
+ant customBuild -Dinclude="enhancement, preferences, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino
 
 Build the un-minified Infusion:
-ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino -DnoMinify="true"
+ant customBuild -Dinclude="enhancement, preferences, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino -DnoMinify="true"
 
 
+The following directories were stripped out of the build since they contain code that is included in the MyInfusion.js file:
 
-Customizations of UI Options
+	lib/infusion/components/progress/
+    lib/infusion/components/slidingPanel/
+    lib/infusion/components/tableOfContents/js/
+    lib/infusion/components/textfieldSlider/
+    lib/infusion/components/tooltip/
+    lib/infusion/framework/core/
+    lib/infusion/framework/enhancement/
+    lib/infusion/framework/preferences/js/
+    lib/infusion/framework/renderer/
+    lib/infusion/lib/fastXmlPull/
+    lib/infusion/lib/jquery/core/
+    lib/infusion/lib/jquery/plugins/scrollTo/
+    lib/infusion/lib/jquery/plugins/tooltip/js/
+    lib/infusion/lib/jquery/plugins/touchPunch/
+    lib/infusion/lib/jquery/ui/js/
+    lib/infusion/lib/json/
+
+Customizations of Preference Framework
 ============================
 
-The following edits have been made to the UI Options HTML files:
+The following edits have been made to the preference framework HTML files:
 
-FatPanelUIOptionsFrame.html:
+lib/infusion/framework/preferneces/html/SeparatedPanelPrefsEditorFrame.html:
+
 32,38c32
 <         <script type="text/javascript" src="../../../lib/jquery/core/js/jquery.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.core.js"></script>

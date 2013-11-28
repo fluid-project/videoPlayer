@@ -25,29 +25,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * set up test environment
      *******************************************************************************/
 
-    fluid.demands("fluid.uiOptions.store", ["fluid.globalSettingsStore", "fluid.tests.videoPlayer"], {
+    fluid.demands("fluid.prefs.store", ["fluid.globalSettingsStore", "fluid.tests.videoPlayer"], {
         funcName: "fluid.tempStore"
     });
 
-    fluid.demands("templateLoader", ["fluid.uiOptions.fatPanel", "fluid.tests.videoPlayer"], {
+    fluid.demands("templateLoader", ["fluid.prefs.separatedPanel", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
-                uiOptions: "../../html/FatPanelUIOptionsNoNativeVideo.html",
+                prefsEditor: "../../html/SeparatedPanelNoNativeVideo.html",
                 captionsSettings: "../../html/MediaPanelTemplate.html",
                 transcriptsSettings: "../../html/MediaPanelTemplate.html"
             }
         }
     });
 
-    fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.uiOptions.fatPanel", "fluid.tests.videoPlayer"], {
+    fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.prefs.separatedPanel", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
-                uiOptions: "../../html/FatPanelUIOptions.html"
+                prefsEditor: "../../html/SeparatedPanel.html"
             }
         }
     });
 
-    fluid.demands("messageLoader", ["fluid.uiOptions.fatPanel", "fluid.tests.videoPlayer"], {
+    fluid.demands("messageLoader", ["fluid.prefs.separatedPanel", "fluid.tests.videoPlayer"], {
         options: {
             templates: {
                 captionSettings: "../../messages/captions.json",
@@ -65,30 +65,30 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     $.extend(true, opts, vpEventsOpts);
 
     /*******************************************************************************
-     * The to-be-tested component that contains UIO and video player
+     * The to-be-tested component that contains Prefs Editor and video player
      *******************************************************************************/
 
     fluid.defaults("fluid.tests.videoPlayerMediaPanels", {
         gradeNames: ["fluid.eventedComponent", "autoInit"],
         components: {
-            fatPanel: {
-                type: "fluid.uiOptions.fatPanel",
-                container: ".flc-uiOptions",
+            separatedPanel: {
+                type: "fluid.prefs.separatedPanel",
+                container: ".flc-prefsEditor",
                 options: {
-                    gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
-                    templatePrefix: "../../lib/infusion/components/uiOptions/html/",
-                    messagePrefix: "../../lib/infusion/components/uiOptions/messages/",
+                    gradeNames: ["fluid.prefs.transformDefaultPanelsOptions"],
+                    templatePrefix: "../../lib/infusion/framework/preferences/html/",
+                    messagePrefix: "../../lib/infusion/framework/preferences/messages/",
                     templateLoader: {
-                        gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.uiOptions.starterTemplateLoader"]
+                        gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.prefs.starterTemplateLoader"]
                     },
                     messageLoader: {
-                        gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.uiOptions.starterMessageLoader"]
+                        gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.prefs.starterMessageLoader"]
                     },
-                    uiOptions: {
-                        gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"]
+                    prefsEditor: {
+                        gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.prefs.starterPanels", "fluid.prefs.rootModel.starter", "fluid.prefs.uiEnhancerRelay"]
                     },
                     listeners: {
-                        onReady: "{fluid.tests.videoPlayerMediaPanels}.events.onUIOReady"
+                        onReady: "{fluid.tests.videoPlayerMediaPanels}.events.onPrefsEditorReady"
                     }
                 }
             },
@@ -104,14 +104,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             target: "{that > videoPlayer}.container"
         },
         events: {
-            onUIOReady: null,
+            onPrefsEditorReady: null,
             onVPReady: null,
             onReady: {
                 events: {
-                    onUIOReady: "onUIOReady",
+                    onPrefsEditorReady: "onPrefsEditorReady",
                     onVPReady: "onVPReady"
                 },
-                args: ["{fatPanel}", "{videoPlayer}"]
+                args: ["{separatedPanel}", "{videoPlayer}"]
             }
         }
     });
@@ -120,12 +120,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
      * Unit test for initial setup
      *******************************************************************************/
 
-    fluid.tests.checkPanelsPresent = function (fatPanel, videoPlayer) {
+    fluid.tests.checkPanelsPresent = function (separatedPanel, videoPlayer) {
         var defs = fluid.defaults("fluid.videoPlayer.mediaPanels");
-        var capsPanel = $(defs.selectors.captionsSettings, fatPanel.iframeRenderer.iframeDocument);
-        var transPanel = $(defs.selectors.transcriptsSettings, fatPanel.iframeRenderer.iframeDocument);
+        var capsPanel = $(defs.selectors.captionsSettings, separatedPanel.iframeRenderer.iframeDocument);
+        var transPanel = $(defs.selectors.transcriptsSettings, separatedPanel.iframeRenderer.iframeDocument);
 
-        jqUnit.assertEquals("IFrame is present and invisible", false, fatPanel.iframeRenderer.iframe.is(":visible"));
+        jqUnit.assertEquals("IFrame is present and invisible", false, separatedPanel.iframeRenderer.iframe.is(":visible"));
 
         if (fluid.browser.nativeVideoSupport()) {
             jqUnit.assertEquals("Captions panel is present", 1, capsPanel.length);
@@ -139,7 +139,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.start();
     };
 
-    jqUnit.asyncTest("UIO setup", function () {
+    jqUnit.asyncTest("PrefsEditor setup", function () {
         var options = {
             listeners: {
                 onReady: "fluid.tests.checkPanelsPresent"
@@ -164,18 +164,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
 
-    fluid.tests.checkTopComponents = function (fatPanel, videoPlayer) {
-        jqUnit.assertNotUndefined("UIO has been instantiated", fatPanel);
+    fluid.tests.checkTopComponents = function (separatedPanel, videoPlayer) {
+        jqUnit.assertNotUndefined("Prefs Editor has been instantiated", separatedPanel);
         jqUnit.assertNotUndefined("Video player has been instantiated", videoPlayer);
     };
 
-    fluid.tests.changeUIOModel = function (fatPanel, panel, path, value) {
-        fatPanel.uiOptions[panel].applier.requestChange(path, value);
+    fluid.tests.changePrefsEditorModel = function (separatedPanel, panel, path, value) {
+        separatedPanel.prefsEditor[panel].applier.requestChange(path, value);
     };
 
-    fluid.tests.checkMediaState = function (fatPanel, videoPlayer, media, expectedState, scenario) {
-        var uio = fatPanel.uiOptions;
-        var langCtrlsEnabled = !uio[media + "Settings"].locate("language").prop("disabled");
+    fluid.tests.checkMediaState = function (separatedPanel, videoPlayer, media, expectedState, scenario) {
+        var prefsEditor = separatedPanel.prefsEditor;
+        var langCtrlsEnabled = !prefsEditor[media + "Settings"].locate("language").prop("disabled");
         var mediaEnabled = !!videoPlayer.model["display" + fluid.tests.capitaliseFirstLetter(media)];
         var mediaMenuButtonOn = $(mediaControlsSelectors[media]).hasClass("fl-videoPlayer-" + media + "-button-on");
         jqUnit.assertEquals(scenario + media + " language dropdown is " + (expectedState ? " " : " not ") + "enabled", expectedState, langCtrlsEnabled);
@@ -183,24 +183,24 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertEquals(scenario + media + " button is " + (expectedState ? "on" : "off"), expectedState, mediaMenuButtonOn);
     };
 
-    fluid.tests.verifyMedia = function (fatPanel, videoPlayer, media) {
-        fluid.tests.checkMediaState(fatPanel, videoPlayer, media, false, "Initially, ");
+    fluid.tests.verifyMedia = function (separatedPanel, videoPlayer, media) {
+        fluid.tests.checkMediaState(separatedPanel, videoPlayer, media, false, "Initially, ");
 
-        fluid.tests.changeUIOModel(fatPanel, media + "Settings", "show", true);
-        fluid.tests.checkMediaState(fatPanel, videoPlayer, media, true, "After enabling " + media + ", ");
+        fluid.tests.changePrefsEditorModel(separatedPanel, media + "Settings", "show", true);
+        fluid.tests.checkMediaState(separatedPanel, videoPlayer, media, true, "After enabling " + media + ", ");
 
-        fluid.tests.changeUIOModel(fatPanel, media + "Settings", "language", "fr");
+        fluid.tests.changePrefsEditorModel(separatedPanel, media + "Settings", "language", "fr");
         var actualLang = fluid.tests.languageCodes[videoPlayer.model.currentTracks[media][0]];
         jqUnit.assertEquals(media + " language is set to fr", "fr", actualLang);
 
-        fluid.tests.changeUIOModel(fatPanel, media + "Settings", "show", false);
-        fluid.tests.checkMediaState(fatPanel, videoPlayer, media, false, "After disabling " + media + ", ");
+        fluid.tests.changePrefsEditorModel(separatedPanel, media + "Settings", "show", false);
+        fluid.tests.checkMediaState(separatedPanel, videoPlayer, media, false, "After disabling " + media + ", ");
 
         jqUnit.start();
     };
 
     fluid.tests.testMedia = function (media, vpContainer) {
-        jqUnit.asyncTest("Video player responds to changes in UIO " + media + " settings model", function () {
+        jqUnit.asyncTest("Video player responds to changes in Prefs Editor " + media + " settings model", function () {
             var options = {
                 listeners: {
                     onReady: {

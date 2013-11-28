@@ -12,7 +12,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 /*global jQuery, fluid*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 
@@ -31,18 +31,18 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        var uiOptions = fluid.uiOptions.fatPanel(".flc-uiOptions", {
-            gradeNames: ["fluid.uiOptions.transformDefaultPanelsOptions"],
-            templatePrefix: "../lib/infusion/components/uiOptions/html/",
-            messagePrefix: "../lib/infusion/components/uiOptions/messages/",
+        var prefsEditor = fluid.prefs.separatedPanel(".flc-prefsEditor", {
+            gradeNames: ["fluid.prefs.transformDefaultPanelsOptions"],
+            templatePrefix: "../lib/infusion/framework/preferences/html/",
+            messagePrefix: "../lib/infusion/framework/preferences/messages/",
             templateLoader: {
-                gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.uiOptions.starterTemplateLoader"]
+                gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.prefs.starterTemplateLoader"]
             },
             messageLoader: {
-                gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.uiOptions.starterMessageLoader"]
+                gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.prefs.starterMessageLoader"]
             },
-            uiOptions: {
-                gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.uiOptions.starterPanels", "fluid.uiOptions.rootModel.starter", "fluid.uiOptions.uiEnhancerRelay"],
+            prefsEditor: {
+                gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.prefs.starterPanels", "fluid.prefs.rootModel.starter", "fluid.prefs.uiEnhancerRelay"],
                 members: {
                     rootModel: {
                         captions: false,
@@ -60,7 +60,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         var earlyVideoPlayerInstances = [ {
-            container: ".mammals-video", 
+            container: ".mammals-video",
             options: {
                 gradeNames: ["fluid.videoPlayer.enhancerBinder"],
                 videoTitle: "Mammals",
@@ -69,7 +69,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         {
                             src: "videos/Mammals/Mammals.mp4",
                             type: "video/mp4"
-                        }, 
+                        },
                         {
                             src: "videos/Mammals/Mammals.webm",
                             type: "video/webm"
@@ -85,7 +85,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             type: "text/vtt",
                             srclang: "en",
                             label: "English"
-                        }, 
+                        },
                         {
                             src: "videos/Mammals/Mammals.fr.vtt",
                             type: "text/vtt",
@@ -99,7 +99,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             type: "JSONcc",
                             srclang: "en",
                             label: "English"
-                        }, 
+                        },
                         {
                             src: "videos/Mammals/Mammals.transcripts.fr.json",
                             type: "JSONcc",
@@ -110,7 +110,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         }, {
-            container: ".polar-mammals-video", 
+            container: ".polar-mammals-video",
             options: {
                 gradeNames: ["fluid.videoPlayer.enhancerBinder"],
                 videoTitle: "Polar Mammals",
@@ -119,7 +119,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         {
                             src: "videos/PolarMammals/PolarMammals.mp4",
                             type: "video/mp4"
-                        }, 
+                        },
                         {
                             src: "videos/PolarMammals/PolarMammals.webm",
                             type: "video/webm"
@@ -135,7 +135,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             type: "text/vtt",
                             srclang: "en",
                             label: "English"
-                        }, 
+                        },
                         {
                             src: "videos/PolarMammals/PolarMammals.fr.vtt",
                             type: "text/vtt",
@@ -149,7 +149,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             type: "JSONcc",
                             srclang: "en",
                             label: "English"
-                        }, 
+                        },
                         {
                             src: "videos/PolarMammals/PolarMammals.transcripts.fr.json",
                             type: "JSONcc",
@@ -160,9 +160,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         }];
-        
+
         var lateVideoPlayerInstances = [{
-            container: ".polar-adapt-video", 
+            container: ".polar-adapt-video",
             options: {
                 gradeNames: ["fluid.videoPlayer.enhancerBinder"],
                 videoTitle: "Polar Mammal Adaptation",
@@ -187,7 +187,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             type: "text/vtt",
                             srclang: "en",
                             label: "English"
-                        }, 
+                        },
                         {
                             src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.fr.vtt",
                             type: "text/vtt",
@@ -201,7 +201,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                             type: "JSONcc",
                             srclang: "en",
                             label: "English"
-                        }, 
+                        },
                         {
                             src: "videos/PolarMammalAdaptations/PolarMammalAdaptations.transcripts.fr.json",
                             type: "JSONcc",
@@ -212,14 +212,14 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             }
         }];
-    
+
         // TODO: This still needs cleaning up
         fluid.transform(earlyVideoPlayerInstances, function (instance) {
             fluid.invoke("fluid.videoPlayer", [instance.container, instance.options]);
         });
 
-        // Initialise one video player extremely late to show that this method still works 
+        // Initialise one video player extremely late to show that this method still works
         fluid.invoke("fluid.videoPlayer", [lateVideoPlayerInstances[0].container, lateVideoPlayerInstances[0].options]);
     });
-    
+
 })(jQuery);
