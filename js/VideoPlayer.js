@@ -85,7 +85,16 @@ var fluid_1_5 = fluid_1_5 || {};
      */
 
     fluid.defaults("fluid.videoPlayer", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "fluid.progressiveCheckerForComponent", "autoInit"],
+        componentName: "fluid.videoPlayer",
+        progressiveCheckerOptions: {
+            checks: [{
+                // Don't animate show/hide in Safari
+                feature: "{fluid.browser.safari}",
+                contextName: "fluid.videoPlayer.simpleControllers"
+            }],
+            defaultContextName: "fluid.videoPlayer.animatedControllers"
+        },
         components: {
             media: {
                 type: "fluid.videoPlayer.media",
@@ -290,11 +299,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 href: "../html/videoPlayer_template.html"
             }
         },
-        videoTitle: "unnamed video",
-        invokers: {
-            showControllers: "fluid.videoPlayer.showControllers",
-            hideControllers: "fluid.videoPlayer.hideControllers"
-        }
+        videoTitle: "unnamed video"
     });
     
     fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer"], {
@@ -650,21 +655,19 @@ var fluid_1_5 = fluid_1_5 || {};
      *    http://issues.fluidproject.org/browse/FLUID-4804
      * Workaround: Don't animate show/hide in Safari
      *********/
-    fluid.demands("fluid.videoPlayer.showControllers", ["fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.showControllersAnimated",
-        args: ["{videoPlayer}"]
+    // These two grades are solely for the purpose of defining the show/hide functions for XX.
+    // They should never be instantiated.
+    fluid.defaults("fluid.videoPlayer.simpleControllers", {
+        invokers: {
+            showControllers: "fluid.videoPlayer.showControllersSimple",
+            hideControllers: "fluid.videoPlayer.hideControllersSimple"
+        }
     });
-    fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.hideControllersAnimated",
-        args: ["{videoPlayer}"]
-    });
-    fluid.demands("fluid.videoPlayer.showControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.showControllersSimple",
-        args: ["{videoPlayer}"]
-    });
-    fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.hideControllersSimple",
-        args: ["{videoPlayer}"]
+    fluid.defaults("fluid.videoPlayer.animatedControllers", {
+        invokers: {
+            showControllers: "fluid.videoPlayer.showControllersAnimated",
+            hideControllers: "fluid.videoPlayer.hideControllersAnimated"
+        }
     });
     
 })(jQuery, fluid_1_5);

@@ -168,7 +168,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    // Grade that adds the captions settings panel, for browsers that have native video support
+    // This grade is solely for the purpose of adding the captions settings panel to fluid.videoPlayer.mediaPanels
+    // (which doesn't happen if native video is not supported). It should never be instantiated.
     fluid.defaults("fluid.videoPlayer.nativeVideoCaptionSupport", {
         components: {
             captionsSettings: {
