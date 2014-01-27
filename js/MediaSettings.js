@@ -132,16 +132,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // used independently without the need to specify "fluid.prefs.prefsEditor" explicitly. However,
         // applying it in the grade list causing prefsEditor rendered twice. Needs to find out the
         // cause.
-        gradeNames: [/*"fluid.prefs",*/"fluid.viewComponent", "autoInit"],
+        gradeNames: [/*"fluid.prefs",*/"fluid.viewComponent", "fluid.progressiveCheckerForComponent", "autoInit"],
+        componentName: "fluid.videoPlayer.mediaPanels", // where to look for progressive checker options
+        progressiveCheckerOptions: {
+            checks: [{
+                // captions are only supported in browsers that have native video support
+                feature: "{fluid.browser.nativeVideoSupport}",
+                contextName: "fluid.videoPlayer.nativeVideoCaptionSupport"
+            }]
+        },
         selectors: {
             captionsSettings: ".flc-prefsEditor-captions-settings",
             transcriptsSettings: ".flc-prefsEditor-transcripts-settings"
         },
         components: {
-            captionsSettings: {
-                type: "fluid.emptyEventedSubcomponent",
-                createOnEvent: "onPrefsEditorMarkupReady"
-            },
             transcriptsSettings: {
                 type: "fluid.videoPlayer.panel.transcriptsSettings",
                 container: "{prefsEditor}.dom.transcriptsSettings",
@@ -164,22 +168,27 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         }
     });
 
-    // Captions are only supported in browsers wtih native video support
-    fluid.demands("captionsSettings", ["fluid.browser.nativeVideoSupport"], {
-        funcName: "fluid.videoPlayer.panel.captionsSettings",
-        container: "{prefsEditor}.dom.captionsSettings",
-        options: {
-            gradeNames: "fluid.prefs.prefsEditorConnections",
-            rules: {
-                "captions": "show",
-                "captionLanguage": "language"
-            },
-            model: {
-                show: "{fluid.prefs.rootModel}.rootModel.captions",
-                language: "{fluid.prefs.rootModel}.rootModel.captionLanguage"
-            },
-            resources: {
-                template: "{templateLoader}.resources.captionsSettings"
+    // Grade that adds the captions settings panel, for browsers that have native video support
+    fluid.defaults("fluid.videoPlayer.nativeVideoCaptionSupport", {
+        components: {
+            captionsSettings: {
+                type: "fluid.videoPlayer.panel.captionsSettings",
+                createOnEvent: "onPrefsEditorMarkupReady",
+                container: "{prefsEditor}.dom.captionsSettings",
+                options: {
+                    gradeNames: "fluid.prefs.prefsEditorConnections",
+                    rules: {
+                        "captions": "show",
+                        "captionLanguage": "language"
+                    },
+                    model: {
+                        show: "{fluid.prefs.rootModel}.rootModel.captions",
+                        language: "{fluid.prefs.rootModel}.rootModel.captionLanguage"
+                    },
+                    resources: {
+                        template: "{templateLoader}.resources.captionsSettings"
+                    }
+                }
             }
         }
     });
@@ -198,29 +207,29 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
     // Define templates for PrefsEditor with media settings
     fluid.defaults("fluid.videoPlayer.mediaPanelTemplateLoader", {
-        gradeNames: ["fluid.prefs.resourceLoader", "autoInit"],
+        gradeNames: ["fluid.prefs.resourceLoader", "fluid.progressiveCheckerForComponent", "autoInit"],
+        componentName: "fluid.videoPlayer.mediaPanelTemplateLoader",
+        progressiveCheckerOptions: {
+            checks: [{
+                // captions are only supported in browsers that have native video support
+                feature: "{fluid.browser.nativeVideoSupport}",
+                contextName: "fluid.videoPlayer.templateWithCaptionsPanel"
+            }],
+            defaultContextName: "fluid.videoPlayer.templateNoCaptionsPanel"
+        },
         templates: {
             captionsSettings: "../html/MediaPanelTemplate.html",
             transcriptsSettings: "../html/MediaPanelTemplate.html"
         }
     });
-
-    // Replace two demands blocks below with progressive checker once FLUID-5155 is resolved.
-    // Right now, the dynamic grade "{that}.check" applied by fluid.progressiveCheckerForComponent
-    // doesn't get resolved when being passed down via IoCSS.
-    fluid.demands("templateLoader", ["fluid.prefs.separatedPanel"], {
-        options: {
-            templates: {
-                prefsEditor: "../html/SeparatedPanelNoNativeVideo.html"
-            }
+    fluid.defaults("fluid.videoPlayer.templateWithCaptionsPanel", {
+        templates: {
+            prefsEditor: "../html/SeparatedPanel.html"
         }
     });
-
-    fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.prefs.separatedPanel"], {
-        options: {
-            templates: {
-                prefsEditor: "../html/SeparatedPanel.html"
-            }
+    fluid.defaults("fluid.videoPlayer.templateNoCaptionsPanel", {
+        templates: {
+            prefsEditor: "../html/SeparatedPanelNoNativeVideo.html"
         }
     });
 
