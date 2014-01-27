@@ -92,8 +92,11 @@ var fluid_1_5 = fluid_1_5 || {};
                 // Don't animate show/hide in Safari
                 feature: "{fluid.browser.safari}",
                 contextName: "fluid.videoPlayer.simpleControllers"
-            }],
-            defaultContextName: "fluid.videoPlayer.animatedControllers"
+            }, {
+                // Don't add captionator if native video is not supported
+                feature: "{fluid.browser.nativeVideoSupport}",
+                contextName: "fluid.videoPlayer.captionSupport"
+            }]
         },
         components: {
             media: {
@@ -184,11 +187,6 @@ var fluid_1_5 = fluid_1_5 || {};
                         menuButton: "{videoPlayer}.options.templates.menuButton"
                     }
                 }
-            },
-            html5Captionator: {
-                type: "fluid.videoPlayer.captionator",
-                container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onMediaReady"
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -299,21 +297,29 @@ var fluid_1_5 = fluid_1_5 || {};
                 href: "../html/videoPlayer_template.html"
             }
         },
-        videoTitle: "unnamed video"
+        videoTitle: "unnamed video",
+        invokers: {
+            showControllers: "fluid.videoPlayer.showControllersAnimated",
+            hideControllers: "fluid.videoPlayer.hideControllersAnimated"
+        }
     });
     
-    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer"], {
-        funcName: "fluid.emptySubcomponent"
-    });
-    
-    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer", "fluid.browser.nativeVideoSupport"], {
-        funcName: "fluid.videoPlayer.html5Captionator",
-        options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
-            captions: "{videoPlayer}.options.video.captions",
-            events: {
-                onReady: "{videoPlayer}.events.onCaptionsReady"
+    // This grade is solely for the purpose of adding the html5captionator subcomponent,
+    // which doesn't happen if native video is not supported. It should never be instantiated.
+    fluid.defaults("fluid.videoPlayer.captionSupport", {
+        components: {
+            html5Captionator: {
+                type: "fluid.videoPlayer.html5Captionator",
+                container: "{videoPlayer}.dom.videoPlayer",
+                createOnEvent: "onMediaReady",
+                options: {
+                    model: "{videoPlayer}.model",
+                    applier: "{videoPlayer}.applier",
+                    captions: "{videoPlayer}.options.video.captions",
+                    events: {
+                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                    }
+                }
             }
         }
     });
