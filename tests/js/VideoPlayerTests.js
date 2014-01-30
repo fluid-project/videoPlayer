@@ -164,7 +164,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
 
-        var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5"};
+        var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5", "supportsNativeVideo": "fluid.browser.nativeVideoSupport"};
 
         var HTML5Tests = [{
             desc: "video player instantiation with customized controller",

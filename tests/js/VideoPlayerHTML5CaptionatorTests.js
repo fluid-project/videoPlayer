@@ -59,7 +59,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var testInit = function (options, hasCaptionator, hasCaptionatorMarkup) {
             jqUnit.expect(2);
 
-            var assertType = hasCaptionator ? "fluid.videoPlayer.html5Captionator" : "fluid.emptySubcomponent";
+            var assertType = hasCaptionator ? "fluid.videoPlayer.html5Captionator" : undefined;
             var testStr = hasCaptionator ? "html5Captionator has been instantiated"
                                          : "html5Captionator has NOT been instantiated";
             var domStr = hasCaptionatorMarkup ? "Captionator DIV is present in the DOM"
