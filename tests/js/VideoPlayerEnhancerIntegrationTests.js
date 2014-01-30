@@ -24,14 +24,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.defaults("fluid.tests.videoPlayerEnhancer", {
         gradeNames: ["fluid.test.testEnvironment", "autoInit"],
         components: {
-            pageEnhancer: {
-                type: "fluid.pageEnhancer",
-                options: {
-                    uiEnhancer: {
-                        gradeNames: ["fluid.uiEnhancer.starterEnactors", "fluid.videoPlayer.vpRelay"]
-                    }
-                }
-            },
             videoPlayer: {
                 type: "fluid.videoPlayer",
                 container: ".videoPlayer-enhancer",
@@ -151,6 +143,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     $(document).ready(function () {
+        fluid.pageEnhancer({
+            uiEnhancer: {
+                gradeNames: ["fluid.uiEnhancer.starterEnactors", "fluid.videoPlayer.vpRelay"],
+                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+                classnameMap: {
+                    theme: {
+                        "default": null
+                    }
+                }
+            }
+        });
         fluid.test.runTests([
             "fluid.tests.videoPlayerEnhancer"
         ]);
