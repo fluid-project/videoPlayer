@@ -20,18 +20,41 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     fluid.staticEnvironment.vpTest = fluid.typeTag("fluid.tests.videoPlayer");
 
     $(document).ready(function () {
-
         var separatedPanel = fluid.prefs.separatedPanel(".flc-prefsEditor", {
             gradeNames: ["fluid.prefs.transformDefaultPanelsOptions"],
             templatePrefix: "../../lib/infusion/framework/preferences/html/",
+            messagePrefix: "../../lib/infusion/framework/preferences/messages/",
             templateLoader: {
-                options: {
-                    gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.prefs.defaultTemplateLoader"]
-                }
+                gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.prefs.starterTemplateLoader"]
+            },
+            messageLoader: {
+                gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.prefs.starterMessageLoader"]
             },
             prefsEditor: {
-                options: {
-                    gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.prefs.starterPanels", "fluid.prefs.rootModel.starter", "fluid.prefs.uiEnhancerRelay"]
+                gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.prefs.starterPanels", "fluid.prefs.rootModel.starter", "fluid.prefs.uiEnhancerRelay"]
+            }
+        });
+        fluid.demands("templateLoader", ["fluid.prefs.separatedPanel", "fluid.tests.videoPlayer"], {
+            options: {
+                templates: {
+                    prefsEditor: "../../html/SeparatedPanelNoNativeVideo.html",
+                    captionsSettings: "../../html/MediaPanelTemplate.html",
+                    transcriptsSettings: "../../html/MediaPanelTemplate.html"
+                }
+            }
+        });
+        fluid.demands("templateLoader", ["fluid.browser.nativeVideoSupport", "fluid.prefs.separatedPanel", "fluid.tests.videoPlayer"], {
+            options: {
+                templates: {
+                    prefsEditor: "../../html/SeparatedPanel.html"
+                }
+            }
+        });
+        fluid.demands("messageLoader", ["fluid.prefs.separatedPanel", "fluid.tests.videoPlayer"], {
+            options: {
+                templates: {
+                    captionSettings: "../../messages/captions.json",
+                    transcriptSettings: "../../messages/transcripts.json"
                 }
             }
         });
