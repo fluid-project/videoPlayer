@@ -37,6 +37,10 @@ Build:
     # only need to run this the first time, as it will install all necessary dependencies.
     npm install
 
+    # install the command line interface for grunt
+    # you'll likely need to run this as administrator
+    sudo npm install -g grunt-cli
+
     # runs the build and creates
     # products/videoPlayer-all-VERSION.zip
     # products/videoPlayer-all-min-VERSION.zip

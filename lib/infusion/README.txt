@@ -1,39 +1,45 @@
-MyInfusion was built from an unreleased version of Infusion master branch (585ae84e652099a9f944d0bd8dd3fe342bff411e) using the following command:
+MyInfusion was built from Infusion master branch https://github.com/fluid-project/infusion/, commit=568cb1d4091ccc68d95fb91afadfe10c7f14f457 using the following command:
 
 Build the minified Infusion:
-ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino
+ant customBuild -Dinclude="enhancement, preferences, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino
 
 Build the un-minified Infusion:
-ant customBuild -Dinclude="enhancement, uiOptions, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino -DnoMinify="true"
+ant customBuild -Dinclude="enhancement, preferences, progress, tooltip, jQueryScrollToPlugin" -lib lib/rhino -DnoMinify="true"
 
 
+The following directories were stripped out of the build since they contain code that is included in the MyInfusion.js file:
 
-Customizations of UI Options
+	lib/infusion/components/progress/
+    lib/infusion/components/slidingPanel/
+    lib/infusion/components/tableOfContents/js/
+    lib/infusion/components/textfieldSlider/
+    lib/infusion/components/tooltip/
+    lib/infusion/framework/core/
+    lib/infusion/framework/enhancement/
+    lib/infusion/framework/preferences/js/
+    lib/infusion/framework/renderer/
+    lib/infusion/lib/fastXmlPull/
+    lib/infusion/lib/jquery/core/
+    lib/infusion/lib/jquery/plugins/scrollTo/
+    lib/infusion/lib/jquery/plugins/tooltip/js/
+    lib/infusion/lib/jquery/plugins/touchPunch/
+    lib/infusion/lib/jquery/ui/js/
+    lib/infusion/lib/json/
+
+Customizations of Preference Framework
 ============================
 
-The following edits have been made to the UI Options HTML files:
+The following edits have been made to the preference framework HTML files:
 
-FatPanelUIOptions.html:
-9a10
->             <li><a href="#tab4" class="fl-tab-media">Audio + Video</a></li>
-14c15,16
-<         <div id="tab3" class="flc-uiOptions-links-controls fl-uiOptions-links"></div>
----
->         <div id="tab3" class="flc-uiOptions-links-controls fl-uiOptions-links"></div>
->         <div id="tab4" class="flc-uiOptions-media-controls fl-uiOptions-media"></div>
+lib/infusion/framework/preferneces/html/SeparatedPanelPrefsEditorFrame.html:
 
-FatPanelUIOptionsFrame.html:
-24a25,26
->         <!-- Note that this line differs from the framework version -->
->         <link rel="stylesheet" type="text/css" href="../../../../../css/UIOptions-media.css" />
-28,35c30
+32,38c32
 <         <script type="text/javascript" src="../../../lib/jquery/core/js/jquery.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.core.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.widget.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.mouse.js"></script>
 <         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.slider.js"></script>
-<         <script type="text/javascript" src="../../../lib/jquery/ui/js/jquery.ui.tabs.js"></script>
-<         <script type="text/javascript" src="../../../lib/jquery/plugins/ariaTabs/js/ui.ariaTabs.js"></script>          
+<         <script type="text/javascript" src="../../../lib/jquery/plugins/touchPunch/js/jquery.ui.touch-punch.js"></script>
 <         <script type="text/javascript" src="../../../lib/json/js/json2.js"></script>
 ---
->         <script type="text/javascript" src="../../../MyInfusion.js"></script>
+>          <script type="text/javascript" src="../../../MyInfusion.js"></script>

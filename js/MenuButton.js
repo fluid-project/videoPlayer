@@ -32,7 +32,6 @@ var fluid_1_5 = fluid_1_5 || {};
         renderOnInit: true,
         preInitFunction: "fluid.videoPlayer.languageMenu.preInit",
         postInitFunction: "fluid.videoPlayer.languageMenu.postInit",
-        finalInitFunction: "fluid.videoPlayer.languageMenu.finalInit",
         produceTree: "fluid.videoPlayer.languageMenu.produceTree",
         languages: [],
         currentLanguagePath: "activeLanguages",
@@ -54,6 +53,10 @@ var fluid_1_5 = fluid_1_5 || {};
             onControlledElementReady: {
                 listener: "fluid.videoPlayer.languageMenu.setAriaControlsAttr",
                 args: ["{languageMenu}", "{arguments}.0"]
+            },
+            afterRender: {
+                listener: "fluid.videoPlayer.languageMenu.init",
+                priority: "first"
             }
         },
         selectors: {
@@ -212,7 +215,7 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
 
-    fluid.videoPlayer.languageMenu.finalInit = function (that) {
+    fluid.videoPlayer.languageMenu.init = function (that) {
         fluid.videoPlayer.languageMenu.bindEventListeners(that);
         fluid.videoPlayer.languageMenu.setUpKeyboardA11y(that);
 
@@ -364,8 +367,8 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.languageControls.refreshButtonClass = function (that) {
-        var showHide = that.readIndirect("showHidePath");
-        that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, showHide);
+        var showHide = that.readIndirect("showHidePath"); // may be undefined if never set
+        that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, !!showHide);
     };
 
     fluid.videoPlayer.languageControls.setUpControls = function (that) {

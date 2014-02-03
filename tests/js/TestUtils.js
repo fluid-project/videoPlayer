@@ -20,7 +20,8 @@ fluid.registerNamespace("fluid.testUtils");
 /* A number of utility functions for testing things common among many controls */
 
 (function ($) {
-    var baseOpts = {
+    fluid.testUtils.baseOpts = {
+        gradeNames: ["fluid.videoPlayer.enhancerBinder"],
         video: {
             sources: [
                 {
@@ -84,17 +85,17 @@ fluid.registerNamespace("fluid.testUtils");
     };
 
     fluid.testUtils.initVideoPlayer = function (container, options) {
-        var opts = fluid.copy(baseOpts);
+        var opts = fluid.copy(fluid.testUtils.baseOpts);
         $.extend(true, opts, options);
 
         return fluid.videoPlayer(container, opts);
     };
 
-    fluid.testUtils.initEnhancedVideoPlayer = function (instance, relay) {
-        var opts = fluid.copy(baseOpts);
+    fluid.testUtils.initEnhancedVideoPlayer = function (instance) {
+        var opts = fluid.copy(fluid.testUtils.baseOpts);
         $.extend(true, opts, instance.options);
         instance.options = opts;
-        return fluid.videoPlayer.makeEnhancedInstances(instance, relay);
+        return fluid.invoke("fluid.videoPlayer", [instance.container, instance.options]);
     };
 
     fluid.testUtils.getTooltipCheckString = function (jEl, expectedText) {

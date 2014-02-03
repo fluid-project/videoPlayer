@@ -31,9 +31,26 @@ module.exports = function (grunt) {
             }
         },
         concat: {
-            main: {
-                src: "<%= modulefiles.main.output %>",
-                dest: "<%= srcConcatenatedPath %>"
+            all: {
+                src: [
+                    "lib/infusion/MyInfusion.js",
+                    "lib/jqeury-ui/js/jquery.ui.button.js",
+                    "lib/captionator/js/captionator.js",
+                    "lib/mediaelement/js/mediaelement.js",
+                    "js/VideoPlayer_framework.js",
+                    "js/VideoPlayer_showHide.js",
+                    "js/VideoPlayer.js",
+                    "js/VideoPlayer_html5Captionator.js",
+                    "js/VideoPlayer_controllers.js",
+                    "js/ToggleButton.js",
+                    "js/MenuButton.js",
+                    "js/MediaSettings.js",
+                    "js/VideoPlayer_media.js",
+                    "js/VideoPlayer_transcript.js",
+                    "js/VideoPlayer_intervalEventsConductor.js",
+                    "js/VideoPlayer_prefsEditor.js"
+                ],
+                dest: "build/videoPlayer-all.js"
             }
         },
         uglify: {

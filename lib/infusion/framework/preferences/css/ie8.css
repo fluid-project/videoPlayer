@@ -1,0 +1,4 @@
+.fl-prefsEditor .fl-prefsEditor-onoff input{clip:auto;height:1em;width:1em;margin:0;position:relative;}
+.fl-prefsEditor .fl-prefsEditor-onoff .fl-prefsEditor-switch{display:none;}
+.fl-prefsEditor .fl-prefsEditor-onoff input:focus+label{outline:none;}
+@font-face{font-family:'InfusionIcons';src:url('../fonts/InfusionIcons-PrefsEditor.eot');}

@@ -168,7 +168,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         // Wait a second for the previous test process to complete
         setTimeout(function () {
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
-        }, 500);
+        }, 1500);
 
         jqUnit.asyncTest("Drop-down aria-controls text area", function () {
             var testOpts = {

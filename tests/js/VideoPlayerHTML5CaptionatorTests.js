@@ -41,9 +41,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         var initVideoPlayer = function (options, onReadyCallback) {
-            options = options || {};
-
-            fluid.merge(null, options, {
+            options = $.extend(null, options, {
                 listeners: {
                     onReady: onReadyCallback
                 }
@@ -61,7 +59,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var testInit = function (options, hasCaptionator, hasCaptionatorMarkup) {
             jqUnit.expect(2);
 
-            var assertFn = hasCaptionator ? jqUnit.assertNotUndefined : jqUnit.assertUndefined;
+            var assertType = hasCaptionator ? "fluid.videoPlayer.html5Captionator" : undefined;
             var testStr = hasCaptionator ? "html5Captionator has been instantiated"
                                          : "html5Captionator has NOT been instantiated";
             var domStr = hasCaptionatorMarkup ? "Captionator DIV is present in the DOM"
@@ -69,7 +67,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
             initVideoPlayer(options, function (videoPlayer) {
                 // check on the typeName as only real components have a typeName, the fluid.emptySubcomponent does not.
-                assertFn(testStr, fluid.get(videoPlayer, "html5Captionator.typeName"));
+                jqUnit.assertEquals(testStr, assertType, fluid.get(videoPlayer, "html5Captionator.typeName"));
                 jqUnit.assertEquals(domStr, hasCaptionatorMarkup ? 1 : 0, $(captionatorSelector).length);
                 jqUnit.start();
             });
@@ -99,8 +97,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var optionsFullWithDisplayCaptionsOff = {};
 
         // build optionsWithoutCurrentTrack based on defaultOptionsNoCaptions with some extra options
-        fluid.merge(null, optionsWithoutCurrentTrack, defaultOptionsNoCaptions);
-        fluid.merge(null, optionsWithoutCurrentTrack, {
+        optionsWithoutCurrentTrack = $.extend(null, fluid.copy(defaultOptionsNoCaptions), {
             video: {
                 captions: [
                     {
@@ -122,8 +119,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         // build optionsFull based on optionsWithoutCurrentTrack with some extra options
-        fluid.merge(null, optionsFull, optionsWithoutCurrentTrack);
-        fluid.merge(null, optionsFull, {
+        optionsFull = $.extend(null, fluid.copy(optionsWithoutCurrentTrack), {
             model: {
                 currentTracks: {
                     captions: [0]
@@ -133,8 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         // build optionsFullWithDisplayCaptionsOff based on optionsWithoutCurrentTrack but with displayCaptions set to false
-        fluid.merge(null, optionsFullWithDisplayCaptionsOff, optionsWithoutCurrentTrack);
-        fluid.merge(null, optionsFullWithDisplayCaptionsOff, {
+        optionsFullWithDisplayCaptionsOff = $.extend(null, fluid.copy(optionsWithoutCurrentTrack), {
             model: {
                 currentTracks: {
                     captions: [0]
