@@ -147,7 +147,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     ownModel: false,
                     applier: "{controllers}.applier",
                     listeners: {
-                        onReady: "{controllers}.events.onPlayReady"
+                        onAttach: "{controllers}.events.onPlayReady"
                     }
                 }
             },
