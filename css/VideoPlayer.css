@@ -139,6 +139,10 @@
 .fl-videoPlayer-button:focus {
     background-color: #3195C7;
 }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-button {
+    border: none;
+}
+
 .fl-theme-prefsEditor-yb .fl-videoPlayer-button:focus { background-color: #FFFF00 !important; }
 .fl-theme-prefsEditor-wb .fl-videoPlayer-button:focus { background-color: #FFFFFF !important; }
 .fl-theme-prefsEditor-by .fl-videoPlayer-button:focus,
@@ -157,7 +161,8 @@
 }
 
 .fl-theme-prefsEditor-by .fl-videoPlayer-controller,
-.fl-theme-prefsEditor-bw .fl-videoPlayer-controller { box-shadow: none !important; }
+.fl-theme-prefsEditor-bw .fl-videoPlayer-controller,
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-controller { box-shadow: none !important; }
 
 .fl-videoPlayer-controller * {
     display: inline-block;
@@ -708,7 +713,8 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-prefsEditor-yb .fl-videoPlayer-overlay, .fl-theme-prefsEditor-yb .fl-videoPlayer-captionArea, .fl-theme-prefsEditor-yb .captionator-cue-canvas,
 .fl-theme-prefsEditor-wb .fl-videoPlayer-overlay, .fl-theme-prefsEditor-wb .fl-videoPlayer-captionArea, .fl-theme-prefsEditor-wb .captionator-cue-canvas,
 .fl-theme-prefsEditor-by .fl-videoPlayer-overlay, .fl-theme-prefsEditor-by .fl-videoPlayer-captionArea, .fl-theme-prefsEditor-by .captionator-cue-canvas,
-.fl-theme-prefsEditor-bw .fl-videoPlayer-overlay, .fl-theme-prefsEditor-bw .fl-videoPlayer-captionArea, .fl-theme-prefsEditor-bw .captionator-cue-canvas {
+.fl-theme-prefsEditor-bw .fl-videoPlayer-overlay, .fl-theme-prefsEditor-bw .fl-videoPlayer-captionArea, .fl-theme-prefsEditor-bw .captionator-cue-canvas,
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-overlay, .fl-theme-prefsEditor-lgdg .fl-videoPlayer-captionArea, .fl-theme-prefsEditor-lgdg .captionator-cue-canvas {
     background-color: transparent !important;
 }
 .fl-videoPlayer-caption-captionText {
@@ -830,6 +836,10 @@ ul.fl-videoPlayer-transcripts-languageList li {
     border: 1px solid yellow;  /* This will go away once we have the proper styling for the initial overlay */
 }
 
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-main {
+    border: 1px solid #BDBDBB;  /* This will go away once we have the proper styling for the initial overlay */
+}
+
 /*******************************************************************
  * Styling overrides for the scrubber when using PrefsEditor themes
  *******************************************************************/
@@ -837,7 +847,8 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-prefsEditor-bw .fl-videoPlayer-scrubber,
 .fl-theme-prefsEditor-wb .fl-videoPlayer-scrubber,
 .fl-theme-prefsEditor-by .fl-videoPlayer-scrubber,
-.fl-theme-prefsEditor-yb .fl-videoPlayer-scrubber {
+.fl-theme-prefsEditor-yb .fl-videoPlayer-scrubber,
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-scrubber {
      border-width: 1px;
      margin: 0 -2px; /* To compensate for the additional border width, so div stays within container */
 }
@@ -845,7 +856,8 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-prefsEditor-bw .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-prefsEditor-wb .fl-videoPlayer-scrubber .ui-slider-handle,
 .fl-theme-prefsEditor-by .fl-videoPlayer-scrubber .ui-slider-handle,
-.fl-theme-prefsEditor-yb .fl-videoPlayer-scrubber .ui-slider-handle {
+.fl-theme-prefsEditor-yb .fl-videoPlayer-scrubber .ui-slider-handle,
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-scrubber .ui-slider-handle {
      border-width: 1px;
  }
 
@@ -863,6 +875,10 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-prefsEditor-yb .fl-videoPlayer-scrubber .ui-slider-range {
     background-image: none;
     background-color: yellow !important;
+}
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-scrubber .ui-slider-range {
+    background-image: none;
+    background-color: #BDBDBB !important;
 }
 
 
@@ -894,6 +910,14 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-prefsEditor-yb .ui-state-default.ui-state-hover .ui-icon {
     background-color: #ff0 !important;
 }
+
+.fl-theme-prefsEditor-lgdg .ui-state-active .ui-button-text,
+.fl-theme-prefsEditor-lgdg .ui-state-active .ui-icon,
+.fl-theme-prefsEditor-lgdg .ui-state-default.ui-state-hover .ui-button-text,
+.fl-theme-prefsEditor-lgdg .ui-state-default.ui-state-hover .ui-icon {
+    background-color: #BDBDBB !important;
+}
+
 
 /*******************************************************************
  * Styling overrides for the controls when using PrefsEditor themes
@@ -1014,6 +1038,22 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/white/pause_hover.png');
 }
 
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-play {
+    background-image: url('../images/lgdg/play.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-play:hover {
+    background-image: url('../images/lgdg/play_hover.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-playing {
+    background-image: url('../images/lgdg/pause.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-playing:hover {
+    background-image: url('../images/lgdg/pause_hover.png');
+}
+
 
 /* Fullscreen button */
 
@@ -1069,6 +1109,15 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/white/smallscreen_hover.png');
 }
 
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-fullscreen {
+    background-image: url('../images/lgdg/fullscreen.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-fullscreen:hover {
+    background-image: url('../images/lgdg/fullscreen_hover.png');
+}
+
+
 /* Volume button */
 .fl-theme-prefsEditor-bw .fl-videoPlayer-mute,
 .fl-theme-prefsEditor-by .fl-videoPlayer-mute {
@@ -1095,6 +1144,13 @@ ul.fl-videoPlayer-transcripts-languageList li {
 
 .fl-theme-prefsEditor-wb .fl-videoPlayer-muted {
     background-image: url('../images/white/volume_off.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-mute {
+    background-image: url('../images/lgdg/volume.png');
+}
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-muted {
+    background-image: url('../images/lgdg/volume_off.png');
 }
 
 /* Captions and transcripts */
@@ -1137,6 +1193,18 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/white/captions_on.png');
 }
 
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-captions-button {
+    background-image: url('../images/lgdg/captions.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-captions-button:hover {
+    background-image: url('../images/lgdg/captions_hover.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-captions-button-on {
+    background-image: url('../images/lgdg/captions_on.png');
+}
+
 .fl-theme-prefsEditor-bw .fl-videoPlayer-transcripts-button,
 .fl-theme-prefsEditor-by .fl-videoPlayer-transcripts-button {
     background-image: url('../images/black/transcript.png');
@@ -1176,10 +1244,24 @@ ul.fl-videoPlayer-transcripts-languageList li {
     background-image: url('../images/white/transcript_on.png');
 }
 
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-button {
+    background-image: url('../images/lgdg/transcript.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-button:hover {
+    background-image: url('../images/lgdg/transcript_hover.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-button-on {
+    background-image: url('../images/lgdg/transcript_on.png');
+}
+
+
 .fl-theme-prefsEditor-wb .fl-videoPlayer-transcript-element:hover,
 .fl-theme-prefsEditor-yb .fl-videoPlayer-transcript-element:hover,
 .fl-theme-prefsEditor-bw .fl-videoPlayer-transcript-element:hover,
-.fl-theme-prefsEditor-by .fl-videoPlayer-transcript-element:hover {
+.fl-theme-prefsEditor-by .fl-videoPlayer-transcript-element:hover,
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcript-element:hover {
     text-decoration:underline;
 }
 
@@ -1199,4 +1281,9 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-prefsEditor-by .fl-videoPlayer-transcripts-close-button,
 .fl-theme-prefsEditor-by .fl-videoPlayer-transcripts-close-button:hover {
     background-image: url('../images/black/transcriptclose.png');
+}
+
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-close-button,
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-close-button:hover {
+    background-image: url('../images/lgdg/transcriptclose.png');
 }
