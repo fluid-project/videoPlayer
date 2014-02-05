@@ -86,7 +86,7 @@
 .fl-theme-prefsEditor-wb .fl-videoPlayer-video-play { background-image: url('../images/white/play_overlay.png'); background-color: rgba(0,0,0,0.05) !important; }
 .fl-theme-prefsEditor-by .fl-videoPlayer-video-play { background-image: url('../images/black/play_overlay_by.png'); background-color: rgba(0,0,0,0.05) !important; }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-video-play { background-image: url('../images/black/play_overlay_bw.png'); background-color: rgba(0,0,0,0.05) !important; }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-video-play { background-image: url('../images/black/play_overlay_lgdg.png'); background-color: rgba(0,0,0,0.05) !important; }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-video-play { background-image: url('../images/lgdg/play_overlay_lgdg.png'); background-color: rgba(0,0,0,0.05) !important; }
 
 .fl-videoPlayer-video-element:focus,
 .fl-videoPlayer-transcript-element-selected {
@@ -455,7 +455,7 @@ a.fl-videoPlayer-button-wrapper {
     background-image: url('../images/black/sliderbg_blackonwhite.jpg') !important;
 }
 .fl-theme-prefsEditor-lgdg .fl-videoPlayer-volumeControl {
-    background-image: url('../images/lgdg/sliderbg_lgdg.jpg') !important;
+    background-image: url('../images/lgdg/sliderbg_lgdg.png') !important;
 }
 .fl-theme-prefsEditor-by .fl-videoPlayer-volumeControl .ui-slider-handle,
 .fl-theme-prefsEditor-bw .fl-videoPlayer-volumeControl .ui-slider-handle {

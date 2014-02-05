@@ -1,0 +1,6 @@
+{
+    "mediaelement": {
+        "files": ["lib/mediaelement/js/mediaelement.js"],
+        "dependencies": []
+    }
+}

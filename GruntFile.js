@@ -1,6 +1,11 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        packageName: grunt.option("packageName") || "videoPlayer-all",
+        srcConcatenatedPath: "build/<%= packageName %>.js",
+        minConcatenatedPath: "build/<%= packageName %>-min.js",
+        vpFiles: {
+            src: ["ReleaseNotes.txt", "README.txt", "css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"},
         clean: {
             build: "build",
             products: "products"
@@ -8,24 +13,20 @@ module.exports = function (grunt) {
         compress: {
             src: {
                 options: {
-                    archive: "products/videoPlayer-all-<%= pkg.version %>.zip"
+                    archive: "products/<%= packageName %>-<%= pkg.version %>.zip"
                 },
                 files: [
-                    // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
-                    {src: ["build/videoPlayer-all.js"], dest: "./", expand: true, cwd: "./", flatten: true},
-                    {src: ["./ReleaseNotes.txt"], dest: "./"},
-                    {src: ["css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
+                    {src: ["<%= srcConcatenatedPath %>"], dest: "./", expand: true, cwd: "./", flatten: true},
+                    "<%= vpFiles %>"
                 ]
             },
             min: {
                 options: {
-                    archive: "products/videoPlayer-all-min-<%= pkg.version %>.zip"
+                    archive: "products/<%= packageName %>-min-<%= pkg.version %>.zip"
                 },
                 files: [
-                    // expand makes the src relative to cwd path, and flatten collapses the file down to the cwd directory
-                    {src: ["build/videoPlayer-all-min.js"], dest: "./", expand: true, cwd: "./", flatten: true},
-                    {src: ["./ReleaseNotes.txt"], dest: "./"},
-                    {src: ["css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"}
+                    {src: ["<%= minConcatenatedPath %>"], dest: "./", expand: true, cwd: "./", flatten: true},
+                    "<%= vpFiles %>"
                 ]
             }
         },
@@ -57,19 +58,30 @@ module.exports = function (grunt) {
                 mangle: false
             },
             my_target: {
-                files: {
-                    "build/videoPlayer-all-min.js": ["build/videoPlayer-all.js"]
-                }
+                src: ["<%= srcConcatenatedPath %>"],
+                dest: "<%= minConcatenatedPath %>"
+            }
+        },
+        modulefiles: {
+            main: {
+                options: {
+                    exclude: grunt.option("exclude") || [],
+                    include: grunt.option("include")
+                },
+                src: ["**/*Dependencies.json"]
             }
         }
     });
+
+    console.log("src path: " + grunt.config.get("srcConcatenatedPath"));
 
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-compress");
     grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks('grunt-modulefiles');
 
-    grunt.registerTask("build-src", ["clean", "concat"]);
+    grunt.registerTask("build-src", ["clean", "modulefiles", "concat"]);
     grunt.registerTask("build-min", ["build-src", "uglify"]);
     grunt.registerTask("build", ["build-min", "compress", "clean:build"]);
     grunt.registerTask("default", ["build"]);
