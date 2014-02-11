@@ -28,8 +28,8 @@ Demos
 Video Player ships with demos for seeing it in action. You can
 find it in the "demos" folder in the release bundle or nightly builds on our web site at:
 
-    http://build.fluidproject.org/videoPlayer/videoPlayer/demos/VideoPlayer.html
-    http://build.fluidproject.org/videoPlayer/videoPlayer/demos/Mammals.html
+    http://build.fluidproject.org/videoPlayer/demos/VideoPlayer.html
+    http://build.fluidproject.org/videoPlayer/demos/Mammals.html
 
 When run from your local machine, the demos must be served through a web server to function properly.
 

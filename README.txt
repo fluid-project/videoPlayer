@@ -7,7 +7,7 @@ VideoPlayer is an HTML5 video player, built with the Fluid Infusion framework.
 Where Can I See a Demo?
 =======================
 
-    http://build.fluidproject.org/videoPlayer/videoPlayer/demos/Mammals.html
+    http://build.fluidproject.org/videoPlayer/demos/Mammals.html
 
 
 How Do I Build VideoPlayer?
