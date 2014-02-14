@@ -197,6 +197,11 @@ var fluid_1_5 = fluid_1_5 || {};
          };
     };
     
-    
+    // Check if fluid static environment contains the given context feature.
+    // If yes, returns the grade. Otherwise, returns an empty string.
+    fluid.videoPlayer.getGrade = function (envFeature, grade) {
+        var toReplace = new RegExp('\\.', 'g');
+        return !!fluid.get(fluid.staticEnvironment, envFeature.replace(toReplace, "--")) ? grade : "";
+    };
+
 })(jQuery, fluid_1_5);
-    

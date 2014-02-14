@@ -85,17 +85,13 @@ var fluid_1_5 = fluid_1_5 || {};
      */
 
     fluid.defaults("fluid.videoPlayer", {
-        gradeNames: ["fluid.viewComponent", "fluid.progressiveCheckerForComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "fluid.progressiveCheckerForComponent", "{that}.getCaptionGrade", "autoInit"],
         componentName: "fluid.videoPlayer",
         progressiveCheckerOptions: {
             checks: [{
                 // Don't animate show/hide in Safari
                 feature: "{fluid.browser.safari}",
                 contextName: "fluid.videoPlayer.simpleControllers"
-            }, {
-                // Don't add captionator if native video is not supported
-                feature: "{fluid.browser.nativeVideoSupport}",
-                contextName: "fluid.videoPlayer.captionSupport"
             }]
         },
         components: {
@@ -300,10 +296,17 @@ var fluid_1_5 = fluid_1_5 || {};
         videoTitle: "unnamed video",
         invokers: {
             showControllers: "fluid.videoPlayer.showControllersAnimated",
-            hideControllers: "fluid.videoPlayer.hideControllersAnimated"
+            hideControllers: "fluid.videoPlayer.hideControllersAnimated",
+            getCaptionGrade: {
+                funcName: "fluid.videoPlayer.getCaptionGrade"
+            }
         }
     });
     
+    fluid.videoPlayer.getCaptionGrade = function () {
+        return fluid.videoPlayer.getGrade("fluid.browser.nativeVideoSupport", "fluid.videoPlayer.captionSupport");
+    };
+
     // This grade is solely for the purpose of adding the html5captionator subcomponent,
     // which doesn't happen if native video is not supported. It should never be instantiated.
     fluid.defaults("fluid.videoPlayer.captionSupport", {

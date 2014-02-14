@@ -303,19 +303,12 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     });
 
-    // Check if fluid static environment contains the given context featuer. 
-    // If yes, returns the grade. Otherwise, returns an empty string.
-    fluid.videoPlayer.controllers.getGrade = function (envFeature, grade) {
-        var toReplace = new RegExp('\\.', 'g');
-        return !!fluid.get(fluid.staticEnvironment, envFeature.replace(toReplace, "--")) ? grade : "";
-    };
-
     fluid.videoPlayer.controllers.getFullScreenGrade = function () {
-        return fluid.videoPlayer.controllers.getGrade("fluid.browser.supportsFullScreen", "fluid.videoPlayer.controllers.fullScreenButton");
+        return fluid.videoPlayer.getGrade("fluid.browser.supportsFullScreen", "fluid.videoPlayer.controllers.fullScreenButton");
     };
 
     fluid.videoPlayer.controllers.getCaptionGrade = function () {
-        return fluid.videoPlayer.controllers.getGrade("fluid.browser.nativeVideoSupport", "fluid.videoPlayer.controllers.captionControls");
+        return fluid.videoPlayer.getGrade("fluid.browser.nativeVideoSupport", "fluid.videoPlayer.controllers.captionControls");
     };
 
     fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
