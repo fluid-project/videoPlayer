@@ -983,6 +983,11 @@ ul.fl-videoPlayer-transcripts-languageList li {
     color: yellow !important;
     text-decoration: none !important;
 }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcript-element-highlight {
+    background-color: #BDBDBB !important;
+    color: #555555 !important;
+    text-decoration: none !important;
+}
 
 
 /* Play button */
