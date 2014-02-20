@@ -435,6 +435,11 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-volumeControl .ui-slider-handle {
     background-color: #FFFFFF !important;
 }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-volumeControl .ui-slider-handle {
+    background-image: none !important;
+    outline: 1px solid #555555;
+    background-color: #BDBDBB !important;
+}
 .fl-theme-prefsEditor-yb .fl-videoPlayer-volumeControl .ui-slider-range-min,
 .fl-theme-prefsEditor-wb .fl-videoPlayer-volumeControl .ui-slider-range-min {
     background-image: none !important;
