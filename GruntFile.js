@@ -5,7 +5,8 @@ module.exports = function (grunt) {
         srcConcatenatedPath: "build/<%= packageName %>.js",
         minConcatenatedPath: "build/<%= packageName %>-min.js",
         vpFiles: {
-            src: ["ReleaseNotes.txt", "README.txt", "css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**"], dest: "./"},
+            src: ["ReleaseNotes.txt", "README.txt", "css/**", "demos/**", "html/**", "images/**", "js/**", "lib/**", "tests/**", "messages/**", "fonts/**"],
+            dest: "./"},
         clean: {
             build: "build",
             products: "products"
