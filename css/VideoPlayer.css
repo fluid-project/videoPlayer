@@ -205,7 +205,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-play:focus { background-image: url('../images/black/play.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-play:focus { background-image: url('../images/yellow/play.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-play:focus { background-image: url('../images/white/play.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-play:focus { background-image: url('../images/lgdg/play.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-play:focus { background-image: url('../images/dglg/play.png'); }
 
 .fl-videoPlayer-playing {
     background-image: url('../images/default/pause.png');
@@ -222,7 +222,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-playing:focus { background-image: url('../images/black/pause.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-playing:focus { background-image: url('../images/yellow/pause.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-playing:focus { background-image: url('../images/white/pause.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-playing:focus { background-image: url('../images/lgdg/pause.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-playing:focus { background-image: url('../images/dglg/pause.png'); }
 
 /* Fullscreen button */
 .fl-videoPlayer-fullscreen {
@@ -240,7 +240,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-fullscreen:focus { background-image: url('../images/black/fullscreen.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-fullscreen:focus { background-image: url('../images/yellow/fullscreen.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-fullscreen:focus { background-image: url('../images/white/fullscreen.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-fullscreen:focus { background-image: url('../images/lgdg/fullscreen.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-fullscreen:focus { background-image: url('../images/dglg/fullscreen.png'); }
 
 .fl-videoPlayer-fullscreen-on {
     background-image: url('../images/default/smallscreen.png');
@@ -257,7 +257,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-fullscreen-on:focus { background-image: url('../images/black/smallscreen.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-fullscreen-on:focus { background-image: url('../images/yellow/smallscreen.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-fullscreen-on:focus { background-image: url('../images/white/smallscreen.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-fullscreen-on:focus { background-image: url('../images/lgdg/smallscreen.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-fullscreen-on:focus { background-image: url('../images/dglg/smallscreen.png'); }
 
 /* Volume button */
 .fl-videoPlayer-mute {
@@ -284,7 +284,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-captions-button:focus { background-image: url('../images/black/captions.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-captions-button:focus { background-image: url('../images/yellow/captions.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-captions-button:focus { background-image: url('../images/white/captions.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-captions-button:focus { background-image: url('../images/lgdg/captions.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-captions-button:focus { background-image: url('../images/dglg/captions.png'); }
 
 .fl-videoPlayer-captions-button-on {
     background-image: url('../images/default/captions_on.png');
@@ -296,7 +296,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-captions-button-on:focus { background-image: url('../images/black/captions_on.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-captions-button-on:focus { background-image: url('../images/yellow/captions_on.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-captions-button-on:focus { background-image: url('../images/white/captions_on.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-captions-button-on:focus { background-image: url('../images/lgdg/captions_on.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-captions-button-on:focus { background-image: url('../images/dglg/captions_on.png'); }
 
 /* Transcript button */
 .fl-videoPlayer-transcripts-button {
@@ -314,7 +314,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-transcripts-button:focus { background-image: url('../images/black/transcript.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-transcripts-button:focus { background-image: url('../images/yellow/transcript.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-transcripts-button:focus { background-image: url('../images/white/transcript.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-button:focus { background-image: url('../images/lgdg/transcript.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-button:focus { background-image: url('../images/dglg/transcript.png'); }
 
 .fl-videoPlayer-transcripts-button-on {
     background-image: url('../images/default/transcript_on.png');
@@ -326,7 +326,7 @@ a.fl-videoPlayer-button-wrapper {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-transcripts-button-on:focus { background-image: url('../images/black/transcript_on.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-transcripts-button-on:focus { background-image: url('../images/yellow/transcript_on.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-transcripts-button-on:focus { background-image: url('../images/white/transcript_on.png'); }
-.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-button-on:focus { background-image: url('../images/lgdg/transcript_on.png'); }
+.fl-theme-prefsEditor-lgdg .fl-videoPlayer-transcripts-button-on:focus { background-image: url('../images/dglg/transcript_on.png'); }
 
 
 /******************
@@ -371,7 +371,7 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-theme-prefsEditor-lgdg .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-mute {
     background-color: #bdbdbb !important;
-    background-image: url('../images/lgdg/volume.png');
+    background-image: url('../images/dglg/volume.png');
 }
 
 .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
@@ -396,7 +396,7 @@ a.fl-videoPlayer-button-wrapper {
 }
 .fl-theme-prefsEditor-lgdg .fl-videoPlayer-volumeContainer:focus .fl-videoPlayer-muted {
     background-color: #BDBDBB !important;
-    background-image: url('../images/lgdg/volume_off.png');
+    background-image: url('../images/dglg/volume_off.png');
 }
 
 .fl-videoPlayer-volumeControl.ui-corner-all {
@@ -791,6 +791,7 @@ ul.fl-videoPlayer-transcripts-languageList li {
 .fl-theme-prefsEditor-wb .fl-videoPlayer-transcripts-close-button:focus { background-image: url('../images/black/transcriptclose.png'); }
 .fl-theme-prefsEditor-by .fl-videoPlayer-transcripts-close-button:focus { background-image: url('../images/yellow/transcriptclose.png'); }
 .fl-theme-prefsEditor-bw .fl-videoPlayer-transcripts-close-button:focus { background-image: url('../images/white/transcriptclose.png'); }
+.fl-theme-prefsEditor-lddg .fl-videoPlayer-transcripts-close-button:focus { background-image: url('../images/dglg/transcriptclose.png'); }
 
 .fl-videoPlayer-transcript-element:hover {
     color: #25b3d3;
