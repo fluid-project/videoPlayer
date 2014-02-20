@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2013 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -94,7 +94,9 @@ var fluid_1_5 = fluid_1_5 || {};
                     var synthChange = {type: "ADD", path: key, value: newValue};
                     // fluid.log("Replaying pent change ", synthChange, " to target ", target);
                     var changes = value.func(newValue, key, target, [synthChange]);
-                    fluid.requestChanges(target.applier, changes);
+                    if (changes.length > 0) {
+                        fluid.requestChanges(target.applier, changes);
+                    }
                 }
             });
         }
@@ -165,8 +167,7 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
     
-
-// TODO: move into DataBinding
+    // TODO: move into DataBinding
     fluid.linearRangeGuard = function(min, max) {
         return function (model, changeRequest, applier) {
             var newValue = changeRequest.value;
@@ -180,9 +181,6 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     };
 
-
-    
-    
     // A "mini-grade" to ease the work of dealing with "modelPath" idiom components - this
     // is only desirable until changeApplier relay gets into the core framework
     fluid.defaults("fluid.videoPlayer.indirectReader", {
@@ -199,6 +197,11 @@ var fluid_1_5 = fluid_1_5 || {};
          };
     };
     
-    
+    // Check if fluid static environment contains the given context feature.
+    // If yes, returns the grade. Otherwise, returns an empty string.
+    fluid.videoPlayer.getGrade = function (envFeature, grade) {
+        var toReplace = new RegExp('\\.', 'g');
+        return !!fluid.get(fluid.staticEnvironment, envFeature.replace(toReplace, "--")) ? grade : "";
+    };
+
 })(jQuery, fluid_1_5);
-    

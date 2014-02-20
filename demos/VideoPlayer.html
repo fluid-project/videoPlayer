@@ -5,22 +5,26 @@
         <title>Video Player Demo</title>
         <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-layout.css" />
         <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-text.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-bw-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-wb-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-by-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-yb-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-text-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/FatPanelUIOptions.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-bw-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-wb-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-by-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-yb-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-lgdg-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-dglg-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-text-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/SeparatedPanelPrefsEditor.css" />
 
         <link type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />
         <link type="text/css" href="../css/VideoPlayer.css" rel="stylesheet" />
         <link type="text/css" href="../lib/captionator/css/captions.css" rel="stylesheet" />
+        <link type="text/css" href="PrefsEditor.css" rel="stylesheet" />
         <!--[if lt IE 9]>
             <link type="text/css" href="../css/ltie9.css" rel="stylesheet" />
         <![endif]-->
 
         <!-- Fluid and jQuery Dependencies -->
         <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
+        <script type="text/javascript" src="../js/MediaSettings.js"></script>
         <!-- Utils -->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../lib/captionator/js/captionator.js"></script>
@@ -39,21 +43,18 @@
         <script type="text/javascript" src="../js/VideoPlayer_media.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_transcript.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayer_uiOptions.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_prefsEditor.js"></script>
 
         </head>
     <body>
-        <script>
-            fluid.pageEnhancer({
-                tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html"
-            });
-        </script>
-
-        <div class="flc-uiOptions fl-uiOptions-fatPanel">
-            <div class="flc-slidingPanel-panel flc-uiOptions-iframe"></div>
+        <div class="flc-prefsEditor fl-prefsEditor-separatedPanel">
+            <div class="flc-slidingPanel-panel flc-prefsEditor-iframe"></div>
             <div class="fl-panelBar">
-                <button class="flc-slidingPanel-toggleButton fl-toggleButton">Show/Hide</button>
-            </div>
+                 <span class="fl-prefsEditor-buttons">
+                    <button class="flc-prefsEditor-reset fl-prefsEditor-reset">Reset</button>
+                    <button class="flc-slidingPanel-toggleButton fl-prefsEditor-showHide">Show/Hide</button>
+                </span>
+             </div>
         </div>
         <div class="flc-toc-tocContainer"> </div>
 
@@ -63,23 +64,44 @@
         </div>
 
         <script>
-            var uiOptions = fluid.uiOptions.fatPanel.withMediaPanel(".flc-uiOptions", {
-                prefix: "../lib/infusion/components/uiOptions/html/",
-                components: {
-                    relay: {
-                        type: "fluid.videoPlayer.relay"
-                    }
-                },
-                templateLoader: {
-                    options: {
-                        templates: {
-                            mediaControls: "../html/UIOptionsTemplate-media.html"
+            fluid.globalSettingsStore();
+            fluid.pageEnhancer({
+                uiEnhancer: {
+                    gradeNames: ["fluid.uiEnhancer.starterEnactors", "fluid.videoPlayer.vpRelay"],
+                    tocTemplate: "../lib/infusion/components/tableOfContents/html/TableOfContents.html",
+                    classnameMap: {
+                        theme: {
+                            "default": null
                         }
                     }
                 }
             });
 
-            var videoOptions = {container: ".videoPlayer", options: {
+            var prefsEditor = fluid.prefs.separatedPanel(".flc-prefsEditor", {
+                gradeNames: ["fluid.prefs.transformDefaultPanelsOptions"],
+                templatePrefix: "../lib/infusion/framework/preferences/html/",
+                messagePrefix: "../lib/infusion/framework/preferences/messages/",
+                templateLoader: {
+                    gradeNames: ["fluid.videoPlayer.mediaPanelTemplateLoader", "fluid.prefs.starterTemplateLoader"]
+                },
+                messageLoader: {
+                    gradeNames: ["fluid.videoPlayer.mediaPanelMessageLoader", "fluid.prefs.starterMessageLoader"]
+                },
+                prefsEditor: {
+                    gradeNames: ["fluid.videoPlayer.mediaPanels", "fluid.prefs.starterPanels", "fluid.prefs.rootModel.starter", "fluid.prefs.uiEnhancerRelay"],
+                    members: {
+                        rootModel: {
+                            captions: false,
+                            captionLanguage: "en",
+                            transcripts: false,
+                            transcriptLanguage: "en"
+                        }
+                    }
+                }
+            });
+
+            var vpOptions = {
+                gradeNames: ["fluid.videoPlayer.enhancerBinder"],
                 video: {
                     sources: [
                         {
@@ -130,8 +152,8 @@
                     ]
                 },
                 videoTitle: "A chance to reorganize our future?"
-            }};
-            fluid.videoPlayer.makeEnhancedInstances(videoOptions, uiOptions.relay);
+            };
+            fluid.invoke("fluid.videoPlayer", [".videoPlayer", vpOptions]);
         </script>
     </body>
 </html>
