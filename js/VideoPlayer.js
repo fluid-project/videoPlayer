@@ -127,7 +127,18 @@ var fluid_1_5 = fluid_1_5 || {};
                         },
                         onReady: "{videoPlayer}.events.onMediaReady"
                     },
-                    sources: "{videoPlayer}.options.video.sources"
+                    sources: "{videoPlayer}.options.video.sources",
+                    components: {
+                        mediaEventBinder: {
+                            options: {
+                                listeners: {
+                                    "{videoPlayer}.events.onScrub": "{media}.setTime",
+                                    "{videoPlayer}.events.onTimeUpdate": "{media}.updateCurrentTime",
+                                    "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
+                                }
+                            }
+                        }
+                    }
                 }
             },
             transcript: {
@@ -588,20 +599,6 @@ var fluid_1_5 = fluid_1_5 || {};
         
     fluid.defaults("fluid.videoPlayer.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"]
-    });
-
-    /*********************************************************************************
-     * Demands blocks for event binding components                                   *
-     *********************************************************************************/
-    
-    fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onScrub": "{media}.setTime",
-                "{videoPlayer}.events.onTimeUpdate": "{media}.updateCurrentTime",
-                "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
-            }
-        }
     });
 
     /*******************************************************************
