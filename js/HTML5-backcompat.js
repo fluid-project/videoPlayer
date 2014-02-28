@@ -25,13 +25,18 @@ var demo = demo || {};
         $("<" + tag + "/>");
     };
 
-    demo.html5BackwardsCompatability.finalInit = function (that) {
+    demo.html5BackwardsCompatability.createElements = function (that) {
         fluid.each(that.options.elements, that.createElm);
     };
     
     fluid.defaults("demo.html5BackwardsCompatability", {
         gradeNames: ["fluid.littleComponent", "autoInit"],
-        finalInitFunction: "demo.html5BackwardsCompatability.finalInit",
+        listeners: {
+            onCreate: {
+                listener: "demo.html5BackwardsCompatability.createElements",
+                args: ["{that}"]
+            }
+        },
         invokers: {
             createElm: "demo.html5BackwardsCompatability.createElm"
         },

@@ -161,7 +161,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 }
             }
         },
-        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             afterTemplateLoaded: null,
             onStartTimeChange: null,
@@ -231,6 +230,13 @@ var fluid_1_5 = fluid_1_5 || {};
                 forceCache: true,
                 href: "../html/videoPlayer_controllers_template.html"
             }
+        },
+
+        listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.controllers.loadTemplates",
+                args: ["{that}"]
+            },
         }
     });
 
@@ -315,7 +321,7 @@ var fluid_1_5 = fluid_1_5 || {};
         that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
     };
     
-    fluid.videoPlayer.controllers.finalInit = function (that) {
+    fluid.videoPlayer.controllers.loadTemplates = function (that) {
         var templates = that.options.templates;
         fluid.fetchResources(templates, function () {
             var resourceSpec = templates.controllers;
@@ -401,7 +407,6 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
         gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
         showHidePath: "scrubber",
         components: {
             bufferedProgress: {
@@ -421,11 +426,18 @@ var fluid_1_5 = fluid_1_5 || {};
             onScrub: null,
             onStartScrub: null,
             onProgressAttached: null,
+            afterInit: null,
             onReady: {
                 events: {
                     onProgressAttached: "onProgressAttached",
-                    onCreate: "onCreate"
+                    afterInit: "afterInit"
                 },
+                args: ["{scrubber}"]
+            }
+        },
+        listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.controllers.scrubber.init",
                 args: ["{scrubber}"]
             }
         },
@@ -525,11 +537,12 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
 
-    fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
+    fluid.videoPlayer.controllers.scrubber.init = function (that) {
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
         bindScrubberModel(that);
         that.refresh();
+        that.events.afterInit.fire();
     };
     
 
@@ -655,14 +668,20 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.defaults("fluid.videoPlayer.volumeControls", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
         postInitFunction: "fluid.videoPlayer.volumeControls.postInit",
-        finalInitFunction: "fluid.videoPlayer.volumeControls.finalInit",
         events: {
             muteButtonReady: null,
+            afterSetup: null,
             onReady: {
                 events: {
                     muteButtonReady: "muteButtonReady",
-                    onCreate: "onCreate"
+                    afterSetup: "afterSetup"
                 },
+                args: ["{volumeControls}"]
+            }
+        },
+        listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.volumeControls.setup",
                 args: ["{volumeControls}"]
             }
         },
@@ -735,12 +754,13 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
 
-    fluid.videoPlayer.volumeControls.finalInit = function (that) {
+    fluid.videoPlayer.volumeControls.setup = function (that) {
         var volumeControls = fluid.videoPlayer.volumeControls;
 
         volumeControls.init(that);
         volumeControls.bindDOMEvents(that);
         volumeControls.bindModel(that);
+        that.events.afterSetup.fire();
     };
 
     /********************************************************************************

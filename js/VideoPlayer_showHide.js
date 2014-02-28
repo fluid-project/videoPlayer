@@ -20,7 +20,12 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.defaults("fluid.videoPlayer.showHide", {
         gradeNames: ["fluid.modelComponent", "autoInit"],
-        finalInit: "fluid.videoPlayer.showHide.finalInit",
+        listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.showHide.init",
+                args: "{showHide}"
+            }
+        },
         modelPrefix: "isShown",
         model: {
             isShown: {
@@ -37,7 +42,7 @@ var fluid_1_5 = fluid_1_5 || {};
         showHidePath: ""
     });
     
-    fluid.videoPlayer.showHide.finalInit = function (that) {
+    fluid.videoPlayer.showHide.init = function (that) {
         fluid.each(that.options.selectors, function (selectorValue, selectorKey) {
             var modelPath = fluid.pathUtil.composePath(
                     fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath),

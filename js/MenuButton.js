@@ -30,8 +30,6 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.defaults("fluid.videoPlayer.languageMenu", {
         gradeNames: ["fluid.rendererComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         renderOnInit: true,
-        preInitFunction: "fluid.videoPlayer.languageMenu.preInit",
-        postInitFunction: "fluid.videoPlayer.languageMenu.postInit",
         produceTree: "fluid.videoPlayer.languageMenu.produceTree",
         languages: [],
         currentLanguagePath: "activeLanguages",
@@ -75,7 +73,13 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         invokers: {
             updateTracks: { funcName: "fluid.videoPlayer.languageMenu.updateTracks", args: ["{languageMenu}"] },
-            updateShowHide: { funcName: "fluid.videoPlayer.languageMenu.updateShowHide", args: ["{languageMenu}"] }
+            updateShowHide: { funcName: "fluid.videoPlayer.languageMenu.updateShowHide", args: ["{languageMenu}"] },
+            toggleView: { funcName: "fluid.videoPlayer.languageMenu.toggleView", args: ["{languageMenu}"] },
+            showMenu: { funcName: "fluid.videoPlayer.languageMenu.showMenu", args: ["{languageMenu}"] },
+            hideMenu: { funcName: "fluid.videoPlayer.languageMenu.hideMenu", args: ["{languageMenu}"] },
+            showAndSelect: { funcName: "fluid.videoPlayer.languageMenu.showAndSelect", args: ["{languageMenu}"] },
+            activate: { funcName: "fluid.videoPlayer.languageMenu.activate", args: ["{languageMenu}", "{arguments}.0"] },
+            showHide: { funcName: "fluid.videoPlayer.languageMenu.showHide", args: ["{languageMenu}"] }
         },
         hideOnInit: true
     });
@@ -184,35 +188,31 @@ var fluid_1_5 = fluid_1_5 || {};
         that.locate("menuItem").attr("aria-controls", controlledId);
     };
 
-    fluid.videoPlayer.languageMenu.preInit = function (that) {
-        that.toggleView = function () {
-            that.container.toggle();
-            that.container.attr("aria-hidden", !that.container.is(':visible'));
-        };
+    fluid.videoPlayer.languageMenu.toggleView = function (that) {
+        that.container.toggle();
+        that.container.attr("aria-hidden", !that.container.is(':visible'));
     };
 
-    fluid.videoPlayer.languageMenu.postInit = function (that) {
-        that.showMenu = function () {
-            that.container.show();
-            that.container.attr("aria-hidden", "false");
-        };
-        that.hideMenu = function () {
-            that.container.hide();
-            that.container.attr("aria-hidden", "true");
-        };
-        that.showAndSelect = function () {
-            that.showMenu();
-            that.container.fluid("selectable.select", that.locate("menuItem").last());
-        };
-        that.activate = function (index) {
-            that.writeIndirect("currentLanguagePath", [index]);
-            that.writeIndirect("showHidePath", true);
-            that.hideMenu();
-        };
-        that.showHide = function () {
-            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
-            that.hideMenu();
-        };
+    fluid.videoPlayer.languageMenu.showMenu = function (that) {
+        that.container.show();
+        that.container.attr("aria-hidden", "false");
+    };
+    fluid.videoPlayer.languageMenu.hideMenu = function (that) {
+        that.container.hide();
+        that.container.attr("aria-hidden", "true");
+    };
+    fluid.videoPlayer.languageMenu.showAndSelect = function (that) {
+        that.showMenu();
+        that.container.fluid("selectable.select", that.locate("menuItem").last());
+    };
+    fluid.videoPlayer.languageMenu.activate = function (that, index) {
+        that.writeIndirect("currentLanguagePath", [index]);
+        that.writeIndirect("showHidePath", true);
+        that.hideMenu();
+    };
+    fluid.videoPlayer.languageMenu.showHide = function (that) {
+        that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton");
+        that.hideMenu();
     };
 
     fluid.videoPlayer.languageMenu.init = function (that) {
@@ -236,7 +236,6 @@ var fluid_1_5 = fluid_1_5 || {};
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.languageControls", {
         gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.languageControls.finalInit",
         selectors: {
             button: ".flc-menuButton-button",
             label: ".flc-menuButton-label",
@@ -249,6 +248,10 @@ var fluid_1_5 = fluid_1_5 || {};
             afterFetchResources: null
         },
         listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.languageControls.loadTemplates",
+                args: ["{that}"]
+            },
             afterFetchResources: {
                 listener: "fluid.videoPlayer.languageControls.setUpControls",
                 priority: "last"
@@ -383,7 +386,7 @@ var fluid_1_5 = fluid_1_5 || {};
         that.events.onReady.fire(that);
     };
 
-    fluid.videoPlayer.languageControls.finalInit = function (that) {
+    fluid.videoPlayer.languageControls.loadTemplates = function (that) {
         fluid.fetchResources(that.options.templates, function (resourceSpec) {
             that.container.append(that.options.templates.menuButton.resourceText);
             that.events.afterFetchResources.fire(that);

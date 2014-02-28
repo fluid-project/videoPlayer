@@ -21,16 +21,22 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.defaults("fluid.toggleButton", {
         gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         postInitFunction: "fluid.toggleButton.postInit",
-        finalInitFunction: "fluid.toggleButton.finalInit",
         events: {
             onPress: null,
             onTooltipAttached: null,
+            onSetupComplete: null,
             onReady: {
                 events: {
-                    onCreate: "onCreate",
-                    tooltip: "onTooltipAttached"
+                    tooltip: "onTooltipAttached",
+                    setup: "onSetupComplete"
                 },
                 args: ["{toggleButton}"]
+            }
+        },
+        listeners: {
+            onCreate: {
+                listener: "fluid.toggleButton.setUpToggleButton",
+                args: ["{that}"]
             }
         },
         selectors: {    // Integrators may override this selector
@@ -53,6 +59,10 @@ var fluid_1_5 = fluid_1_5 || {};
         invokers: {
             tooltipContentFunction: {
                 funcName: "fluid.toggleButton.tooltipContentFunction",
+                args: "{toggleButton}"
+            },
+            press: {
+                funcName: "fluid.toggleButton.press",
                 args: "{toggleButton}"
             }
         },
@@ -97,11 +107,11 @@ var fluid_1_5 = fluid_1_5 || {};
             that.tooltip.updateContent(labelText);
         };
 
-        that.press = function () {
-            that.requestStateChange();
-            that.events.onPress.fire(that);
-            return false;
-        };
+    };
+    fluid.toggleButton.press = function (that) {
+        that.requestStateChange();
+        that.events.onPress.fire(that);
+        return false;
     };
 
     fluid.toggleButton.tooltipContentFunction = function (that) {
@@ -109,22 +119,15 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.toggleButton.setUpToggleButton = function (that) {
-        that.locate("button").attr("role", "button");
-        that.refreshView();
-    };
-
-    fluid.toggleButton.bindToggleButtonEvents = function (that) {
         var button = that.locate("button");
-        button.click(that.press);
+        button.attr("role", "button");
+        that.refreshView();
 
+        button.click(that.press);
         that.applier.modelChanged.addListener(that.options.modelPath, function () {
             that.refreshView();
         });
+        that.events.onSetupComplete.fire();
     };
 
-    fluid.toggleButton.finalInit = function (that) {
-        fluid.toggleButton.setUpToggleButton(that);
-        fluid.toggleButton.bindToggleButtonEvents(that);
-    };
-    
 })(jQuery, fluid_1_5);

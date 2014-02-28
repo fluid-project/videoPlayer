@@ -198,7 +198,6 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         preInitFunction: "fluid.videoPlayer.preInit",
         postInitFunction: "fluid.videoPlayer.postInit",
-        finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             onScrub: null,
             onTemplateReady: null,
@@ -248,6 +247,12 @@ var fluid_1_5 = fluid_1_5 || {};
                     captions: "onCaptionsReady"
                 },
                 args: ["{arguments}.captions.1"]
+            }
+        },
+        listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.loadTemplates",
+                args: ["{that}"]
             }
         },
         selectors: {
@@ -526,7 +531,7 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
     
-    fluid.videoPlayer.finalInit = function (that) {
+    fluid.videoPlayer.loadTemplates = function (that) {
         that.container.attr("role", "application");
 
         // Render each media source with its custom renderer, registered by type.

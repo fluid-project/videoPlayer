@@ -34,15 +34,15 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onEventBindingReady"
             }
         },
-        finalInitFunction: "fluid.videoPlayer.media.finalInit",
         preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onEventBindingReady: null,
             onTimeUpdate: null, // picked up by intervalEventsConductor.events.onTimeUpdate
+            afterInit: null,
             onReady: {
                 events: {
                     eventBindingReady: "onEventBindingReady",
-                    created: "onCreate"
+                    afterInit: "afterInit"
                 }
             },
 
@@ -74,6 +74,10 @@ var fluid_1_5 = fluid_1_5 || {};
             timeupdate: "onMediaElementTimeUpdate"
         },
         listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.media.init",
+                args: ["{media}"]
+            },
             onMediaElementCanPlay: [
                 {
                     listener: "{media}.applier.fireChangeRequest",
@@ -273,10 +277,11 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
 
-    fluid.videoPlayer.media.finalInit = function (that) {
+    fluid.videoPlayer.media.init = function (that) {
         that.renderSources();
         that.bindMediaModel();
         that.bindMediaDOMEvents();
+        that.events.afterInit.fire();
     };
 
 })(jQuery, fluid_1_5);
