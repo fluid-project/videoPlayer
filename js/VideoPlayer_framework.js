@@ -203,16 +203,23 @@ var fluid_1_5 = fluid_1_5 || {};
     // is only desirable until changeApplier relay gets into the core framework
     fluid.defaults("fluid.videoPlayer.indirectReader", {
         gradeNames: ["fluid.modelComponent", "autoInit"],
-        preInitFunction: "fluid.videoPlayer.makeIndirectReader"
+        invokers: {
+            readIndirect: {
+                funcName: "fluid.videoPlayer.indirectReader.readIndirect",
+                args: ["{that}", "{arguments}.0"]
+            },
+            writeIndirect: {
+                funcName: "fluid.videoPlayer.indirectReader.writeIndirect",
+                args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2"]
+            }
+        }
     });
     
-    fluid.videoPlayer.makeIndirectReader = function(that) {
-        that.readIndirect = function(pathName) {
-            return fluid.get(that.model, fluid.get(that.options, pathName));
-        };
-        that.writeIndirect = function(pathName, value, source) {
-            fluid.fireSourcedChange(that.applier, fluid.get(that.options, pathName), value, source);
-        };
+    fluid.videoPlayer.indirectReader.readIndirect = function(that, pathName) {
+        return fluid.get(that.model, fluid.get(that.options, pathName));
+    };
+    fluid.videoPlayer.indirectReader.writeIndirect = function(that, pathName, value, source) {
+        fluid.fireSourcedChange(that.applier, fluid.get(that.options, pathName), value, source);
     };
     
     // Check if fluid static environment contains the given context feature.
