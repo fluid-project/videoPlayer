@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2013 OCAD University
+Copyright 2011-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -196,8 +196,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 }
             }
         },
-        preInitFunction: "fluid.videoPlayer.preInit",
-        postInitFunction: "fluid.videoPlayer.postInit",
         events: {
             onScrub: null,
             onTemplateReady: null,
@@ -250,10 +248,16 @@ var fluid_1_5 = fluid_1_5 || {};
             }
         },
         listeners: {
-            onCreate: {
+            onCreate: [{
+                listener: "fluid.videoPlayer.addKindToTracks",
+                args: ["{that}"]
+            },{
+                listener: "fluid.videoPlayer.addVolumeGuard",
+                args: ["{that}"]
+            },{
                 listener: "fluid.videoPlayer.loadTemplates",
                 args: ["{that}"]
-            }
+            }]
         },
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
@@ -315,6 +319,22 @@ var fluid_1_5 = fluid_1_5 || {};
             hideControllers: "fluid.videoPlayer.hideControllersAnimated",
             getCaptionGrade: {
                 funcName: "fluid.videoPlayer.getCaptionGrade"
+            },
+            play: {
+                funcName: "fluid.videoPlayer.play",
+                args: ["{videoPlayer}"]
+            },
+            incrTime: {
+                funcName: "fluid.videoPlayer.incrTime",
+                args: ["{videoPlayer}"]
+            },
+            decrTime: {
+                funcName: "fluid.videoPlayer.decrTime",
+                args: ["{videoPlayer}"]
+            },
+            toggleFullscreen: {
+                funcName: "fluid.videoPlayer.toggleFullscreen",
+                args: ["{videoPlayer}"]
             }
         }
     });
@@ -488,47 +508,49 @@ var fluid_1_5 = fluid_1_5 || {};
         });
     };
 
-    fluid.videoPlayer.preInit = function (that) {
+    fluid.videoPlayer.addKindToTracks = function (that) {
         fluid.each(that.options.defaultKinds, function (defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
         
-        that.toggleFullscreen = function () {
-            that.applier.requestChange("fullscreen", !that.model.fullscreen);
-        };
     };
 
-    fluid.videoPlayer.postInit = function (that) {
+    fluid.videoPlayer.toggleFullscreen = function (that) {
+        that.applier.requestChange("fullscreen", !that.model.fullscreen);
+    };
+
+    fluid.videoPlayer.play = function (that) {
+        that.applier.fireChangeRequest({
+            "path": "play",
+            "value": !that.model.play
+        });
+    };
+
+    fluid.videoPlayer.incrTime = function (that) {
+        that.events.onStartScrub.fire();
+        if (that.model.currentTime < that.model.totalTime) {
+            var newVol = that.model.currentTime + that.model.totalTime * 0.05;
+            that.events.onScrub.fire(newVol <= that.model.totalTime ? newVol : that.model.totalTime);
+        }
+        that.events.afterScrub.fire();
+    };
+
+    fluid.videoPlayer.decrTime = function (that) {
+        that.events.onStartScrub.fire();
+
+        if (that.model.currentTime > 0) {
+            var newVol = that.model.currentTime - that.model.totalTime * 0.05;
+            that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
+        }
+        that.events.afterScrub.fire();
+    };
+
+    fluid.videoPlayer.addVolumeGuard = function (that) {
         // TODO: declarative syntax for this in framework
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
         that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
 
-        that.play = function (ev) {
-            that.applier.fireChangeRequest({
-                "path": "play",
-                "value": !that.model.play
-            });
-        };
-
-        that.incrTime = function () {
-            that.events.onStartScrub.fire();
-            if (that.model.currentTime < that.model.totalTime) {
-                var newVol = that.model.currentTime + that.model.totalTime * 0.05;
-                that.events.onScrub.fire(newVol <= that.model.totalTime ? newVol : that.model.totalTime);
-            }
-            that.events.afterScrub.fire();
-        };
-
-        that.decrTime = function () {
-            that.events.onStartScrub.fire();
-            
-            if (that.model.currentTime > 0) {
-                var newVol = that.model.currentTime - that.model.totalTime * 0.05;
-                that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
-            }
-            that.events.afterScrub.fire();
-        };
     };
     
     fluid.videoPlayer.loadTemplates = function (that) {

@@ -1,5 +1,5 @@
 /*
-Copyright 2012-2013 OCAD University
+Copyright 2012-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -9,7 +9,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5*/
+/*global jQuery, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -47,11 +47,22 @@ var fluid_1_5 = fluid_1_5 || {};
     
     fluid.defaults("fluid.modelRelay", {
         gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
-        postInitFunction: "fluid.modelRelay.postInit",
         targets: {},
         rules: {},
         events: {
             // triggerEvent [optional injected event]
+        },
+        listeners: {
+            onCreate: {
+                listener: "fluid.modelRelay.init",
+                args: ["{modelRelay}"]
+            }
+        },
+        invokers: {
+            addTarget: {
+                funcName: "fluid.modelRelay.addTarget",
+                args: ["{modelRelay}", "{arguments}.0"]
+            }
         },
         // TODO: upgrade event framework to support "latched events"
         bindingTriggered: false
@@ -65,7 +76,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 if (typeof(value) === "string") {
                     target.applier.requestChange(value, newValue);
                 } else {
-                    var fullargs = [newValue, key, target, changeList]
+                    var fullargs = [newValue, key, target, changeList];
                     if (value.lens) {
                         var transformed = value.lens.transform.apply(null, [newValue, key]);
                         target.applier.requestChange(value.targetPath, newValue);
@@ -116,16 +127,16 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     };
     
-    fluid.modelRelay.postInit = function(that) {
+    fluid.modelRelay.addTarget = function(that, target) {
+        fluid.modelRelay.registerTarget(that, target);
+        that.targets[target.id] = target;
+    };
+    fluid.modelRelay.init = function(that) {
         that.targets = {};
         // This is used for holding pent up changes produced by irreversible transforms - it holds
         // the raw changes which would be destined for the model, ready to be re-transformed
         that.pentModel = {};
         that.pentApplier = fluid.makeChangeApplier(that.pentModel);
-        that.addTarget = function(target) {
-            fluid.modelRelay.registerTarget(that, target);
-            that.targets[target.id] = target;
-        };
         fluid.each(that.options.rules, function(value, key) {
             if (typeof(value) !== "string") {
                 if (value.targetPath) {
@@ -155,16 +166,23 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.defaults("fluid.scaleLens", {
         gradeNames: ["fluid.lens", "autoInit"],
         scaleFactor: 1.0,
-        postInitFunction: "fluid.scaleLens.postInit"
+        invokers: {
+            transform: {
+                funcName: "fluid.scaleLens.transform",
+                args: ["{scaleLens}"]
+            },
+            reverseTransform: {
+                funcName: "fluid.scaleLens.reverseTransform",
+                args: ["{scaleLens}", "{arguments}.0"]
+            }
+        }
     });
     
-    fluid.scaleLens.postInit = function(that) {
-        that.transform = function(value) {
-            return value * that.options.scaleFactor; 
-        };
-        that.reverseTransform = function(value) {
-            return value / that.options.scaleFactor;
-        };
+    fluid.scaleLens.transform = function(that, value) {
+        return value * that.options.scaleFactor;
+    };
+    fluid.scaleLens.reverseTransform = function(that, value) {
+        return value / that.options.scaleFactor;
     };
     
     // TODO: move into DataBinding
@@ -178,7 +196,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 newValue = max;
             }
             changeRequest.value = newValue;
-        }
+        };
     };
 
     // A "mini-grade" to ease the work of dealing with "modelPath" idiom components - this
@@ -189,12 +207,12 @@ var fluid_1_5 = fluid_1_5 || {};
     });
     
     fluid.videoPlayer.makeIndirectReader = function(that) {
-         that.readIndirect = function(pathName) {
-             return fluid.get(that.model, fluid.get(that.options, pathName));
-         };
-         that.writeIndirect = function(pathName, value, source) {
-             fluid.fireSourcedChange(that.applier, fluid.get(that.options, pathName), value, source);
-         };
+        that.readIndirect = function(pathName) {
+            return fluid.get(that.model, fluid.get(that.options, pathName));
+        };
+        that.writeIndirect = function(pathName, value, source) {
+            fluid.fireSourcedChange(that.applier, fluid.get(that.options, pathName), value, source);
+        };
     };
     
     // Check if fluid static environment contains the given context feature.

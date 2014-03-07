@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -9,7 +9,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5*/
+/*global jQuery, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -20,7 +20,6 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.defaults("fluid.toggleButton", {
         gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
-        postInitFunction: "fluid.toggleButton.postInit",
         events: {
             onPress: null,
             onTooltipAttached: null,
@@ -64,6 +63,14 @@ var fluid_1_5 = fluid_1_5 || {};
             press: {
                 funcName: "fluid.toggleButton.press",
                 args: "{toggleButton}"
+            },
+            requestStateChange: {
+                funcName: "fluid.toggleButton.requestStateChange",
+                args: "{toggleButton}"
+            },
+            refreshView: {
+                funcName: "fluid.toggleButton.refreshView",
+                args: "{toggleButton}"
             }
         },
         components: {
@@ -82,32 +89,27 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     });
 
-    fluid.toggleButton.postInit = function (that) {
-        if (that.options.ownModel || that.readIndirect("modelPath") === undefined) {
-            that.writeIndirect("modelPath", false);
-        }
-        that.requestStateChange = function () {
-            that.writeIndirect("modelPath", !that.readIndirect("modelPath"));
-        };
-
-        that.refreshView = function () {
-            var button = that.locate("button");
-            var pressed = that.readIndirect("modelPath");
-            var styles = that.options.styles;
-            if (styles.init === styles.pressed) {
-                button.addClass(styles.init);
-            } else {
-                button.toggleClass(styles.init, !pressed);
-                button.toggleClass(styles.pressed, pressed);
-            }
-            button.attr("aria-pressed", pressed);
-
-            var labelText = that.tooltipContentFunction(that);
-            that.locate("button").attr("aria-label", labelText);
-            that.tooltip.updateContent(labelText);
-        };
-
+    fluid.toggleButton.requestStateChange = function (that) {
+        that.writeIndirect("modelPath", !that.readIndirect("modelPath"));
     };
+
+    fluid.toggleButton.refreshView = function (that) {
+        var button = that.locate("button");
+        var pressed = that.readIndirect("modelPath");
+        var styles = that.options.styles;
+        if (styles.init === styles.pressed) {
+            button.addClass(styles.init);
+        } else {
+            button.toggleClass(styles.init, !pressed);
+            button.toggleClass(styles.pressed, pressed);
+        }
+        button.attr("aria-pressed", pressed);
+
+        var labelText = that.tooltipContentFunction(that);
+        that.locate("button").attr("aria-label", labelText);
+        that.tooltip.updateContent(labelText);
+    };
+
     fluid.toggleButton.press = function (that) {
         that.requestStateChange();
         that.events.onPress.fire(that);
@@ -115,10 +117,14 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.toggleButton.tooltipContentFunction = function (that) {
-          return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
+        return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
     };
 
     fluid.toggleButton.setUpToggleButton = function (that) {
+        if (that.options.ownModel || that.readIndirect("modelPath") === undefined) {
+            that.writeIndirect("modelPath", false);
+        }
+
         var button = that.locate("button");
         button.attr("role", "button");
         that.refreshView();

@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2013 OCAD University
+Copyright 2011-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5*/
+/*global jQuery, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -352,7 +352,7 @@ var fluid_1_5 = fluid_1_5 || {};
         var time = that.locate(element);
         time.text(fluid.videoPlayer.formatTime(that.model[element]));
     };
-    
+
     // TODO: Privacy is inherited. Consider making this public
     var bindScrubberDOMEvents = function (that) {
         // Bind the scrubbers slide event to change the video's time.
@@ -445,6 +445,26 @@ var fluid_1_5 = fluid_1_5 || {};
             updateBuffered: {
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
                 args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            },
+            updateMin: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMin",
+                args: ["{scrubber}"]
+            },
+            updateMax: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMax",
+                args: ["{scrubber}"]
+            },
+            updateCurrent: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateCurrent",
+                args: ["{scrubber}"]
+            },
+            syncState: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.syncState",
+                args: ["{scrubber}"]
+            },
+            refresh: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.refresh",
+                args: ["{scrubber}"]
             }
         },
         selectors: {
@@ -463,7 +483,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
     // The flag that stops the buffer progress update once the video is fully buffered.
     var bufferCompleted = false;
-    
+
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
         var lastBufferedTime = that.model.bufferEnd;
         var totalTime = that.model.totalTime;
@@ -473,7 +493,7 @@ var fluid_1_5 = fluid_1_5 || {};
         if (lastBufferedTime !== totalTime) {
             bufferCompleted = false;
         }
-        
+
         if (totalTime && lastBufferedTime && !bufferCompleted) {
             var percent = Math.round(lastBufferedTime / totalTime * 100);
             
@@ -481,7 +501,7 @@ var fluid_1_5 = fluid_1_5 || {};
             // that the width of the progress div is reduced at the controller bar slide-up
             that.locate("bufferedProgressBar").width(that.model.videoWidth);
             that.bufferedProgress.update(percent);
-            
+
             // Stops the buffer progress from being kept updated once the progress reaches 100%
             if (lastBufferedTime === totalTime) {
                 bufferCompleted = true;
@@ -489,52 +509,48 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     };
 
-    fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
-        // TODO: these methods should be public functions, since people might like to alter them
-        //       (inherited code)
-        that.updateMin = function () {
-            var startTime = that.model.startTime || 0;
-            var scrubber = that.locate("scrubber");
-            scrubber.slider("option", "min", startTime + that.model.currentTime);
-            that.locate("handle").attr({
-                "aria-valuemin": startTime + that.model.currentTime
-            });
-        };
+    fluid.videoPlayer.controllers.scrubber.updateMin = function (that) {
+        var startTime = that.model.startTime || 0;
+        var scrubber = that.locate("scrubber");
+        scrubber.slider("option", "min", startTime + that.model.currentTime);
+        that.locate("handle").attr({
+            "aria-valuemin": startTime + that.model.currentTime
+        });
+    };
 
-        that.updateMax = function () {
-            updateTime(that, "totalTime");
-            var scrubber = that.locate("scrubber");
-            scrubber.slider("option", "max", that.model.totalTime);
-            that.locate("handle").attr({
-                "aria-valuemax": that.model.totalTime
-            });
-        };
+    fluid.videoPlayer.controllers.scrubber.updateMax = function (that) {
+        updateTime(that, "totalTime");
+        var scrubber = that.locate("scrubber");
+        scrubber.slider("option", "max", that.model.totalTime);
+        that.locate("handle").attr({
+            "aria-valuemax": that.model.totalTime
+        });
+    };
 
-        that.updateCurrent = function () {
-            updateTime(that, "currentTime");
-            var scrubber = that.locate("scrubber");
-            scrubber.slider("value", that.model.currentTime);
-            that.locate("handle").attr({
-                "aria-valuenow": that.model.currentTime,
-                "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
-            });
-        };
-        
-        that.syncState = function () {
-            var scrubber = that.locate("scrubber");
-            if (that.model.canPlay === true) {
-                scrubber.slider("enable");
-            } else {
-                scrubber.slider("disable");
-            }
-        };
-        
-        that.refresh = function () {
-            that.updateMin();
-            that.updateMax();
-            that.updateCurrent();
-            that.syncState();
-        };
+    fluid.videoPlayer.controllers.scrubber.updateCurrent = function (that) {
+        updateTime(that, "currentTime");
+        var scrubber = that.locate("scrubber");
+        scrubber.slider("value", that.model.currentTime);
+        that.locate("handle").attr({
+            "aria-valuenow": that.model.currentTime,
+            "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
+        });
+    };
+
+    fluid.videoPlayer.controllers.scrubber.syncState = function (that) {
+        var scrubber = that.locate("scrubber");
+        if (that.model.canPlay === true) {
+            scrubber.slider("enable");
+        } else {
+            scrubber.slider("disable");
+        }
+    };
+
+    fluid.videoPlayer.controllers.scrubber.refresh = function (that) {
+        that.updateMin();
+        that.updateMax();
+        that.updateCurrent();
+        that.syncState();
     };
 
     fluid.videoPlayer.controllers.scrubber.init = function (that) {
@@ -544,7 +560,6 @@ var fluid_1_5 = fluid_1_5 || {};
         that.refresh();
         that.events.afterInit.fire();
     };
-    
 
     /********************************************************
     * Volume Control: a button that turns into a slider     *
@@ -667,7 +682,6 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.defaults("fluid.videoPlayer.volumeControls", {
         gradeNames: ["fluid.viewComponent", "autoInit"],
-        postInitFunction: "fluid.videoPlayer.volumeControls.postInit",
         events: {
             muteButtonReady: null,
             afterSetup: null,
@@ -710,6 +724,7 @@ var fluid_1_5 = fluid_1_5 || {};
         components: {
             muteButton: {
                 type: "fluid.toggleButton",
+                container: "{volumeControls}.container",
                 options: {
                     selectors: {
                         button: ".flc-videoPlayer-mute"
@@ -736,22 +751,26 @@ var fluid_1_5 = fluid_1_5 || {};
                     } 
                 }
             }
+        },
+        invokers: {
+            updateSlider: {
+                funcName: "fluid.videoPlayer.volumeControls.updateSlider",
+                args: ["{volumeControls}"]
+            }
+        },
+        members: {
+            oldVolume: "{that}.options.unmuteVolue"
         }
     });
 
-    fluid.videoPlayer.volumeControls.postInit = function (that) {
-        that.options.components.muteButton.container = that.container;
-        that.oldVolume = that.options.unmuteVolume;
-
-        that.updateSlider = function () {
-            var volume = that.model.volume;
-            var volumeControl = that.locate("volumeControl");
-            volumeControl.slider("value", volume);
-            that.locate("handle").attr({
-                "aria-valuenow": volume,
-                "aria-valuetext": Math.round(volume) + "%"
-            });
-        };
+    fluid.videoPlayer.volumeControls.updateSlider = function (that) {
+        var volume = that.model.volume;
+        var volumeControl = that.locate("volumeControl");
+        volumeControl.slider("value", volume);
+        that.locate("handle").attr({
+            "aria-valuenow": volume,
+            "aria-valuetext": Math.round(volume) + "%"
+        });
     };
 
     fluid.videoPlayer.volumeControls.setup = function (that) {
