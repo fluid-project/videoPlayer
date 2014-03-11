@@ -50,6 +50,10 @@ var fluid_1_5 = fluid_1_5 || {};
             onCreate: {
                 listener: "fluid.videoPlayer.transcript.init",
                 args: "{that}"
+            },
+            onReady: {
+                listener: "fluid.videoPlayer.transcript.bindDOM",
+                args: "{that}"
             }
         },
         model: {
@@ -430,13 +434,16 @@ var fluid_1_5 = fluid_1_5 || {};
         
         that.options.transcriptElementIdPrefix = that.options.transcriptElementIdPrefix + "-" + that.id;
 
+        fluid.videoPlayer.transcript.prepareTranscript(that);
+    };
+
+    // Interface setup that must happen after render
+    fluid.videoPlayer.transcript.bindDOM = function (that) {
+        fluid.videoPlayer.transcript.switchTranscriptArea(that);
+
         fluid.videoPlayer.transcript.bindTranscriptDOMEvents(that);
         fluid.videoPlayer.transcript.bindTranscriptModel(that);
-        
-        fluid.videoPlayer.transcript.prepareTranscript(that);
-        fluid.videoPlayer.transcript.switchTranscriptArea(that);
 
         that.locate("languageDropdown").attr("aria-controls", that.transcriptTextId());
     };
-
 })(jQuery, fluid_1_5);
