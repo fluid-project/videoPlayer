@@ -73,6 +73,9 @@ var fluid_1_5 = fluid_1_5 || {};
         var specListeners = fluid.transform(that.options.rules, function(value, key) {
             var listener = function (newModel, oldModel, changeList) {
                 var newValue = fluid.get(newModel, key);
+                if (newValue === fluid.get(oldModel, key)) {
+                    return null;
+                }
                 if (typeof(value) === "string") {
                     target.applier.requestChange(value, newValue);
                 } else {
