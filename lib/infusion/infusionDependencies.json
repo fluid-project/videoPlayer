@@ -1,6 +1,0 @@
-{
-    "infusion": {
-        "files": ["lib/infusion/MyInfusion.js"],
-        "dependencies": []
-    }
-}
