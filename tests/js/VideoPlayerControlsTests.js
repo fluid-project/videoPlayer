@@ -138,7 +138,7 @@ fluid.registerNamespace("fluid.tests");
         jqUnit.module("Video Player Controller");
                
         jqUnit.asyncTest("Volume controls", function () {
-            jqUnit.expect(7);
+            jqUnit.expect(8);
             var checkSlider = function (prefaceString, ariavaluenow, expectedValue) {
                    jqUnit.assertEquals(prefaceString + ", the slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
                },
@@ -146,31 +146,27 @@ fluid.registerNamespace("fluid.tests");
                    fluid.testUtils.getTooltipCheckString(element, expectedText);
                    element.mouseleave();
                },
-               testVolumeControls = fluid.videoPlayer.volumeControls("#basic-volume-controls-test", {
+               testVolumeControls = fluid.videoPlayer.controllers.volumeControls("#basic-volume-controls-test", {
                    listeners: {
                        onReady: function (that) {
-console.log("in test, initial that.model is ",that.model);
                            var muteButton = that.locate("mute"),
                                volumeSlider = that.locate("volumeControl"),
                                sliderHandle = that.locate("handle");
 
+                           jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
                            jqUnit.assertEquals("Mute button should have title", that.options.strings.instructions, muteButton.attr("title"));
                            jqUnit.assertEquals("Volume container should have aria-label", that.options.strings.instructions, that.container.attr("aria-label"));
                            checkTooltipOnHover(volumeSlider, "Volume");
                            checkTooltipOnHover(muteButton, "Mute");
-console.log("test: about to click mute button to cause muting");
                            muteButton.click();
-console.log("in test, after mute that.model is ",that.model);
                            checkSlider("After clicking mute button", sliderHandle.attr("aria-valuenow"), "0");
                            checkTooltipOnHover(muteButton, "Un-mute");
-console.log("test: about to click mute button to remove muting");
                            muteButton.click();
-console.log("in test, after unmute that.model is ",that.model);
 
                            jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
                            jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
                            checkSlider("After clicking mute button again", sliderHandle.attr("aria-valuenow"), "50");
-                           jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
+                           jqUnit.notVisible("The slider should not be visible", volumeSlider);
 
                            jqUnit.start();
                        }

@@ -72,7 +72,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 }
             },
             volumeControl: {
-                type: "fluid.videoPlayer.volumeControls",
+                type: "fluid.videoPlayer.controllers.volumeControls",
                 container: "{controllers}.dom.volumeContainer",
                 createOnEvent: "afterTemplateLoaded",
                 options: {
@@ -559,73 +559,147 @@ var fluid_1_5 = fluid_1_5 || {};
     * Volume Control: a button that turns into a slider     *
     *           To control the volume                       *
     *********************************************************/
-    
-    fluid.registerNamespace("fluid.videoPlayer.volumeControls");
-    
-    fluid.videoPlayer.volumeControls.bindDOMEvents = function (that) {
-        // Bind the volume Control slide event to change the video's volume and its image.
-        var volumeControl = that.locate("volumeControl");
-        var muteButton = that.muteButton;
-        var tooltip = muteButton.tooltip;
-
-        fluid.each(["slide", "slidechange"], function (value) {
-            volumeControl.bind(value, function (evt, ui) {
-                fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
-            });
-        });
-
-        volumeControl.mouseenter(function () {
-            tooltip.updateContent(that.options.strings.volume);
-        });
-
-        volumeControl.mouseleave(function () {
-            tooltip.updateContent(muteButton.tooltipContentFunction);
-        });
-    };
-    
-    fluid.videoPlayer.updateMuteStatus = function (that) {
-        return function (newModel, oldModel) {
-console.log("volCtrls updateMuteStatus (volume) model changed listener: new="+newModel+", old="+oldModel+", that.model.volume="+that.model.volume);
-            if (!that.applier.hasChangeSource("mute")) {
-                if (that.model.volume === 0) {
-                    that.oldVolume = oldModel.volume;
-                    fluid.fireSourcedChange(that.applier, "muted", true, "volume");
-                } else if (that.model.muted) {
-                    fluid.fireSourcedChange(that.applier, "muted", false, "volume");
+    fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
+        gradeNames: ["fluid.viewRelayComponent", "autoInit"],
+        model: {
+            muted: false,
+            volume: 50,
+            minVolume: 0,
+            maxVolume: 100
+        },
+        modelListeners: {
+            volume: [{
+                funcName: "fluid.videoPlayer.controllers.volumeControls.updateMuteStatus",
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue"]
+            }, {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.updateSlider",
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue"]
+            }],
+            canPlay: {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.enableMuteButton",
+                args: "{volumeControls}"
+            },
+            muted: {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.handleMute",
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue"]
+            }
+        },
+        events: {
+            muteButtonReady: null,
+            afterSetup: null,
+            onReady: {
+                events: {
+                    muteButtonReady: "muteButtonReady",
+                    afterSetup: "afterSetup"
+                },
+                args: ["{volumeControls}"]
+            }
+        },
+        listeners: {
+            onCreate: [{
+                listener: "fluid.videoPlayer.controllers.volumeControls.setup",
+                args: ["{volumeControls}"]
+            }]
+        },
+        selectors: {
+            mute: ".flc-videoPlayer-mute",
+            volumeControl: ".flc-videoPlayer-volumeControl",
+            handle: ".ui-slider-handle"
+        },
+        styles: {
+            mute: "fl-videoPlayer-mute",
+            volumeControl: "fl-videoPlayer-volumeControl",
+            buttonIcon: "ui-icon-signal"
+        },
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+        strings: {
+            volume: "Volume",
+            instructions: "Volume controls. Use up and down arrows to adjust volume, space or enter to mute."
+        },
+        unmuteVolume: 10,
+        members: {
+            oldVolume: "{that}.options.unmuteVolue"
+        },
+        invokers: {
+            updateSlider: {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.updateSlider",
+                args: ["{volumeControls}"]
+            },
+            
+        },
+        components: {
+            muteButton: {
+                type: "fluid.toggleButton",
+                container: "{volumeControls}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-mute"
+                    },
+                    styles: {
+                        init: "fl-videoPlayer-mute",
+                        pressed: "fl-videoPlayer-muted"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: {
+                        press: "Mute",
+                        release: "Un-mute"
+                    },
+                    model: {
+                        pressed: "{volumeControls}.model.muted"
+                    },
+                    components: {
+                        tooltip: {
+                            container: "{volumeControls}.container"
+                        }
+                    },
+                    listeners: {
+                        onCreate: "{volumeControls}.events.muteButtonReady"
+                    } 
                 }
             }
-        };
-    };
-
-    fluid.videoPlayer.volumeControls.bindModel = function (that) {
-        // Relay non-slider based volume changes to slider, and all volume changes to mute status
-        fluid.addSourceGuardedListener(that.applier, "volume", "slider", that.updateSlider);
-        that.applier.modelChanged.addListener("volume", fluid.videoPlayer.updateMuteStatus(that));
-
-        that.applier.modelChanged.addListener("canPlay", function () {
-            that.locate("mute").attr("disabled", !that.model.canPlay);
-        });
-
-        that.applier.modelChanged.addListener("muted", function (newMuteValue, oldMuteValue) {
-console.log("volCtrls muted model changed listener: new="+newMuteValue+", old="+oldMuteValue+", that.model.muted="+that.model.muted);
-            // See updateVolume method for converse logic
-//            if (oldModel.volume > 0) {
-                that.oldVolume = that.model.volume;
-  //          }
-            var fromVolume = that.applier.hasChangeSource("volume");
-            if (!fromVolume) { 
-//                var isMuting = newMuteValue.muted;
-                if (newMuteValue) {
-                    // If this mute event was not already sourced from a volume change, fire volume to 0
-                    fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
-                } else {
-                    fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
-                }
+        }
+    });
+    
+    fluid.videoPlayer.controllers.volumeControls.updateMuteStatus = function (that, newVolume, oldVolume) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            // skip the initial transaction
+            return;
+        }
+        if (!that.applier.hasChangeSource("mute")) {
+            if (that.model.volume === 0) {
+                that.oldVolume = oldVolume;
+                fluid.fireSourcedChange(that.applier, "muted", true, "volume");
+            } else if (that.model.muted) {
+                fluid.fireSourcedChange(that.applier, "muted", false, "volume");
             }
-        });
+        }
     };
 
-    fluid.videoPlayer.volumeControls.init = function (that) {
+    fluid.videoPlayer.controllers.volumeControls.enableMuteButton = function (that) {
+        that.locate("mute").attr("disabled", !that.model.canPlay);
+    };
+
+    fluid.videoPlayer.controllers.volumeControls.handleMute = function (that, newMuteValue, oldMuteValue) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            // skip the initial transaction
+            return;
+        }
+        // See updateVolume method for converse logic
+        if (that.model.volume > 0) {
+            that.oldVolume = that.model.volume;
+        }
+        var fromVolume = that.applier.hasChangeSource("volume");
+        if (!fromVolume) { 
+            if (newMuteValue) {
+                // If this mute event was not already sourced from a volume change, fire volume to 0
+                fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
+            } else {
+                fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
+            }
+        }
+    };
+
+    fluid.videoPlayer.controllers.volumeControls.setup = function (that) {
         var volumeControl = that.locate("volumeControl");
         var mute = that.locate("mute");
 
@@ -674,108 +748,41 @@ console.log("volCtrls muted model changed listener: new="+newMuteValue+", old="+
 
         that.container.attr("aria-label", that.options.strings.instructions);
         mute.attr("title", that.options.strings.instructions);
-    };
 
-    fluid.defaults("fluid.videoPlayer.volumeControls", {
-        gradeNames: ["fluid.viewRelayComponent", "autoInit"],
-        model: {
-            muted: false,
-            volume: 50,
-            minVolume: 0,
-            maxVolume: 100
-        },
-        events: {
-            muteButtonReady: null,
-            afterSetup: null,
-            onReady: {
-                events: {
-                    muteButtonReady: "muteButtonReady",
-                    afterSetup: "afterSetup"
-                },
-                args: ["{volumeControls}"]
-            }
-        },
-        listeners: {
-            onCreate: {
-                listener: "fluid.videoPlayer.volumeControls.setup",
-                args: ["{volumeControls}"]
-            }
-        },
-        selectors: {
-            mute: ".flc-videoPlayer-mute",
-            volumeControl: ".flc-videoPlayer-volumeControl",
-            handle: ".ui-slider-handle"
-        },
-        styles: {
-            mute: "fl-videoPlayer-mute",
-            volumeControl: "fl-videoPlayer-volumeControl",
-            buttonIcon: "ui-icon-signal"
-        },
-        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-        strings: {
-            volume: "Volume",
-            instructions: "Volume controls. Use up and down arrows to adjust volume, space or enter to mute."
-        },
-        unmuteVolume: 10,
-        members: {
-            oldVolume: "{that}.options.unmuteVolue"
-        },
-        invokers: {
-            updateSlider: {
-                funcName: "fluid.videoPlayer.volumeControls.updateSlider",
-                args: ["{volumeControls}"]
-            }
-        },
-        components: {
-            muteButton: {
-                type: "fluid.toggleButton",
-                container: "{volumeControls}.container",
-                options: {
-                    selectors: {
-                        button: ".flc-videoPlayer-mute"
-                    },
-                    styles: {
-                        init: "fl-videoPlayer-mute",
-                        pressed: "fl-videoPlayer-muted"
-                    },
-                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-                    strings: {
-                        press: "Mute",
-                        release: "Un-mute"
-                    },
-                    model: {
-                        pressed: "{volumeControls}.model.muted"
-                    },
-                    components: {
-                        tooltip: {
-                            container: "{volumeControls}.container"
-                        }
-                    },
-                    listeners: {
-                        onCreate: "{volumeControls}.events.muteButtonReady"
-                    } 
-                }
-            }
-        }
-    });
-
-    fluid.videoPlayer.volumeControls.updateSlider = function (that) {
-        var volume = that.model.volume;
+        // Bind the volume Control slide event to change the video's volume and its image.
         var volumeControl = that.locate("volumeControl");
+        var muteButton = that.muteButton;
+        var tooltip = muteButton.tooltip;
+
+        fluid.each(["slide", "slidechange"], function (value) {
+            volumeControl.bind(value, function (evt, ui) {
+                fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
+            });
+        });
+
+        volumeControl.mouseenter(function () {
+            tooltip.updateContent(that.options.strings.volume);
+        });
+
+        volumeControl.mouseleave(function () {
+            tooltip.updateContent(muteButton.tooltipContentFunction);
+        });
+        that.events.afterSetup.fire();
+    };
+    
+
+    fluid.videoPlayer.controllers.volumeControls.updateSlider = function (that, newValue, oldValue) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            // skip the initial transaction
+            return;
+        }
+        var volumeControl = that.locate("volumeControl");
+        var volume = that.model.volume;
         volumeControl.slider("value", volume);
         that.locate("handle").attr({
             "aria-valuenow": volume,
             "aria-valuetext": Math.round(volume) + "%"
         });
-    };
-
-    fluid.videoPlayer.volumeControls.setup = function (that) {
-        var volumeControls = fluid.videoPlayer.volumeControls;
-
-        volumeControls.init(that);
-        volumeControls.bindDOMEvents(that);
-        volumeControls.bindModel(that);
-        that.events.afterSetup.fire();
     };
 
     /********************************************************************************

@@ -102,7 +102,7 @@ fluid.registerNamespace("fluid.testUtils");
         jqUnit.expect(1);
         jEl.mouseover();
         var tooltip = $("#" + jEl.attr("aria-describedby"));
-        jqUnit.assertEquals("Tooltip should contain " + expectedText + " initially", expectedText, tooltip.text());
+        jqUnit.assertEquals("Tooltip should contain " + expectedText, expectedText, tooltip.text());
         return tooltip;
     };
 
