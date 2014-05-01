@@ -85,7 +85,7 @@ var fluid_1_5 = fluid_1_5 || {};
      */
 
     fluid.defaults("fluid.videoPlayer", {
-        gradeNames: ["fluid.viewComponent", "fluid.progressiveCheckerForComponent", "{that}.getCaptionGrade", "autoInit"],
+        gradeNames: ["fluid.viewRelayComponent", "fluid.progressiveCheckerForComponent", "{that}.getCaptionGrade", "autoInit"],
         componentName: "fluid.videoPlayer",
         progressiveCheckerOptions: {
             checks: [{
@@ -102,7 +102,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 priority: "first",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
                         onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
@@ -116,11 +115,12 @@ var fluid_1_5 = fluid_1_5 || {};
                         },
                         // This event should be split into two to differentiate between the setting and unsetting of fullscreen
                         "{videoPlayer}.events.onFullscreenModelChanged": {
-                            listener: function (videoPlayer, media, model) {
-                                if (model.fullscreen) {
+                            listener: function (videoPlayer, media, fullscreenFlag) {
+                                if (fullscreenFlag) {
                                     media.requestFullScreen(videoPlayer.locate("videoPlayer")[0]);
                                 } else {
-                                    media.cancelFullScreen();
+// XXX This is happening on construction, before media is actually ready; cancelFullScreen doesn't exist
+//                                    media.cancelFullScreen();
                                 }
                             },
                             args: ["{videoPlayer}", "{media}", "{arguments}.0"]
@@ -147,7 +147,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onIntervalEventsConductorReady",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
                         onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
@@ -177,7 +176,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.options.video.captions",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
@@ -353,7 +351,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onMediaReady",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.options.video.captions",
                     events: {
                         onReady: "{videoPlayer}.events.onCaptionsReady"
@@ -549,7 +546,10 @@ var fluid_1_5 = fluid_1_5 || {};
         // TODO: declarative syntax for this in framework
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
-        that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
+
+
+// XXX  guards doesn't exist anymore
+//        that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
 
     };
     

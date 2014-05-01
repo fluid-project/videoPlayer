@@ -19,7 +19,7 @@ var fluid_1_5 = fluid_1_5 || {};
 (function ($, fluid) {
 
     fluid.defaults("fluid.videoPlayer.showHide", {
-        gradeNames: ["fluid.modelComponent", "autoInit"],
+        gradeNames: ["fluid.modelRelayComponent", "autoInit"],
         listeners: {
             onCreate: {
                 listener: "fluid.videoPlayer.showHide.init",
@@ -49,7 +49,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     selectorKey
                 );
             
-            that.applier.modelChanged.addListener(modelPath, function () {
+            that.applier.modelChanged.addListener(modelPath, function (newValue) {
                 var container = that.locate(selectorKey);
                 
                 if (!container) {
@@ -57,8 +57,9 @@ var fluid_1_5 = fluid_1_5 || {};
                 }
 
                 var showFlag = fluid.get(that.model, modelPath);
-                
-                container[showFlag ? "show" : "hide"]();
+// XXX Don't know why actual model doesn't reflect the results of the model change yet
+console.log("newValue is " + newValue + ", but fluid.get(that.model, modelPath) is "+showFlag);
+                container.toggle(showFlag);
             });
         });
     };

@@ -27,7 +27,7 @@ var fluid_1_5 = fluid_1_5 || {};
      *********************************************************************************/
 
     fluid.defaults("fluid.videoPlayer.media", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewRelayComponent", "autoInit"],
         components: {
             mediaEventBinder: {
                 type: "fluid.videoPlayer.eventBinder",

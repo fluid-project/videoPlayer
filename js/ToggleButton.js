@@ -19,23 +19,24 @@ var fluid_1_5 = fluid_1_5 || {};
 (function ($, fluid) {
 
     fluid.defaults("fluid.toggleButton", {
-        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
-        events: {
-            onPress: null,
-            onTooltipAttached: null,
-            onSetupComplete: null,
-            onReady: {
-                events: {
-                    tooltip: "onTooltipAttached",
-                    setup: "onSetupComplete"
-                },
-                args: ["{toggleButton}"]
+        gradeNames: ["fluid.viewRelayComponent", "autoInit"],
+        model: {
+            pressed: false // default state
+        },
+        modelListeners: {
+            pressed: {
+                funcName: "fluid.toggleButton.updateButton",
+                args: ["{toggleButton}", "{change}.value", "{toggleButton}.tooltip", "{toggleButton}.tooltipContentFunction"]
             }
+        },
+        events: {
+            onPress: null, // XXX want to get rid of this: in menu button, use model listener instead of this
+            onTooltipAttached: null
         },
         listeners: {
             onCreate: {
-                listener: "fluid.toggleButton.setUpToggleButton",
-                args: ["{that}"]
+                funcName: "fluid.toggleButton.setUpToggleButton",
+                args: ["{toggleButton}"]
             }
         },
         selectors: {    // Integrators may override this selector
@@ -47,9 +48,6 @@ var fluid_1_5 = fluid_1_5 || {};
             pressed: "fl-videoPlayer-button-pressed",
             tooltip: "fl-videoPlayer-tooltip"
         },
-        ownModel: true,
-        model: {},
-        modelPath: "pressed",
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {  // Integrators will likely override these strings
             press: "Press",
@@ -64,13 +62,9 @@ var fluid_1_5 = fluid_1_5 || {};
                 funcName: "fluid.toggleButton.press",
                 args: "{toggleButton}"
             },
-            requestStateChange: {
-                funcName: "fluid.toggleButton.requestStateChange",
-                args: "{toggleButton}"
-            },
-            refreshView: {
-                funcName: "fluid.toggleButton.refreshView",
-                args: "{toggleButton}"
+            setState: {
+                changePath: "pressed",
+                value: "{arguments}.0"
             }
         },
         components: {
@@ -89,13 +83,9 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     });
 
-    fluid.toggleButton.requestStateChange = function (that) {
-        that.writeIndirect("modelPath", !that.readIndirect("modelPath"));
-    };
-
-    fluid.toggleButton.refreshView = function (that) {
+    fluid.toggleButton.updateButton = function (that, newValue, tooltip, tooltipFunc) {
         var button = that.locate("button");
-        var pressed = that.readIndirect("modelPath");
+        var pressed = that.model.pressed;
         var styles = that.options.styles;
         if (styles.init === styles.pressed) {
             button.addClass(styles.init);
@@ -105,35 +95,25 @@ var fluid_1_5 = fluid_1_5 || {};
         }
         button.attr("aria-pressed", pressed);
 
-        var labelText = that.tooltipContentFunction(that);
+        var labelText = tooltipFunc(that);
         that.locate("button").attr("aria-label", labelText);
         that.tooltip.updateContent(labelText);
     };
 
     fluid.toggleButton.press = function (that) {
-        that.requestStateChange();
-        that.events.onPress.fire(that);
+        that.setState(!that.model.pressed);
+        that.events.onPress.fire(that); // XXX
         return false;
     };
 
     fluid.toggleButton.tooltipContentFunction = function (that) {
-        return that.options.strings[that.readIndirect("modelPath")? "release": "press"];
+        return that.options.strings[that.model.pressed? "release": "press"];
     };
 
     fluid.toggleButton.setUpToggleButton = function (that) {
-        if (that.options.ownModel || that.readIndirect("modelPath") === undefined) {
-            that.writeIndirect("modelPath", false);
-        }
-
         var button = that.locate("button");
         button.attr("role", "button");
-        that.refreshView();
-
         button.click(that.press);
-        that.applier.modelChanged.addListener(that.options.modelPath, function () {
-            that.refreshView();
-        });
-        that.events.onSetupComplete.fire();
     };
 
 })(jQuery, fluid_1_5);

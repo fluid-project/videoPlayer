@@ -28,13 +28,22 @@ var fluid_1_5 = fluid_1_5 || {};
         needs the list of captions (or transcripts, etc) as its model for rendering.
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.languageMenu", {
-        gradeNames: ["fluid.rendererComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
-        renderOnInit: true,
-        produceTree: "fluid.videoPlayer.languageMenu.produceTree",
-        languages: [],
-        currentLanguagePath: "activeLanguages",
-        showHidePath: "showLanguage",
-        model: {},
+        gradeNames: ["fluid.rendererRelayComponent", "autoInit"],
+        model: {
+            showLanguage: false, // maps to displayTranscripts or displayCaptions
+            currentLanguage: [], // maps to currentTracks.transcripts or currentTracks.captions; integer index(/indices?)
+            languages: [] // {srclang, label}, populated from options in produceTree()
+        },
+        modelListeners: {
+            showLanguage: {
+                funcName: "{that}.updateShowHide",
+                args: ["{change}.value"]
+            },
+            currentLanguage: {
+                funcName: "{that}.updateTracks",
+                args: ["{change}.value"]
+            }
+        },
         events: {
             onReady: {
                 events: {
@@ -43,7 +52,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 },
                 args: ["{languageMenu}"]
             },
-            activated: null,
             hiddenByKeyboard: null,
             onControlledElementReady: null
         },
@@ -62,7 +70,6 @@ var fluid_1_5 = fluid_1_5 || {};
             language: ".flc-videoPlayer-language",
             showHide: ".flc-videoPlayer-languageNone"
         },
-        repeatingSelectors: ["language"],
         strings: {
             showLanguage: "Show Language",
             hideLanguage: "Hide Language"
@@ -71,24 +78,28 @@ var fluid_1_5 = fluid_1_5 || {};
             selected: "fl-videoPlayer-menuItem-selected",
             active: "fl-videoPlayer-menuItem-active"
         },
+        renderOnInit: true,
+        repeatingSelectors: ["language"],
+        produceTree: "fluid.videoPlayer.languageMenu.produceTree",
+        languages: [], // XXX does this have to be external?
+        hideOnInit: true,
         invokers: {
-            updateTracks: { funcName: "fluid.videoPlayer.languageMenu.updateTracks", args: ["{languageMenu}"] },
-            updateShowHide: { funcName: "fluid.videoPlayer.languageMenu.updateShowHide", args: ["{languageMenu}"] },
+            updateTracks: { funcName: "fluid.videoPlayer.languageMenu.updateTracks", args: ["{languageMenu}", "{arguments}.0"] },
+            updateShowHide: { funcName: "fluid.videoPlayer.languageMenu.updateShowHide", args: ["{languageMenu}", "{arguments}.0"] },
             toggleView: { funcName: "fluid.videoPlayer.languageMenu.toggleView", args: ["{languageMenu}"] },
             showMenu: { funcName: "fluid.videoPlayer.languageMenu.showMenu", args: ["{languageMenu}"] },
             hideMenu: { funcName: "fluid.videoPlayer.languageMenu.hideMenu", args: ["{languageMenu}"] },
             showAndSelect: { funcName: "fluid.videoPlayer.languageMenu.showAndSelect", args: ["{languageMenu}"] },
             activate: { funcName: "fluid.videoPlayer.languageMenu.activate", args: ["{languageMenu}", "{arguments}.0"] },
             showHide: { funcName: "fluid.videoPlayer.languageMenu.showHide", args: ["{languageMenu}"] }
-        },
-        hideOnInit: true
+        }
     });
 
     // TODO: Could this be specified declaratively, in a "protoTree" option?
     // Ans: not very effectively... the renderer still needs to be burned to the ground
     fluid.videoPlayer.languageMenu.produceTree = function (that) {
         // Silly damn renderer with its crazy JSON idiolect!
-        that.model.languages = that.options.languages;
+        that.model.languages = that.options.languages; // XXX do this with ioc expression? can I do that in the model?
         var tree = {
             // create a menu item for each language in the model
             expander: {
@@ -110,7 +121,7 @@ var fluid_1_5 = fluid_1_5 || {};
             },
             // add the 'turn off' option
             showHide: {
-                value: that.options.strings[that.readIndirect("showHidePath") ? "hideLanguage" : "showLanguage"],
+                value: that.options.strings[that.model.showLanguage ? "hideLanguage" : "showLanguage"],
                 decorators: {
                     type: "attrs",
                     attributes: {
@@ -162,25 +173,20 @@ var fluid_1_5 = fluid_1_5 || {};
         that.locate("showHide").click(function (evt) {
             that.showHide();
         });
-
-        that.applier.modelChanged.addListener(that.options.showHidePath, that.updateShowHide);
-        that.applier.modelChanged.addListener(that.options.currentLanguagePath, that.updateTracks);
-
     };
 
-    fluid.videoPlayer.languageMenu.updateTracks = function (that) {
+    fluid.videoPlayer.languageMenu.updateTracks = function (that, newCurrLangs) {
         var menuItems = that.locate("menuItem");
         menuItems.removeClass(that.options.styles.selected).removeClass(that.options.styles.active);
         menuItems.attr("aria-checked", "false").attr("aria-selected", "false");
-        var langIndex = that.readIndirect("currentLanguagePath")[0];
+        var langIndex = newCurrLangs ? newCurrLangs[0] : 0; // XXX
         var selectedItem = $(menuItems[langIndex]);
         selectedItem.addClass(that.options.styles.active);
         selectedItem.attr("aria-checked", "true").attr("aria-selected", "true");
     };
     
-    fluid.videoPlayer.languageMenu.updateShowHide = function (that) {
-        var showHide = that.readIndirect("showHidePath"); 
-        that.locate("showHide").text(that.options.strings[showHide ? "hideLanguage" : "showLanguage"]);
+    fluid.videoPlayer.languageMenu.updateShowHide = function (that, newValue) {
+        that.locate("showHide").text(that.options.strings[newValue ? "hideLanguage" : "showLanguage"]);
     };
 
     fluid.videoPlayer.languageMenu.setAriaControlsAttr = function (that, controlledId) {
@@ -206,12 +212,12 @@ var fluid_1_5 = fluid_1_5 || {};
         that.container.fluid("selectable.select", that.locate("menuItem").last());
     };
     fluid.videoPlayer.languageMenu.activate = function (that, index) {
-        that.writeIndirect("currentLanguagePath", [index]);
-        that.writeIndirect("showHidePath", true);
+        that.applier.change("currentLanguage", [index]);
+        that.applier.change("showLanguage", true);
         that.hideMenu();
     };
     fluid.videoPlayer.languageMenu.showHide = function (that) {
-        that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton");
+        that.applier.change("showLanguage", !that.model.showLanguage);
         that.hideMenu();
     };
 
@@ -222,7 +228,7 @@ var fluid_1_5 = fluid_1_5 || {};
         that.container.attr("role", "menu");
         that.container.css("z-index", 9999);
         that.hideMenu();
-        that.updateTracks();
+        that.updateTracks([0]);
         that.updateShowHide();
     };
 
@@ -235,11 +241,18 @@ var fluid_1_5 = fluid_1_5 || {};
         activation only shows the menu
      *****************************************************************************/
     fluid.defaults("fluid.videoPlayer.languageControls", {
-        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
-        selectors: {
-            button: ".flc-menuButton-button",
-            label: ".flc-menuButton-label",
-            menu: ".flc-menuButton-languageMenu"
+        gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
+        model: {
+            // XXX don't know if this is correct
+            showLanguage: false, // maps to displayTranscripts or displayCaptions
+            currentLanguage: [], // maps to currentTracks.transcripts or currentTracks.captions; integer index(/indices?)
+            languages: [] // {srclang, label}, populated from options in produceTree()
+        },
+        modelListeners: {
+            showLanguage: {
+                funcName: "{that}.refreshButtonClass",
+                args: "{arguments}"
+            }
         },
         events: {
             onReady: null,
@@ -257,9 +270,12 @@ var fluid_1_5 = fluid_1_5 || {};
                 priority: "last"
             }
         },
-        languages: [],
-        currentLanguagePath: "",
-        showHidePath: "",
+        languages: [], // XXX does this have to be external?
+        selectors: {
+            button: ".flc-menuButton-button",
+            label: ".flc-menuButton-label",
+            menu: ".flc-menuButton-languageMenu"
+        },
         strings: {
             showLanguage: "Show Language",
             hideLanguage: "Hide Language"
@@ -267,6 +283,18 @@ var fluid_1_5 = fluid_1_5 || {};
         styles: {
             button: "fl-videoPlayer-button",
             buttonWithShowing: "fl-videoPlayer-buttonWithShowing"  
+        },
+        templates: {
+            menuButton: {
+                forceCache: true,
+                href: "../html/menuButton_template.html"
+            }
+        },
+        invokers: {
+            refreshButtonClass: {
+                funcName: "fluid.videoPlayer.languageControls.refreshButtonClass",
+                args: ["{languageControls}"]
+            }
         },
         components: {
             button: {
@@ -293,9 +321,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 options: {
                     model: "{languageControls}.model",
                     languages: "{languageControls}.options.languages",
-                    applier: "{languageControls}.applier",
-                    showHidePath: "{languageControls}.options.showHidePath",
-                    currentLanguagePath: "{languageControls}.options.currentLanguagePath",
                     strings: "{languageControls}.options.strings",
                     events: {
                         onControlledElementReady: "{languageControls}.events.onControlledElementReady"
@@ -305,18 +330,6 @@ var fluid_1_5 = fluid_1_5 || {};
             eventBinder: {
                 type: "fluid.videoPlayer.languageControls.eventBinder",
                 createOnEvent: "onRenderingComplete"
-            }
-        },
-        templates: {
-            menuButton: {
-                forceCache: true,
-                href: "../html/menuButton_template.html"
-            }
-        },
-        invokers: {
-            refreshButtonClass: {
-                funcName: "fluid.videoPlayer.languageControls.refreshButtonClass",
-                args: ["{languageControls}"]
             }
         }
     });
@@ -370,8 +383,10 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.languageControls.refreshButtonClass = function (that) {
-        var showHide = that.readIndirect("showHidePath"); // may be undefined if never set
-        that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, !!showHide);
+        var showHide = that.model.showLanguage; // may be undefined if never set
+        if (that.button) {
+            that.button.locate("button").toggleClass(that.options.styles.buttonWithShowing, !!showHide);
+        }
     };
 
     fluid.videoPlayer.languageControls.setUpControls = function (that) {
@@ -381,7 +396,6 @@ var fluid_1_5 = fluid_1_5 || {};
         fluid.videoPlayer.languageControls.setUpKeyboardA11y(that);
         fluid.videoPlayer.languageControls.setUpAria(that);
 
-        that.applier.modelChanged.addListener(that.options.showHidePath, that.refreshButtonClass);
         that.refreshButtonClass();
         that.events.onReady.fire(that);
     };

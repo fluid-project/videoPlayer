@@ -24,7 +24,7 @@ var fluid_1_5 = fluid_1_5 || {};
      *****************************************************************************/
     
     fluid.defaults("fluid.videoPlayer.transcript", {
-        gradeNames: ["fluid.rendererComponent", "autoInit"],
+        gradeNames: ["fluid.rendererRelayComponent", "autoInit"],
         renderOnInit: true,
         rendererOptions: {
             autoBind: true
@@ -381,8 +381,8 @@ var fluid_1_5 = fluid_1_5 || {};
             fluid.videoPlayer.transcript.switchTranscriptArea(that);
         });
 
-        that.applier.modelChanged.addListener("currentTracks.transcripts", function (model, oldModel) {
-            if (model.currentTracks.transcripts[0] === oldModel.currentTracks.transcripts[0]) {
+        that.applier.modelChanged.addListener("currentTracks.transcripts", function (transcriptArray, oldTranscriptArray) {
+            if (transcriptArray[0] === oldTranscriptArray[0]) {
                 // actual choice of track hasn't changed
                 return;
             }
@@ -393,7 +393,7 @@ var fluid_1_5 = fluid_1_5 || {};
             var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
             that.locate("languageDropdown").find("option:selected").removeAttr("selected");
             that.locate("languageDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
-            that.updateTranscriptHighlight(model.transcriptIntervalId);
+            that.updateTranscriptHighlight(that.model.transcriptIntervalId);
             
             that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
         });

@@ -26,7 +26,7 @@ var fluid_1_5 = fluid_1_5 || {};
      *********************************************************************************/
     
     fluid.defaults("fluid.videoPlayer.intervalEventsConductor", {
-        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
+        gradeNames: ["fluid.eventedComponent", "fluid.modelRelayComponent", "autoInit"],
         events: {
             onTimeUpdate: null,
             onIntervalChange: null,

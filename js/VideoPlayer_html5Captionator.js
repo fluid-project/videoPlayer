@@ -25,7 +25,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
      ********************************************************************/
 
     fluid.defaults("fluid.videoPlayer.html5Captionator", {
-        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
+        gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         model: {},
         captions: [],
         events: {

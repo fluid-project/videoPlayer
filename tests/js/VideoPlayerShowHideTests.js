@@ -23,23 +23,49 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
         var showHideContainer = ".flc-videoPlayer-testContainer";
         
+        fluid.registerNamespace("fluid.tests.showHide");
         fluid.defaults("fluid.videoPlayer.testShowHide", {
-            gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
+            gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.showHide", "autoInit"],
+            modelListeners: {
+                isShown: {
+                    listener: "fluid.tests.showHide.checkValue",
+                    args: ["{testShowHide}", "{arguments}"]
+                }
+            },
             showHidePath: "scrubber",
             selectors: {
                 testContainer: showHideContainer
             },
-            selectorsToIgnore: ["testContainer"]
+            listeners: {
+                onCreate: {
+                    listener: "fluid.tests.showHide.test",
+                    args: ["{testShowHide}"]
+                }
+            }
         });
-        
+
+        fluid.tests.showHide.expectedValue = undefined;
+
+        fluid.tests.showHide.checkValue = function (testThat, changeRequest) {
+            // skip the initial transaction
+            if (fluid.tests.showHide.expectedValue !== undefined) {
+                jqUnit[fluid.tests.showHide.expectedValue ? "isVisible" : "notVisible"]("When 'isShown' flag is " + fluid.tests.showHide.expectedValue + ", container should" + (fluid.tests.showHide.expectedValue ? "" : " not") + " be visible", $(showHideContainer));
+            }
+        };
+
+        fluid.tests.showHide.test = function (that) {
+            fluid.tests.showHide.expectedValue = true;
+            that.applier.change("isShown.scrubber.testContainer", true);
+
+            fluid.tests.showHide.expectedValue = false;
+            that.applier.change("isShown.scrubber.testContainer", false);
+
+            fluid.tests.showHide.expectedValue = true;
+            that.applier.change("isShown.scrubber.testContainer", true);
+        };
+
         jqUnit.test("hide", function () {
             var that = fluid.videoPlayer.testShowHide(".flc-videoPlayer-showHide");
-            
-            jqUnit.isVisible("The container is shown", $(showHideContainer));
-            that.applier.requestChange("isShown.scrubber.testContainer", false);
-            jqUnit.notVisible("The container is hidden", $(showHideContainer));
-            that.applier.requestChange("isShown.scrubber.testContainer", true);
-            jqUnit.isVisible("The container is back to be shown", $(showHideContainer));
         });
         
     });

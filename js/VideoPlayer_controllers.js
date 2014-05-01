@@ -53,7 +53,7 @@ var fluid_1_5 = fluid_1_5 || {};
     });
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
-        gradeNames: ["fluid.viewComponent", "autoInit", "{that}.getCaptionGrade", "{that}.getFullScreenGrade"], 
+        gradeNames: ["fluid.viewRelayComponent", "autoInit", "{that}.getCaptionGrade", "{that}.getFullScreenGrade"], 
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
@@ -61,7 +61,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "afterTemplateLoaded",
                 options: {
                     model: "{controllers}.model",
-                    applier: "{controllers}.applier",
                     events: {
                         onScrub: "{controllers}.events.onScrub",
                         afterScrub: "{controllers}.events.afterScrub",
@@ -78,7 +77,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "afterTemplateLoaded",
                 options: {
                     model: "{controllers}.model",
-                    applier: "{controllers}.applier",
                     listeners: {
                         onReady: "{controllers}.events.onVolumeReady"
                     }
@@ -100,7 +98,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 options: {
                     languages: "{controllers}.options.transcripts",
                     model: "{controllers}.model",
-                    applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
                     currentLanguagePath: "currentTracks.transcripts",
                     styles: {
@@ -145,7 +142,6 @@ var fluid_1_5 = fluid_1_5 || {};
                     model: "{controllers}.model",
                     modelPath: "play",
                     ownModel: false,
-                    applier: "{controllers}.applier",
                     listeners: {
                         onAttach: "{controllers}.events.onPlayReady"
                     }
@@ -156,7 +152,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "afterTemplateLoaded",
                 options: {
                     listeners: {
-                        onReady: "{controllers}.events.onFullScreenReady"
+                        onCreate: "{controllers}.events.onFullScreenReady"
                     }
                 }
             }
@@ -264,9 +260,8 @@ var fluid_1_5 = fluid_1_5 || {};
                     model: "{controllers}.model",
                     modelPath: "fullscreen",
                     ownModel: false,
-                    applier: "{controllers}.applier",
                     listeners: {
-                        onReady: "{controllers}.events.onFullScreenReady"
+                        onCreate: "{controllers}.events.onFullScreenReady"
                     }
                 }
             }
@@ -283,7 +278,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 options: {
                     languages: "{controllers}.options.captions",
                     model: "{controllers}.model",
-                    applier: "{controllers}.applier",
                     showHidePath: "displayCaptions",
                     currentLanguagePath: "currentTracks.captions",
                     styles: {
@@ -406,7 +400,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
-        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
+        gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.showHide", "autoInit"],
         showHidePath: "scrubber",
         components: {
             bufferedProgress: {
@@ -591,6 +585,7 @@ var fluid_1_5 = fluid_1_5 || {};
     
     fluid.videoPlayer.updateMuteStatus = function (that) {
         return function (newModel, oldModel) {
+console.log("volCtrls updateMuteStatus (volume) model changed listener: new="+newModel+", old="+oldModel+", that.model.volume="+that.model.volume);
             if (!that.applier.hasChangeSource("mute")) {
                 if (that.model.volume === 0) {
                     that.oldVolume = oldModel.volume;
@@ -611,15 +606,16 @@ var fluid_1_5 = fluid_1_5 || {};
             that.locate("mute").attr("disabled", !that.model.canPlay);
         });
 
-        that.applier.modelChanged.addListener("muted", function (newModel, oldModel) {
+        that.applier.modelChanged.addListener("muted", function (newMuteValue, oldMuteValue) {
+console.log("volCtrls muted model changed listener: new="+newMuteValue+", old="+oldMuteValue+", that.model.muted="+that.model.muted);
             // See updateVolume method for converse logic
-            if (oldModel.volume > 0) {
-                that.oldVolume = oldModel.volume;
-            }
+//            if (oldModel.volume > 0) {
+                that.oldVolume = that.model.volume;
+  //          }
             var fromVolume = that.applier.hasChangeSource("volume");
             if (!fromVolume) { 
-                var isMuting = newModel.muted;
-                if (isMuting) {
+//                var isMuting = newMuteValue.muted;
+                if (newMuteValue) {
                     // If this mute event was not already sourced from a volume change, fire volume to 0
                     fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
                 } else {
@@ -681,7 +677,13 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.defaults("fluid.videoPlayer.volumeControls", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewRelayComponent", "autoInit"],
+        model: {
+            muted: false,
+            volume: 50,
+            minVolume: 0,
+            maxVolume: 100
+        },
         events: {
             muteButtonReady: null,
             afterSetup: null,
@@ -699,13 +701,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 args: ["{volumeControls}"]
             }
         },
-        model: {
-            muted: false,
-            volume: 50,
-            minVolume: 0,
-            maxVolume: 100
-        },
-        unmuteVolume: 10,
         selectors: {
             mute: ".flc-videoPlayer-mute",
             volumeControl: ".flc-videoPlayer-volumeControl",
@@ -720,6 +715,16 @@ var fluid_1_5 = fluid_1_5 || {};
         strings: {
             volume: "Volume",
             instructions: "Volume controls. Use up and down arrows to adjust volume, space or enter to mute."
+        },
+        unmuteVolume: 10,
+        members: {
+            oldVolume: "{that}.options.unmuteVolue"
+        },
+        invokers: {
+            updateSlider: {
+                funcName: "fluid.videoPlayer.volumeControls.updateSlider",
+                args: ["{volumeControls}"]
+            }
         },
         components: {
             muteButton: {
@@ -738,28 +743,19 @@ var fluid_1_5 = fluid_1_5 || {};
                         press: "Mute",
                         release: "Un-mute"
                     },
-                    model: "{volumeControls}.model",
-                    applier: "{volumeControls}.applier",
-                    modelPath: "muted",
+                    model: {
+                        pressed: "{volumeControls}.model.muted"
+                    },
                     components: {
                         tooltip: {
                             container: "{volumeControls}.container"
                         }
                     },
                     listeners: {
-                        onReady: "{volumeControls}.events.muteButtonReady"
+                        onCreate: "{volumeControls}.events.muteButtonReady"
                     } 
                 }
             }
-        },
-        invokers: {
-            updateSlider: {
-                funcName: "fluid.videoPlayer.volumeControls.updateSlider",
-                args: ["{volumeControls}"]
-            }
-        },
-        members: {
-            oldVolume: "{that}.options.unmuteVolue"
         }
     });
 

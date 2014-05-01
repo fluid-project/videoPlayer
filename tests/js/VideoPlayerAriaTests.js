@@ -37,10 +37,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var transcriptLangMenuSelector = ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu";
 
         fluid.tests.videoPlayer.triggerTranscript = function (that) {
+console.log("triggering transcript");
             $(transcriptLangMenuSelector + " li:eq(0)").click();
         };
 
         fluid.tests.videoPlayer.testAriaControlsAttrs = function (that) {
+console.log("testing aria");
             var controlsToTest = [{
                 controlName: "Transcript menu",
                 control: transcriptLangMenuSelector,

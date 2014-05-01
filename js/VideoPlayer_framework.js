@@ -46,7 +46,7 @@ var fluid_1_5 = fluid_1_5 || {};
     // as "state".
     
     fluid.defaults("fluid.modelRelay", {
-        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
+        gradeNames: ["fluid.eventedComponent", "fluid.modelRelayComponent", "autoInit"],
         targets: {},
         rules: {},
         events: {
@@ -205,7 +205,7 @@ var fluid_1_5 = fluid_1_5 || {};
     // A "mini-grade" to ease the work of dealing with "modelPath" idiom components - this
     // is only desirable until changeApplier relay gets into the core framework
     fluid.defaults("fluid.videoPlayer.indirectReader", {
-        gradeNames: ["fluid.modelComponent", "autoInit"],
+        gradeNames: ["fluid.modelRelayComponent", "autoInit"],
         invokers: {
             readIndirect: {
                 funcName: "fluid.videoPlayer.indirectReader.readIndirect",
