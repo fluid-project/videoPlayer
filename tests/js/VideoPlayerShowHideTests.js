@@ -26,12 +26,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.registerNamespace("fluid.tests.showHide");
         fluid.defaults("fluid.videoPlayer.testShowHide", {
             gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.showHide", "autoInit"],
-            modelListeners: {
-                isShown: {
-                    listener: "fluid.tests.showHide.checkValue",
-                    args: ["{testShowHide}", "{arguments}"]
-                }
-            },
             showHidePath: "scrubber",
             selectors: {
                 testContainer: showHideContainer
@@ -44,24 +38,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         });
 
-        fluid.tests.showHide.expectedValue = undefined;
-
-        fluid.tests.showHide.checkValue = function (testThat, changeRequest) {
-            // skip the initial transaction
-            if (fluid.tests.showHide.expectedValue !== undefined) {
-                jqUnit[fluid.tests.showHide.expectedValue ? "isVisible" : "notVisible"]("When 'isShown' flag is " + fluid.tests.showHide.expectedValue + ", container should" + (fluid.tests.showHide.expectedValue ? "" : " not") + " be visible", $(showHideContainer));
-            }
-        };
-
         fluid.tests.showHide.test = function (that) {
-            fluid.tests.showHide.expectedValue = true;
             that.applier.change("isShown.scrubber.testContainer", true);
+            jqUnit.isVisible("When 'isShown' flag is true, container should be visible", $(showHideContainer));
 
-            fluid.tests.showHide.expectedValue = false;
             that.applier.change("isShown.scrubber.testContainer", false);
+            jqUnit.notVisible("When 'isShown' flag is false, container should NOT be visible", $(showHideContainer));
 
-            fluid.tests.showHide.expectedValue = true;
             that.applier.change("isShown.scrubber.testContainer", true);
+            jqUnit.isVisible("When 'isShown' flag is true, container should be visible", $(showHideContainer));
         };
 
         jqUnit.test("hide", function () {

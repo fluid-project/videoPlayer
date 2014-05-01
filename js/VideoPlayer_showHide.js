@@ -1,5 +1,5 @@
 /*
-Copyright 2013 OCAD University
+Copyright 2013-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -19,14 +19,7 @@ var fluid_1_5 = fluid_1_5 || {};
 (function ($, fluid) {
 
     fluid.defaults("fluid.videoPlayer.showHide", {
-        gradeNames: ["fluid.modelRelayComponent", "autoInit"],
-        listeners: {
-            onCreate: {
-                listener: "fluid.videoPlayer.showHide.init",
-                args: "{showHide}"
-            }
-        },
-        modelPrefix: "isShown",
+        gradeNames: ["fluid.modelRelayComponent", "autoInit", "{showHide}.createModelListenersGrade"],
         model: {
             isShown: {
                 // A list of flags (true or false) to define the showing/hiding of any selectors
@@ -36,32 +29,48 @@ var fluid_1_5 = fluid_1_5 || {};
                 // unique component name. "handle" is the selector defined in the "scrubber" component.
             }
         },
+        modelPrefix: "isShown",
+
         // The identifier of the component for showing/hiding in the model "isShown" collection,
         // normally the unique component name, or any name as long as it maintains the uniqueness
         // of each component that has the "showHide" grade attached on.
-        showHidePath: ""
+        showHidePath: "",
+
+        invokers: {
+            createModelListenersGrade: {
+                funcName: "fluid.videoPlayer.showHide.createModelListenersGrade",
+                args: ["{showHide}.options.selectors", "{showHide}.options.modelPrefix", "{showHide}.options.showHidePath"]
+            }
+        }
     });
     
-    fluid.videoPlayer.showHide.init = function (that) {
-        fluid.each(that.options.selectors, function (selectorValue, selectorKey) {
+    fluid.videoPlayer.showHide.createModelListenersGrade = function (selectors, modelPrefix, showHidePath) {
+        var gradeName = "fluid.videoPlayer.showHide.modelListeners";
+        var defaults = {
+            modelListeners: {}
+        };
+        fluid.each(selectors, function (selectorValue, selectorKey) {
             var modelPath = fluid.pathUtil.composePath(
-                    fluid.pathUtil.composePath(that.options.modelPrefix, that.options.showHidePath),
+                    fluid.pathUtil.composePath(modelPrefix, showHidePath),
                     selectorKey
                 );
-            
-            that.applier.modelChanged.addListener(modelPath, function (newValue) {
-                var container = that.locate(selectorKey);
-                
-                if (!container) {
-                    return;
-                }
-
-                var showFlag = fluid.get(that.model, modelPath);
-// XXX Don't know why actual model doesn't reflect the results of the model change yet
-console.log("newValue is " + newValue + ", but fluid.get(that.model, modelPath) is "+showFlag);
-                container.toggle(showFlag);
-            });
+            defaults.modelListeners[modelPath] = {
+                funcName: "fluid.videoPlayer.showHide.updateVisibility",
+                args: ["{showHide}", selectorKey, modelPath]
+            };
         });
+        fluid.defaults(gradeName, defaults);
+        return gradeName;
+    };
+
+    fluid.videoPlayer.showHide.updateVisibility = function (that, selectorKey, modelPath) {
+        var container = that.locate(selectorKey);
+        if (!container) {
+            return;
+        }
+
+        var showFlag = fluid.get(that.model, modelPath);
+        container.toggle(showFlag);
     };
 
 })(jQuery, fluid_1_5);
