@@ -263,9 +263,9 @@ var fluid_1_5 = fluid_1_5 || {};
                         press: "Full screen",
                         release: "Exit full screen mode"
                     },
-                    model: "{controllers}.model",
-                    modelPath: "fullscreen",
-                    ownModel: false,
+                    model: {
+                        pressed: "{controllers}.model.fullscreen"
+                    },
                     listeners: {
                         onCreate: "{controllers}.events.onFullScreenReady"
                     }

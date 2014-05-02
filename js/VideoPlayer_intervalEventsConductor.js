@@ -98,7 +98,7 @@ var fluid_1_5 = fluid_1_5 || {};
      */
     fluid.videoPlayer.intervalEventsConductor.handleTimeUpdate = function (that, currentTime, buffered) {
         if (that.options.intervalList) {
-            var previousInterval = that.options.model.previousIntervalId;
+            var previousInterval = that.model.previousIntervalId;
             var currentInterval = fluid.videoPlayer.intervalEventsConductor.findCurrentInterval(currentTime, that.options.intervalList, previousInterval);
             
             if (currentInterval !== previousInterval) {

@@ -236,7 +236,7 @@ var fluid_1_5 = fluid_1_5 || {};
         that.locate("transcriptText").children().removeClass(that.options.styles.highlight);
         
         // Highlight the current transcript
-        if (currentTrackId !== null) {
+        if (currentTrackId) {
             var currentTranscriptElementId = fluid.videoPlayer.transcript.getTranscriptElementId(that.options.transcriptElementIdPrefix, currentTrackId);
             var element = fluid.jById(currentTranscriptElementId); 
             element.addClass(that.options.styles.highlight);
