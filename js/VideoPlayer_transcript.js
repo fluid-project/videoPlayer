@@ -54,6 +54,10 @@ var fluid_1_5 = fluid_1_5 || {};
             onReady: {
                 listener: "fluid.videoPlayer.transcript.bindDOM",
                 args: "{that}"
+            },
+            onIntervalChange: {
+                listener: "fluid.videoPlayer.transcript.updateInterval",
+                args: ["{transcript}", "{arguments}.0", "{arguments}.1"]
             }
         },
         model: {
@@ -62,6 +66,20 @@ var fluid_1_5 = fluid_1_5 || {};
             choices: [],
             labels: [],
             transcriptIntervalId: null
+        },
+        modelListeners: {
+            displayTranscripts: {
+                funcName: "fluid.videoPlayer.transcript.toggleTranscriptArea",
+                args: "{transcript}"
+            },
+            "currentTracks.transcripts": {
+                funcName: "fluid.videoPlayer.transcript.switchTranscript",
+                args: ["{transcript}", "{arguments}.0", "{arguments}.1"]
+            },
+            transcriptIntervalId: {
+                funcName: "{transcript}.updateTranscriptHighlight",
+                args: ["{arguments}.0.transcriptIntervalId"]
+            }
         },
         transcripts: [],
         invokers: {
@@ -113,7 +131,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     // Update visibility of the transcript area based on the flag "model.displayTranscripts"
-    fluid.videoPlayer.transcript.switchTranscriptArea = function (that) {
+    fluid.videoPlayer.transcript.toggleTranscriptArea = function (that) {
         if (that.model.displayTranscripts) {
             fluid.videoPlayer.transcript.showTranscriptArea(that);
             that.events.onTranscriptShow.fire();
@@ -209,6 +227,9 @@ var fluid_1_5 = fluid_1_5 || {};
     };
     
     fluid.videoPlayer.transcript.highlightTranscriptElement = function (that, currentTrackId) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         // Remove the previous highlights. The previous highlight may not necessarily be the "previousTrackId"
         // since a slight time delay is applied on the interval change listener to prevent the event queuing-up
         // when the scrubber bar is slid back and forth quickly
@@ -376,36 +397,27 @@ var fluid_1_5 = fluid_1_5 || {};
         });
     };
 
-    fluid.videoPlayer.transcript.bindTranscriptModel = function (that) {
-        that.applier.modelChanged.addListener("displayTranscripts", function () {
-            fluid.videoPlayer.transcript.switchTranscriptArea(that);
-        });
+    fluid.videoPlayer.transcript.switchTranscript = function (that, transcriptArray, oldTranscriptArray) {
+        if ((oldTranscriptArray === undefined) || (transcriptArray[0] === oldTranscriptArray[0])) {
+            // actual choice of track hasn't changed
+            return;
+        }
 
-        that.applier.modelChanged.addListener("currentTracks.transcripts", function (transcriptArray, oldTranscriptArray) {
-            if (transcriptArray[0] === oldTranscriptArray[0]) {
-                // actual choice of track hasn't changed
-                return;
-            }
-
-            fluid.videoPlayer.transcript.prepareTranscript(that);
-            
-            // Select the new transcript in the drop down list box
-            var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
-            that.locate("languageDropdown").find("option:selected").removeAttr("selected");
-            that.locate("languageDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
-            that.updateTranscriptHighlight(that.model.transcriptIntervalId);
-            
-            that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
-        });
+        fluid.videoPlayer.transcript.prepareTranscript(that);
         
-        that.events.onIntervalChange.addListener(function (currentInterval, previousInterval) {
-            if (currentInterval !== that.model.transcriptIntervalId) {
-                that.applier.requestChange("transcriptIntervalId", currentInterval);
-            }
-        });
-        that.applier.modelChanged.addListener("transcriptIntervalId", function (newModel) {
-            that.updateTranscriptHighlight(newModel.transcriptIntervalId);
-        });
+        // Select the new transcript in the drop down list box
+        var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
+        that.locate("languageDropdown").find("option:selected").removeAttr("selected");
+        that.locate("languageDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
+        that.updateTranscriptHighlight(that.model.transcriptIntervalId);
+
+        that.events.onCurrentTranscriptChanged.fire(currentTranscriptIndex);
+    };
+
+    fluid.videoPlayer.transcript.updateInterval = function (that, currentInterval, previousInterval) {
+        if (currentInterval !== that.model.transcriptIntervalId) {
+            that.applier.requestChange("transcriptIntervalId", currentInterval);
+        }
     };
 
     fluid.videoPlayer.transcript.produceTree = function (that) {
@@ -439,10 +451,9 @@ var fluid_1_5 = fluid_1_5 || {};
 
     // Interface setup that must happen after render
     fluid.videoPlayer.transcript.bindDOM = function (that) {
-        fluid.videoPlayer.transcript.switchTranscriptArea(that);
+        fluid.videoPlayer.transcript.toggleTranscriptArea(that);
 
         fluid.videoPlayer.transcript.bindTranscriptDOMEvents(that);
-        fluid.videoPlayer.transcript.bindTranscriptModel(that);
 
         that.locate("languageDropdown").attr("aria-controls", that.transcriptTextId());
     };

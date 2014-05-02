@@ -305,6 +305,13 @@ var fluid_1_5 = fluid_1_5 || {};
             canPlay: false,
             play: false
         },
+        modelListeners: {
+            play: {
+                funcName: "fluid.videoPlayer.togglePlayOverlay",
+                args: "{videoPlayer}"
+            },
+            fullScreen: "{videoPlayer}.events.onFullscreenModelChanged.fire"
+        },
         templates: {
             videoPlayer: {
                 forceCache: true,
@@ -490,13 +497,6 @@ var fluid_1_5 = fluid_1_5 || {};
         });
     };
 
-    var bindVideoPlayerModel = function (that) {
-        that.applier.modelChanged.addListener("fullscreen", that.events.onFullscreenModelChanged.fire);
-        that.applier.modelChanged.addListener("play", function () { 
-            fluid.videoPlayer.togglePlayOverlay(that); 
-        });
-    };
-    
     fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
         fluid.each(tracks, function (track) {
             if (!track.kind) {
@@ -517,6 +517,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.play = function (that) {
+console.log("fluid.videoPlayer.play() firing change request to change from "+that.model.play+" to "+!that.model.play);
         that.applier.fireChangeRequest({
             "path": "play",
             "value": !that.model.play
@@ -580,8 +581,6 @@ var fluid_1_5 = fluid_1_5 || {};
                     that.locate("videoContainer").attr("aria-label", that.options.strings.videoTitlePreface + that.options.videoTitle);
 
                     bindVideoPlayerDOMEvents(that);
-                    //create all the listeners to the model
-                    bindVideoPlayerModel(that);
                 }
             }
 

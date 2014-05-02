@@ -64,6 +64,9 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.showHide.updateVisibility = function (that, selectorKey, modelPath) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         var container = that.locate(selectorKey);
         if (!container) {
             return;

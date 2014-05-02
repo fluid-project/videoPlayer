@@ -27,6 +27,10 @@ https://source.fluidproject.org/svn/LICENSE.txt
     fluid.defaults("fluid.videoPlayer.html5Captionator", {
         gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         model: {},
+        modelListeners: {
+            displayCaptions: "{html5Captionator}.events.onCaptionChanged.fire",
+            "currentTracks.captions": "{html5Captionator}.events.onCaptionChanged.fire"
+        },
         captions: [],
         events: {
             afterTrackElCreated: null,
@@ -78,18 +82,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     };
 
-    fluid.videoPlayer.html5Captionator.bindCaptionatorModel = function (that) {
-        var elPaths = that.options.elPaths;
-
-        // Wrapping the event firing in a wrapper function is a work-around for FLUID-5151
-        that.applier.modelChanged.addListener(elPaths.displayCaptions, function () {
-            that.events.onCaptionChanged.fire();
-        });
-        that.applier.modelChanged.addListener(elPaths.currentCaptions, function () {
-            that.events.onCaptionChanged.fire();
-        });
-    };
-    
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (trackEl) {
             trackEl.track.mode = "disabled";
@@ -105,6 +97,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     fluid.videoPlayer.html5Captionator.refreshCaptions = function (that) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         var tracks = $("track", that.locate("video"));
         var display = that.readIndirect("elPaths.displayCaptions");
         if (display) {
@@ -165,7 +160,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             appendCueCanvasTo: that.locate("caption")[0],
             sizeCuesByTextBoundingBox: true
         });
-        fluid.videoPlayer.html5Captionator.bindCaptionatorModel(that);
         that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
 

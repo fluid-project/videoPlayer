@@ -28,17 +28,13 @@ var fluid_1_5 = fluid_1_5 || {};
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
      */
-    //add all the modelChanged listener to the applier
-    // TODO: Privacy is inherited. Consider making this public
-    var bindControllerModel = function (that) {
-        that.applier.modelChanged.addListener("canPlay", function () {
-            that.locate("play").attr("disabled", !that.model.canPlay);
-            that.locate("fullscreen").attr("disabled", !that.model.canPlay);
-        });
-    };
-
     fluid.registerNamespace("fluid.videoPlayer.controllers");
     
+    fluid.videoPlayer.controllers.togglePlayDependentControls = function (that) {
+        that.locate("play").attr("disabled", !that.model.canPlay);
+        that.locate("fullscreen").attr("disabled", !that.model.canPlay);
+    };
+
     fluid.videoPlayer.controllers.supportFullscreen = function () {
         var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
         
@@ -53,7 +49,17 @@ var fluid_1_5 = fluid_1_5 || {};
     });
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
-        gradeNames: ["fluid.viewRelayComponent", "autoInit", "{that}.getCaptionGrade", "{that}.getFullScreenGrade"], 
+        gradeNames: ["fluid.viewRelayComponent", "autoInit", "{that}.getCaptionGrade", "{that}.getFullScreenGrade"],
+        modelListeners: {
+            canPlay: {
+                funcName: "fluid.videoPlayer.controllers.togglePlayDependentControls",
+                args: "{controllers}"
+            },
+            totalTime: {
+                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
+                args: ["{controllers}", "{arguments}.0.totalTime"]
+            }
+        },
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
@@ -139,9 +145,9 @@ var fluid_1_5 = fluid_1_5 || {};
                         press: "Play",
                         release: "Pause"
                     },
-                    model: "{controllers}.model",
-                    modelPath: "play",
-                    ownModel: false,
+                    model: {
+                        pressed: "{controllers}.model.play"
+                    },
                     listeners: {
                         onAttach: "{controllers}.events.onPlayReady"
                     }
@@ -312,7 +318,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
-        that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
+        that.applier.change("isShown.scrubber.handle", !!totalTime);
     };
     
     fluid.videoPlayer.controllers.loadTemplates = function (that) {
@@ -324,15 +330,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 that.container.append(resourceSpec.resourceText);
                 that.events.afterTemplateLoaded.fire();
                 
-                //TODO: Move to event listeners
-                bindControllerModel(that);
                 that.showHideScrubberHandle(that.model);
             }
         });
         
-        that.applier.modelChanged.addListener("totalTime", function (newModel) {
-            that.showHideScrubberHandle(newModel);
-        });
     };
     
     /********************************************
@@ -364,20 +365,6 @@ var fluid_1_5 = fluid_1_5 || {};
         });
     };
 
-    // TODO: This function is inherited. Consider making this public
-    var bindScrubberModel = function (that) {
-
-        that.applier.modelChanged.addListener("startTime", that.updateMin);
-        that.applier.modelChanged.addListener("totalTime", that.updateMax);
-
-        // Bind to the video's timeupdate event so we can programmatically update the slider.
-        that.applier.modelChanged.addListener("currentTime", that.updateCurrent);
-        that.applier.modelChanged.addListener("bufferEnd", that.updateBuffered);
-        
-        that.applier.modelChanged.addListener("canPlay", that.syncState);
-
-    };
-
     // TODO: Privacy is inherited. Consider making this public
     var createScrubberMarkup = function (that) {
         var scrubber = that.locate("scrubber");
@@ -401,18 +388,27 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
         gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.showHide", "autoInit"],
-        showHidePath: "scrubber",
-        components: {
-            bufferedProgress: {
-                type: "fluid.progress",
-                container: "{scrubber}.dom.bufferedProgress",
-                options: {
-                    initiallyHidden: false,
-                    minWidth: 0,
-                    listeners: {
-                        onAttach: "{scrubber}.events.onProgressAttached"
-                    }
-                }
+        // model is shared from controllers parent component
+        modelListeners: {
+            startTime: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMin",
+                args: ["{scrubber}"]
+            },
+            totalTime: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMax",
+                args: ["{scrubber}"]
+            },
+            currentTime: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateCurrent",
+                args: ["{scrubber}"]
+            },
+            bufferedEnd: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
+                args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            },
+            canPlay: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.syncState",
+                args: ["{scrubber}"]
             }
         },
         events: {
@@ -435,6 +431,19 @@ var fluid_1_5 = fluid_1_5 || {};
                 args: ["{scrubber}"]
             }
         },
+        selectors: {
+            totalTime: ".flc-videoPlayer-total",
+            currentTime: ".flc-videoPlayer-current",
+            scrubber: ".flc-videoPlayer-scrubber",
+            handle: ".ui-slider-handle",
+            bufferedProgress: ".flc-videoPlayer-buffered-progress",
+            bufferedProgressBar: ".flc-progress-bar"
+        },
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+        strings: {
+            scrubber: "Time scrub"
+        },
+        showHidePath: "scrubber",
         invokers: {
             updateBuffered: {
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
@@ -461,17 +470,18 @@ var fluid_1_5 = fluid_1_5 || {};
                 args: ["{scrubber}"]
             }
         },
-        selectors: {
-            totalTime: ".flc-videoPlayer-total",
-            currentTime: ".flc-videoPlayer-current",
-            scrubber: ".flc-videoPlayer-scrubber",
-            handle: ".ui-slider-handle",
-            bufferedProgress: ".flc-videoPlayer-buffered-progress",
-            bufferedProgressBar: ".flc-progress-bar"
-        },
-        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-        strings: {
-            scrubber: "Time scrub"
+        components: {
+            bufferedProgress: {
+                type: "fluid.progress",
+                container: "{scrubber}.dom.bufferedProgress",
+                options: {
+                    initiallyHidden: false,
+                    minWidth: 0,
+                    listeners: {
+                        onAttach: "{scrubber}.events.onProgressAttached"
+                    }
+                }
+            }
         }
     });
 
@@ -479,6 +489,9 @@ var fluid_1_5 = fluid_1_5 || {};
     var bufferCompleted = false;
 
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         var lastBufferedTime = that.model.bufferEnd;
         var totalTime = that.model.totalTime;
 
@@ -504,6 +517,9 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.updateMin = function (that) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         var startTime = that.model.startTime || 0;
         var scrubber = that.locate("scrubber");
         scrubber.slider("option", "min", startTime + that.model.currentTime);
@@ -513,6 +529,9 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.updateMax = function (that) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         updateTime(that, "totalTime");
         var scrubber = that.locate("scrubber");
         scrubber.slider("option", "max", that.model.totalTime);
@@ -522,6 +541,9 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.updateCurrent = function (that) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         updateTime(that, "currentTime");
         var scrubber = that.locate("scrubber");
         scrubber.slider("value", that.model.currentTime);
@@ -532,6 +554,9 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.syncState = function (that) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         var scrubber = that.locate("scrubber");
         if (that.model.canPlay === true) {
             scrubber.slider("enable");
@@ -550,7 +575,6 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.videoPlayer.controllers.scrubber.init = function (that) {
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
-        bindScrubberModel(that);
         that.refresh();
         that.events.afterInit.fire();
     };
@@ -570,7 +594,7 @@ var fluid_1_5 = fluid_1_5 || {};
         modelListeners: {
             volume: [{
                 funcName: "fluid.videoPlayer.controllers.volumeControls.updateMuteStatus",
-                args: ["{volumeControls}", "{change}.value", "{change}.oldValue"]
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue", "{change}"]
             }, {
                 funcName: "fluid.videoPlayer.controllers.volumeControls.updateSlider",
                 args: ["{volumeControls}", "{change}.value", "{change}.oldValue"]
@@ -581,7 +605,7 @@ var fluid_1_5 = fluid_1_5 || {};
             },
             muted: {
                 funcName: "fluid.videoPlayer.controllers.volumeControls.handleMute",
-                args: ["{volumeControls}", "{change}.value", "{change}.oldValue"]
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue", "{change}"]
             }
         },
         events: {
@@ -660,12 +684,13 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     });
     
-    fluid.videoPlayer.controllers.volumeControls.updateMuteStatus = function (that, newVolume, oldVolume) {
+    fluid.videoPlayer.controllers.volumeControls.updateMuteStatus = function (that, newVolume, oldVolume, change) {
         if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
             // skip the initial transaction
             return;
         }
-        if (!that.applier.hasChangeSource("mute")) {
+console.log("updateMuteStatus: newVol="+newVolume+", oldVol="+oldVolume);
+        if (!that.applier.hasChangeSource("mute", change)) {
             if (that.model.volume === 0) {
                 that.oldVolume = oldVolume;
                 fluid.fireSourcedChange(that.applier, "muted", true, "volume");
@@ -679,17 +704,19 @@ var fluid_1_5 = fluid_1_5 || {};
         that.locate("mute").attr("disabled", !that.model.canPlay);
     };
 
-    fluid.videoPlayer.controllers.volumeControls.handleMute = function (that, newMuteValue, oldMuteValue) {
+    fluid.videoPlayer.controllers.volumeControls.handleMute = function (that, newMuteValue, oldMuteValue, change) {
         if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
             // skip the initial transaction
             return;
         }
+console.log("handleMute: new="+newMuteValue+", old="+oldMuteValue);
         // See updateVolume method for converse logic
         if (that.model.volume > 0) {
             that.oldVolume = that.model.volume;
         }
-        var fromVolume = that.applier.hasChangeSource("volume");
+        var fromVolume = that.applier.hasChangeSource("volume", change);
         if (!fromVolume) { 
+console.log("handleMute: changing volume");
             if (newMuteValue) {
                 // If this mute event was not already sourced from a volume change, fire volume to 0
                 fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
@@ -756,6 +783,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
         fluid.each(["slide", "slidechange"], function (value) {
             volumeControl.bind(value, function (evt, ui) {
+console.log(">>> slidechange triggering volume change");
                 fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
             });
         });
@@ -776,6 +804,7 @@ var fluid_1_5 = fluid_1_5 || {};
             // skip the initial transaction
             return;
         }
+console.log("updateSlider: new="+newValue+", old="+oldValue);
         var volumeControl = that.locate("volumeControl");
         var volume = that.model.volume;
         volumeControl.slider("value", volume);

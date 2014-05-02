@@ -28,11 +28,9 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.defaults("fluid.videoPlayer.media", {
         gradeNames: ["fluid.viewRelayComponent", "autoInit"],
-        components: {
-            mediaEventBinder: {
-                type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onEventBindingReady"
-            }
+        modelListeners: {
+            play: "{media}.play",
+            muted: "{media}.mute"
         },
         events: {
             onEventBindingReady: null,
@@ -57,31 +55,6 @@ var fluid_1_5 = fluid_1_5 || {};
             onExitFullScreen: null,
             
             onLoadedMetadata: null
-        },
-        invokers: {
-            renderSources: { funcName: "fluid.videoPlayer.media.renderSources", args: ["{media}"] },
-            bindMediaModel: { funcName: "fluid.videoPlayer.media.bindMediaModel", args: ["{media}"] },
-            bindMediaDOMEvents: { funcName: "fluid.videoPlayer.media.bindMediaDOMEvents", args: ["{media}"] },
-            updateCurrentTime: {
-                funcName: "fluid.videoPlayer.media.updateCurrentTime",
-                args: ["{media}", "{arguments}.0", "{arguments}.1"]
-            },
-            setTime: { funcName: "fluid.videoPlayer.media.setTime", args: ["{media}", "{arguments}.0"] },
-            updateVolume: { funcName: "fluid.videoPlayer.media.updateVolume", args: ["{media}"] },
-            play: { funcName: "fluid.videoPlayer.media.play", args: ["{media}"] },
-            mute: { funcName: "fluid.videoPlayer.media.mute", args: ["{media}"] },
-            refresh: { funcName: "fluid.videoPlayer.media.refresh", args: ["{media}"] },
-            requestFullScreen: { funcName: "fluid.videoPlayer.media.requestFullScreen", args: ["{media}", "{arguments}.0"] },
-            cancelFullScreen: { funcName: "fluid.videoPlayer.media.cancelFullScreen", args: ["{media}"] },
-        },
-        mediaEventBindings: {
-            canplay: "onMediaElementCanPlay",
-            canplaythrough: "onMediaElementCanPlayThrough",
-            loadeddata: "onMediaElementLoadedData",
-            loadedmetadata: "onMediaElementLoadedMetadata",
-            volumechange: "onMediaElementVolumeChange",
-            ended: "onMediaElementEnded",
-            timeupdate: "onMediaElementTimeUpdate"
         },
         listeners: {
             onCreate: {
@@ -120,6 +93,31 @@ var fluid_1_5 = fluid_1_5 || {};
             }],
             onMediaElementTimeUpdate: "fluid.videoPlayer.media.handleTimeUpdate"
         },
+        invokers: {
+            renderSources: { funcName: "fluid.videoPlayer.media.renderSources", args: ["{media}"] },
+            bindMediaModel: { funcName: "fluid.videoPlayer.media.bindMediaModel", args: ["{media}"] },
+            bindMediaDOMEvents: { funcName: "fluid.videoPlayer.media.bindMediaDOMEvents", args: ["{media}"] },
+            updateCurrentTime: {
+                funcName: "fluid.videoPlayer.media.updateCurrentTime",
+                args: ["{media}", "{arguments}.0", "{arguments}.1"]
+            },
+            setTime: { funcName: "fluid.videoPlayer.media.setTime", args: ["{media}", "{arguments}.0"] },
+            updateVolume: { funcName: "fluid.videoPlayer.media.updateVolume", args: ["{media}"] },
+            play: { funcName: "fluid.videoPlayer.media.play", args: ["{media}"] },
+            mute: { funcName: "fluid.videoPlayer.media.mute", args: ["{media}"] },
+            refresh: { funcName: "fluid.videoPlayer.media.refresh", args: ["{media}"] },
+            requestFullScreen: { funcName: "fluid.videoPlayer.media.requestFullScreen", args: ["{media}", "{arguments}.0"] },
+            cancelFullScreen: { funcName: "fluid.videoPlayer.media.cancelFullScreen", args: ["{media}"] },
+        },
+        mediaEventBindings: {
+            canplay: "onMediaElementCanPlay",
+            canplaythrough: "onMediaElementCanPlayThrough",
+            loadeddata: "onMediaElementLoadedData",
+            loadedmetadata: "onMediaElementLoadedMetadata",
+            volumechange: "onMediaElementVolumeChange",
+            ended: "onMediaElementEnded",
+            timeupdate: "onMediaElementTimeUpdate"
+        },
         sourceRenderers: {
             "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/webm": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
@@ -127,7 +125,13 @@ var fluid_1_5 = fluid_1_5 || {};
             "video/ogv": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/youtube": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag"
         },
-        sources: []
+        sources: [],
+        components: {
+            mediaEventBinder: {
+                type: "fluid.videoPlayer.eventBinder",
+                createOnEvent: "onEventBindingReady"
+            }
+        }
     });
 
     fluid.videoPlayer.media.createSourceMarkup = {
@@ -151,8 +155,6 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.media.bindMediaModel = function (that) {
-        that.applier.modelChanged.addListener("play", that.play);
-        that.applier.modelChanged.addListener("muted", that.mute);
         fluid.addSourceGuardedListener(that.applier, 
             "volume", "media", that.updateVolume);
     };
