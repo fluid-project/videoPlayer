@@ -689,14 +689,11 @@ var fluid_1_5 = fluid_1_5 || {};
             // skip the initial transaction
             return;
         }
-console.log("updateMuteStatus: newVol="+newVolume+", oldVol="+oldVolume);
-        if (!that.applier.hasChangeSource("mute", change)) {
-            if (that.model.volume === 0) {
-                that.oldVolume = oldVolume;
-                fluid.fireSourcedChange(that.applier, "muted", true, "volume");
-            } else if (that.model.muted) {
-                fluid.fireSourcedChange(that.applier, "muted", false, "volume");
-            }
+        if (that.model.volume === 0) {
+            that.oldVolume = oldVolume;
+            that.applier.change("muted", true);
+        } else if (that.model.muted) {
+            that.applier.change("muted", false);
         }
     };
 
@@ -709,20 +706,14 @@ console.log("updateMuteStatus: newVol="+newVolume+", oldVol="+oldVolume);
             // skip the initial transaction
             return;
         }
-console.log("handleMute: new="+newMuteValue+", old="+oldMuteValue);
         // See updateVolume method for converse logic
         if (that.model.volume > 0) {
             that.oldVolume = that.model.volume;
         }
-        var fromVolume = that.applier.hasChangeSource("volume", change);
-        if (!fromVolume) { 
-console.log("handleMute: changing volume");
-            if (newMuteValue) {
-                // If this mute event was not already sourced from a volume change, fire volume to 0
-                fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
-            } else {
-                fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
-            }
+        if (newMuteValue) {
+            that.applier.change("volume", 0);
+        } else {
+            that.applier.change("volume", that.oldVolume);
         }
     };
 
@@ -783,8 +774,9 @@ console.log("handleMute: changing volume");
 
         fluid.each(["slide", "slidechange"], function (value) {
             volumeControl.bind(value, function (evt, ui) {
-console.log(">>> slidechange triggering volume change");
-                fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
+                if (ui.value !== that.model.volume) {
+                    that.applier.change("volume", ui.value);
+                }
             });
         });
 
@@ -804,7 +796,6 @@ console.log(">>> slidechange triggering volume change");
             // skip the initial transaction
             return;
         }
-console.log("updateSlider: new="+newValue+", old="+oldValue);
         var volumeControl = that.locate("volumeControl");
         var volume = that.model.volume;
         volumeControl.slider("value", volume);

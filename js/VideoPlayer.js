@@ -517,7 +517,6 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.play = function (that) {
-console.log("fluid.videoPlayer.play() firing change request to change from "+that.model.play+" to "+!that.model.play);
         that.applier.fireChangeRequest({
             "path": "play",
             "value": !that.model.play
