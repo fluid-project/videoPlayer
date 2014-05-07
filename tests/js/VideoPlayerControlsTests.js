@@ -173,5 +173,30 @@ fluid.registerNamespace("fluid.tests");
                    }
                });
             });
+
+        jqUnit.asyncTest("Scrubber", function () {
+            jqUnit.expect(5);
+            var testScrubber = fluid.videoPlayer.controllers.scrubber("#scrubber-test", {
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.notVisible("The scrubber handle is not shown initially, when totalTime is the default 0", that.locate("handle"));
+
+                        that.applier.change("totalTime", 50);
+                        jqUnit.isVisible("The scrubber handle is shown when totalTime is 50", that.locate("handle"));
+
+                        that.applier.change("totalTime", 100);
+                        jqUnit.isVisible("The scrubber handle is shown when totalTime is 100", that.locate("handle"));
+
+                        that.applier.change("totalTime", 0);
+                        jqUnit.notVisible("The scrubber handle is not shown when totalTime is 0", that.locate("handle"));
+
+                        that.applier.change("totalTime", 100);
+                        jqUnit.isVisible("The scrubber handle is shown when totalTime is 100", that.locate("handle"));
+
+                        jqUnit.start();
+                    }
+                }
+            });
+        });
     });
 })(jQuery);

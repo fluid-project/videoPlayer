@@ -12,6 +12,7 @@
         <script type="text/javascript" src="../../lib/jquery-ui/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_html5Captionator.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer.js"></script>
+        <script type="text/javascript" src="../../js/VideoPlayer_showHide.js"></script>
         <script type="text/javascript" src="../../js/VideoPlayer_controllers.js"></script>
         <script type="text/javascript" src="../../js/ToggleButton.js"></script>
         <script type="text/javascript" src="../../js/MenuButton.js"></script>
@@ -78,6 +79,23 @@
         <div id="full-controllers-test">
             
         </div>
+
+        <div id="scrubber-test" class="fl-videoPlayer-scrubberContainer">
+            <div class="flc-videoPlayer-scrubber fl-videoPlayer-scrubber">
+                <a class="ui-slider-handle" href="#">
+                    <span class="flc-videoPlayer-current fl-videoPlayer-time fl-videoPlayer-current"></span>/<span class="flc-videoPlayer-total fl-videoPlayer-time fl-videoPlayer-total"></span>
+                </a>
+            </div>
+
+            <div class="flc-videoPlayer-buffered-progress fl-videoPlayer-buffered-progress">
+                <div class="flc-progress fl-progress-popUp">
+                    <div class="flc-progress-bar fl-progress-theBar">
+                        <div class="flc-progress-indicator fl-progress-indicator"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
       </div> <!-- /main -->
 
     </body>

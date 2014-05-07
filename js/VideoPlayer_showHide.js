@@ -51,29 +51,26 @@ var fluid_1_5 = fluid_1_5 || {};
         };
         fluid.each(selectors, function (selectorValue, selectorKey) {
             var modelPath = fluid.pathUtil.composePath(
-                    fluid.pathUtil.composePath(modelPrefix, showHidePath),
-                    selectorKey
-                );
+                fluid.pathUtil.composePath(modelPrefix, showHidePath),
+                selectorKey
+            );
             defaults.modelListeners[modelPath] = {
                 funcName: "fluid.videoPlayer.showHide.updateVisibility",
-                args: ["{showHide}", selectorKey, modelPath]
+                args: ["{that}", selectorKey, "{change}.path", "{change}.value"]
             };
         });
         fluid.defaults(gradeName, defaults);
         return gradeName;
     };
 
-    fluid.videoPlayer.showHide.updateVisibility = function (that, selectorKey, modelPath) {
-        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
-            return;
-        }
+    fluid.videoPlayer.showHide.updateVisibility = function (that, selectorKey, modelPath, newVal) {
         var container = that.locate(selectorKey);
         if (!container) {
             return;
         }
 
         var showFlag = fluid.get(that.model, modelPath);
-        container.toggle(showFlag);
+        container.toggle(newVal);
     };
 
 })(jQuery, fluid_1_5);

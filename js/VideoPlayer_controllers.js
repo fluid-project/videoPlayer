@@ -54,10 +54,6 @@ var fluid_1_5 = fluid_1_5 || {};
             canPlay: {
                 funcName: "fluid.videoPlayer.controllers.togglePlayDependentControls",
                 args: "{controllers}"
-            },
-            totalTime: {
-                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
-                args: ["{controllers}", "{arguments}.0.totalTime"]
             }
         },
         components: {
@@ -66,7 +62,13 @@ var fluid_1_5 = fluid_1_5 || {};
                 container: "{controllers}.dom.scrubberContainer",
                 createOnEvent: "afterTemplateLoaded",
                 options: {
-                    model: "{controllers}.model",
+                    model: {
+                        currentTime: "{controllers}.model.currentTime",
+                        scrubTime: "{controllers}.model.scrubTime",
+                        totalTime: "{controllers}.model.totalTime",
+                        bufferEnd: "{controllers}.model.bufferedEnd",
+                        isShown: "{controllers}.model.isShown"
+                    },
                     events: {
                         onScrub: "{controllers}.events.onScrub",
                         afterScrub: "{controllers}.events.afterScrub",
@@ -82,7 +84,13 @@ var fluid_1_5 = fluid_1_5 || {};
                 container: "{controllers}.dom.volumeContainer",
                 createOnEvent: "afterTemplateLoaded",
                 options: {
-                    model: "{controllers}.model",
+                    model: {
+                        canPlay: "{controllers}.model.canPlay",
+                        muted: "{controllers}.model.muted",
+                        volume: "{controllers}.model.volume",
+                        minVolume: "{controllers}.model.minVolume",
+                        maxVolume: "{controllers}.model.maxVolume"
+                    },
                     listeners: {
                         onReady: "{controllers}.events.onVolumeReady"
                     }
@@ -103,9 +111,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "afterTemplateLoaded",
                 options: {
                     languages: "{controllers}.options.transcripts",
-                    model: "{controllers}.model",
-                    showHidePath: "displayTranscripts",
-                    currentLanguagePath: "currentTracks.transcripts",
+                    model: {
+                        showLanguage: "{controllers}.model.displayTranscripts",
+                        currentLanguage: "{controllers}.model.currentTracks.transcripts"
+                    },
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
                         buttonWithShowing: "fl-videoPlayer-transcripts-button-on"
@@ -157,6 +166,9 @@ var fluid_1_5 = fluid_1_5 || {};
                 type: "fluid.emptyEventedSubcomponent",
                 createOnEvent: "afterTemplateLoaded",
                 options: {
+                    model: {
+                        pressed: "{controllers}.model.fullscreen"
+                    },
                     listeners: {
                         onCreate: "{controllers}.events.onFullScreenReady"
                     }
@@ -216,8 +228,8 @@ var fluid_1_5 = fluid_1_5 || {};
         
         invokers: {
             showHideScrubberHandle: { 
-                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
-                args: ["{controllers}", "{arguments}.0.totalTime"]
+                funcName: "fluid.videoPlayer.controllers.scrubber.showHideHandle", 
+                args: ["{scrubber}", "{arguments}.0.totalTime"]
             },
             getCaptionGrade: {
                 funcName: "fluid.videoPlayer.controllers.getCaptionGrade"
@@ -283,9 +295,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "afterTemplateLoaded",
                 options: {
                     languages: "{controllers}.options.captions",
-                    model: "{controllers}.model",
-                    showHidePath: "displayCaptions",
-                    currentLanguagePath: "currentTracks.captions",
+                    model: {
+                        showLanguage: "{controllers}.model.displayCaptions",
+                        currentLanguage: "{controllers}.model.currentTracks.captions"
+                    },
                     styles: {
                         button: "fl-videoPlayer-captions-button",
                         buttonWithShowing: "fl-videoPlayer-captions-button-on"
@@ -317,10 +330,6 @@ var fluid_1_5 = fluid_1_5 || {};
         return fluid.videoPlayer.getGrade("fluid.browser.nativeVideoSupport", "fluid.videoPlayer.controllers.captionControls");
     };
 
-    fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
-        that.applier.change("isShown.scrubber.handle", !!totalTime);
-    };
-    
     fluid.videoPlayer.controllers.loadTemplates = function (that) {
         var templates = that.options.templates;
         fluid.fetchResources(templates, function () {
@@ -388,16 +397,25 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
         gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.showHide", "autoInit"],
-        // model is shared from controllers parent component
+        model: {
+            currentTime: 0,
+            scrubTime: 0,
+            totalTime: 0,
+            bufferEnd: 0,
+            isShown: {}
+        },
         modelListeners: {
             startTime: {
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateMin",
                 args: ["{scrubber}"]
             },
-            totalTime: {
+            totalTime: [{
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateMax",
                 args: ["{scrubber}"]
-            },
+            },{
+                funcName: "fluid.videoPlayer.controllers.scrubber.showHideHandle", 
+                args: ["{scrubber}", "{arguments}.0.value"]
+            }],
             currentTime: {
                 funcName: "fluid.videoPlayer.controllers.scrubber.updateCurrent",
                 args: ["{scrubber}"]
@@ -489,7 +507,7 @@ var fluid_1_5 = fluid_1_5 || {};
     var bufferCompleted = false;
 
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
-        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
             return;
         }
         var lastBufferedTime = that.model.bufferEnd;
@@ -517,7 +535,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.updateMin = function (that) {
-        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
             return;
         }
         var startTime = that.model.startTime || 0;
@@ -529,7 +547,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.updateMax = function (that) {
-        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
             return;
         }
         updateTime(that, "totalTime");
@@ -541,7 +559,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.updateCurrent = function (that) {
-        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
             return;
         }
         updateTime(that, "currentTime");
@@ -554,7 +572,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.controllers.scrubber.syncState = function (that) {
-        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
             return;
         }
         var scrubber = that.locate("scrubber");
@@ -563,6 +581,10 @@ var fluid_1_5 = fluid_1_5 || {};
         } else {
             scrubber.slider("disable");
         }
+    };
+
+    fluid.videoPlayer.controllers.scrubber.showHideHandle = function (scrubber, totalTime) {
+        scrubber.applier.change("isShown.scrubber.handle", !!totalTime);
     };
 
     fluid.videoPlayer.controllers.scrubber.refresh = function (that) {

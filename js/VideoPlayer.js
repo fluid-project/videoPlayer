@@ -101,7 +101,13 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onCreateMediaReady",
                 priority: "first",
                 options: {
-                    model: "{videoPlayer}.model",
+                    model: {
+                        play: "{videoPlayer}.model.play",
+                        muted: "{videoPlayer}.model.muted",
+                        volume: "{videoPlayer}.model.volume",
+                        totalTime: "{videoPlayer}.model.totalTime",
+                        scrubTime: "{videoPlayer}.model.scrubTime"
+                    },
                     events: {
                         onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
                         onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
@@ -146,7 +152,12 @@ var fluid_1_5 = fluid_1_5 || {};
                 container: "{videoPlayer}.dom.transcript",
                 createOnEvent: "onIntervalEventsConductorReady",
                 options: {
-                    model: "{videoPlayer}.model",
+                    model: {
+                        displayTranscripts: "{videoPlayer}.model.displayTranscripts",
+                        currentTracks: {
+                            transcripts: "{videoPlayer}.model.currentTracks.transcripts"
+                        }
+                    },
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
                         onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
@@ -190,6 +201,11 @@ var fluid_1_5 = fluid_1_5 || {};
                     },
                     templates: {
                         menuButton: "{videoPlayer}.options.templates.menuButton"
+/*
+                    },
+                    members: {
+                        applier: "{videoPlayer}.applier"
+*/
                     }
                 }
             }
@@ -214,6 +230,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 events: {
                     onTemplateReady: "onTemplateReady",
                     onControllersReady: "onControllersReady",
+                    onMediaReady: "onMediaReady",
                     onCreate: "onCreate"
                 },
                 args: ["{videoPlayer}"]
