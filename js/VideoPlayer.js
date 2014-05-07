@@ -103,6 +103,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 options: {
                     model: {
                         play: "{videoPlayer}.model.play",
+                        canPlay: "{videoPlayer}.model.canPlay",
                         muted: "{videoPlayer}.model.muted",
                         volume: "{videoPlayer}.model.volume",
                         totalTime: "{videoPlayer}.model.totalTime",

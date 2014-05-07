@@ -67,6 +67,7 @@ var fluid_1_5 = fluid_1_5 || {};
                         scrubTime: "{controllers}.model.scrubTime",
                         totalTime: "{controllers}.model.totalTime",
                         bufferEnd: "{controllers}.model.bufferedEnd",
+                        canPlay: "{controllers}.model.canPlay",
                         isShown: "{controllers}.model.isShown"
                     },
                     events: {
@@ -402,6 +403,7 @@ var fluid_1_5 = fluid_1_5 || {};
             scrubTime: 0,
             totalTime: 0,
             bufferEnd: 0,
+            canPlay: false,
             isShown: {}
         },
         modelListeners: {
