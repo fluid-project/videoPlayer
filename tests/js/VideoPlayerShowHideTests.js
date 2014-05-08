@@ -23,23 +23,34 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     
         var showHideContainer = ".flc-videoPlayer-testContainer";
         
+        fluid.registerNamespace("fluid.tests.showHide");
         fluid.defaults("fluid.videoPlayer.testShowHide", {
-            gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
+            gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.showHide", "autoInit"],
             showHidePath: "scrubber",
             selectors: {
                 testContainer: showHideContainer
             },
-            selectorsToIgnore: ["testContainer"]
+            listeners: {
+                onCreate: {
+                    listener: "fluid.tests.showHide.test",
+                    args: ["{testShowHide}"]
+                }
+            }
         });
-        
+
+        fluid.tests.showHide.test = function (that) {
+            that.applier.change("isShown.scrubber.testContainer", true);
+            jqUnit.isVisible("When 'isShown' flag is true, container should be visible", $(showHideContainer));
+
+            that.applier.change("isShown.scrubber.testContainer", false);
+            jqUnit.notVisible("When 'isShown' flag is false, container should NOT be visible", $(showHideContainer));
+
+            that.applier.change("isShown.scrubber.testContainer", true);
+            jqUnit.isVisible("When 'isShown' flag is true, container should be visible", $(showHideContainer));
+        };
+
         jqUnit.test("hide", function () {
             var that = fluid.videoPlayer.testShowHide(".flc-videoPlayer-showHide");
-            
-            jqUnit.isVisible("The container is shown", $(showHideContainer));
-            that.applier.requestChange("isShown.scrubber.testContainer", false);
-            jqUnit.notVisible("The container is hidden", $(showHideContainer));
-            that.applier.requestChange("isShown.scrubber.testContainer", true);
-            jqUnit.isVisible("The container is back to be shown", $(showHideContainer));
         });
         
     });

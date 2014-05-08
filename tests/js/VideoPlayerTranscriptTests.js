@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -17,16 +17,96 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
+    fluid.registerNamespace("fluid.tests");
+
+    fluid.tests.localTranscriptOpts = {
+        transcripts: [
+            {
+                src: "TestTranscripts.en.json",
+                type: "JSONcc",
+                srclang: "en",
+                label: "English"
+            },
+            {
+                src: "TestTranscripts.fr.json",
+                type: "JSONcc",
+                srclang: "fr",
+                label: "French"
+            }
+        ]
+    };
+
+    fluid.defaults("fluid.tests.transcriptsTests", {
+        gradeNames: ["fluid.test.testEnvironment", "autoInit"],
+        components: {
+            transcripts: {
+                type: "fluid.videoPlayer.transcript",
+                container: ".flc-videoPlayer-transcriptArea",
+                options: {
+                    model: {
+                        currentTranscriptTracks: [0]
+                    },
+                    transcripts: fluid.tests.localTranscriptOpts.transcripts
+                }
+            },
+            tester: {
+                type: "fluid.tests.transcriptTester"
+            }
+        }
+    });
+
+    fluid.defaults("fluid.tests.transcriptTester", {
+        gradeNames: ["fluid.test.testCaseHolder", "autoInit"],
+        modules: [{
+            name: "Multiple Transcripts",
+            tests: [{
+                expect: 4,
+                name: "Load and switch transcript",
+                sequence: [{
+                    event: "{transcripts}.events.onTranscriptsLoaded",
+                    listener: "fluid.tests.transcriptsInitialized"
+                },{
+                    func: "fluid.tests.switchTranscript",
+                    args: ["{transcripts}"]
+                },{
+                    event: "{transcripts}.events.onTranscriptsLoaded",
+                    listener: "fluid.tests.transcriptsSwitched"
+                }]
+            }]
+        }]
+    });
+
+    fluid.tests.initialTranscriptText = null;
+
+    fluid.tests.transcriptsInitialized = function (intervalList, id, that) {
+        jqUnit.assertTrue("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text().length > 0);
+        jqUnit.assertTrue("Each transcript element is wrapped in a properly-named span", 
+                ($(".flc-videoPlayer-transcript-text").find('[id|="' + that.options.transcriptElementIdPrefix + '"]').length > 0));
+
+        fluid.tests.initialTranscriptText = $(".flc-videoPlayer-transcript-text").text();
+    };
+
+    fluid.tests.switchTranscript = function (that) {
+        that.applier.change("currentTranscriptTracks", [1]);
+    };
+
+    fluid.tests.transcriptsSwitched = function (intervalList, id, that) {
+        jqUnit.assertTrue("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text().length > 0);
+        jqUnit.assertNotEquals("The transcript text is switched", $(".flc-videoPlayer-transcript-text").text(), fluid.tests.initialTranscriptText.substring(0, 100));
+    };
+
     $(document).ready(function () {
+
+        fluid.test.runTests([
+            "fluid.tests.transcriptsTests"
+        ]);
 
         jqUnit.module("Video Player Transcript Tests");
     
         // The transcript files sit in the local disk
         var baseOptions = {
                 model: {
-                    currentTracks: {
-                        transcripts: [0]
-                    }
+                    currentTranscriptTracks: [0]
                 }
             };
         
@@ -75,28 +155,8 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             jqUnit.assertTrue("The default selected language is the first option", $(".flc-videoPlayer-transcripts-language-dropdown option")[0].selected);
         };
         
-        fluid.videoPlayer.switchTranscript = function (that) {
-            // Switch the current transcript selection to trigger onTranscriptsLoaded event that fires the listener fluid.videoPlayer.testTranscriptLoaded
-            // to re-load the transcript in another language
-            that.applier.requestChange("currentTracks.transcripts.0", 1);
-        };
         
         var initialTranscriptText;
-        
-        fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
-            jqUnit.assertNotNull("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text());
-            jqUnit.assertTrue("Each transcript element is wrapped in a properly-named span", 
-                    ($(".flc-videoPlayer-transcript-text").find('[id|="' + that.options.transcriptElementIdPrefix + '"]').length > 0));
-            
-            // make sure the transcript text is switched when another option is selected from the language combo box
-            // Depending on the connection with universal subtitle site, the test below may not get run with remote universal subtitle transcript files.
-            if (!initialTranscriptText) {
-                initialTranscriptText = $(".flc-videoPlayer-transcript-text").text();
-                jqUnit.start();
-            } else {
-                jqUnit.assertNotEquals("The transcript text is switched", $(".flc-videoPlayer-transcript-text").text(), initialTranscriptText);
-            }
-        };
         
         var testProcess = function (transcriptOps, purpose) {
             // initialize the var that saves the loaded transcript for a fresh start.
@@ -116,34 +176,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 jqUnit.start();
             });
     
-            jqUnit.asyncTest(purpose + " - load and switch transcript", function () {
-                var testOpts = {
-                        listeners: {
-                            onReady: fluid.videoPlayer.switchTranscript,
-                            onTranscriptsLoaded: fluid.videoPlayer.testTranscriptLoaded
-                        }
-                    };
-                
-                var that = initTranscript(transcriptOps, testOpts);
-            });
         };
-
-        var localTranscriptOpts = {
-                transcripts: [
-                    {
-                        src: "TestTranscripts.en.json",
-                        type: "JSONcc",
-                        srclang: "en",
-                        label: "English"
-                    },
-                    {
-                        src: "TestTranscripts.fr.json",
-                        type: "JSONcc",
-                        srclang: "fr",
-                        label: "French"
-                    }
-                ]
-            };
 
         // Load transcript files from universal subtitles
         var universalSubsOpts = {
@@ -163,12 +196,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 ]
             };
         
-        testProcess(localTranscriptOpts, "Local transcript files");
+        testProcess(fluid.tests.localTranscriptOpts, "Local transcript files");
         
         // Wait a second for the previous test process to complete
         setTimeout(function () {
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
-        }, 500);
+        }, 1500);
 
         jqUnit.asyncTest("Drop-down aria-controls text area", function () {
             var testOpts = {
@@ -181,7 +214,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-            var that = initTranscript(localTranscriptOpts, testOpts);
+            var that = initTranscript(fluid.tests.localTranscriptOpts, testOpts);
         });
 
         jqUnit.asyncTest("transcriptTextId", function () {
@@ -193,7 +226,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     }
                 }
             };
-            var that = initTranscript(localTranscriptOpts, testOpts);
+            var that = initTranscript(fluid.tests.localTranscriptOpts, testOpts);
         });
+
     });
+
 })(jQuery);

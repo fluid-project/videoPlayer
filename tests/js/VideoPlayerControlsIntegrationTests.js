@@ -45,7 +45,7 @@ fluid.registerNamespace("fluid.tests");
                 listeners: {
                     onReady: {
                         listener: function (that) {
-                            var video = that.model.mediaElementVideo;
+                            var video = that.media.model.mediaElementVideo;
                             var muteButton = that.controllers.volumeControl.locate("mute");
 
                             jqUnit.assertFalse("Initially, video should not be muted", video.muted);
@@ -94,17 +94,30 @@ fluid.registerNamespace("fluid.tests");
         });
 
         jqUnit.asyncTest("Show/hide scrubber handle", function () {
+            jqUnit.expect(6);
             var testPlayer = fluid.testUtils.initVideoPlayer("#videoPlayer", {
                 listeners: {
                     onReady: {
                         listener: function (controllers) {
                             // The controllers main container is hidden by default. Show it for the further tests.
                             controllers.container.show();
-                            
-                            controllers.applier.requestChange("totalTime", 0);
-                            jqUnit.notVisible("The scrubber handle is not shown", controllers.scrubber.locate("handle"));
-                            controllers.applier.requestChange("totalTime", 100);
-                            jqUnit.isVisible("The scrubber handle is shown", controllers.scrubber.locate("handle"));
+                            jqUnit.isVisible("The scrubber handle is shown initially, when the totalTime is 100", controllers.scrubber.locate("handle"));
+
+                            controllers.applier.change("totalTime", 0);
+                            jqUnit.notVisible("The scrubber handle is not shown when totalTime is 0", controllers.scrubber.locate("handle"));
+
+                            controllers.applier.change("totalTime", 50);
+                            jqUnit.isVisible("The scrubber handle is shown when totalTime is 50", controllers.scrubber.locate("handle"));
+
+                            controllers.applier.change("totalTime", 100);
+                            jqUnit.isVisible("The scrubber handle is shown when totalTime is 100", controllers.scrubber.locate("handle"));
+
+                            controllers.applier.change("totalTime", 0);
+                            jqUnit.notVisible("The scrubber handle is not shown when totalTime is 0", controllers.scrubber.locate("handle"));
+
+                            controllers.applier.change("totalTime", 100);
+                            jqUnit.isVisible("The scrubber handle is shown when totalTime is 100", controllers.scrubber.locate("handle"));
+
                             jqUnit.start();
                         },
                         args: ["{controllers}"]

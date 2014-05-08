@@ -25,14 +25,17 @@ https://source.fluidproject.org/svn/LICENSE.txt
      ********************************************************************/
 
     fluid.defaults("fluid.videoPlayer.html5Captionator", {
-        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.html5Captionator.finalInit",
-        preInitFunction:   "fluid.videoPlayer.html5Captionator.preInit",
+        gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.indirectReader", "autoInit"],
         model: {},
+        modelListeners: {
+            displayCaptions: "{html5Captionator}.events.onCaptionChanged.fire",
+            "currentTracks.captions": "{html5Captionator}.events.onCaptionChanged.fire"
+        },
         captions: [],
         events: {
             afterTrackElCreated: null,
             onTracksReady: null,
+            onCaptionChanged: null,
             onReady: null
         },
         elPaths: {
@@ -44,9 +47,21 @@ https://source.fluidproject.org/svn/LICENSE.txt
             video: ".flc-videoPlayer-video",
             caption: ".flc-videoPlayer-captionArea"
         },
+        invokers: {
+            refreshCaptions: {
+                funcName: "fluid.videoPlayer.html5Captionator.refreshCaptions",
+                args: "{that}"
+            }
+        },
         listeners: {
             afterTrackElCreated: "fluid.videoPlayer.html5Captionator.waitForTracks",
-            onTracksReady: "fluid.videoPlayer.html5Captionator.captionify"
+            "onTracksReady.captionify": "fluid.videoPlayer.html5Captionator.captionify",
+            "onTracksReady.refreshCaptions": "{that}.refreshCaptions",
+            onCaptionChanged: "{that}.refreshCaptions",
+            onCreate: {
+                listener: "fluid.videoPlayer.html5Captionator.init",
+                args: "{that}"
+            }
         },
         createTrackFns: {
             "text/amarajson": "fluid.videoPlayer.html5Captionator.createAmaraTrack",
@@ -54,13 +69,19 @@ https://source.fluidproject.org/svn/LICENSE.txt
         }
     });
     
-    
-    var bindCaptionatorModel = function (that) {
-        var elPaths = that.options.elPaths;
-        that.applier.modelChanged.addListener(elPaths.currentCaptions, that.refreshCaptions);
-        that.applier.modelChanged.addListener(elPaths.displayCaptions, that.refreshCaptions);
+    fluid.videoPlayer.html5Captionator.init = function (that) {
+        var captions = that.options.captions;
+        
+        // Need to know when all the tracks have been created so we can trigger captionator
+        that.tracksToCreate = captions.length;
+
+        // Start adding tracks to the video tag
+        fluid.each(captions, function (capOpt, key) {
+            fluid.invoke(that.options.createTrackFns[capOpt.type], [that, key, capOpt], that);
+        });
+
     };
-    
+
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (trackEl) {
             trackEl.track.mode = "disabled";
@@ -75,32 +96,18 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.html5Captionator.preInit = function (that) {
-        that.createTrackFns = that.options.createTrackFns;
-
-        that.refreshCaptions = function () {
-            var tracks = $("track", that.locate("video"));
-            var display = that.readIndirect("elPaths.displayCaptions");
-            if (display) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
-                    tracks, that.options.captions);
-            } else {
-                fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
-            }
-        };
-
-    };
-
-    fluid.videoPlayer.html5Captionator.finalInit = function (that) {
-        var captions = that.options.captions;
-        
-        // Need to know when all the tracks have been created so we can trigger captionator
-        that.tracksToCreate = captions.length;
-
-        // Start adding tracks to the video tag
-        fluid.each(captions, function (capOpt, key) {
-            fluid.invoke(that.createTrackFns[capOpt.type], [that, key, capOpt], that);
-        });
+    fluid.videoPlayer.html5Captionator.refreshCaptions = function (that) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
+        var tracks = $("track", that.locate("video"));
+        var display = that.readIndirect("elPaths.displayCaptions");
+        if (display) {
+            fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
+                tracks, that.options.captions);
+        } else {
+            fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
+        }
     };
 
     fluid.videoPlayer.html5Captionator.createTrack = function (that, key, opts) {
@@ -153,7 +160,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
             appendCueCanvasTo: that.locate("caption")[0],
             sizeCuesByTextBoundingBox: true
         });
-        bindCaptionatorModel(that);
         that.events.onReady.fire(that, fluid.allocateSimpleId(that.locate("caption")));
     };
 

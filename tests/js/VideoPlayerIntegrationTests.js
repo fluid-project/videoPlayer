@@ -17,10 +17,122 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
+    fluid.registerNamespace("fluid.tests");
+
+    fluid.tests.transcriptMenuSelector = ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu";
+
+    fluid.defaults("fluid.tests.transcriptsTests", {
+        gradeNames: ["fluid.test.testEnvironment", "autoInit"],
+        components: {
+            videoPlayer: {
+                type: "fluid.videoPlayer",
+                container: ".videoPlayer-transcript",
+                options: {
+                    video: {
+                        sources: [
+                            {
+                                src: "TestVideo.mp4",
+                                type: "video/mp4"
+                            },
+                            {
+                                src: "../../demos/videos/ReorganizeFuture/ReorganizeFuture.webm",
+                                type: "video/webm"
+                            }
+                        ],
+                        transcripts: [{
+                            src: "TestTranscripts.en.json",
+                            type: "JSONcc",
+                            srclang: "en",
+                            label: "English"
+                        },
+                        {
+                            src: "TestTranscripts.fr.json",
+                            type: "JSONcc",
+                            srclang: "fr",
+                            label: "French"
+                        }]
+                    },
+                    templates: {
+                        videoPlayer: {
+                            forceCache: true,
+                            href: "../../html/videoPlayer_template.html"
+                        }
+                    },
+                    components: {
+                        controllers: {
+                            options: {
+                                templates: {
+                                    controllers: {
+                                        href: "../../html/videoPlayer_controllers_template.html"
+                                    },
+                                    menuButton: {
+                                        href: "../../html/menuButton_template.html"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            tester: {
+                type: "fluid.tests.transcriptTester"
+            }
+        }
+    });
+
+    fluid.defaults("fluid.tests.transcriptTester", {
+        gradeNames: ["fluid.test.testCaseHolder", "autoInit"],
+        modules: [{
+            name: "Multiple Transcripts",
+            tests: [{
+                expect: 6,
+                name: "Load and switch transcript",
+                sequence: [{
+                    event: "{videoPlayer}.events.onReady",
+                    listener: "fluid.tests.transcriptsInitialized"
+                },{
+                    // click the first one
+                    element: fluid.tests.transcriptMenuSelector + " li:eq(1)",
+                    jQueryTrigger: "click"
+                },{
+                    event: "{videoPlayer}.events.onTranscriptsLoaded",
+                    listener: "fluid.tests.transcriptsSwitched"
+                },{
+                    // click the second one
+                    element: fluid.tests.transcriptMenuSelector + " li:eq(0)",
+                    jQueryTrigger: "click"
+                },{
+                    event: "{videoPlayer}.events.onCurrentTranscriptChanged",
+                    listener: "fluid.tests.transcriptsSwitched"
+                }]
+            }]
+        }]
+    });
+
+    fluid.tests.initialTranscriptText = null;
+
+    fluid.tests.transcriptsInitialized = function (that) {
+        jqUnit.assertTrue("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text().length > 0);
+        jqUnit.assertTrue("Each transcript element is wrapped in a properly-named span", 
+                ($(".flc-videoPlayer-transcript-text").find('[id|="' + that.transcript.options.transcriptElementIdPrefix + '"]').length > 0));
+
+        fluid.tests.initialTranscriptText = $(".flc-videoPlayer-transcript-text").text();
+    };
+
+    fluid.tests.transcriptsSwitched = function (intervalList, id, that) {
+        jqUnit.assertTrue("The transcript text is filled in", $(".flc-videoPlayer-transcript-text").text().length > 0);
+        jqUnit.assertNotEquals("The transcript text is switched", $(".flc-videoPlayer-transcript-text").text(), fluid.tests.initialTranscriptText.substring(0, 100));
+
+        fluid.tests.initialTranscriptText = $(".flc-videoPlayer-transcript-text").text();
+    };
+
     $(document).ready(function () {
 
-        jqUnit.module("Video Player Integration Tests");
+        fluid.test.runTests([
+            "fluid.tests.transcriptsTests"
+        ]);
 
+        jqUnit.module("Video Player Integration Tests");
 
         var testPlayPause = function (clickFunc) {
             var video = $(".flc-videoPlayer-video");
@@ -107,19 +219,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             fluid.testUtils.initVideoPlayer(".videoPlayer-playButton", testOpts);
         });
 
-        var transcriptMenuSelector = ".flc-videoPlayer-transcriptControls-container .flc-menuButton-languageMenu";
-
         jqUnit.asyncTest("Show transcript button", function () {
             jqUnit.expect(2);
 
             fluid.videoPlayer.testTranscript = function (that) {
                 var video = $(".flc-videoPlayer-video");
-                var transMenu = $(transcriptMenuSelector);
+                var transMenu = $(fluid.tests.transcriptMenuSelector);
 
                 jqUnit.assertFalse("The transcript panel is hidden initially", $(".flc-videoPlayer-transcriptArea").is(":visible"));
                 
                 // Clicking "show transcript" menu item to open transcript panel
-                $(transcriptMenuSelector + " li:last").click();  // click "show transcript" button
+                $(fluid.tests.transcriptMenuSelector + " li:last").click();  // click "show transcript" button
                 jqUnit.assertTrue("The transcript panel is shown", $(".flc-videoPlayer-transcriptArea").is(":visible"));
                 
                 jqUnit.start();
@@ -128,73 +238,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var testOpts = {
                     listeners: {
                         onReady: fluid.videoPlayer.testTranscript
-                    }
-                };
-            
-            fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
-        });
-
-        jqUnit.asyncTest("Switch transcript language buttons", function () {
-            jqUnit.expect(3);
-
-            var initialTranscriptText;
-            var testedTranscriptSpanClick = false;
-            
-            fluid.videoPlayer.testTranscript = function (that) {
-                // initial loading
-                $(transcriptMenuSelector + " li:eq(0)").click();
-                // switch to another language
-                $(transcriptMenuSelector + " li:eq(1)").click();
-
-            };
-            
-            fluid.videoPlayer.testTranscriptLoaded = function (intervalList, id, that) {
-                var transcriptTextArea = $(".flc-videoPlayer-transcript-text");
-
-                // make sure the transcript text is switched when another option is selected from the language combo box
-                // Depending on the connection with universal subtitle site, the test below may not get run with remote universal subtitle transcript files.
-                if (!initialTranscriptText) {
-                    initialTranscriptText = transcriptTextArea.text();
-                    jqUnit.assertNotNull("The transcript text is filled in", initialTranscriptText);
-                } else {
-                    jqUnit.assertNotEquals("The transcript text is switched", transcriptTextArea.text(), initialTranscriptText);
-                }
-                
-                // click on one transcript span advances video
-                // Use a time delay for the video to be fully loaded
-                setTimeout(function () {
-                    if (!testedTranscriptSpanClick) {
-                        var video = $(".flc-videoPlayer-video");
-                        var currentTimeBf = video[0].currentTime;
-
-                        var transcriptSpan = $("#" + that.options.transcriptElementIdPrefix + "-4");
-                        transcriptSpan.click();
-                        jqUnit.assertNotEquals("The video is advanced", video[0].currentTime, currentTimeBf);
-                        
-                        testedTranscriptSpanClick = true;
-                    }
-                    
-                    // The delay is to allow the transcript span highlight function to finish. This function is executed with
-                    // a slight time delay (100 millisec, see VideoPlayer_transcript.js), after another transcript span is clicked, 
-                    // to prevent the event queuing-up.
-                    setTimeout(function () {
-                        jqUnit.start();
-                    }, 500);
-                }, 1000);
-            };
-            
-            var testOpts = {
-                    listeners: {
-                        onReady: fluid.videoPlayer.testTranscript
-                    },
-                    components: {
-                        transcript: {
-                            options: {
-                                listeners: {
-                                    onTranscriptsLoaded: fluid.videoPlayer.testTranscriptLoaded
-                                }
-                            }
-                        }
                     }
                 };
             

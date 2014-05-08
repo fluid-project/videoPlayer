@@ -1,0 +1,35 @@
+
+/*
+ * Prefs Editor Panels styles
+ */
+@font-face {
+    font-family: 'InfusionIcons-VP';
+    src: url('../fonts/InfusionIcons-VideoPlayer.ttf'),
+         url('../fonts/InfusionIcons-VideoPlayer.eot');
+}
+.fl-prefsEditor .fl-videoPlayer-media-icon {
+    font-family: 'InfusionIcons-VP' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    float:left;
+    margin: 0.2em 0.3em 0 0;
+    font-size: 2em;
+}
+.fl-prefsEditor .fl-prefsEditor-captions-settings .fl-videoPlayer-media-icon:before {
+    content: "\e000";
+}
+.fl-prefsEditor .fl-prefsEditor-transcripts-settings .fl-videoPlayer-media-icon:before {
+    content: "\e001";
+}
+.fl-prefsEditor-caption-language,
+.fl-prefsEditor-transcript-language {
+}
+
+.fl-prefsEditor-separatedPanel .fl-inputs.fl-videoPlayer-media-language {
+    margin-left: 6.5em;
+    width: 12em;
+}

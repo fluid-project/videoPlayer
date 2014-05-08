@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -9,7 +9,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5*/
+/*global jQuery, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -46,12 +46,23 @@ var fluid_1_5 = fluid_1_5 || {};
     // as "state".
     
     fluid.defaults("fluid.modelRelay", {
-        gradeNames: ["fluid.eventedComponent", "fluid.modelComponent", "autoInit"],
-        postInitFunction: "fluid.modelRelay.postInit",
+        gradeNames: ["fluid.eventedComponent", "fluid.modelRelayComponent", "autoInit"],
         targets: {},
         rules: {},
         events: {
             // triggerEvent [optional injected event]
+        },
+        listeners: {
+            onCreate: {
+                listener: "fluid.modelRelay.init",
+                args: ["{modelRelay}"]
+            }
+        },
+        invokers: {
+            addTarget: {
+                funcName: "fluid.modelRelay.addTarget",
+                args: ["{modelRelay}", "{arguments}.0"]
+            }
         },
         // TODO: upgrade event framework to support "latched events"
         bindingTriggered: false
@@ -62,10 +73,13 @@ var fluid_1_5 = fluid_1_5 || {};
         var specListeners = fluid.transform(that.options.rules, function(value, key) {
             var listener = function (newModel, oldModel, changeList) {
                 var newValue = fluid.get(newModel, key);
+                if (newValue === fluid.get(oldModel, key)) {
+                    return null;
+                }
                 if (typeof(value) === "string") {
                     target.applier.requestChange(value, newValue);
                 } else {
-                    var fullargs = [newValue, key, target, changeList]
+                    var fullargs = [newValue, key, target, changeList];
                     if (value.lens) {
                         var transformed = value.lens.transform.apply(null, [newValue, key]);
                         target.applier.requestChange(value.targetPath, newValue);
@@ -94,7 +108,9 @@ var fluid_1_5 = fluid_1_5 || {};
                     var synthChange = {type: "ADD", path: key, value: newValue};
                     // fluid.log("Replaying pent change ", synthChange, " to target ", target);
                     var changes = value.func(newValue, key, target, [synthChange]);
-                    fluid.requestChanges(target.applier, changes);
+                    if (changes.length > 0) {
+                        fluid.requestChanges(target.applier, changes);
+                    }
                 }
             });
         }
@@ -114,16 +130,16 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     };
     
-    fluid.modelRelay.postInit = function(that) {
+    fluid.modelRelay.addTarget = function(that, target) {
+        fluid.modelRelay.registerTarget(that, target);
+        that.targets[target.id] = target;
+    };
+    fluid.modelRelay.init = function(that) {
         that.targets = {};
         // This is used for holding pent up changes produced by irreversible transforms - it holds
         // the raw changes which would be destined for the model, ready to be re-transformed
         that.pentModel = {};
         that.pentApplier = fluid.makeChangeApplier(that.pentModel);
-        that.addTarget = function(target) {
-            fluid.modelRelay.registerTarget(that, target);
-            that.targets[target.id] = target;
-        };
         fluid.each(that.options.rules, function(value, key) {
             if (typeof(value) !== "string") {
                 if (value.targetPath) {
@@ -153,20 +169,26 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.defaults("fluid.scaleLens", {
         gradeNames: ["fluid.lens", "autoInit"],
         scaleFactor: 1.0,
-        postInitFunction: "fluid.scaleLens.postInit"
+        invokers: {
+            transform: {
+                funcName: "fluid.scaleLens.transform",
+                args: ["{scaleLens}"]
+            },
+            reverseTransform: {
+                funcName: "fluid.scaleLens.reverseTransform",
+                args: ["{scaleLens}", "{arguments}.0"]
+            }
+        }
     });
     
-    fluid.scaleLens.postInit = function(that) {
-        that.transform = function(value) {
-            return value * that.options.scaleFactor; 
-        };
-        that.reverseTransform = function(value) {
-            return value / that.options.scaleFactor;
-        };
+    fluid.scaleLens.transform = function(that, value) {
+        return value * that.options.scaleFactor;
+    };
+    fluid.scaleLens.reverseTransform = function(that, value) {
+        return value / that.options.scaleFactor;
     };
     
-
-// TODO: move into DataBinding
+    // TODO: move into DataBinding
     fluid.linearRangeGuard = function(min, max) {
         return function (model, changeRequest, applier) {
             var newValue = changeRequest.value;
@@ -177,28 +199,37 @@ var fluid_1_5 = fluid_1_5 || {};
                 newValue = max;
             }
             changeRequest.value = newValue;
-        }
+        };
     };
 
-
-    
-    
     // A "mini-grade" to ease the work of dealing with "modelPath" idiom components - this
     // is only desirable until changeApplier relay gets into the core framework
     fluid.defaults("fluid.videoPlayer.indirectReader", {
-        gradeNames: ["fluid.modelComponent", "autoInit"],
-        preInitFunction: "fluid.videoPlayer.makeIndirectReader"
+        gradeNames: ["fluid.modelRelayComponent", "autoInit"],
+        invokers: {
+            readIndirect: {
+                funcName: "fluid.videoPlayer.indirectReader.readIndirect",
+                args: ["{that}", "{arguments}.0"]
+            },
+            writeIndirect: {
+                funcName: "fluid.videoPlayer.indirectReader.writeIndirect",
+                args: ["{that}", "{arguments}.0", "{arguments}.1", "{arguments}.2"]
+            }
+        }
     });
     
-    fluid.videoPlayer.makeIndirectReader = function(that) {
-         that.readIndirect = function(pathName) {
-             return fluid.get(that.model, fluid.get(that.options, pathName));
-         };
-         that.writeIndirect = function(pathName, value, source) {
-             fluid.fireSourcedChange(that.applier, fluid.get(that.options, pathName), value, source);
-         };
+    fluid.videoPlayer.indirectReader.readIndirect = function(that, pathName) {
+        return fluid.get(that.model, fluid.get(that.options, pathName));
+    };
+    fluid.videoPlayer.indirectReader.writeIndirect = function(that, pathName, value, source) {
+        fluid.fireSourcedChange(that.applier, fluid.get(that.options, pathName), value, source);
     };
     
-    
+    // Check if fluid static environment contains the given context feature.
+    // If yes, returns the grade. Otherwise, returns an empty string.
+    fluid.videoPlayer.getGrade = function (envFeature, grade) {
+        var toReplace = new RegExp('\\.', 'g');
+        return !!fluid.get(fluid.staticEnvironment, envFeature.replace(toReplace, "--")) ? grade : "";
+    };
+
 })(jQuery, fluid_1_5);
-    

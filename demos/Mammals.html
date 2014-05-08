@@ -8,13 +8,14 @@
         <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-layout.css" />
         <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/fss/css/fss-text.css" />
         <link rel="stylesheet" type="text/css" href="../lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.14.custom.css"  />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-bw-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-wb-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-by-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-theme-yb-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/fss/fss-text-uio.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/infusion/components/uiOptions/css/FatPanelUIOptions.css" />
-        <link rel="stylesheet" type="text/css" href="../css/UIOptions-media.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-bw-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-wb-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-by-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-yb-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-lgdg-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-theme-dglg-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/fss/fss-text-prefsEditor.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/infusion/framework/preferences/css/SeparatedPanelPrefsEditor.css" />
         <link rel="stylesheet" type="text/css" href="../css/VideoPlayer.css" />
         <!--[if lt IE 9]>
             <link type="text/css" href="../css/ltie9.css" rel="stylesheet" />
@@ -22,14 +23,15 @@
         <link rel="stylesheet" type="text/css" href="Mammals.css" />
 
         <!-- Fluid and jQuery Dependencies -->
-        <script type="text/javascript" src="../lib/infusion/MyInfusion.js"></script>
+        <script type="text/javascript" src="../lib/infusion/infusion-custom.js"></script>
+        <script type="text/javascript" src="../js/MediaSettings.js"></script>
         <!-- Utils -->
         <script type="text/javascript" src="../lib/jquery-ui/js/jquery.ui.button.js"></script>
         <script type="text/javascript" src="../lib/captionator/js/captionator.js"></script>
         <script type="text/javascript" src="../lib/mediaelement/js/mediaelement.js"></script>
         <!--[if lt IE 9]>
             <script type="text/javascript" src="../lib/html5shiv/js/html5shiv.js"></script>
-        <![endif]-->      
+        <![endif]-->
         <!-- VideoPlayer dependencies -->
         <script type="text/javascript" src="../js/VideoPlayer_framework.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_showHide.js"></script>
@@ -41,15 +43,18 @@
         <script type="text/javascript" src="../js/VideoPlayer_transcript.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_intervalEventsConductor.js"></script>
         <script type="text/javascript" src="../js/VideoPlayer_html5Captionator.js"></script>
-        <script type="text/javascript" src="../js/VideoPlayer_uiOptions.js"></script>
+        <script type="text/javascript" src="../js/VideoPlayer_prefsEditor.js"></script>
         <script type="text/javascript" src="Mammals.js"></script>
 
     </head>
-    <body class="fl-videoPlayer-theme">        
-        <div class="flc-uiOptions fl-uiOptions-fatPanel">
-            <div class="flc-slidingPanel-panel flc-uiOptions-iframe"></div>
+    <body class="fl-videoPlayer-theme">
+        <div class="flc-prefsEditor fl-prefsEditor-separatedPanel">
+            <div class="flc-slidingPanel-panel flc-prefsEditor-iframe"></div>
             <div class="fl-panelBar">
-                <button class="flc-slidingPanel-toggleButton fl-toggleButton">Show/Hide</button>
+                 <span class="fl-prefsEditor-buttons">
+                    <button class="flc-prefsEditor-reset fl-prefsEditor-reset">Reset</button>
+                    <button class="flc-slidingPanel-toggleButton fl-prefsEditor-showHide">Show/Hide</button>
+                </span>
             </div>
         </div>
         <div class="flc-toc-tocContainer"> </div>
@@ -71,7 +76,7 @@
                         <li class="last">Email Updates</li>
                     </ul>
                 </nav>
-        
+
                 <form class="search">
         	        <label class="fl-hidden-accessible" for="search-field">Search</label>
         	        <input type="search" id="search-field" placeholder="Search" />
@@ -79,7 +84,7 @@
                 </form>
             </div>
         </header>
-        
+
         <div class="content">
             <nav class="breadcrumbs">
                 <ul>
@@ -88,7 +93,7 @@
                     <li>What is a Mammal? Answers from Ross MacPhee	</li>
                 </ul>
             </nav>
-        
+
             <article>
                 <section>
                     <h1>What is a Mammal? Answers from Ross MacPhee</h1>
@@ -100,14 +105,14 @@
                     <p>For more on his research, be sure to read our article What Killed the Mammoths? Ross MacPhee Looks for Answers, also in this issue.</p>
                     <p>You can read excerpts of this interview here or listen to our accompanying podcasts that we’ve created in partnership with AMNH for you and your students. Or listen to excerpts in our podcasts.</p>
                 </section>
-                
+
                 <section>
                     <h2>What is a mammal?</h2>
                     <p><strong>MacPhee</strong>: Mammals are a group of animals known as vertebrates: animals with backbones and four legs [tetrapods], whose young develop through a series of complex birth membranes. They are the only animals that have distinct characteristics of hair, feed from mother&#8217;s milk, and have three tiny bones that interpret sound into the brain.</p>
                     <p>You can also watch this podcast in <a href="http://www.youtube.com/watch?v=0jw74pfWfxA">YouTube</a>.</p>
                     <div class="mammals-video fl-videoPlayer"></div>
                 </section>
-            
+
                 <section>
                     <h2>What kind of mammals do you find in the Arctic?</h2>
                     <p><strong>MacPhee</strong>: There aren’t that many completely distinctive Arctic animals when it comes to land mammals. They live in larger ranges beyond the Arctic. Some of the mammals that live in Arctic regions include large herbivores like musk ox and caribou; carnivores such as polar bears and arctic foxes; and smaller animals like arctic hares and other animals within rodent groups.</p>
@@ -119,7 +124,7 @@
                     <h2>What about Antarctic mammals?</h2>
                     <p><strong>MacPhee</strong>: There are no land mammals in Antarctica and there haven&#8217;t been for at least 30 million years because the conditions are permanently cold, unlike the Arctic. Just like in the Arctic, the seas are home to seals, whales, and porpoises, but, of course, comprised of different species. Baleen whales rely on krill and plankton that they eat in great quantities in the ocean. Krill also serve as a rich food source for seals.</p>
                 </section>
-            
+
                 <section>
                     <h2>What adaptations enable mammals to live in a polar environment?</h2>
                     <p><strong>MacPhee</strong>: One of the main ways that mammals adapt to the polar regions is through mechanisms providing insulation, such as fur, blubber, and an efficient circulatory system. For marine mammals, insulation is less of a problem than you may think. As long as they&#8217;re in water that&#8217;s not frozen at 32 degrees Fahrenheit [0 degrees Celsius], a few inches of blubber and fur patterning that is high in R-value [thermal resistance] are sufficient insulation to keep them warm.</p>
@@ -131,7 +136,7 @@
                     <p>Another way in which polar mammals survive is migration. This behavioral adaptation allows mammals to locate suitable feeding and breeding grounds. Both terrestrial mammals, such as caribou, and marine mammals, such as whales, migrate.</p>
                 </section>
             </article>
-            
+
             <aside>
                 <h2>Resources</h2>
                 <ul class="resources">
@@ -149,7 +154,7 @@
                     </li>
                 </ul>
             </aside>
-        
+
             <aside class="standards">
                 <h2><i>NATIONAL SCIENCE EDUCATION STANDARDS</i>: SCIENCE CONTENT STANDARDS</h2>
                 <p><em>The entire <a href="http://books.nap.edu/catalog.php?record_id=4962">National Science Education Standards</a> document can be read online or downloaded for free from the National Academies Press web site. The following excerpt was taken from <a href="http://books.nap.edu/openbook.php?record_id=4962&amp;page=103">Chapter 6</a>.</em></p>
@@ -170,11 +175,11 @@
                     <li>Diversity and Adaptations of Organisms</li>
                 </ul>
             </aside>
-        
+
             <p class="author">This article was written by Robert Payo. For more information, see the <a title="Contributors" href="http://beyondpenguins.ehe.osu.edu/contributors">Contributors</a> page. Email Robert at <a href="mailto:beyondpenguins@msteacher.org">beyondpenguins@msteacher.org</a>.</p>
             <p class="copyright">Copyright January 2009 &#8211; The Ohio State University. This material is based upon work supported by the National Science Foundation under Grant No. 0733024. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation. This work is licensed under an <a href="http://creativecommons.org/licenses/by-sa/3.0/"> Attribution-ShareAlike 3.0 Unported Creative Commons license</a>.</p>
         </div>
-        
+
         <footer>
             <ul><li><a href="http://beyondpenguins.ehe.osu.edu/terms-of-use">Terms of Use</a></li>
                 <li><a href="http://beyondpenguins.ehe.osu.edu/funded-by-nsf">Funded by NSF</a></li>

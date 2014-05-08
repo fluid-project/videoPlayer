@@ -60,9 +60,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var testVTTCaption = function (vttArray, index, captionObj) {
             jqUnit.assertEquals("First line is empty", "", vttArray[index]);
 
-            var times = fluid.videoPlayer.millisToHmsm(captionObj.start_time) + " --> " + fluid.videoPlayer.millisToHmsm(captionObj.end_time);
-
-            jqUnit.assertEquals("Times are correctly specified", times, vttArray[index + 1]);
+            jqUnit.assertEquals("Times are correctly specified", captionObj.expected_vttTime, vttArray[index + 1]);
             jqUnit.assertEquals("Caption is in the correct position", captionObj.text, vttArray[index + 2]);
         };
 
@@ -89,22 +87,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             var testJson = [{
                 "subtitle_id": "cseicmgnhp6334683",
                 "text": "Eeny, meeny, miny, moe,",
-                "start_time": 1.7769230769230799,
-                "end_time": 4.0330000000000004,
+                "start": 1.7769230769230799,
+                "end": 4.0330000000000004,
+                "expected_vttTime": "04:00:00.002 --> 00:00:00.004",
                 "sub_order": 1.0,
                 "start_of_paragraph": false
             }, {
                 "subtitle_id": "mgnplxysgb6342310",
                 "text": "Catch a tiger by the toe",
-                "start_time": 4.0330000000000004,
-                "end_time": 5.9923076923076897,
+                "start": 4.0330000000000004,
+                "end": 5.9923076923076897,
+                "expected_vttTime": "00:00:00.004 --> 00:00:00.006",
                 "sub_order": 2.0,
                 "start_of_paragraph": false
             }, {
                 "subtitle_id": "fdztnjtkic6348025",
                 "text": "If he hollers let him go",
-                "start_time": 5.9923076923076897,
-                "end_time": 8.0560769230769207,
+                "start": 5.9923076923076897,
+                "end": 8.0560769230769207,
+                "expected_vttTime": "00:00:00.006 --> 00:00:00.008",
                 "sub_order": 3.0,
                 "start_of_paragraph": false
             }];
@@ -125,12 +126,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             jqUnit.expect(2);
 
             fluid.fetchAmaraJsonCallback = function (data) {
-                jqUnit.assertTrue("Json was fetched", data.length > 0);
-                jqUnit.assertEquals("Checking the first caption text", "Eeny, meeny, miny, moe,", data[0].text);
+                jqUnit.assertTrue("Json was fetched", data.subtitles.length > 0);
+                jqUnit.assertEquals("Checking the first caption text", "Eeny, meeny, miny, moe,", data.subtitles[0].text);
                 jqUnit.start();
             };
 
-            fluid.videoPlayer.fetchAmaraJson("http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en", fluid.fetchAmaraJsonCallback);
+            fluid.videoPlayer.fetchAmaraJson("http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en", "en", fluid.fetchAmaraJsonCallback);
         });
 
         var testVideoLabel = function (vp, expectedLabel) {
@@ -162,8 +163,25 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         });
 
+        jqUnit.asyncTest("Model: 'currentTracks' arrays initialized based on options", function () {
+            jqUnit.expect(2);
+            var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        jqUnit.assertEquals("Model's 'currentTracks.captions' array has 0 in it", 0, videoPlayer.model.currentTracks.captions[0]);
+                        jqUnit.assertEquals("Model's 'currentTracks.transcripts' array has 0 in it", 0, videoPlayer.model.currentTracks.transcripts[0]);
+                        jqUnit.start();
+                    }
+                }
+            });
+        });
 
-        var envFeatures = {"supportsHtml5": "fluid.browser.supportsHtml5"};
+
+        var envFeatures = {
+            "supportsHtml5": "fluid.browser.supportsHtml5",
+            "supportsNativeVideo": "fluid.browser.nativeVideoSupport",
+            "supportsFullScreen": "fluid.browser.supportsFullScreen"
+        };
 
         var HTML5Tests = [{
             desc: "video player instantiation with customized controller",

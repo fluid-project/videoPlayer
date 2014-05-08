@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2013 OCAD University
+Copyright 2011-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, swfobject, fluid_1_5, MediaElement, mejs*/
+/*global jQuery, fluid_1_5, MediaElement, mejs*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -27,22 +27,20 @@ var fluid_1_5 = fluid_1_5 || {};
      *********************************************************************************/
 
     fluid.defaults("fluid.videoPlayer.media", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
-        components: {
-            mediaEventBinder: {
-                type: "fluid.videoPlayer.eventBinder",
-                createOnEvent: "onEventBindingReady"
-            }
+        gradeNames: ["fluid.viewRelayComponent", "autoInit"],
+        modelListeners: {
+            play: "{media}.play",
+            muted: "{media}.mute",
+            volume: "{media}.setMediaVolume"
         },
-        finalInitFunction: "fluid.videoPlayer.media.finalInit",
-        preInitFunction: "fluid.videoPlayer.media.preInit",
         events: {
             onEventBindingReady: null,
             onTimeUpdate: null, // picked up by intervalEventsConductor.events.onTimeUpdate
+            afterInit: null,
             onReady: {
                 events: {
                     eventBindingReady: "onEventBindingReady",
-                    created: "onCreate"
+                    afterInit: "afterInit"
                 }
             },
 
@@ -59,21 +57,11 @@ var fluid_1_5 = fluid_1_5 || {};
             
             onLoadedMetadata: null
         },
-        invokers: {
-            renderSources: { funcName: "fluid.videoPlayer.media.renderSources", args: ["{media}"] },
-            bindMediaModel: { funcName: "fluid.videoPlayer.media.bindMediaModel", args: ["{media}"] },
-            bindMediaDOMEvents: { funcName: "fluid.videoPlayer.media.bindMediaDOMEvents", args: ["{media}"] }
-        },
-        mediaEventBindings: {
-            canplay: "onMediaElementCanPlay",
-            canplaythrough: "onMediaElementCanPlayThrough",
-            loadeddata: "onMediaElementLoadedData",
-            loadedmetadata: "onMediaElementLoadedMetadata",
-            volumechange: "onMediaElementVolumeChange",
-            ended: "onMediaElementEnded",
-            timeupdate: "onMediaElementTimeUpdate"
-        },
         listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.media.init",
+                args: ["{media}"]
+            },
             onMediaElementCanPlay: [
                 {
                     listener: "{media}.applier.fireChangeRequest",
@@ -96,7 +84,7 @@ var fluid_1_5 = fluid_1_5 || {};
             }, {
                 listener: "{media}.events.onLoadedMetadata.fire"
             }],
-            onMediaElementVolumeChange: "fluid.videoPlayer.media.handleVolumeChange",
+            onMediaElementVolumeChange: "fluid.videoPlayer.media.handleMediaVolumeChange",
             onMediaElementEnded: [{
                 listener: "{media}.applier.fireChangeRequest",
                 args: [{path: "play", value: false}]
@@ -106,6 +94,30 @@ var fluid_1_5 = fluid_1_5 || {};
             }],
             onMediaElementTimeUpdate: "fluid.videoPlayer.media.handleTimeUpdate"
         },
+        invokers: {
+            renderSources: { funcName: "fluid.videoPlayer.media.renderSources", args: ["{media}"] },
+            bindMediaDOMEvents: { funcName: "fluid.videoPlayer.media.bindMediaDOMEvents", args: ["{media}"] },
+            updateCurrentTime: {
+                funcName: "fluid.videoPlayer.media.updateCurrentTime",
+                args: ["{media}", "{arguments}.0", "{arguments}.1"]
+            },
+            setTime: { funcName: "fluid.videoPlayer.media.setTime", args: ["{media}", "{arguments}.0"] },
+            setMediaVolume: { funcName: "fluid.videoPlayer.media.setMediaVolume", args: ["{media}", "{arguments}.0.value", "{arguments}.0.oldValue", "{arguments}"] },
+            play: { funcName: "fluid.videoPlayer.media.play", args: ["{media}"] },
+            mute: { funcName: "fluid.videoPlayer.media.mute", args: ["{media}"] },
+            refresh: { funcName: "fluid.videoPlayer.media.refresh", args: ["{media}"] },
+            requestFullScreen: { funcName: "fluid.videoPlayer.media.requestFullScreen", args: ["{media}", "{arguments}.0"] },
+            cancelFullScreen: { funcName: "fluid.videoPlayer.media.cancelFullScreen", args: ["{media}"] },
+        },
+        mediaEventBindings: {
+            canplay: "onMediaElementCanPlay",
+            canplaythrough: "onMediaElementCanPlayThrough",
+            loadeddata: "onMediaElementLoadedData",
+            loadedmetadata: "onMediaElementLoadedMetadata",
+            volumechange: "onMediaElementVolumeChange",
+            ended: "onMediaElementEnded",
+            timeupdate: "onMediaElementTimeUpdate"
+        },
         sourceRenderers: {
             "video/mp4": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/webm": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
@@ -113,7 +125,13 @@ var fluid_1_5 = fluid_1_5 || {};
             "video/ogv": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag",
             "video/youtube": "fluid.videoPlayer.media.createSourceMarkup.html5SourceTag"
         },
-        sources: []
+        sources: [],
+        components: {
+            mediaEventBinder: {
+                type: "fluid.videoPlayer.eventBinder",
+                createOnEvent: "onEventBindingReady"
+            }
+        }
     });
 
     fluid.videoPlayer.media.createSourceMarkup = {
@@ -136,18 +154,14 @@ var fluid_1_5 = fluid_1_5 || {};
         });
     };
 
-    fluid.videoPlayer.media.bindMediaModel = function (that) {
-        that.applier.modelChanged.addListener("play", that.play);
-        that.applier.modelChanged.addListener("muted", that.mute);
-        fluid.addSourceGuardedListener(that.applier, 
-            "volume", "media", that.updateVolume);
-    };
-
-    fluid.videoPlayer.media.handleVolumeChange = function (that, evt) {
+    fluid.videoPlayer.media.handleMediaVolumeChange = function (that, evt) {
         var mediaVolume = that.model.mediaElementVideo.volume * 100;
+        if (mediaVolume === that.model.volume) {
+            return;
+        }
         // Don't fire self-generated volume changes on zero when muted, to avoid cycles
         if (!that.model.muted || mediaVolume !== 0) {
-            fluid.fireSourcedChange(that.applier, "volume", mediaVolume, "media");
+            that.applier.change("volume", mediaVolume);
         }
     };
     
@@ -155,7 +169,7 @@ var fluid_1_5 = fluid_1_5 || {};
         // With youtube videos, "loadedmetadata" event is not triggered at the initial load,
         // so the video duration is not set but the duration does get returned when the video is at play.
         if (that.model.totalTime === 0) {
-            that.applier.requestChange("totalTime", that.model.mediaElementVideo.duration);
+            that.applier.change("totalTime", that.model.mediaElementVideo.duration);
         }
         
         // in IE8, the mediaElement's currentTime isn't updated, but the event carries a currentTime field
@@ -174,7 +188,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 // if currentTime has caught up with scrubTime, we don't need scrubTime anymore.
                 // if we don't wait for currentTime to catch up, scrubbing with the keyboard
                 // jumps and doesn't progress.
-                that.applier.requestChange("scrubTime", null);
+                that.applier.change("scrubTime", null);
             }
         }
 
@@ -185,7 +199,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.videoPlayer.media.updateStartTime = function (that) {
         var newStartTime = that.model.mediaElementVideo.startTime || 0;
-        that.applier.requestChange("startTime", newStartTime);
+        that.applier.change("startTime", newStartTime);
     };
 
     fluid.videoPlayer.media.bindMediaDOMEvents = function (that) {
@@ -215,68 +229,67 @@ var fluid_1_5 = fluid_1_5 || {};
 
     };
 
-    fluid.videoPlayer.media.preInit = function (that) {
-        that.updateCurrentTime = function (currentTime, buffered) {
-            // buffered is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
-            var bufferEnd = (buffered && buffered.length > 0) ? buffered.end(buffered.length - 1) : 0;
+    fluid.videoPlayer.media.updateCurrentTime = function (that, currentTime, buffered) {
+        // buffered is a TimeRanges object (http://www.whatwg.org/specs/web-apps/current-work/#time-ranges)
+        var bufferEnd = (buffered && buffered.length > 0) ? buffered.end(buffered.length - 1) : 0;
 
-            that.applier.fireChangeRequest({
-                path: "currentTime", 
-                value: currentTime
-            });
-            that.applier.fireChangeRequest({
-                path: "bufferEnd",
-                value: bufferEnd
-            });
-        };
-        
-        that.setTime = function (time) {
-            if (!that.model.mediaElementVideo) { return; }
-
-            that.applier.requestChange("scrubTime", time);
-            that.model.mediaElementVideo.setCurrentTime(time);
-        };
-
-        that.updateVolume = function () {
-            if (!that.model.mediaElementVideo) { return; }
-
-            that.model.mediaElementVideo.setVolume(that.model.volume / 100);
-        };
-
-        that.play = function () {
-            if (!that.model.mediaElementVideo) { return; }
-
-            if (that.model.play === true) {
-                that.model.mediaElementVideo.play();
-            } else {
-                that.model.mediaElementVideo.pause();
-            }
-        };
-
-        that.mute = function () {
-            if (!that.model.mediaElementVideo) { return; }
-
-            that.model.mediaElementVideo.setMuted(that.model.muted);
-        };
-
-        that.refresh = function () {
-            that.updateVolume();
-            that.play();
-        };
-        
-        that.requestFullScreen = function (elm) {
-            mejs.MediaFeatures.requestFullScreen(elm || that.model.mediaElementVideo);
-        };
-        
-        that.cancelFullScreen = function () {
-            mejs.MediaFeatures.cancelFullScreen();
-        };
+        that.applier.fireChangeRequest({
+            path: "currentTime",
+            value: currentTime
+        });
+        that.applier.fireChangeRequest({
+            path: "bufferEnd",
+            value: bufferEnd
+        });
     };
 
-    fluid.videoPlayer.media.finalInit = function (that) {
+    fluid.videoPlayer.media.setTime = function (that, time) {
+        if (!that.model.mediaElementVideo) { return; }
+
+        that.applier.change("scrubTime", time);
+        that.model.mediaElementVideo.setCurrentTime(time);
+    };
+
+    fluid.videoPlayer.media.setMediaVolume = function (that, newValue, oldValue) {
+        if (!that.model.mediaElementVideo) { return; }
+        if (newValue !== oldValue) {
+            that.model.mediaElementVideo.setVolume(that.model.volume / 100);
+        }
+    };
+
+    fluid.videoPlayer.media.play = function (that) {
+        if (!that.model.mediaElementVideo) { return; }
+
+        if (that.model.play === true) {
+            that.model.mediaElementVideo.play();
+        } else {
+            that.model.mediaElementVideo.pause();
+        }
+    };
+
+    fluid.videoPlayer.media.mute = function (that) {
+        if (!that.model.mediaElementVideo) { return; }
+
+        that.model.mediaElementVideo.setMuted(that.model.muted);
+    };
+
+    fluid.videoPlayer.media.refresh = function (that) {
+        that.setMediaVolume();
+        that.play();
+    };
+
+    fluid.videoPlayer.media.requestFullScreen = function (that, elm) {
+        mejs.MediaFeatures.requestFullScreen(elm || that.model.mediaElementVideo);
+    };
+
+    fluid.videoPlayer.media.cancelFullScreen = function () {
+        mejs.MediaFeatures.cancelFullScreen();
+    };
+
+    fluid.videoPlayer.media.init = function (that) {
         that.renderSources();
-        that.bindMediaModel();
         that.bindMediaDOMEvents();
+        that.events.afterInit.fire();
     };
 
 })(jQuery, fluid_1_5);

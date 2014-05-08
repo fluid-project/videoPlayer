@@ -44,12 +44,12 @@ fluid.registerNamespace("fluid.tests");
             jqUnit.expect(3);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
-                    onReady: function (that) {
-                        jqUnit.assertEquals("Initial state should be 'false'", false, that.readIndirect("modelPath"));
-                        that.requestStateChange();
-                        jqUnit.assertEquals("After request for state change, state should be 'true'", true, that.readIndirect("modelPath"));
-                        that.requestStateChange();
-                        jqUnit.assertEquals("After another request for state change, state should be 'false'", false, that.readIndirect("modelPath"));
+                    onCreate: function (that) {
+                        jqUnit.assertEquals("Initial state should be 'false'", false, that.model.pressed);
+                        that.setState(true);
+                        jqUnit.assertEquals("After request for state change, state should be 'true'", true, that.model.pressed);
+                        that.setState(false);
+                        jqUnit.assertEquals("After another request for state change, state should be 'false'", false, that.model.pressed);
 
                         jqUnit.start();
                     }
@@ -61,13 +61,12 @@ fluid.registerNamespace("fluid.tests");
             jqUnit.expect(1);
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
-                    onReady: function (that) {
-                        var toggleButton = that.locate("button");
-                        toggleButton.click();
-                    },
-                    onPress: function () {
-                        jqUnit.assertTrue("onPress event should fire", true);
-                        jqUnit.start();
+                    onCreate: function (that) {
+                        that.applier.modelChanged.addListener("pressed", function () {
+                            jqUnit.assertTrue("onPress event should fire", true);
+                            jqUnit.start();
+                        });
+                        that.locate("button").click();
                     }
                 }
             });
@@ -78,13 +77,13 @@ fluid.registerNamespace("fluid.tests");
             var testComponent;
             testComponent = fluid.tests.initToggleButton({
                 listeners: {
-                    onReady: function (that) {
-                        jqUnit.assertEquals("Initial state should be 'false'", false, that.readIndirect("modelPath"));
+                    onCreate: function (that) {
+                        jqUnit.assertEquals("Initial state should be 'false'", false, that.model.pressed);
                         that.press();
                     },
                     onPress: function (that) {
                         jqUnit.assertTrue("onPress event should fire", true);
-                        jqUnit.assertEquals("State should change to be 'true'", true, that.readIndirect("modelPath"));
+                        jqUnit.assertEquals("State should change to be 'true'", true, that.model.pressed);
                         jqUnit.start();
                     }
                 }
@@ -95,7 +94,7 @@ fluid.registerNamespace("fluid.tests");
             var testComponent = fluid.tests.initToggleButton({
                 listeners: {
                     onPress: fluid.tests.onPressEventHandler,
-                    onReady: function (that) {
+                    onCreate: function (that) {
                         var toggleButton = that.locate("button");
 
                         fluid.testUtils.verifyBasicButtonFunctions(toggleButton, "toggle",
@@ -118,7 +117,7 @@ fluid.registerNamespace("fluid.tests");
             var testComponent = fluid.tests.initToggleButton({
                 strings: testStrings,
                 listeners: {
-                    onReady: function (that) {
+                    onCreate: function (that) {
                         var toggleButton = that.locate("button");
                         var tooltip = fluid.testUtils.getTooltipCheckString(toggleButton, testStrings.press);
 
@@ -150,7 +149,7 @@ fluid.registerNamespace("fluid.tests");
                     },
                     strings: testStrings,
                     listeners: {
-                        onReady: function (that) {
+                        onCreate: function (that) {
                             var toggleButton = that.locate("button"),
                                 tooltip = fluid.testUtils.getTooltipCheckString(toggleButton, myCustomText);
                             jqUnit.start();
@@ -163,13 +162,16 @@ fluid.registerNamespace("fluid.tests");
             jqUnit.expect(2);
             fluid.tests.initToggleButton({
                 listeners: {
-                    onReady: function (that) {
+                    onCreate: function (that) {
                         jqUnit.assertEquals("Content should contain press label text", that.options.strings.press, that.locate("button").attr("aria-label"));
+                        that.applier.modelChanged.addListener("pressed", function () {
+                            // there's no way to ensure this listener happens last, other than force it to wait
+                            setTimeout(function () {
+                                jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("button").attr("aria-label"));
+                                jqUnit.start();
+                            }, 100);
+                        });
                         that.locate("button").click();
-                    },
-                    onPress: function (that) {
-                        jqUnit.assertEquals("Content should contain release label text", that.options.strings.release, that.locate("button").attr("aria-label"));
-                        jqUnit.start();
                     }
                 }
             });

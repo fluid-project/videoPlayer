@@ -138,39 +138,65 @@ fluid.registerNamespace("fluid.tests");
         jqUnit.module("Video Player Controller");
                
         jqUnit.asyncTest("Volume controls", function () {
-            jqUnit.expect(7);
-            var checkSlider = function (ariavaluenow, expectedValue) {
-                   jqUnit.assertEquals("The slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
+            jqUnit.expect(8);
+            var checkSlider = function (prefaceString, ariavaluenow, expectedValue) {
+                   jqUnit.assertEquals(prefaceString + ", the slider button should have valuenow of " + expectedValue, expectedValue, ariavaluenow);
                },
                checkTooltipOnHover = function (element, expectedText) {
                    fluid.testUtils.getTooltipCheckString(element, expectedText);
                    element.mouseleave();
                },
-               testVolumeControls = fluid.videoPlayer.volumeControls("#basic-volume-controls-test", {
+               testVolumeControls = fluid.videoPlayer.controllers.volumeControls("#basic-volume-controls-test", {
                    listeners: {
                        onReady: function (that) {
                            var muteButton = that.locate("mute"),
                                volumeSlider = that.locate("volumeControl"),
                                sliderHandle = that.locate("handle");
 
+                           jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
                            jqUnit.assertEquals("Mute button should have title", that.options.strings.instructions, muteButton.attr("title"));
                            jqUnit.assertEquals("Volume container should have aria-label", that.options.strings.instructions, that.container.attr("aria-label"));
                            checkTooltipOnHover(volumeSlider, "Volume");
                            checkTooltipOnHover(muteButton, "Mute");
                            muteButton.click();
-                           checkSlider(sliderHandle.attr("aria-valuenow"), "0");
+                           checkSlider("After clicking mute button", sliderHandle.attr("aria-valuenow"), "0");
                            checkTooltipOnHover(muteButton, "Un-mute");
                            muteButton.click();
 
                            jqUnit.assertEquals("There should be exactly one volume slider", 1, volumeSlider.length);
                            jqUnit.assertEquals("The slider button should have role of 'slider'", "slider", sliderHandle.attr("role"));
-                           checkSlider(sliderHandle.attr("aria-valuenow"), "50");
-                           jqUnit.notVisible("The slider should not be visible initially", volumeSlider);
+                           checkSlider("After clicking mute button again", sliderHandle.attr("aria-valuenow"), "50");
+                           jqUnit.notVisible("The slider should not be visible", volumeSlider);
 
                            jqUnit.start();
                        }
                    }
                });
             });
+
+        jqUnit.asyncTest("Scrubber handle visibility", function () {
+            jqUnit.expect(5);
+            var testScrubber = fluid.videoPlayer.controllers.scrubber("#scrubber-test", {
+                listeners: {
+                    onReady: function (that) {
+                        jqUnit.notVisible("The scrubber handle is not shown initially, when totalTime is the default 0", that.locate("handle"));
+
+                        that.applier.change("totalTime", 50);
+                        jqUnit.isVisible("The scrubber handle is shown when totalTime is 50", that.locate("handle"));
+
+                        that.applier.change("totalTime", 100);
+                        jqUnit.isVisible("The scrubber handle is shown when totalTime is 100", that.locate("handle"));
+
+                        that.applier.change("totalTime", 0);
+                        jqUnit.notVisible("The scrubber handle is not shown when totalTime is 0", that.locate("handle"));
+
+                        that.applier.change("totalTime", 100);
+                        jqUnit.isVisible("The scrubber handle is shown when totalTime is 100", that.locate("handle"));
+
+                        jqUnit.start();
+                    }
+                }
+            });
+        });
     });
 })(jQuery);

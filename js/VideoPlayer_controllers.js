@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2013 OCAD University
+Copyright 2011-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5*/
+/*global jQuery, fluid_1_5*/
 
 // JSLint options 
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -28,17 +28,13 @@ var fluid_1_5 = fluid_1_5 || {};
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
      */
-    //add all the modelChanged listener to the applier
-    // TODO: Privacy is inherited. Consider making this public
-    var bindControllerModel = function (that) {
-        that.applier.modelChanged.addListener("canPlay", function () {
-            that.locate("play").attr("disabled", !that.model.canPlay);
-            that.locate("fullscreen").attr("disabled", !that.model.canPlay);
-        });
-    };
-
     fluid.registerNamespace("fluid.videoPlayer.controllers");
     
+    fluid.videoPlayer.controllers.togglePlayDependentControls = function (that) {
+        that.locate("play").attr("disabled", !that.model.canPlay);
+        that.locate("fullscreen").attr("disabled", !that.model.canPlay);
+    };
+
     fluid.videoPlayer.controllers.supportFullscreen = function () {
         var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
         
@@ -53,15 +49,27 @@ var fluid_1_5 = fluid_1_5 || {};
     });
 
     fluid.defaults("fluid.videoPlayer.controllers", { 
-        gradeNames: ["fluid.viewComponent", "autoInit"], 
+        gradeNames: ["fluid.viewRelayComponent", "autoInit", "{that}.getCaptionGrade", "{that}.getFullScreenGrade"],
+        modelListeners: {
+            canPlay: {
+                funcName: "fluid.videoPlayer.controllers.togglePlayDependentControls",
+                args: "{controllers}"
+            }
+        },
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
                 container: "{controllers}.dom.scrubberContainer",
                 createOnEvent: "afterTemplateLoaded",
                 options: {
-                    model: "{controllers}.model",
-                    applier: "{controllers}.applier",
+                    model: {
+                        currentTime: "{controllers}.model.currentTime",
+                        scrubTime: "{controllers}.model.scrubTime",
+                        totalTime: "{controllers}.model.totalTime",
+                        bufferEnd: "{controllers}.model.bufferedEnd",
+                        canPlay: "{controllers}.model.canPlay",
+                        isShown: "{controllers}.model.isShown"
+                    },
                     events: {
                         onScrub: "{controllers}.events.onScrub",
                         afterScrub: "{controllers}.events.afterScrub",
@@ -73,12 +81,17 @@ var fluid_1_5 = fluid_1_5 || {};
                 }
             },
             volumeControl: {
-                type: "fluid.videoPlayer.volumeControls",
+                type: "fluid.videoPlayer.controllers.volumeControls",
                 container: "{controllers}.dom.volumeContainer",
                 createOnEvent: "afterTemplateLoaded",
                 options: {
-                    model: "{controllers}.model",
-                    applier: "{controllers}.applier",
+                    model: {
+                        canPlay: "{controllers}.model.canPlay",
+                        muted: "{controllers}.model.muted",
+                        volume: "{controllers}.model.volume",
+                        minVolume: "{controllers}.model.minVolume",
+                        maxVolume: "{controllers}.model.maxVolume"
+                    },
                     listeners: {
                         onReady: "{controllers}.events.onVolumeReady"
                     }
@@ -99,10 +112,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "afterTemplateLoaded",
                 options: {
                     languages: "{controllers}.options.transcripts",
-                    model: "{controllers}.model",
-                    applier: "{controllers}.applier",
-                    showHidePath: "displayTranscripts",
-                    currentLanguagePath: "currentTracks.transcripts",
+                    model: {
+                        showLanguage: "{controllers}.model.displayTranscripts",
+                        currentLanguage: "{controllers}.model.currentTracks.transcripts"
+                    },
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
                         buttonWithShowing: "fl-videoPlayer-transcripts-button-on"
@@ -142,12 +155,11 @@ var fluid_1_5 = fluid_1_5 || {};
                         press: "Play",
                         release: "Pause"
                     },
-                    model: "{controllers}.model",
-                    modelPath: "play",
-                    ownModel: false,
-                    applier: "{controllers}.applier",
+                    model: {
+                        pressed: "{controllers}.model.play"
+                    },
                     listeners: {
-                        onReady: "{controllers}.events.onPlayReady"
+                        onAttach: "{controllers}.events.onPlayReady"
                     }
                 }
             },
@@ -155,13 +167,15 @@ var fluid_1_5 = fluid_1_5 || {};
                 type: "fluid.emptyEventedSubcomponent",
                 createOnEvent: "afterTemplateLoaded",
                 options: {
+                    model: {
+                        pressed: "{controllers}.model.fullscreen"
+                    },
                     listeners: {
-                        onReady: "{controllers}.events.onFullScreenReady"
+                        onCreate: "{controllers}.events.onFullScreenReady"
                     }
                 }
             }
         },
-        finalInitFunction: "fluid.videoPlayer.controllers.finalInit",
         events: {
             afterTemplateLoaded: null,
             onStartTimeChange: null,
@@ -215,8 +229,14 @@ var fluid_1_5 = fluid_1_5 || {};
         
         invokers: {
             showHideScrubberHandle: { 
-                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
-                args: ["{controllers}", "{controllers}.model.totalTime"]
+                funcName: "fluid.videoPlayer.controllers.scrubber.showHideHandle", 
+                args: ["{scrubber}", "{arguments}.0.totalTime"]
+            },
+            getCaptionGrade: {
+                funcName: "fluid.videoPlayer.controllers.getCaptionGrade"
+            },
+            getFullScreenGrade: {
+                funcName: "fluid.videoPlayer.controllers.getFullScreenGrade"
             }
         },
         
@@ -225,75 +245,93 @@ var fluid_1_5 = fluid_1_5 || {};
                 forceCache: true,
                 href: "../html/videoPlayer_controllers_template.html"
             }
-        }
-    });
+        },
 
-    var fullScreenButtonOptions = {
-        selectors: {
-            button: ".flc-videoPlayer-fullscreen",
-            label: ".flc-videoPlayer-fullscreen-label"
-        },
-        styles: {
-            init: "fl-videoPlayer-fullscreen",
-            pressed: "fl-videoPlayer-fullscreen-on"
-        },
-        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-        strings: {
-            press: "Full screen",
-            release: "Exit full screen mode"
-        },
-        model: "{controllers}.model",
-        modelPath: "fullscreen",
-        ownModel: false,
-        applier: "{controllers}.applier",
         listeners: {
-            onReady: "{controllers}.events.onFullScreenReady"
-        }
-    };
-
-    var captionControlsOptions = {
-        languages: "{controllers}.options.captions",
-        model: "{controllers}.model",
-        applier: "{controllers}.applier",
-        showHidePath: "displayCaptions",
-        currentLanguagePath: "currentTracks.captions",
-        styles: {
-            button: "fl-videoPlayer-captions-button",
-            buttonWithShowing: "fl-videoPlayer-captions-button-on"
-        },
-        strings: {
-            showLanguage: "Show Captions",
-            hideLanguage: "Hide Captions",
-            press: "Captions",
-            release: "Captions"
-        },
-        events: {
-            onControlledElementReady: "{controllers}.events.onCaptionsReady"
-        },
-        templates: {
-            menuButton: {
-                href: "{controllers}.options.templates.menuButton.href"
+            onCreate: {
+                listener: "fluid.videoPlayer.controllers.loadTemplates",
+                args: ["{that}"]
             }
         }
+    });
+
+    fluid.defaults("fluid.videoPlayer.controllers.fullScreenButton", {
+        gradeNames: ["fluid.littleComponent", "autoInit"],
+        components: {
+            fullScreenButton: {
+                type: "fluid.toggleButton",
+                container: "{controllers}.container",
+                createOnEvent: "afterTemplateLoaded",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-fullscreen",
+                        label: ".flc-videoPlayer-fullscreen-label"
+                    },
+                    styles: {
+                        init: "fl-videoPlayer-fullscreen",
+                        pressed: "fl-videoPlayer-fullscreen-on"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: {
+                        press: "Full screen",
+                        release: "Exit full screen mode"
+                    },
+                    model: {
+                        pressed: "{controllers}.model.fullscreen"
+                    },
+                    listeners: {
+                        onCreate: "{controllers}.events.onFullScreenReady"
+                    }
+                }
+            }
+        }
+    });
+
+    fluid.defaults("fluid.videoPlayer.controllers.captionControls", {
+        gradeNames: ["fluid.littleComponent", "autoInit"],
+        components: {
+            captionControls: {
+                type: "fluid.videoPlayer.languageControls",
+                container: "{controllers}.dom.captionControlsContainer",
+                createOnEvent: "afterTemplateLoaded",
+                options: {
+                    languages: "{controllers}.options.captions",
+                    model: {
+                        showLanguage: "{controllers}.model.displayCaptions",
+                        currentLanguage: "{controllers}.model.currentTracks.captions"
+                    },
+                    styles: {
+                        button: "fl-videoPlayer-captions-button",
+                        buttonWithShowing: "fl-videoPlayer-captions-button-on"
+                    },
+                    strings: {
+                        showLanguage: "Show Captions",
+                        hideLanguage: "Hide Captions",
+                        press: "Captions",
+                        release: "Captions"
+                    },
+                    events: {
+                        onControlledElementReady: "{controllers}.events.onCaptionsReady"
+                    },
+                    templates: {
+                        menuButton: {
+                            href: "{controllers}.options.templates.menuButton.href"
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    fluid.videoPlayer.controllers.getFullScreenGrade = function () {
+        return fluid.videoPlayer.getGrade("fluid.browser.supportsFullScreen", "fluid.videoPlayer.controllers.fullScreenButton");
     };
 
-    fluid.demands("fullScreenButton", ["fluid.browser.supportsFullScreen"], {
-        funcName: "fluid.toggleButton",
-        container: "{controllers}.container",
-        options: fullScreenButtonOptions
-    });
-    
-    fluid.demands("captionControls", ["fluid.browser.nativeVideoSupport"], {
-        funcName: "fluid.videoPlayer.languageControls",
-        container: "{controllers}.dom.captionControlsContainer",
-        options: captionControlsOptions
-    });
-    
-    fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
-        that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
+    fluid.videoPlayer.controllers.getCaptionGrade = function () {
+        return fluid.videoPlayer.getGrade("fluid.browser.nativeVideoSupport", "fluid.videoPlayer.controllers.captionControls");
     };
-    
-    fluid.videoPlayer.controllers.finalInit = function (that) {
+
+    fluid.videoPlayer.controllers.loadTemplates = function (that) {
         var templates = that.options.templates;
         fluid.fetchResources(templates, function () {
             var resourceSpec = templates.controllers;
@@ -302,13 +340,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 that.container.append(resourceSpec.resourceText);
                 that.events.afterTemplateLoaded.fire();
                 
-                //TODO: Move to event listeners
-                bindControllerModel(that);
-                that.showHideScrubberHandle();
+                that.showHideScrubberHandle(that.model);
             }
         });
         
-        that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
     };
     
     /********************************************
@@ -322,7 +357,7 @@ var fluid_1_5 = fluid_1_5 || {};
         var time = that.locate(element);
         time.text(fluid.videoPlayer.formatTime(that.model[element]));
     };
-    
+
     // TODO: Privacy is inherited. Consider making this public
     var bindScrubberDOMEvents = function (that) {
         // Bind the scrubbers slide event to change the video's time.
@@ -338,20 +373,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 that.events.afterScrub.fire(ui.value);
             }
         });
-    };
-
-    // TODO: This function is inherited. Consider making this public
-    var bindScrubberModel = function (that) {
-
-        that.applier.modelChanged.addListener("startTime", that.updateMin);
-        that.applier.modelChanged.addListener("totalTime", that.updateMax);
-
-        // Bind to the video's timeupdate event so we can programmatically update the slider.
-        that.applier.modelChanged.addListener("currentTime", that.updateCurrent);
-        that.applier.modelChanged.addListener("bufferEnd", that.updateBuffered);
-        
-        that.applier.modelChanged.addListener("canPlay", that.syncState);
-
     };
 
     // TODO: Privacy is inherited. Consider making this public
@@ -376,20 +397,38 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.defaults("fluid.videoPlayer.controllers.scrubber", {
-        gradeNames: ["fluid.viewComponent", "fluid.videoPlayer.showHide", "autoInit"],
-        finalInitFunction: "fluid.videoPlayer.controllers.scrubber.finalInit",
-        showHidePath: "scrubber",
-        components: {
-            bufferedProgress: {
-                type: "fluid.progress",
-                container: "{scrubber}.dom.bufferedProgress",
-                options: {
-                    initiallyHidden: false,
-                    minWidth: 0,
-                    listeners: {
-                        onAttach: "{scrubber}.events.onProgressAttached"
-                    }
-                }
+        gradeNames: ["fluid.viewRelayComponent", "fluid.videoPlayer.showHide", "autoInit"],
+        model: {
+            currentTime: 0,
+            scrubTime: 0,
+            totalTime: 0,
+            bufferEnd: 0,
+            canPlay: false,
+            isShown: {}
+        },
+        modelListeners: {
+            startTime: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMin",
+                args: ["{scrubber}"]
+            },
+            totalTime: [{
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMax",
+                args: ["{scrubber}"]
+            },{
+                funcName: "fluid.videoPlayer.controllers.scrubber.showHideHandle", 
+                args: ["{scrubber}", "{arguments}.0.value"]
+            }],
+            currentTime: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateCurrent",
+                args: ["{scrubber}"]
+            },
+            bufferedEnd: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
+                args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            },
+            canPlay: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.syncState",
+                args: ["{scrubber}"]
             }
         },
         events: {
@@ -397,18 +436,19 @@ var fluid_1_5 = fluid_1_5 || {};
             onScrub: null,
             onStartScrub: null,
             onProgressAttached: null,
+            afterInit: null,
             onReady: {
                 events: {
                     onProgressAttached: "onProgressAttached",
-                    onCreate: "onCreate"
+                    afterInit: "afterInit"
                 },
                 args: ["{scrubber}"]
             }
         },
-        invokers: {
-            updateBuffered: {
-                funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
-                args: ["{fluid.videoPlayer.controllers.scrubber}"]
+        listeners: {
+            onCreate: {
+                listener: "fluid.videoPlayer.controllers.scrubber.init",
+                args: ["{scrubber}"]
             }
         },
         selectors: {
@@ -422,13 +462,56 @@ var fluid_1_5 = fluid_1_5 || {};
         // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
         strings: {
             scrubber: "Time scrub"
+        },
+        showHidePath: "scrubber",
+        invokers: {
+            updateBuffered: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateBuffered",
+                args: ["{fluid.videoPlayer.controllers.scrubber}"]
+            },
+            updateMin: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMin",
+                args: ["{scrubber}"]
+            },
+            updateMax: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateMax",
+                args: ["{scrubber}"]
+            },
+            updateCurrent: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.updateCurrent",
+                args: ["{scrubber}"]
+            },
+            syncState: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.syncState",
+                args: ["{scrubber}"]
+            },
+            refresh: {
+                funcName: "fluid.videoPlayer.controllers.scrubber.refresh",
+                args: ["{scrubber}"]
+            }
+        },
+        components: {
+            bufferedProgress: {
+                type: "fluid.progress",
+                container: "{scrubber}.dom.bufferedProgress",
+                options: {
+                    initiallyHidden: false,
+                    minWidth: 0,
+                    listeners: {
+                        onAttach: "{scrubber}.events.onProgressAttached"
+                    }
+                }
+            }
         }
     });
 
     // The flag that stops the buffer progress update once the video is fully buffered.
     var bufferCompleted = false;
-    
+
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
         var lastBufferedTime = that.model.bufferEnd;
         var totalTime = that.model.totalTime;
 
@@ -437,7 +520,7 @@ var fluid_1_5 = fluid_1_5 || {};
         if (lastBufferedTime !== totalTime) {
             bufferCompleted = false;
         }
-        
+
         if (totalTime && lastBufferedTime && !bufferCompleted) {
             var percent = Math.round(lastBufferedTime / totalTime * 100);
             
@@ -445,7 +528,7 @@ var fluid_1_5 = fluid_1_5 || {};
             // that the width of the progress div is reduced at the controller bar slide-up
             that.locate("bufferedProgressBar").width(that.model.videoWidth);
             that.bufferedProgress.update(percent);
-            
+
             // Stops the buffer progress from being kept updated once the progress reaches 100%
             if (lastBufferedTime === totalTime) {
                 bufferCompleted = true;
@@ -453,131 +536,212 @@ var fluid_1_5 = fluid_1_5 || {};
         }
     };
 
-    fluid.videoPlayer.controllers.scrubber.postInit = function (that) {
-        // TODO: these methods should be public functions, since people might like to alter them
-        //       (inherited code)
-        that.updateMin = function () {
-            var startTime = that.model.startTime || 0;
-            var scrubber = that.locate("scrubber");
-            scrubber.slider("option", "min", startTime + that.model.currentTime);
-            that.locate("handle").attr({
-                "aria-valuemin": startTime + that.model.currentTime
-            });
-        };
-
-        that.updateMax = function () {
-            updateTime(that, "totalTime");
-            var scrubber = that.locate("scrubber");
-            scrubber.slider("option", "max", that.model.totalTime);
-            that.locate("handle").attr({
-                "aria-valuemax": that.model.totalTime
-            });
-        };
-
-        that.updateCurrent = function () {
-            updateTime(that, "currentTime");
-            var scrubber = that.locate("scrubber");
-            scrubber.slider("value", that.model.currentTime);
-            that.locate("handle").attr({
-                "aria-valuenow": that.model.currentTime,
-                "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
-            });
-        };
-        
-        that.syncState = function () {
-            var scrubber = that.locate("scrubber");
-            if (that.model.canPlay === true) {
-                scrubber.slider("enable");
-            } else {
-                scrubber.slider("disable");
-            }
-        };
-        
-        that.refresh = function () {
-            that.updateMin();
-            that.updateMax();
-            that.updateCurrent();
-            that.syncState();
-        };
+    fluid.videoPlayer.controllers.scrubber.updateMin = function (that) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
+        var startTime = that.model.startTime || 0;
+        var scrubber = that.locate("scrubber");
+        scrubber.slider("option", "min", startTime + that.model.currentTime);
+        that.locate("handle").attr({
+            "aria-valuemin": startTime + that.model.currentTime
+        });
     };
 
-    fluid.videoPlayer.controllers.scrubber.finalInit = function (that) {
+    fluid.videoPlayer.controllers.scrubber.updateMax = function (that) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
+        updateTime(that, "totalTime");
+        var scrubber = that.locate("scrubber");
+        scrubber.slider("option", "max", that.model.totalTime);
+        that.locate("handle").attr({
+            "aria-valuemax": that.model.totalTime
+        });
+    };
+
+    fluid.videoPlayer.controllers.scrubber.updateCurrent = function (that) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
+        updateTime(that, "currentTime");
+        var scrubber = that.locate("scrubber");
+        scrubber.slider("value", that.model.currentTime);
+        that.locate("handle").attr({
+            "aria-valuenow": that.model.currentTime,
+            "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
+        });
+    };
+
+    fluid.videoPlayer.controllers.scrubber.syncState = function (that) {
+        if (!that.modelRelay || that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            return;
+        }
+        var scrubber = that.locate("scrubber");
+        if (that.model.canPlay === true) {
+            scrubber.slider("enable");
+        } else {
+            scrubber.slider("disable");
+        }
+    };
+
+    fluid.videoPlayer.controllers.scrubber.showHideHandle = function (scrubber, totalTime) {
+        scrubber.applier.change("isShown.scrubber.handle", !!totalTime);
+    };
+
+    fluid.videoPlayer.controllers.scrubber.refresh = function (that) {
+        that.updateMin();
+        that.updateMax();
+        that.updateCurrent();
+        that.syncState();
+    };
+
+    fluid.videoPlayer.controllers.scrubber.init = function (that) {
         createScrubberMarkup(that);
         bindScrubberDOMEvents(that);
-        bindScrubberModel(that);
         that.refresh();
+        that.events.afterInit.fire();
     };
-    
 
     /********************************************************
     * Volume Control: a button that turns into a slider     *
     *           To control the volume                       *
     *********************************************************/
-    
-    fluid.registerNamespace("fluid.videoPlayer.volumeControls");
-    
-    fluid.videoPlayer.volumeControls.bindDOMEvents = function (that) {
-        // Bind the volume Control slide event to change the video's volume and its image.
-        var volumeControl = that.locate("volumeControl");
-        var muteButton = that.muteButton;
-        var tooltip = muteButton.tooltip;
-
-        fluid.each(["slide", "slidechange"], function (value) {
-            volumeControl.bind(value, function (evt, ui) {
-                fluid.fireSourcedChange(that.applier, "volume", ui.value, "slider");
-            });
-        });
-
-        volumeControl.mouseenter(function () {
-            tooltip.updateContent(that.options.strings.volume);
-        });
-
-        volumeControl.mouseleave(function () {
-            tooltip.updateContent(muteButton.tooltipContentFunction);
-        });
-    };
-    
-    fluid.videoPlayer.updateMuteStatus = function (that) {
-        return function (newModel, oldModel) {
-            if (!that.applier.hasChangeSource("mute")) {
-                if (that.model.volume === 0) {
-                    that.oldVolume = oldModel.volume;
-                    fluid.fireSourcedChange(that.applier, "muted", true, "volume");
-                } else if (that.model.muted) {
-                    fluid.fireSourcedChange(that.applier, "muted", false, "volume");
+    fluid.defaults("fluid.videoPlayer.controllers.volumeControls", {
+        gradeNames: ["fluid.viewRelayComponent", "autoInit"],
+        model: {
+            muted: false,
+            volume: 50,
+            minVolume: 0,
+            maxVolume: 100
+        },
+        modelListeners: {
+            volume: [{
+                funcName: "fluid.videoPlayer.controllers.volumeControls.updateMuteStatus",
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue", "{change}"]
+            }, {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.updateSlider",
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue"]
+            }],
+            canPlay: {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.enableMuteButton",
+                args: "{volumeControls}"
+            },
+            muted: {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.handleMute",
+                args: ["{volumeControls}", "{change}.value", "{change}.oldValue", "{change}"]
+            }
+        },
+        events: {
+            muteButtonReady: null,
+            afterSetup: null,
+            onReady: {
+                events: {
+                    muteButtonReady: "muteButtonReady",
+                    afterSetup: "afterSetup"
+                },
+                args: ["{volumeControls}"]
+            }
+        },
+        listeners: {
+            onCreate: [{
+                listener: "fluid.videoPlayer.controllers.volumeControls.setup",
+                args: ["{volumeControls}"]
+            }]
+        },
+        selectors: {
+            mute: ".flc-videoPlayer-mute",
+            volumeControl: ".flc-videoPlayer-volumeControl",
+            handle: ".ui-slider-handle"
+        },
+        styles: {
+            mute: "fl-videoPlayer-mute",
+            volumeControl: "fl-videoPlayer-volumeControl",
+            buttonIcon: "ui-icon-signal"
+        },
+        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+        strings: {
+            volume: "Volume",
+            instructions: "Volume controls. Use up and down arrows to adjust volume, space or enter to mute."
+        },
+        unmuteVolume: 10,
+        members: {
+            oldVolume: "{that}.options.unmuteVolue"
+        },
+        invokers: {
+            updateSlider: {
+                funcName: "fluid.videoPlayer.controllers.volumeControls.updateSlider",
+                args: ["{volumeControls}"]
+            },
+            
+        },
+        components: {
+            muteButton: {
+                type: "fluid.toggleButton",
+                container: "{volumeControls}.container",
+                options: {
+                    selectors: {
+                        button: ".flc-videoPlayer-mute"
+                    },
+                    styles: {
+                        init: "fl-videoPlayer-mute",
+                        pressed: "fl-videoPlayer-muted"
+                    },
+                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
+                    strings: {
+                        press: "Mute",
+                        release: "Un-mute"
+                    },
+                    model: {
+                        pressed: "{volumeControls}.model.muted"
+                    },
+                    components: {
+                        tooltip: {
+                            container: "{volumeControls}.container"
+                        }
+                    },
+                    listeners: {
+                        onCreate: "{volumeControls}.events.muteButtonReady"
+                    } 
                 }
             }
-        };
+        }
+    });
+    
+    fluid.videoPlayer.controllers.volumeControls.updateMuteStatus = function (that, newVolume, oldVolume, change) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            // skip the initial transaction
+            return;
+        }
+        if (that.model.volume === 0) {
+            that.oldVolume = oldVolume;
+            that.applier.change("muted", true);
+        } else if (that.model.muted) {
+            that.applier.change("muted", false);
+        }
     };
 
-    fluid.videoPlayer.volumeControls.bindModel = function (that) {
-        // Relay non-slider based volume changes to slider, and all volume changes to mute status
-        fluid.addSourceGuardedListener(that.applier, "volume", "slider", that.updateSlider);
-        that.applier.modelChanged.addListener("volume", fluid.videoPlayer.updateMuteStatus(that));
-
-        that.applier.modelChanged.addListener("canPlay", function () {
-            that.locate("mute").attr("disabled", !that.model.canPlay);
-        });
-
-        that.applier.modelChanged.addListener("muted", function (newModel, oldModel) {
-            // See updateVolume method for converse logic
-            if (oldModel.volume > 0) {
-                that.oldVolume = oldModel.volume;
-            }
-            var fromVolume = that.applier.hasChangeSource("volume");
-            if (!fromVolume) { 
-                var isMuting = newModel.muted;
-                if (isMuting) {
-                    // If this mute event was not already sourced from a volume change, fire volume to 0
-                    fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
-                } else {
-                    fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
-                }
-            }
-        });
+    fluid.videoPlayer.controllers.volumeControls.enableMuteButton = function (that) {
+        that.locate("mute").attr("disabled", !that.model.canPlay);
     };
 
-    fluid.videoPlayer.volumeControls.init = function (that) {
+    fluid.videoPlayer.controllers.volumeControls.handleMute = function (that, newMuteValue, oldMuteValue, change) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            // skip the initial transaction
+            return;
+        }
+        // See updateVolume method for converse logic
+        if (that.model.volume > 0) {
+            that.oldVolume = that.model.volume;
+        }
+        if (newMuteValue) {
+            that.applier.change("volume", 0);
+        } else {
+            that.applier.change("volume", that.oldVolume);
+        }
+    };
+
+    fluid.videoPlayer.controllers.volumeControls.setup = function (that) {
         var volumeControl = that.locate("volumeControl");
         var mute = that.locate("mute");
 
@@ -626,97 +790,43 @@ var fluid_1_5 = fluid_1_5 || {};
 
         that.container.attr("aria-label", that.options.strings.instructions);
         mute.attr("title", that.options.strings.instructions);
-    };
 
-    fluid.defaults("fluid.videoPlayer.volumeControls", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
-        postInitFunction: "fluid.videoPlayer.volumeControls.postInit",
-        finalInitFunction: "fluid.videoPlayer.volumeControls.finalInit",
-        events: {
-            muteButtonReady: null,
-            onReady: {
-                events: {
-                    muteButtonReady: "muteButtonReady",
-                    onCreate: "onCreate"
-                },
-                args: ["{volumeControls}"]
-            }
-        },
-        model: {
-            muted: false,
-            volume: 50,
-            minVolume: 0,
-            maxVolume: 100
-        },
-        unmuteVolume: 10,
-        selectors: {
-            mute: ".flc-videoPlayer-mute",
-            volumeControl: ".flc-videoPlayer-volumeControl",
-            handle: ".ui-slider-handle"
-        },
-        styles: {
-            mute: "fl-videoPlayer-mute",
-            volumeControl: "fl-videoPlayer-volumeControl",
-            buttonIcon: "ui-icon-signal"
-        },
-        // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-        strings: {
-            volume: "Volume",
-            instructions: "Volume controls. Use up and down arrows to adjust volume, space or enter to mute."
-        },
-        components: {
-            muteButton: {
-                type: "fluid.toggleButton",
-                options: {
-                    selectors: {
-                        button: ".flc-videoPlayer-mute"
-                    },
-                    styles: {
-                        init: "fl-videoPlayer-mute",
-                        pressed: "fl-videoPlayer-muted"
-                    },
-                    // TODO: Strings should be moved out into a single top-level bundle (FLUID-4590)
-                    strings: {
-                        press: "Mute",
-                        release: "Un-mute"
-                    },
-                    model: "{volumeControls}.model",
-                    applier: "{volumeControls}.applier",
-                    modelPath: "muted",
-                    components: {
-                        tooltip: {
-                            container: "{volumeControls}.container"
-                        }
-                    },
-                    listeners: {
-                        onReady: "{volumeControls}.events.muteButtonReady"
-                    } 
+        // Bind the volume Control slide event to change the video's volume and its image.
+        var volumeControl = that.locate("volumeControl");
+        var muteButton = that.muteButton;
+        var tooltip = muteButton.tooltip;
+
+        fluid.each(["slide", "slidechange"], function (value) {
+            volumeControl.bind(value, function (evt, ui) {
+                if (ui.value !== that.model.volume) {
+                    that.applier.change("volume", ui.value);
                 }
-            }
-        }
-    });
-
-    fluid.videoPlayer.volumeControls.postInit = function (that) {
-        that.options.components.muteButton.container = that.container;
-        that.oldVolume = that.options.unmuteVolume;
-
-        that.updateSlider = function () {
-            var volume = that.model.volume;
-            var volumeControl = that.locate("volumeControl");
-            volumeControl.slider("value", volume);
-            that.locate("handle").attr({
-                "aria-valuenow": volume,
-                "aria-valuetext": Math.round(volume) + "%"
             });
-        };
+        });
+
+        volumeControl.mouseenter(function () {
+            tooltip.updateContent(that.options.strings.volume);
+        });
+
+        volumeControl.mouseleave(function () {
+            tooltip.updateContent(muteButton.tooltipContentFunction);
+        });
+        that.events.afterSetup.fire();
     };
+    
 
-    fluid.videoPlayer.volumeControls.finalInit = function (that) {
-        var volumeControls = fluid.videoPlayer.volumeControls;
-
-        volumeControls.init(that);
-        volumeControls.bindDOMEvents(that);
-        volumeControls.bindModel(that);
+    fluid.videoPlayer.controllers.volumeControls.updateSlider = function (that, newValue, oldValue) {
+        if (that.modelRelay.__CURRENTLY_IN_EVALUATION__) {
+            // skip the initial transaction
+            return;
+        }
+        var volumeControl = that.locate("volumeControl");
+        var volume = that.model.volume;
+        volumeControl.slider("value", volume);
+        that.locate("handle").attr({
+            "aria-valuenow": volume,
+            "aria-valuetext": Math.round(volume) + "%"
+        });
     };
 
     /********************************************************************************

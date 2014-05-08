@@ -1,7 +1,7 @@
 /*
 Copyright 2009 University of Toronto
 Copyright 2011 Charly Molter
-Copyright 2011-2013 OCAD University
+Copyright 2011-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -85,7 +85,15 @@ var fluid_1_5 = fluid_1_5 || {};
      */
 
     fluid.defaults("fluid.videoPlayer", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewRelayComponent", "fluid.progressiveCheckerForComponent", "{that}.getCaptionGrade", "autoInit"],
+        componentName: "fluid.videoPlayer",
+        progressiveCheckerOptions: {
+            checks: [{
+                // Don't animate show/hide in Safari
+                feature: "{fluid.browser.safari}",
+                contextName: "fluid.videoPlayer.simpleControllers"
+            }]
+        },
         components: {
             media: {
                 type: "fluid.videoPlayer.media",
@@ -93,10 +101,18 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onCreateMediaReady",
                 priority: "first",
                 options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
+                    model: {
+                        play: "{videoPlayer}.model.play",
+                        canPlay: "{videoPlayer}.model.canPlay",
+                        muted: "{videoPlayer}.model.muted",
+                        volume: "{videoPlayer}.model.volume",
+                        totalTime: "{videoPlayer}.model.totalTime",
+                        currentTime: "{videoPlayer}.model.currentTime",
+                        scrubTime: "{videoPlayer}.model.scrubTime"
+                    },
                     events: {
-                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata"
+                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
+                        onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
                     },
                     listeners: {
                         onExitFullScreen: {
@@ -107,18 +123,30 @@ var fluid_1_5 = fluid_1_5 || {};
                         },
                         // This event should be split into two to differentiate between the setting and unsetting of fullscreen
                         "{videoPlayer}.events.onFullscreenModelChanged": {
-                            listener: function (videoPlayer, media, model) {
-                                if (model.fullscreen) {
+                            listener: function (videoPlayer, media, fullscreenFlag) {
+                                if (fullscreenFlag) {
                                     media.requestFullScreen(videoPlayer.locate("videoPlayer")[0]);
                                 } else {
-                                    media.cancelFullScreen();
+// XXX This is happening on construction, before media is actually ready; cancelFullScreen doesn't exist
+//                                    media.cancelFullScreen();
                                 }
                             },
                             args: ["{videoPlayer}", "{media}", "{arguments}.0"]
                         },
                         onReady: "{videoPlayer}.events.onMediaReady"
                     },
-                    sources: "{videoPlayer}.options.video.sources"
+                    sources: "{videoPlayer}.options.video.sources",
+                    components: {
+                        mediaEventBinder: {
+                            options: {
+                                listeners: {
+                                    "{videoPlayer}.events.onScrub": "{media}.setTime",
+                                    "{videoPlayer}.events.onTimeUpdate": "{media}.updateCurrentTime",
+                                    "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
+                                }
+                            }
+                        }
+                    }
                 }
             },
             transcript: {
@@ -126,8 +154,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 container: "{videoPlayer}.dom.transcript",
                 createOnEvent: "onIntervalEventsConductorReady",
                 options: {
-                    model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
+                    model: {
+                        displayTranscripts: "{videoPlayer}.model.displayTranscripts",
+                        currentTranscriptTracks: "{videoPlayer}.model.currentTracks.transcripts"
+                    },
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
                         onCurrentTranscriptChanged: "{videoPlayer}.events.onCurrentTranscriptChanged",
@@ -157,7 +187,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 createOnEvent: "onTemplateReady",
                 options: {
                     model: "{videoPlayer}.model",
-                    applier: "{videoPlayer}.applier",
                     captions: "{videoPlayer}.options.video.captions",
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
@@ -172,18 +201,15 @@ var fluid_1_5 = fluid_1_5 || {};
                     },
                     templates: {
                         menuButton: "{videoPlayer}.options.templates.menuButton"
+/*
+                    },
+                    members: {
+                        applier: "{videoPlayer}.applier"
+*/
                     }
                 }
-            },
-            html5Captionator: {
-                type: "fluid.videoPlayer.captionator",
-                container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onMediaReady"
             }
         },
-        preInitFunction: "fluid.videoPlayer.preInit",
-        postInitFunction: "fluid.videoPlayer.postInit",
-        finalInitFunction: "fluid.videoPlayer.finalInit",
         events: {
             onScrub: null,
             onTemplateReady: null,
@@ -204,6 +230,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 events: {
                     onTemplateReady: "onTemplateReady",
                     onControllersReady: "onControllersReady",
+                    onMediaReady: "onMediaReady",
                     onCreate: "onCreate"
                 },
                 args: ["{videoPlayer}"]
@@ -234,6 +261,21 @@ var fluid_1_5 = fluid_1_5 || {};
                 },
                 args: ["{arguments}.captions.1"]
             }
+        },
+        listeners: {
+            onCreate: [{
+                listener: "fluid.videoPlayer.addKindToTracks",
+                args: ["{that}"]
+            },{
+                listener: "fluid.videoPlayer.addVolumeGuard",
+                args: ["{that}"]
+            },{
+                listener: "fluid.videoPlayer.loadTemplates",
+                args: ["{that}"]
+            },{
+                listener: "fluid.videoPlayer.initializeCurrentTracks",
+                args: ["{that}"]
+            }]
         },
         selectors: {
             videoPlayer: ".flc-videoPlayer-main",
@@ -283,6 +325,13 @@ var fluid_1_5 = fluid_1_5 || {};
             canPlay: false,
             play: false
         },
+        modelListeners: {
+            play: {
+                funcName: "fluid.videoPlayer.togglePlayOverlay",
+                args: "{videoPlayer}"
+            },
+            fullScreen: "{videoPlayer}.events.onFullscreenModelChanged.fire"
+        },
         templates: {
             videoPlayer: {
                 forceCache: true,
@@ -291,23 +340,49 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         videoTitle: "unnamed video",
         invokers: {
-            showControllers: "fluid.videoPlayer.showControllers",
-            hideControllers: "fluid.videoPlayer.hideControllers"
+            showControllers: "fluid.videoPlayer.showControllersAnimated",
+            hideControllers: "fluid.videoPlayer.hideControllersAnimated",
+            getCaptionGrade: {
+                funcName: "fluid.videoPlayer.getCaptionGrade"
+            },
+            play: {
+                funcName: "fluid.videoPlayer.play",
+                args: ["{videoPlayer}"]
+            },
+            incrTime: {
+                funcName: "fluid.videoPlayer.incrTime",
+                args: ["{videoPlayer}"]
+            },
+            decrTime: {
+                funcName: "fluid.videoPlayer.decrTime",
+                args: ["{videoPlayer}"]
+            },
+            toggleFullscreen: {
+                funcName: "fluid.videoPlayer.toggleFullscreen",
+                args: ["{videoPlayer}"]
+            }
         }
     });
     
-    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer"], {
-        funcName: "fluid.emptySubcomponent"
-    });
-    
-    fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer", "fluid.browser.nativeVideoSupport"], {
-        funcName: "fluid.videoPlayer.html5Captionator",
-        options: {
-            model: "{videoPlayer}.model",
-            applier: "{videoPlayer}.applier",
-            captions: "{videoPlayer}.options.video.captions",
-            events: {
-                onReady: "{videoPlayer}.events.onCaptionsReady"
+    fluid.videoPlayer.getCaptionGrade = function () {
+        return fluid.videoPlayer.getGrade("fluid.browser.nativeVideoSupport", "fluid.videoPlayer.captionSupport");
+    };
+
+    // This grade is solely for the purpose of adding the html5captionator subcomponent,
+    // which doesn't happen if native video is not supported. It should never be instantiated.
+    fluid.defaults("fluid.videoPlayer.captionSupport", {
+        components: {
+            html5Captionator: {
+                type: "fluid.videoPlayer.html5Captionator",
+                container: "{videoPlayer}.dom.videoPlayer",
+                createOnEvent: "onMediaReady",
+                options: {
+                    model: "{videoPlayer}.model",
+                    captions: "{videoPlayer}.options.video.captions",
+                    events: {
+                        onReady: "{videoPlayer}.events.onCaptionsReady"
+                    }
+                }
             }
         }
     });
@@ -442,13 +517,6 @@ var fluid_1_5 = fluid_1_5 || {};
         });
     };
 
-    var bindVideoPlayerModel = function (that) {
-        that.applier.modelChanged.addListener("fullscreen", that.events.onFullscreenModelChanged.fire);
-        that.applier.modelChanged.addListener("play", function () { 
-            fluid.videoPlayer.togglePlayOverlay(that); 
-        });
-    };
-    
     fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
         fluid.each(tracks, function (track) {
             if (!track.kind) {
@@ -457,50 +525,64 @@ var fluid_1_5 = fluid_1_5 || {};
         });
     };
 
-    fluid.videoPlayer.preInit = function (that) {
+    fluid.videoPlayer.addKindToTracks = function (that) {
         fluid.each(that.options.defaultKinds, function (defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
         
-        that.toggleFullscreen = function () {
-            that.applier.requestChange("fullscreen", !that.model.fullscreen);
-        };
     };
 
-    fluid.videoPlayer.postInit = function (that) {
+    fluid.videoPlayer.initializeCurrentTracks = function (that) {
+        if (that.options.video.captions.length > 0) {
+            that.applier.change("currentTracks.captions", [0]);
+        }
+        if (that.options.video.transcripts.length > 0) {
+            that.applier.change("currentTracks.transcripts", [0]);
+        }
+    };
+
+    fluid.videoPlayer.toggleFullscreen = function (that) {
+        that.applier.requestChange("fullscreen", !that.model.fullscreen);
+    };
+
+    fluid.videoPlayer.play = function (that) {
+        that.applier.fireChangeRequest({
+            "path": "play",
+            "value": !that.model.play
+        });
+    };
+
+    fluid.videoPlayer.incrTime = function (that) {
+        that.events.onStartScrub.fire();
+        if (that.model.currentTime < that.model.totalTime) {
+            var newVol = that.model.currentTime + that.model.totalTime * 0.05;
+            that.events.onScrub.fire(newVol <= that.model.totalTime ? newVol : that.model.totalTime);
+        }
+        that.events.afterScrub.fire();
+    };
+
+    fluid.videoPlayer.decrTime = function (that) {
+        that.events.onStartScrub.fire();
+
+        if (that.model.currentTime > 0) {
+            var newVol = that.model.currentTime - that.model.totalTime * 0.05;
+            that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
+        }
+        that.events.afterScrub.fire();
+    };
+
+    fluid.videoPlayer.addVolumeGuard = function (that) {
         // TODO: declarative syntax for this in framework
         // note that the "mega-model" is shared throughout all components - morally, this should go into the 
         // volume control component, but it is best to get at the single model + applier as early as possible
-        that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
 
-        that.play = function (ev) {
-            that.applier.fireChangeRequest({
-                "path": "play",
-                "value": !that.model.play
-            });
-        };
 
-        that.incrTime = function () {
-            that.events.onStartScrub.fire();
-            if (that.model.currentTime < that.model.totalTime) {
-                var newVol = that.model.currentTime + that.model.totalTime * 0.05;
-                that.events.onScrub.fire(newVol <= that.model.totalTime ? newVol : that.model.totalTime);
-            }
-            that.events.afterScrub.fire();
-        };
+// XXX  guards doesn't exist anymore
+//        that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
 
-        that.decrTime = function () {
-            that.events.onStartScrub.fire();
-            
-            if (that.model.currentTime > 0) {
-                var newVol = that.model.currentTime - that.model.totalTime * 0.05;
-                that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
-            }
-            that.events.afterScrub.fire();
-        };
     };
     
-    fluid.videoPlayer.finalInit = function (that) {
+    fluid.videoPlayer.loadTemplates = function (that) {
         that.container.attr("role", "application");
 
         // Render each media source with its custom renderer, registered by type.
@@ -527,8 +609,6 @@ var fluid_1_5 = fluid_1_5 || {};
                     that.locate("videoContainer").attr("aria-label", that.options.strings.videoTitlePreface + that.options.videoTitle);
 
                     bindVideoPlayerDOMEvents(that);
-                    //create all the listeners to the model
-                    bindVideoPlayerModel(that);
                 }
             }
 
@@ -573,20 +653,6 @@ var fluid_1_5 = fluid_1_5 || {};
         
     fluid.defaults("fluid.videoPlayer.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"]
-    });
-
-    /*********************************************************************************
-     * Demands blocks for event binding components                                   *
-     *********************************************************************************/
-    
-    fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
-        options: {
-            listeners: {
-                "{videoPlayer}.events.onScrub": "{media}.setTime",
-                "{videoPlayer}.events.onTimeUpdate": "{media}.updateCurrentTime",
-                "{videoPlayer}.events.onTranscriptElementChange": "{media}.setTime"
-            }
-        }
     });
 
     /*******************************************************************
@@ -649,31 +715,18 @@ var fluid_1_5 = fluid_1_5 || {};
      *    http://issues.fluidproject.org/browse/FLUID-4804
      * Workaround: Don't animate show/hide in Safari
      *********/
-    fluid.demands("fluid.videoPlayer.showControllers", ["fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.showControllersAnimated",
-        args: ["{videoPlayer}"]
+    // These two grades are solely for the purpose of defining the show/hide functions for XX.
+    // They should never be instantiated.
+    fluid.defaults("fluid.videoPlayer.simpleControllers", {
+        invokers: {
+            showControllers: "fluid.videoPlayer.showControllersSimple",
+            hideControllers: "fluid.videoPlayer.hideControllersSimple"
+        }
     });
-    fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.hideControllersAnimated",
-        args: ["{videoPlayer}"]
-    });
-    fluid.demands("fluid.videoPlayer.showControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.showControllersSimple",
-        args: ["{videoPlayer}"]
-    });
-    fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
-        funcName: "fluid.videoPlayer.hideControllersSimple",
-        args: ["{videoPlayer}"]
-    });
-
-    /***************************************************************************************************
-     * The wiring up of the onTimeUpdate event btw timer component "media" and intervalEventsConductor *
-     ***************************************************************************************************/
-    fluid.demands("fluid.videoPlayer.media", ["fluid.videoPlayer.intervalEventsConductor", "fluid.videoPlayer"], {
-        options: {
-            events: {
-                onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
-            }
+    fluid.defaults("fluid.videoPlayer.animatedControllers", {
+        invokers: {
+            showControllers: "fluid.videoPlayer.showControllersAnimated",
+            hideControllers: "fluid.videoPlayer.hideControllersAnimated"
         }
     });
     

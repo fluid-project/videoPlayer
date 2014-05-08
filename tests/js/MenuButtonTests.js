@@ -43,7 +43,7 @@ fluid.registerNamespace("fluid.tests");
                 label: "Elv√Æsh"
             }],
             model: {
-                activeLanguages: [0],
+                currentLanguage: [0],
                 showLanguage: false
             }
         };
@@ -57,7 +57,7 @@ fluid.registerNamespace("fluid.tests");
         var verifyActivation = function (actionString, that, activatedIndex) {
             jqUnit.expect(5);
             var menuItems = that.locate("menuItem");
-            jqUnit.assertEquals(actionString + " updates the active language", activatedIndex, that.readIndirect("currentLanguagePath")[0]);
+            jqUnit.assertEquals(actionString + " updates the active language", activatedIndex, that.model.currentLanguage[0]);
             jqUnit.assertTrue(actionString + " adds the 'active' style to the item", $(menuItems[activatedIndex]).hasClass(that.options.styles.active));
             jqUnit.assertEquals("Only one item is active at a time", 1, $(that.options.selectors.menuItem + "." + that.options.styles.active).length);
             jqUnit.assertFalse(actionString + " removes 'selected' style from all items", menuItems.hasClass(that.options.styles.selected));
@@ -82,7 +82,7 @@ fluid.registerNamespace("fluid.tests");
                         jqUnit.assertEquals("Menu should have correct number of languages listed", numLangs, langList.length);
                         jqUnit.exists("Menu should have also have the 'show/hide' option", that.locate("showHide"));
                         jqUnit.assertFalse("Initially, nothing should have 'selected' style", langList.hasClass(that.options.styles.selected));
-                        jqUnit.assertTrue("Initially, the 'active language' have the 'active' style", $(langList[that.model.activeLanguages[0]]).hasClass(that.options.styles.active));
+                        jqUnit.assertTrue("Initially, the 'active language' have the 'active' style", $(langList[that.model.currentLanguage[0]]).hasClass(that.options.styles.active));
                         jqUnit.assertEquals("Initially, 'show/hide' option should have the correct text", that.options.strings.showLanguage, that.locate("showHide").text());
 
                         jqUnit.notVisible("The menu should be hidden by default", that.container);
@@ -97,12 +97,15 @@ fluid.registerNamespace("fluid.tests");
                         that.container.fluid("selectable.select", langList[numLangs - 1]);
                         verifySelection("Selecting a language", that, numLangs - 1, 0);
 
+/*
                         that.applier.modelChanged.addListener("showLanguage", function () {
-                            jqUnit.assertEquals("Activating a new language changes the 'show/hide' option text", that.options.strings.hideLanguage, that.locate("showHide").text());
+                            jqUnit.assertEquals("AAAActivating a new language changes the 'show/hide' option text", that.options.strings.hideLanguage, that.locate("showHide").text());
                             that.applier.modelChanged.removeListener("showLanguageChecker");
                         }, "showLanguageChecker");
+*/
                         that.activate(1);
-                        verifyActivation("Activating a new language", that, 1);
+                        verifyActivation("BBBActivating a new language", that, 1);
+                        jqUnit.assertEquals("AAAActivating a new language changes the 'show/hide' option text", that.options.strings.hideLanguage, that.locate("showHide").text());
 
                         that.showMenu();
                         $(that.locate("language")[2]).click();
@@ -182,13 +185,13 @@ fluid.registerNamespace("fluid.tests");
                 listeners: {
                     onReady: {
                         listener: function (that) {
-                            jqUnit.expect(10);
+                            jqUnit.expect(12);
                             var langList = that.menu.locate("language");
                             var showHide = $(that.menu.locate("showHide")[0]);
                             var button = that.locate("button");
                             var verifyLanguageState = function (expectedShowText, expectedShowHideFlag) {
                                 jqUnit.expect(2);
-                                jqUnit.assertEquals("The 'show language' model flag should be " + expectedShowHideFlag, expectedShowHideFlag, fluid.get(that.model, that.options.showHidePath));
+                                jqUnit.assertEquals("The 'show language' model flag should be " + expectedShowHideFlag, expectedShowHideFlag, that.model.showLanguage);
                                 jqUnit.assertEquals("The 'show language' text should be updated", expectedShowText, showHide.text());
                             };
 
@@ -207,16 +210,18 @@ fluid.registerNamespace("fluid.tests");
                             button.click();
                             $(langList[1]).click();
                             jqUnit.notVisible("Show the menu, click a language, menu should hide", that.menu.container);
-                            jqUnit.assertEquals("'current langauge' should be updated", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
+                            jqUnit.assertEquals("'current langauge' should be updated", 1, that.model.currentLanguage[0]);
                             verifyLanguageState(that.options.strings.hideLanguage, true);
 
                             button.click();
                             showHide.click();
+                            jqUnit.notVisible("Show the menu, click the show/hide button, menu should hide", that.menu.container);
                             verifyLanguageState(that.options.strings.showLanguage, false);
-                            jqUnit.assertEquals("'current langauge' should be not be changed", 1, fluid.get(that.model, that.options.currentLanguagePath)[0]);
+                            jqUnit.assertEquals("'current langauge' should be not be changed", 1, that.model.currentLanguage[0]);
 
                             button.click();
                             showHide.click();
+                            jqUnit.notVisible("Show the menu, click the show/hide button again, menu should hide", that.menu.container);
                             verifyLanguageState(that.options.strings.hideLanguage, true);
 
                             jqUnit.start();
