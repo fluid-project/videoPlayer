@@ -163,6 +163,19 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             });
         });
 
+        jqUnit.asyncTest("Model: 'currentTracks' arrays initialized based on options", function () {
+            jqUnit.expect(2);
+            var vidPlayer = fluid.testUtils.initVideoPlayer(".videoPlayer", {
+                listeners: {
+                    onReady: function (videoPlayer) {
+                        jqUnit.assertEquals("Model's 'currentTracks.captions' array has 0 in it", 0, videoPlayer.model.currentTracks.captions[0]);
+                        jqUnit.assertEquals("Model's 'currentTracks.transcripts' array has 0 in it", 0, videoPlayer.model.currentTracks.transcripts[0]);
+                        jqUnit.start();
+                    }
+                }
+            });
+        });
+
 
         var envFeatures = {
             "supportsHtml5": "fluid.browser.supportsHtml5",

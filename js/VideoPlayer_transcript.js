@@ -1,5 +1,5 @@
 /*
-Copyright 2012 OCAD University
+Copyright 2012-2014 OCAD University
 
 Licensed under the Educational Community License (ECL), Version 2.0 or the New
 BSD license. You may not use this file except in compliance with one these
@@ -25,6 +25,26 @@ var fluid_1_5 = fluid_1_5 || {};
     
     fluid.defaults("fluid.videoPlayer.transcript", {
         gradeNames: ["fluid.rendererRelayComponent", "autoInit"],
+        model: {
+            transcriptIntervalId: null,
+            selection: undefined,
+            choices: [],
+            labels: []
+        },
+        modelListeners: {
+            displayTranscripts: {
+                funcName: "fluid.videoPlayer.transcript.toggleTranscriptArea",
+                args: "{transcript}"
+            },
+            currentTranscriptTracks: {
+                funcName: "fluid.videoPlayer.transcript.switchTranscript",
+                args: ["{transcript}", "{arguments}.0.value", "{arguments}.1.oldValue", "{arguments}"]
+            },
+            transcriptIntervalId: {
+                funcName: "{transcript}.updateTranscriptHighlight",
+                args: ["{arguments}.0.transcriptIntervalId"]
+            }
+        },
         renderOnInit: true,
         rendererOptions: {
             autoBind: true
@@ -58,27 +78,6 @@ var fluid_1_5 = fluid_1_5 || {};
             onIntervalChange: {
                 listener: "fluid.videoPlayer.transcript.updateInterval",
                 args: ["{transcript}", "{arguments}.0", "{arguments}.1"]
-            }
-        },
-        model: {
-            displayTranscripts: false,
-            selection: undefined,
-            choices: [],
-            labels: [],
-            transcriptIntervalId: null
-        },
-        modelListeners: {
-            displayTranscripts: {
-                funcName: "fluid.videoPlayer.transcript.toggleTranscriptArea",
-                args: "{transcript}"
-            },
-            "currentTracks.transcripts": {
-                funcName: "fluid.videoPlayer.transcript.switchTranscript",
-                args: ["{transcript}", "{arguments}.0", "{arguments}.1"]
-            },
-            transcriptIntervalId: {
-                funcName: "{transcript}.updateTranscriptHighlight",
-                args: ["{arguments}.0.transcriptIntervalId"]
             }
         },
         transcripts: [],
@@ -133,6 +132,7 @@ var fluid_1_5 = fluid_1_5 || {};
     // Update visibility of the transcript area based on the flag "model.displayTranscripts"
     fluid.videoPlayer.transcript.toggleTranscriptArea = function (that) {
         if (that.model.displayTranscripts) {
+            // XXX This probably shouldn't be calling free functions directly, they should be invokers. Here, and elsewhere
             fluid.videoPlayer.transcript.showTranscriptArea(that);
             that.events.onTranscriptShow.fire();
         } else {
@@ -199,7 +199,7 @@ var fluid_1_5 = fluid_1_5 || {};
         var elementId = evt.currentTarget.id;
         var trackId = parseInt(elementId.substring(that.options.transcriptElementIdPrefix.length + 1), 10);
 
-        var transcriptIndex = that.model.currentTracks.transcripts[0];
+        var transcriptIndex = that.model.currentTranscriptTracks[0];
         var track = that.options.transcripts[transcriptIndex].tracks[trackId];
 
         // TODO: This test for Universal Subtitles file format should be factored better,
@@ -343,11 +343,11 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.videoPlayer.transcript.prepareTranscript = function (that) {
         // Transcript display only supports one language at a time
         // Exit if the current transcript language is not set
-        if (that.model.currentTracks.transcripts.length === 0) {
+        if (that.model.currentTranscriptTracks.length === 0) {
             return true;
         }
         
-        var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
+        var currentTranscriptIndex = parseInt(that.model.currentTranscriptTracks[0], 10);
         var currentTranscript = that.options.transcripts[currentTranscriptIndex];
         
         if (that.options.transcripts.length === 0 || !currentTranscript) {
@@ -398,7 +398,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.videoPlayer.transcript.switchTranscript = function (that, transcriptArray, oldTranscriptArray) {
-        if ((oldTranscriptArray === undefined) || (transcriptArray[0] === oldTranscriptArray[0])) {
+        if ((oldTranscriptArray !== undefined) && (transcriptArray[0] === oldTranscriptArray[0])) {
             // actual choice of track hasn't changed
             return;
         }
@@ -406,7 +406,7 @@ var fluid_1_5 = fluid_1_5 || {};
         fluid.videoPlayer.transcript.prepareTranscript(that);
         
         // Select the new transcript in the drop down list box
-        var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
+        var currentTranscriptIndex = parseInt(that.model.currentTranscriptTracks[0], 10);
         that.locate("languageDropdown").find("option:selected").removeAttr("selected");
         that.locate("languageDropdown").find("option[value='" + currentTranscriptIndex + "']").attr("selected", "selected");
         that.updateTranscriptHighlight(that.model.transcriptIntervalId);
@@ -427,7 +427,7 @@ var fluid_1_5 = fluid_1_5 || {};
         
         return {
             languageDropdown: {
-                selection: "${currentTracks.transcripts.0}",
+                selection: "${currentTranscriptTracks.0}",
                 optionlist: "${choices}",
                 optionnames: "${labels}"
             }
@@ -438,7 +438,7 @@ var fluid_1_5 = fluid_1_5 || {};
         // build the 'choices' from the transcript list provided
         fluid.each(that.options.transcripts, function (value, key) {
             // TODO: convert the integer to string to avoid the "unrecognized text" error at rendering dropdown list box
-            // The integer is converted back in the listener function for currentTracks.transcripts.0. 
+            // The integer is converted back in the listener function for currentTranscriptTracks.0. 
             // Needs a better solution for this.
             that.model.choices.push(key.toString());
             that.model.labels.push(value.label);

@@ -174,7 +174,7 @@ fluid.registerNamespace("fluid.tests");
                });
             });
 
-        jqUnit.asyncTest("Scrubber", function () {
+        jqUnit.asyncTest("Scrubber handle visibility", function () {
             jqUnit.expect(5);
             var testScrubber = fluid.videoPlayer.controllers.scrubber("#scrubber-test", {
                 listeners: {

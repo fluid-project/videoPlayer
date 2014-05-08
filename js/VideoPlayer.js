@@ -156,9 +156,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 options: {
                     model: {
                         displayTranscripts: "{videoPlayer}.model.displayTranscripts",
-                        currentTracks: {
-                            transcripts: "{videoPlayer}.model.currentTracks.transcripts"
-                        }
+                        currentTranscriptTracks: "{videoPlayer}.model.currentTracks.transcripts"
                     },
                     transcripts: "{videoPlayer}.options.video.transcripts",
                     events: {
@@ -273,6 +271,9 @@ var fluid_1_5 = fluid_1_5 || {};
                 args: ["{that}"]
             },{
                 listener: "fluid.videoPlayer.loadTemplates",
+                args: ["{that}"]
+            },{
+                listener: "fluid.videoPlayer.initializeCurrentTracks",
                 args: ["{that}"]
             }]
         },
@@ -529,6 +530,15 @@ var fluid_1_5 = fluid_1_5 || {};
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
         });
         
+    };
+
+    fluid.videoPlayer.initializeCurrentTracks = function (that) {
+        if (that.options.video.captions.length > 0) {
+            that.applier.change("currentTracks.captions", [0]);
+        }
+        if (that.options.video.transcripts.length > 0) {
+            that.applier.change("currentTracks.transcripts", [0]);
+        }
     };
 
     fluid.videoPlayer.toggleFullscreen = function (that) {
