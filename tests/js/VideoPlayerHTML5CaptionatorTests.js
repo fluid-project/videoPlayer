@@ -202,35 +202,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 });
             }
         }, {
-            desc: "html5Captionator without currentTrack",
-            async: true,
-            testFn: function () {
-                initVideoPlayer(optionsWithoutCurrentTrack, function (videoPlayer) {
-                    setTimeout(function () {
-                        var html5Captionator = videoPlayer.html5Captionator,
-                            currentTracks = html5Captionator.model.currentTracks;
-
-                        jqUnit.assertUndefined("currentTracks is empty in the model", optionsWithoutCurrentTrack.currentTracks);
-
-                        jqUnit.assertNotUndefined("html5Captionator has been instantiated", html5Captionator);
-
-                        jqUnit.assertEquals("Current track is also empty in the html5Captionator model",
-                                0, currentTracks.captions.length);
-                        // Can't support this "self-modification" of the model of captionator since it may corrupt data belonging
-                        // to others during startup
-                        //jqUnit.assertEquals("And this element is the index for the first element in the array of captions", 
-                        //        0, currentTracks.captions[0]);
-
-                        testTrackMode(html5Captionator, [false, false]);
-
-                        // Check that captions are not present in the DOM
-                        testCaptionPresence(html5Captionator, "");
-                        jqUnit.expect(3);
-                        jqUnit.start();
-                    });
-                });
-            }
-        }, {
             desc: "displayCaptions is set to false so no captions should be present at all in the DOM",
             async: true,
             testFn: function () {

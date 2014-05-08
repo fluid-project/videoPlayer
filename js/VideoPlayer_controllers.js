@@ -251,7 +251,7 @@ var fluid_1_5 = fluid_1_5 || {};
             onCreate: {
                 listener: "fluid.videoPlayer.controllers.loadTemplates",
                 args: ["{that}"]
-            },
+            }
         }
     });
 
