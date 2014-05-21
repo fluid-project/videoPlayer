@@ -155,7 +155,7 @@ var fluid_1_5 = fluid_1_5 || {};
         var trackId = parseInt(elementId.substring(that.options.transcriptElementIdPrefix.length + 1), 10);
 
         var transcriptIndex = that.model.currentTracks.transcripts[0];
-        var track = that.options.transcripts[transcriptIndex].tracks[trackId];
+        var track = that.options.model.transcripts[transcriptIndex].tracks[trackId];
 
         // TODO: This test for Universal Subtitles file format should be factored better,
         // as part of a general strategy (see parseTranscriptFile())
@@ -224,7 +224,7 @@ var fluid_1_5 = fluid_1_5 || {};
             transcripts = transcripts.transcriptCollection;
         }
         
-        that.options.transcripts[currentIndex].tracks = transcripts;
+        that.options.model.transcripts[currentIndex].tracks = transcripts;
         
         // Generate the transcript text
         var transcriptText = "";
@@ -238,7 +238,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 "&nbsp;";
         }
         
-        that.options.transcripts[currentIndex].transcriptText = transcriptText;
+        that.options.model.transcripts[currentIndex].transcriptText = transcriptText;
         fluid.videoPlayer.transcript.displayTranscript(that, transcriptText);
 
         // Construct intervalList that's used by intervalEventsConductor to fire intervalChange event
@@ -255,7 +255,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };  
     
     fluid.videoPlayer.transcript.loadTranscript = function (that, currentIndex) {
-        var transcriptSource = that.options.transcripts[currentIndex];
+        var transcriptSource = that.options.model.transcripts[currentIndex];
         if (transcriptSource) {
 
             // Handle Universal Subtitles JSON files for transcripts
@@ -300,9 +300,9 @@ var fluid_1_5 = fluid_1_5 || {};
         }
         
         var currentTranscriptIndex = parseInt(that.model.currentTracks.transcripts[0], 10);
-        var currentTranscript = that.options.transcripts[currentTranscriptIndex];
+        var currentTranscript = that.options.model.transcripts[currentTranscriptIndex];
         
-        if (that.options.transcripts.length === 0 || !currentTranscript) {
+        if (that.options.model.transcripts.length === 0 || !currentTranscript) {
             return true;
         }
         
@@ -381,7 +381,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.videoPlayer.transcript.preInit = function (that) {
         // build the 'choices' from the transcript list provided
-        fluid.each(that.options.transcripts, function (value, key) {
+        fluid.each(that.options.model.transcripts, function (value, key) {
             // TODO: convert the integer to string to avoid the "unrecognized text" error at rendering dropdown list box
             // The integer is converted back in the listener function for currentTracks.transcripts.0. 
             // Needs a better solution for this.

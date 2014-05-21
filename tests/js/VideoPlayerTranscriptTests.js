@@ -71,7 +71,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             that.applier.requestChange("displayTranscripts", true);
             
             jqUnit.isVisible("The transcript area is shown", $(".flc-videoPlayer-transcriptArea"));
-            jqUnit.assertEquals("The language combo box has expected number of options", that.options.transcripts.length, $(".flc-videoPlayer-transcripts-language-dropdown option").length);
+            jqUnit.assertEquals("The language combo box has expected number of options", that.options.model.transcripts.length, $(".flc-videoPlayer-transcripts-language-dropdown option").length);
             jqUnit.assertTrue("The default selected language is the first option", $(".flc-videoPlayer-transcripts-language-dropdown option")[0].selected);
         };
         
@@ -129,6 +129,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         };
 
         var localTranscriptOpts = {
+            model: {
                 transcripts: [
                     {
                         src: "TestTranscripts.en.json",
@@ -143,10 +144,12 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         label: "French"
                     }
                 ]
-            };
+            }
+        };
 
         // Load transcript files from universal subtitles
         var universalSubsOpts = {
+            model: {
                 transcripts: [
                     {
                         src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
@@ -161,14 +164,16 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                         label: "French"
                     }
                 ]
-            };
+            }
+        };
         
         testProcess(localTranscriptOpts, "Local transcript files");
         
         // Wait a second for the previous test process to complete
+        // TODO: It should be changed to use promises instead
         setTimeout(function () {
             testProcess(universalSubsOpts, "Universal Subtitle transcript files");
-        }, 500);
+        }, 1000);
 
         jqUnit.asyncTest("Drop-down aria-controls text area", function () {
             var testOpts = {

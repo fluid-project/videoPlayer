@@ -96,7 +96,8 @@ var fluid_1_5 = fluid_1_5 || {};
                     model: "{videoPlayer}.model",
                     applier: "{videoPlayer}.applier",
                     events: {
-                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata"
+                        onLoadedMetadata: "{videoPlayer}.events.onLoadedMetadata",
+                        onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
                     },
                     listeners: {
                         onExitFullScreen: {
@@ -165,7 +166,9 @@ var fluid_1_5 = fluid_1_5 || {};
                         onScrub: "{videoPlayer}.events.onScrub",
                         afterScrub: "{videoPlayer}.events.afterScrub",
                         onTranscriptsReady: "{videoPlayer}.events.canBindTranscriptMenu",
-                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu"
+                        onCaptionsReady: "{videoPlayer}.events.canBindCaptionMenu",
+                        onCaptionListUpdated: "{videoPlayer}.events.onCaptionListUpdated",
+                        onTranscriptListUpdated: "{videoPlayer}.events.onTranscriptListUpdated"
                     },
                     listeners: {
                         onReady: "{videoPlayer}.events.onControllersReady"
@@ -178,7 +181,19 @@ var fluid_1_5 = fluid_1_5 || {};
             html5Captionator: {
                 type: "fluid.videoPlayer.captionator",
                 container: "{videoPlayer}.dom.videoPlayer",
-                createOnEvent: "onMediaReady"
+                createOnEvent: "onSubtitlesFinderReady"
+            },
+            subtitlesFinder: {
+                type: "fluid.subtitlesFinder",
+                createOnEvent: "onMediaReady",
+                options: {
+                    sources: "{videoPlayer}.options.video.sources",
+                    serviceURL: "https://www.universalsubtitles.org/api2/partners/videos/",
+                    languagesPath: "objects.0.languages",
+                    events: {
+                        onReady: "{videoPlayer}.events.onSubtitlesFinderReady"
+                    }
+                }
             }
         },
         preInitFunction: "fluid.videoPlayer.preInit",
@@ -207,6 +222,15 @@ var fluid_1_5 = fluid_1_5 || {};
                     onCreate: "onCreate"
                 },
                 args: ["{videoPlayer}"]
+            },
+            
+            onCaptionListUpdated: null,
+            onTranscriptListUpdated: null,
+            
+            onSubtitlesFinderReady: null,
+            onSubtitlesFinderReadyBoiled: {
+                event: "onSubtitlesFinderReady",
+                args: ["{videoPlayer}", "{arguments}.0"]
             },
             
             // public, time events
@@ -281,7 +305,9 @@ var fluid_1_5 = fluid_1_5 || {};
             volume: 60,
             muted: false,
             canPlay: false,
-            play: false
+            play: false,
+            captions: [],
+            transcripts: []
         },
         templates: {
             videoPlayer: {
@@ -465,6 +491,12 @@ var fluid_1_5 = fluid_1_5 || {};
         that.toggleFullscreen = function () {
             that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
+        
+        // This is the place when we move integrator specified captions and transcripts into the model of a VideoPlayer
+        // This model could be potentially extended by some other components like subtitlesFinder
+        // Also we agreed on keeping things simple for an integrator where an integrator lists options without touching videoPlayer model.
+        that.model.captions = fluid.copy(that.options.video.captions);
+        that.model.transcripts = fluid.copy(that.options.video.transcripts);
     };
 
     fluid.videoPlayer.postInit = function (that) {
@@ -500,9 +532,49 @@ var fluid_1_5 = fluid_1_5 || {};
         };
     };
     
+    fluid.videoPlayer.uniqueMergeArray = function(firstArray, secondArray, elPath) {
+        var languageArray = [], i;
+        firstArray = firstArray || [];
+        secondArray = secondArray || [];
+        
+        var result = firstArray.concat(secondArray);
+        result = fluid.remove_if(result, function (elem) {
+            var srclang = fluid.get(elem, elPath);
+            if (srclang === undefined) {
+                return;
+            }
+            
+            if (languageArray.indexOf(srclang) > -1) {
+                return elem;
+            }
+            languageArray.push(srclang);
+        });
+        
+        return result;
+    };
+    
+    fluid.videoPlayer.extendLanguages = function(that, captionData) {
+        captionData = captionData || [];
+        if (captionData.length === 0) {
+            return;
+        }
+        
+        // Apply uniqueMergeArray for captions and transcripts based on the captionData returned from the subtitlesFinder component
+        fluid.each(["captions", "transcripts"], function (type) {
+            var tempData = fluid.copy(captionData);
+            fluid.videoPlayer.addDefaultKind(tempData, fluid.get(that.options.defaultKinds, type));
+            tempData = fluid.videoPlayer.uniqueMergeArray(fluid.get(that.model, type), tempData, "srclang");
+            that.applier.requestChange(type, tempData);
+        });
+    };
+    
     fluid.videoPlayer.finalInit = function (that) {
         that.container.attr("role", "application");
 
+        that.applier.modelChanged.addListener("captions", that.events.onCaptionListUpdated.fire);
+        that.applier.modelChanged.addListener("transcripts", that.events.onTranscriptListUpdated.fire);
+        that.events.onSubtitlesFinderReadyBoiled.addListener(fluid.videoPlayer.extendLanguages);
+        
         // Render each media source with its custom renderer, registered by type.
         // If we aren't on an HTML 5 video-enabled browser, don't bother setting up the controller, captions or transcripts.
 
@@ -664,17 +736,6 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.demands("fluid.videoPlayer.hideControllers", ["fluid.browser.safari", "fluid.videoPlayer"], {
         funcName: "fluid.videoPlayer.hideControllersSimple",
         args: ["{videoPlayer}"]
-    });
-
-    /***************************************************************************************************
-     * The wiring up of the onTimeUpdate event btw timer component "media" and intervalEventsConductor *
-     ***************************************************************************************************/
-    fluid.demands("fluid.videoPlayer.media", ["fluid.videoPlayer.intervalEventsConductor", "fluid.videoPlayer"], {
-        options: {
-            events: {
-                onTimeUpdate: "{intervalEventsConductor}.events.onTimeUpdate"
-            }
-        }
     });
     
 })(jQuery, fluid_1_5);

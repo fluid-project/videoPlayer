@@ -120,6 +120,17 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 testVTTCaption(resultArray, i * 3 + 1, testJson[i]);
             }
         });
+        
+        jqUnit.test("uniqueMergeArray", function () {
+            jqUnit.expect(7);
+            jqUnit.assertDeepEq("empty and empty", [], fluid.videoPlayer.uniqueMergeArray([], [], "lng"));
+            jqUnit.assertDeepEq("en and empty", [{ lng: "en" }], fluid.videoPlayer.uniqueMergeArray([{ lng: "en" }], [], "lng"));
+            jqUnit.assertDeepEq("en and fr", [{ lng: "en" }, { lng: "fr" }], fluid.videoPlayer.uniqueMergeArray([{ lng: "en" }], [{ lng: "fr" }], "lng"));
+            jqUnit.assertDeepEq("en, sp and en", [{ lng: "en" }, { lng: "sp" }], fluid.videoPlayer.uniqueMergeArray([{ lng: "en" }, { lng: "sp"} ], [{ lng: "en" }], "lng"));
+            jqUnit.assertDeepEq("en and en, sp", [{ lng: "en" }, { lng: "sp" }], fluid.videoPlayer.uniqueMergeArray([{ lng: "en" }], [{ lng: "en" }, { lng: "sp" }], "lng"));
+            jqUnit.assertDeepEq("en and en", [{ lng: "en" }], fluid.videoPlayer.uniqueMergeArray([{ lng: "en" }], [{ lng: "en" }], "lng"));
+            jqUnit.assertDeepEq("en and fr and wrong key", [{ lng: "en" }, { lng: "fr" }], fluid.videoPlayer.uniqueMergeArray([{ lng: "en" }], [{ lng: "fr" }], "some_key"));
+        });
 
         jqUnit.asyncTest("fetchAmaraJson", function () {
             jqUnit.expect(2);

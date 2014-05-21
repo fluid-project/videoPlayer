@@ -102,7 +102,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                     listeners: {
                         onVideoAndTranscriptsLoaded: function (vp, that) {
                             var anElement = $("[id^=flc-videoPlayer-transcript-element]").eq(7);
-                            newTime = (that.convertToMilli(that.options.transcripts[0].tracks[7].inTime) + 1) / 1000;
+                            newTime = (that.convertToMilli(that.options.model.transcripts[0].tracks[7].inTime) + 1) / 1000;
                             
                             vp.events.onTimeUpdate.addListener(function (currTime, buffered) {
                                 // Removing precision from the currTime as chrome returns the value with about 15 decimal places.

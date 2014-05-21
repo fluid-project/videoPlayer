@@ -102,6 +102,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     model: "{controllers}.model",
                     applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
+                    languageListPath: "transcripts",
                     currentLanguagePath: "currentTracks.transcripts",
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
@@ -115,7 +116,8 @@ var fluid_1_5 = fluid_1_5 || {};
                     },
                     events: {
                         onControlledElementReady: "{controllers}.events.onTranscriptsReady",
-                        onReady: "{controllers}.events.onTranscriptControlsReady"
+                        onReady: "{controllers}.events.onTranscriptControlsReady",
+                        onLanguageListUpdated: "{controllers}.events.onTranscriptListUpdated"
                     },
                     templates: {
                         menuButton: {
@@ -167,6 +169,9 @@ var fluid_1_5 = fluid_1_5 || {};
             onStartTimeChange: null,
             afterTimeChange: null,
             onMarkupReady: null,
+            onCaptionListUpdated: null,
+            onTranscriptListUpdated: null,
+            
             onScrub: null,
             onStartScrub: null,
             afterScrub: null,
@@ -257,6 +262,7 @@ var fluid_1_5 = fluid_1_5 || {};
         applier: "{controllers}.applier",
         showHidePath: "displayCaptions",
         currentLanguagePath: "currentTracks.captions",
+        languageListPath: "captions",
         styles: {
             button: "fl-videoPlayer-captions-button",
             buttonWithShowing: "fl-videoPlayer-captions-button-on"
@@ -268,7 +274,8 @@ var fluid_1_5 = fluid_1_5 || {};
             release: "Captions"
         },
         events: {
-            onControlledElementReady: "{controllers}.events.onCaptionsReady"
+            onControlledElementReady: "{controllers}.events.onCaptionsReady",
+            onLanguageListUpdated: "{controllers}.events.onCaptionListUpdated"
         },
         templates: {
             menuButton: {

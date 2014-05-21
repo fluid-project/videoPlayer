@@ -20,7 +20,7 @@ fluid.registerNamespace("fluid.testUtils");
 /* A number of utility functions for testing things common among many controls */
 
 (function ($) {
-    var baseOpts = {
+    fluid.testUtils.baseOpts = {
         video: {
             sources: [
                 {
@@ -79,19 +79,30 @@ fluid.registerNamespace("fluid.testUtils");
                         }
                     }
                 }
+            },
+            // Not to ruin other tests since Amara fetch is an asychronous call and would finish after the test is completed.
+            // To avoid modifying every single test to be an aggregated event waiting for Amara,
+            // We will resolve this component when we want to test its functionality or integration into a videoPlayer
+            
+            // This is also an example for an integrator on how to (by pass/remove) subtitlesFinder
+            subtitlesFinder: {
+                type: "fluid.emptySubcomponent"
+            },
+            html5Captionator: {
+                createOnEvent: "onMediaReady"
             }
         }
     };
 
     fluid.testUtils.initVideoPlayer = function (container, options) {
-        var opts = fluid.copy(baseOpts);
+        var opts = fluid.copy(fluid.testUtils.baseOpts);
         $.extend(true, opts, options);
 
         return fluid.videoPlayer(container, opts);
     };
 
     fluid.testUtils.initEnhancedVideoPlayer = function (instance, relay) {
-        var opts = fluid.copy(baseOpts);
+        var opts = fluid.copy(fluid.testUtils.baseOpts);
         $.extend(true, opts, instance.options);
         instance.options = opts;
         return fluid.videoPlayer.makeEnhancedInstances(instance, relay);

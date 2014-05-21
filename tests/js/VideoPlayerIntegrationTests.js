@@ -21,7 +21,6 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         jqUnit.module("Video Player Integration Tests");
 
-
         var testPlayPause = function (clickFunc) {
             var video = $(".flc-videoPlayer-video");
             
@@ -200,6 +199,177 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             
             fluid.testUtils.initVideoPlayer(".videoPlayer-transcript", testOpts);
         });
+        
+        fluid.subtitlesFinder.mockGet = function (that) {
+            // Mocking the preparsed data by DataSource for subtitlesFinder
+            that.events.onSuccess.fire([{
+                // going to put a real working link for now since html5Captionator will stop execution if src is not valid.
+                src: "http://www.youtube.com/watch?v=_VxQEPw1x9E&language=en",
+                type: "text/amarajson",
+                srclang: "rs",
+                label: "Rastafarian"
+            }]);
+        };
+        
+        var integrationSubtitlesFinderDelayedService = function () {
+            jqUnit.expect(4);
+            
+            var initialLanguageMenuLength = fluid.testUtils.baseOpts.video.transcripts.length;
+            var newLanguageMenuLength = initialLanguageMenuLength + 1;  // Initial plus our new Rastafarian language
+            
+            var stateHelper = {
+                captions: {
+                    secondRenderFlag: false,
+                    endEventName: "onCaptionsUpdateEnd",
+                    controlsContainerSelector: ".flc-videoPlayer-captionControls-container"
+                },
+                transcripts: {
+                    secondRenderFlag: false,
+                    endEventName: "onTranscriptUpdateEnd",
+                    controlsContainerSelector: ".flc-videoPlayer-transcriptControls-container"
+                }
+            };
+            
+            var testLanguageMenu = function (that, type) {
+                var state = stateHelper[type];
+                var secondRenderFlag = state.secondRenderFlag;
+                var endEventName = state.endEventName;
+                var controlsContainerSelector = state.controlsContainerSelector;
+                        
+                // push number of items in the language menu into array. We will check those array values at the end to see if values are set to the proper ones
+                var languages = $(controlsContainerSelector + " .flc-menuButton-languageMenu").find(".flc-videoPlayer-language");
+                var languagesLength = languages.length;
+                
+                // If it is the second time we call afterRender then we want to fire an event saying that Transcript Language Menu was updated
+                if (secondRenderFlag) {
+                    jqUnit.assertTrue("Updated number of languages is bigger", (languagesLength === newLanguageMenuLength));
+                    that.events[endEventName].fire();
+                } else {
+                    
+                    // VP-294
+                    // TODO: We want to have some checks to see that loading indicator for language retreival is present in the DOM
+                    
+                    jqUnit.assertTrue("Initial number of languages is the same", (languagesLength === initialLanguageMenuLength));
+                    stateHelper[type].secondRenderFlag = true;
+                }
+            };
+
+            var testOpts = {
+                events: {
+                    onCaptionatorReady: null,
+                    
+                    onTranscriptUpdateEnd: null,
+                    onTranscriptAfterRender: null,
+                    
+                    onCaptionsUpdateEnd: null,
+                    onCaptionsAfterRender: null,
+                    
+                    onTestEnd: {
+                        events: {
+                            onTranscriptUpdateEnd: "onTranscriptUpdateEnd",
+                            onCaptionsUpdateEnd: "onCaptionsUpdateEnd",
+                            onCaptionatorReady: "onCaptionatorReady"
+                        }
+                    }
+                },
+                listeners: {
+                    onCaptionsAfterRender: testLanguageMenu,
+                    onTranscriptAfterRender: testLanguageMenu,
+                    onTestEnd: function () {
+                        // We require to start our test here to ensure that captionator did its work before test has finished to avoid an error.
+                        // An error due to the asynchronous calls for captionator to create tracks after test is done.
+                        jqUnit.start();
+                    }
+                },
+                components: {
+                    controllers: {
+                        options: {
+                            components: {
+                                captionControls: {
+                                    options: {
+                                        components: {
+                                            menu: {
+                                                options: {
+                                                    events: {
+                                                        onCaptionsUpdateEnd: "{videoPlayer}.events.onCaptionsUpdateEnd"
+                                                    },
+                                                    listeners: {
+                                                        afterRender: {
+                                                            listener: "{videoPlayer}.events.onCaptionsAfterRender",
+                                                            args: ["{menu}", "captions"]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                transcriptControls: {
+                                    options: {
+                                        components: {
+                                            menu: {
+                                                options: {
+                                                    events: {
+                                                        onTranscriptUpdateEnd: "{videoPlayer}.events.onTranscriptUpdateEnd"
+                                                    },
+                                                    listeners: {
+                                                        afterRender: {
+                                                            listener: "{videoPlayer}.events.onTranscriptAfterRender",
+                                                            args: ["{menu}", "transcripts"]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    subtitlesFinder: {
+                        type: "fluid.subtitlesFinder",
+                        // We are going to create amara subcomponent on videoPlayer ready event so that we have the following execution flow:
+                        // Menu Render -> VideoPlayer Ready -> subtitlesFinder Ready with languages -> Menu Render
+                        createOnEvent: "onReady",
+                        options: {
+                            sources: "{videoPlayer}.options.video.sources",
+                            events: {
+                                onReady: "{videoPlayer}.events.onSubtitlesFinderReady"
+                            },
+                            components: {
+                                dataSource: {
+                                    options: {
+                                        invokers: {
+                                            // We are going to overwrite an invoker so that we know exact languages returned for the testing purposes
+                                            get: {
+                                                funcName: "fluid.subtitlesFinder.mockGet",
+                                                args: ["{dataSource}"]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    html5Captionator: {
+                        createOnEvent: "onSubtitlesFinderReady",
+                        options: {
+                            listeners: {
+                                onReady: "{videoPlayer}.events.onCaptionatorReady.fire"
+                            }
+                        }
+                    }
+                }
+            };
+            fluid.testUtils.initVideoPlayer(".videoPlayer-subtitlesFinder", testOpts);
+        };
+        
+        var subtitlesFinderOpts = [{
+           desc: "Check that menus are updated after subtitlesFinder updates language list with a delayed service which happens after menu was rendered",
+           async: true,
+           testFn: integrationSubtitlesFinderDelayedService
+        }];
+        fluid.testUtils.testCaseWithEnv("Video Player SubtitlesFinder integration test. ", subtitlesFinderOpts, ["fluid.browser.nativeVideoSupport"]);
 
     });
 })(jQuery);
