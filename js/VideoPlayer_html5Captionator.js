@@ -13,12 +13,12 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
 /*global jQuery, window, fluid_1_5, captionator*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 
 (function ($, fluid) {
-    
+
     /********************************************************************
      * HTML5 Captionator                                                *
      * An Infusion wrapper of captionatorjs (http://captionatorjs.com/) *
@@ -53,20 +53,21 @@ https://source.fluidproject.org/svn/LICENSE.txt
             "text/vtt": "fluid.videoPlayer.html5Captionator.createVttTrack"
         }
     });
-    
-    
+
+
     var bindCaptionatorModel = function (that) {
         var elPaths = that.options.elPaths;
         that.applier.modelChanged.addListener(elPaths.currentCaptions, that.refreshCaptions);
         that.applier.modelChanged.addListener(elPaths.displayCaptions, that.refreshCaptions);
     };
-    
+
     fluid.videoPlayer.html5Captionator.hideAllTracks = function (tracks) {
         fluid.each(tracks, function (trackEl) {
             trackEl.track.mode = "disabled";
         });
     };
-    
+
+
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.each(captionSources, function (element, key) {
             var currentState = $.inArray(key, currentCaptions) === -1 ? "disabled" : "showing";
@@ -82,7 +83,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var tracks = $("track", that.locate("video"));
             var display = that.readIndirect("elPaths.displayCaptions");
             if (display) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"), 
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"),
                     tracks, that.options.captions);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
@@ -93,7 +94,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.html5Captionator.finalInit = function (that) {
         var captions = that.options.captions;
-        
+
         // Need to know when all the tracks have been created so we can trigger captionator
         that.tracksToCreate = captions.length;
 
