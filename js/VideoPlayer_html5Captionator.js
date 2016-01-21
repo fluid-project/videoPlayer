@@ -37,6 +37,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
         elPaths: {
             currentCaptions: "currentTracks.captions",
+            currentCaptionIds: "currentTrackIds.captions",
             displayCaptions: "displayCaptions"
         },
         // TODO: Those selectors should come from the parent component!!
@@ -58,6 +59,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
     var bindCaptionatorModel = function (that) {
         var elPaths = that.options.elPaths;
         that.applier.modelChanged.addListener(elPaths.currentCaptions, that.refreshCaptions);
+//        that.applier.modelChanged.addListener(elPaths.currentCaptionIds, that.refreshCaptions);
         that.applier.modelChanged.addListener(elPaths.displayCaptions, that.refreshCaptions);
     };
 
@@ -67,12 +69,11 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
     };
 
-
-    fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
-        fluid.each(captionSources, function (element, key) {
-            var currentState = $.inArray(key, currentCaptions) === -1 ? "disabled" : "showing";
-            var track = tracks[key].track;
-            track.mode =  track[currentState.toUpperCase()] || currentState;
+    fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptionIds, tracks, captionSources) {
+        fluid.each(tracks, function (track, index) {
+            var currentState = fluid.contains(currentCaptionIds, track.id) ? "showing" : "disabled";
+            var textTrack = track.track;
+            textTrack.mode =  textTrack[currentState.toUpperCase()] || currentState;
         });
     };
 
@@ -83,7 +84,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var tracks = $("track", that.locate("video"));
             var display = that.readIndirect("elPaths.displayCaptions");
             if (display) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"),
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptionIds"),
                     tracks, that.options.captions);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
@@ -106,20 +107,18 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.html5Captionator.createTrack = function (that, key, opts) {
         var trackEl = $("<track />");
-        var attrs = fluid.filterKeys(fluid.copy(opts), ["kind", "src", "type", "srclang", "label"], false);
+        var attrs = fluid.filterKeys(fluid.copy(opts), ["id", "kind", "src", /*"type",*/ "srclang", "label"], false);
 
         if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaptions")) {
             attrs["default"] = "true";
         }
 
         trackEl.attr(attrs);
-        that.locate("video").append(trackEl);
         return trackEl;
     };
 
     fluid.videoPlayer.html5Captionator.createAmaraTrack = function (that, key, opts) {
         var trackEl = fluid.videoPlayer.html5Captionator.createTrack(that, key, opts);
-
         var afterFetch = function (data) {
             if (!data) {
                 return;
@@ -127,7 +126,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
             var vtt = fluid.videoPlayer.amaraJsonToVTT(data.subtitles);
             var dataUrl = "data:text/vtt," + encodeURIComponent(vtt);
+
             trackEl.attr("src", dataUrl);
+            that.locate("video").append(trackEl);
             that.events.afterTrackElCreated.fire(that);
         };
 
@@ -135,8 +136,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
     };
 
     fluid.videoPlayer.html5Captionator.createVttTrack = function (that, key, opts) {
-        fluid.videoPlayer.html5Captionator.createTrack(that, key, opts);
+        var trackEl = fluid.videoPlayer.html5Captionator.createTrack(that, key, opts);
 
+        that.locate("video").append(trackEl);
         that.events.afterTrackElCreated.fire(that);
     };
 

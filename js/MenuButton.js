@@ -11,7 +11,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 /*global jQuery, window, fluid_1_5*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 var fluid_1_5 = fluid_1_5 || {};
@@ -36,6 +36,7 @@ var fluid_1_5 = fluid_1_5 || {};
         produceTree: "fluid.videoPlayer.languageMenu.produceTree",
         languages: [],
         currentLanguagePath: "activeLanguages",
+        currentLangIdPath: "",
         showHidePath: "showLanguage",
         model: {},
         events: {
@@ -122,7 +123,7 @@ var fluid_1_5 = fluid_1_5 || {};
         that.container.fluid("selectable", {
             direction: fluid.a11y.orientation.VERTICAL,
             selectableSelector: that.options.selectors.menuItem,
-            // TODO: add simple style class support to selectable 
+            // TODO: add simple style class support to selectable
             onSelect: function (el) {
                 $(el).addClass(that.options.styles.selected);
             },
@@ -170,9 +171,9 @@ var fluid_1_5 = fluid_1_5 || {};
         selectedItem.addClass(that.options.styles.active);
         selectedItem.attr("aria-checked", "true").attr("aria-selected", "true");
     };
-    
+
     fluid.videoPlayer.languageMenu.updateShowHide = function (that) {
-        var showHide = that.readIndirect("showHidePath"); 
+        var showHide = that.readIndirect("showHidePath");
         that.locate("showHide").text(that.options.strings[showHide ? "hideLanguage" : "showLanguage"]);
     };
 
@@ -203,11 +204,12 @@ var fluid_1_5 = fluid_1_5 || {};
         };
         that.activate = function (index) {
             that.writeIndirect("currentLanguagePath", [index]);
+            that.writeIndirect("currentLangIdPath", [that.options.languages[index].id]);
             that.writeIndirect("showHidePath", true);
             that.hideMenu();
         };
         that.showHide = function () {
-            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton"); 
+            that.writeIndirect("showHidePath", !that.readIndirect("showHidePath"), "menuButton");
             that.hideMenu();
         };
     };
@@ -253,6 +255,7 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         languages: [],
         currentLanguagePath: "",
+        currentLangIdPath: "",
         showHidePath: "",
         strings: {
             showLanguage: "Show Language",
@@ -260,7 +263,7 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         styles: {
             button: "fl-videoPlayer-button",
-            buttonWithShowing: "fl-videoPlayer-buttonWithShowing"  
+            buttonWithShowing: "fl-videoPlayer-buttonWithShowing"
         },
         components: {
             button: {
@@ -271,7 +274,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     styles: {
                         init: "{languageControls}.options.styles.button",
                         // TODO: see if we want different style for pressed form
-                        pressed: "{languageControls}.options.styles.button"  
+                        pressed: "{languageControls}.options.styles.button"
                     },
                     selectors: {
                         button: "{languageControls}.options.selectors.button",
@@ -290,6 +293,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     applier: "{languageControls}.applier",
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
+                    currentLangIdPath: "{languageControls}.options.currentLangIdPath",
                     strings: "{languageControls}.options.strings",
                     events: {
                         onControlledElementReady: "{languageControls}.events.onControlledElementReady"

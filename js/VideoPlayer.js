@@ -271,6 +271,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 captions: [],
                 transcripts: []
             },
+            currentTrackIds: {
+                captions: [],
+                transcripts: []
+            },
             currentTime: 0,
             scrubTime: null,
             totalTime: 0,
@@ -460,6 +464,10 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.videoPlayer.preInit = function (that) {
         fluid.each(that.options.defaultKinds, function (defaultKind, index) {
             fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);
+        });
+
+        fluid.each(that.options.video.captions, function (cap, index) {
+            cap.id = fluid.allocateSimpleId();
         });
 
         that.toggleFullscreen = function () {

@@ -13,7 +13,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
 /*global jQuery, window, fluid_1_5*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 var fluid_1_5 = fluid_1_5 || {};
@@ -21,10 +21,10 @@ var fluid_1_5 = fluid_1_5 || {};
 (function ($, fluid) {
 
     /**
-     * controllers is a video controller containing a play button, a time scrubber, 
+     * controllers is a video controller containing a play button, a time scrubber,
      *      a volume controller, a button to put captions on/off
      *      , a button to put transcripts on/off
-     * 
+     *
      * @param {Object} container the container which this component is rooted
      * @param {Object} options configuration options for the component
      */
@@ -38,22 +38,22 @@ var fluid_1_5 = fluid_1_5 || {};
     };
 
     fluid.registerNamespace("fluid.videoPlayer.controllers");
-    
+
     fluid.videoPlayer.controllers.supportFullscreen = function () {
         var fullscreenFnNames = ["requestFullScreen", "mozRequestFullScreen", "webkitRequestFullScreen", "oRequestFullScreen", "msieRequestFullScreen"];
-        
+
         return fluid.find(fullscreenFnNames, function (name) {
             return !!$("<div></div>")[0][name] || undefined;
         });
     };
-    
+
     fluid.enhance.check({
         "fluid.browser.supportsFullScreen": "fluid.videoPlayer.controllers.supportFullscreen",
         "fluid.browser.nativeVideoSupport": "fluid.browser.nativeVideoSupport"
     });
 
-    fluid.defaults("fluid.videoPlayer.controllers", { 
-        gradeNames: ["fluid.viewComponent", "autoInit"], 
+    fluid.defaults("fluid.videoPlayer.controllers", {
+        gradeNames: ["fluid.viewComponent", "autoInit"],
         components: {
             scrubber: {
                 type: "fluid.videoPlayer.controllers.scrubber",
@@ -103,6 +103,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
                     currentLanguagePath: "currentTracks.transcripts",
+                    currentLangIdPath: "currentTrackIds.transcripts",
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
                         buttonWithShowing: "fl-videoPlayer-transcripts-button-on"
@@ -212,14 +213,14 @@ var fluid_1_5 = fluid_1_5 || {};
             captionIcon: "ui-icon-comment",
             transcriptIcon: "ui-icon-comment"
         },
-        
+
         invokers: {
-            showHideScrubberHandle: { 
-                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle", 
+            showHideScrubberHandle: {
+                funcName: "fluid.videoPlayer.controllers.showHideScrubberHandle",
                 args: ["{controllers}", "{controllers}.model.totalTime"]
             }
         },
-        
+
         templates: {
             controllers: {
                 forceCache: true,
@@ -257,6 +258,7 @@ var fluid_1_5 = fluid_1_5 || {};
         applier: "{controllers}.applier",
         showHidePath: "displayCaptions",
         currentLanguagePath: "currentTracks.captions",
+        currentLangIdPath: "currentTrackIds.captions",
         styles: {
             button: "fl-videoPlayer-captions-button",
             buttonWithShowing: "fl-videoPlayer-captions-button-on"
@@ -282,47 +284,47 @@ var fluid_1_5 = fluid_1_5 || {};
         container: "{controllers}.container",
         options: fullScreenButtonOptions
     });
-    
+
     fluid.demands("captionControls", ["fluid.browser.nativeVideoSupport"], {
         funcName: "fluid.videoPlayer.languageControls",
         container: "{controllers}.dom.captionControlsContainer",
         options: captionControlsOptions
     });
-    
+
     fluid.videoPlayer.controllers.showHideScrubberHandle = function (that, totalTime) {
         that.applier.requestChange("isShown.scrubber.handle", !!totalTime);
     };
-    
+
     fluid.videoPlayer.controllers.finalInit = function (that) {
         var templates = that.options.templates;
         fluid.fetchResources(templates, function () {
             var resourceSpec = templates.controllers;
-            
+
             if (!resourceSpec.fetchError) {
                 that.container.append(resourceSpec.resourceText);
                 that.events.afterTemplateLoaded.fire();
-                
+
                 //TODO: Move to event listeners
                 bindControllerModel(that);
                 that.showHideScrubberHandle();
             }
         });
-        
+
         that.applier.modelChanged.addListener("totalTime", that.showHideScrubberHandle);
     };
-    
+
     /********************************************
     * scrubber: a slider to follow the progress *
     *           of the video                    *
     ********************************************/
-        
+
     // TODO: Privacy is inherited. Consider making this public
     //change the text of the selected time
     var updateTime = function (that, element) {
         var time = that.locate(element);
         time.text(fluid.videoPlayer.formatTime(that.model[element]));
     };
-    
+
     // TODO: Privacy is inherited. Consider making this public
     var bindScrubberDOMEvents = function (that) {
         // Bind the scrubbers slide event to change the video's time.
@@ -349,7 +351,7 @@ var fluid_1_5 = fluid_1_5 || {};
         // Bind to the video's timeupdate event so we can programmatically update the slider.
         that.applier.modelChanged.addListener("currentTime", that.updateCurrent);
         that.applier.modelChanged.addListener("bufferEnd", that.updateBuffered);
-        
+
         that.applier.modelChanged.addListener("canPlay", that.syncState);
 
     };
@@ -362,7 +364,7 @@ var fluid_1_5 = fluid_1_5 || {};
             range: "min",
             disabled: true
         });
-        
+
         // TODO: This in inherited. Do we need to add aria to sliders ourselves?
         that.locate("handle").attr({
             "aria-label": that.options.strings.scrubber,
@@ -427,25 +429,25 @@ var fluid_1_5 = fluid_1_5 || {};
 
     // The flag that stops the buffer progress update once the video is fully buffered.
     var bufferCompleted = false;
-    
+
     fluid.videoPlayer.controllers.scrubber.updateBuffered = function (that) {
         var lastBufferedTime = that.model.bufferEnd;
         var totalTime = that.model.totalTime;
 
-        // Turn on buffer progress update if the re-buffering is triggered, for instance, 
+        // Turn on buffer progress update if the re-buffering is triggered, for instance,
         // by rewinding back
         if (lastBufferedTime !== totalTime) {
             bufferCompleted = false;
         }
-        
+
         if (totalTime && lastBufferedTime && !bufferCompleted) {
             var percent = Math.round(lastBufferedTime / totalTime * 100);
-            
+
             // Explicitly setting the width of .flc-progress-bar is a work-around for the Chrome/IE9 issue
             // that the width of the progress div is reduced at the controller bar slide-up
             that.locate("bufferedProgressBar").width(that.model.videoWidth);
             that.bufferedProgress.update(percent);
-            
+
             // Stops the buffer progress from being kept updated once the progress reaches 100%
             if (lastBufferedTime === totalTime) {
                 bufferCompleted = true;
@@ -483,7 +485,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 "aria-valuetext": fluid.videoPlayer.formatTime(that.model.currentTime) + " of " + fluid.videoPlayer.formatTime(that.model.totalTime)
             });
         };
-        
+
         that.syncState = function () {
             var scrubber = that.locate("scrubber");
             if (that.model.canPlay === true) {
@@ -492,7 +494,7 @@ var fluid_1_5 = fluid_1_5 || {};
                 scrubber.slider("disable");
             }
         };
-        
+
         that.refresh = function () {
             that.updateMin();
             that.updateMax();
@@ -507,15 +509,15 @@ var fluid_1_5 = fluid_1_5 || {};
         bindScrubberModel(that);
         that.refresh();
     };
-    
+
 
     /********************************************************
     * Volume Control: a button that turns into a slider     *
     *           To control the volume                       *
     *********************************************************/
-    
+
     fluid.registerNamespace("fluid.videoPlayer.volumeControls");
-    
+
     fluid.videoPlayer.volumeControls.bindDOMEvents = function (that) {
         // Bind the volume Control slide event to change the video's volume and its image.
         var volumeControl = that.locate("volumeControl");
@@ -536,7 +538,7 @@ var fluid_1_5 = fluid_1_5 || {};
             tooltip.updateContent(muteButton.tooltipContentFunction);
         });
     };
-    
+
     fluid.videoPlayer.updateMuteStatus = function (that) {
         return function (newModel, oldModel) {
             if (!that.applier.hasChangeSource("mute")) {
@@ -565,13 +567,13 @@ var fluid_1_5 = fluid_1_5 || {};
                 that.oldVolume = oldModel.volume;
             }
             var fromVolume = that.applier.hasChangeSource("volume");
-            if (!fromVolume) { 
+            if (!fromVolume) {
                 var isMuting = newModel.muted;
                 if (isMuting) {
                     // If this mute event was not already sourced from a volume change, fire volume to 0
                     fluid.fireSourcedChange(that.applier, "volume", 0, "mute");
                 } else {
-                    fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");              
+                    fluid.fireSourcedChange(that.applier, "volume", that.oldVolume, "mute");
                 }
             }
         });
@@ -690,7 +692,7 @@ var fluid_1_5 = fluid_1_5 || {};
                     },
                     listeners: {
                         onReady: "{volumeControls}.events.muteButtonReady"
-                    } 
+                    }
                 }
             }
         }
