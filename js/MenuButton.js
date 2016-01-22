@@ -36,7 +36,6 @@ var fluid_1_5 = fluid_1_5 || {};
         produceTree: "fluid.videoPlayer.languageMenu.produceTree",
         languages: [],
         currentLanguagePath: "activeLanguages",
-        currentLangIdPath: "",
         showHidePath: "showLanguage",
         model: {},
         events: {
@@ -204,7 +203,6 @@ var fluid_1_5 = fluid_1_5 || {};
         };
         that.activate = function (index) {
             that.writeIndirect("currentLanguagePath", [index]);
-            that.writeIndirect("currentLangIdPath", [that.options.languages[index].id]);
             that.writeIndirect("showHidePath", true);
             that.hideMenu();
         };
@@ -255,7 +253,6 @@ var fluid_1_5 = fluid_1_5 || {};
         },
         languages: [],
         currentLanguagePath: "",
-        currentLangIdPath: "",
         showHidePath: "",
         strings: {
             showLanguage: "Show Language",
@@ -293,7 +290,6 @@ var fluid_1_5 = fluid_1_5 || {};
                     applier: "{languageControls}.applier",
                     showHidePath: "{languageControls}.options.showHidePath",
                     currentLanguagePath: "{languageControls}.options.currentLanguagePath",
-                    currentLangIdPath: "{languageControls}.options.currentLangIdPath",
                     strings: "{languageControls}.options.strings",
                     events: {
                         onControlledElementReady: "{languageControls}.events.onControlledElementReady"

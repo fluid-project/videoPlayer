@@ -103,7 +103,6 @@ var fluid_1_5 = fluid_1_5 || {};
                     applier: "{controllers}.applier",
                     showHidePath: "displayTranscripts",
                     currentLanguagePath: "currentTracks.transcripts",
-                    currentLangIdPath: "currentTrackIds.transcripts",
                     styles: {
                         button: "fl-videoPlayer-transcripts-button",
                         buttonWithShowing: "fl-videoPlayer-transcripts-button-on"
@@ -258,7 +257,6 @@ var fluid_1_5 = fluid_1_5 || {};
         applier: "{controllers}.applier",
         showHidePath: "displayCaptions",
         currentLanguagePath: "currentTracks.captions",
-        currentLangIdPath: "currentTrackIds.captions",
         styles: {
             button: "fl-videoPlayer-captions-button",
             buttonWithShowing: "fl-videoPlayer-captions-button-on"

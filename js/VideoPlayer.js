@@ -271,10 +271,6 @@ var fluid_1_5 = fluid_1_5 || {};
                 captions: [],
                 transcripts: []
             },
-            currentTrackIds: {
-                captions: [],
-                transcripts: []
-            },
             currentTime: 0,
             scrubTime: null,
             totalTime: 0,

@@ -37,7 +37,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
         },
         elPaths: {
             currentCaptions: "currentTracks.captions",
-            currentCaptionIds: "currentTrackIds.captions",
             displayCaptions: "displayCaptions"
         },
         // TODO: Those selectors should come from the parent component!!
@@ -59,7 +58,6 @@ https://source.fluidproject.org/svn/LICENSE.txt
     var bindCaptionatorModel = function (that) {
         var elPaths = that.options.elPaths;
         that.applier.modelChanged.addListener(elPaths.currentCaptions, that.refreshCaptions);
-//        that.applier.modelChanged.addListener(elPaths.currentCaptionIds, that.refreshCaptions);
         that.applier.modelChanged.addListener(elPaths.displayCaptions, that.refreshCaptions);
     };
 
@@ -69,11 +67,14 @@ https://source.fluidproject.org/svn/LICENSE.txt
         });
     };
 
-    fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptionIds, tracks, captionSources) {
-        fluid.each(tracks, function (track, index) {
-            var currentState = fluid.contains(currentCaptionIds, track.id) ? "showing" : "disabled";
-            var textTrack = track.track;
-            textTrack.mode =  textTrack[currentState.toUpperCase()] || currentState;
+    fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
+        fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
+        fluid.each(currentCaptions, function (capIndex, index) {
+            var id = captionSources[capIndex].id;
+            var track = fluid.find(tracks, function (track, index) {
+                return (track.id == id) ? track : undefined;
+            });
+            track.track.mode =  "showing";
         });
     };
 
@@ -84,7 +85,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
             var tracks = $("track", that.locate("video"));
             var display = that.readIndirect("elPaths.displayCaptions");
             if (display) {
-                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptionIds"),
+                fluid.videoPlayer.html5Captionator.showCurrentTrack(that.readIndirect("elPaths.currentCaptions"),
                     tracks, that.options.captions);
             } else {
                 fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
