@@ -11,35 +11,35 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5*/
+/*global jQuery*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 var fluid_1_5 = fluid_1_5 || {};
 
 (function ($, fluid) {
     fluid.setLogging(false);
-    
+
     /*******************************************************************************
      * Video Player                                                                *
      *                                                                             *
-     * Renders HTML 5 video player at the detection of HTML5 browsers. It degrades * 
+     * Renders HTML 5 video player at the detection of HTML5 browsers. It degrades *
      * gracefully to the browser built-in video player when the browser does not   *
-     * support HTML5.                                                              * 
+     * support HTML5.                                                              *
      *******************************************************************************/
-    
+
     fluid.registerNamespace("fluid.videoPlayer");
-    
+
     fluid.videoPlayer.isSafari = function () {
         var ua = navigator.userAgent.toLowerCase();
         return ((ua.indexOf("safari") > 0) && (ua.indexOf("chrome") < 0)) ? fluid.typeTag("fluid.browser.safari") : undefined;
     };
-    
+
     fluid.enhance.check({
         "fluid.browser.safari": "fluid.videoPlayer.isSafari"
     });
-    
+
     //This is the default key bindings
     fluid.videoPlayer.defaultKeys = {
         play: {
@@ -79,7 +79,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
     /**
      * Video player renders HTML 5 video content and degrades gracefully to an alternative.
-     * 
+     *
      * @param {Object} container the container in which video and (optionally) captions are displayed
      * @param {Object} options configuration options for the component
      */
@@ -197,7 +197,7 @@ var fluid_1_5 = fluid_1_5 || {};
             onTranscriptHide: null,
             onTranscriptShow: null,
             onTranscriptElementChange: null,
-            
+
             onFullscreenModelChanged: null,
 
             onReady: {
@@ -208,10 +208,10 @@ var fluid_1_5 = fluid_1_5 || {};
                 },
                 args: ["{videoPlayer}"]
             },
-            
+
             // public, time events
             onTimeUpdate: null,
-            
+
             // The following events are private
             onCreateMediaReady: null,
             onIntervalEventsConductorReady: null,
@@ -295,11 +295,11 @@ var fluid_1_5 = fluid_1_5 || {};
             hideControllers: "fluid.videoPlayer.hideControllers"
         }
     });
-    
+
     fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer"], {
         funcName: "fluid.emptySubcomponent"
     });
-    
+
     fluid.demands("fluid.videoPlayer.captionator", ["fluid.videoPlayer", "fluid.browser.nativeVideoSupport"], {
         funcName: "fluid.videoPlayer.html5Captionator",
         options: {
@@ -392,17 +392,17 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.videoPlayer.togglePlayOverlay = function (that) {
         var ol = that.locate("videoOverlay");
         var olstyle = that.options.styles.playOverlay;
-        
+
         if (!that.model.play) {
             ol.addClass(olstyle);
         } else {
             ol.removeClass(olstyle);
-        }    
-    }; 
+        }
+    };
 
     var bindVideoPlayerDOMEvents = function (that) {
         var videoContainer = that.locate("videoContainer");
-        
+
         fluid.tabindex(videoContainer, 0);
 
         // The two mousedown listeners below are the work-around for IE9 issue that the video overlay is rendered
@@ -413,18 +413,18 @@ var fluid_1_5 = fluid_1_5 || {};
         that.locate("overlay").mousedown(function (ev) {
             that.play();
         });
-        
+
         that.locate("controllers").mousedown(function (ev) {
             ev.stopPropagation();
         });
-        
+
         // Using "mousedown" event rather than "click", which does not work
         // with the flash fallback in IE8
         videoContainer.mousedown(function (ev) {
             ev.preventDefault();
             that.play();
         });
-        
+
         that.locate("videoPlayer").mouseenter(function () {
             that.showControllers(that);
         });
@@ -444,11 +444,11 @@ var fluid_1_5 = fluid_1_5 || {};
 
     var bindVideoPlayerModel = function (that) {
         that.applier.modelChanged.addListener("fullscreen", that.events.onFullscreenModelChanged.fire);
-        that.applier.modelChanged.addListener("play", function () { 
-            fluid.videoPlayer.togglePlayOverlay(that); 
+        that.applier.modelChanged.addListener("play", function () {
+            fluid.videoPlayer.togglePlayOverlay(that);
         });
     };
-    
+
     fluid.videoPlayer.addDefaultKind = function (tracks, defaultKind) {
         fluid.each(tracks, function (track) {
             if (!track.kind) {
@@ -459,9 +459,13 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.videoPlayer.preInit = function (that) {
         fluid.each(that.options.defaultKinds, function (defaultKind, index) {
-            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);  
+            fluid.videoPlayer.addDefaultKind(fluid.get(that.options.video, index), defaultKind);
         });
-        
+
+        fluid.each(that.options.video.captions, function (cap, index) {
+            cap.id = fluid.allocateSimpleId();
+        });
+
         that.toggleFullscreen = function () {
             that.applier.requestChange("fullscreen", !that.model.fullscreen);
         };
@@ -469,7 +473,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
     fluid.videoPlayer.postInit = function (that) {
         // TODO: declarative syntax for this in framework
-        // note that the "mega-model" is shared throughout all components - morally, this should go into the 
+        // note that the "mega-model" is shared throughout all components - morally, this should go into the
         // volume control component, but it is best to get at the single model + applier as early as possible
         that.applier.guards.addListener({path: "volume", transactional: true}, fluid.linearRangeGuard(0, 100));
 
@@ -491,7 +495,7 @@ var fluid_1_5 = fluid_1_5 || {};
 
         that.decrTime = function () {
             that.events.onStartScrub.fire();
-            
+
             if (that.model.currentTime > 0) {
                 var newVol = that.model.currentTime - that.model.totalTime * 0.05;
                 that.events.onScrub.fire(newVol >= 0 ? newVol : 0);
@@ -499,7 +503,7 @@ var fluid_1_5 = fluid_1_5 || {};
             that.events.afterScrub.fire();
         };
     };
-    
+
     fluid.videoPlayer.finalInit = function (that) {
         that.container.attr("role", "application");
 
@@ -546,11 +550,11 @@ var fluid_1_5 = fluid_1_5 || {};
             // Ensure <object> element is not in tab order, for IE9
             $("object", that.locate("video")).attr("tabindex", "-1");
         });
-        
+
         return that;
     };
-        
-    //returns the time in format hh:mm:ss from a time in seconds 
+
+    //returns the time in format hh:mm:ss from a time in seconds
     fluid.videoPlayer.formatTime = function (time) {
         var fullTime = Math.floor(time);
         var sec = fullTime % 60;
@@ -564,13 +568,13 @@ var fluid_1_5 = fluid_1_5 || {};
         }
         return ret + min + ":" + sec;
     };
-  
+
     /*********************************************************************************
      * Event Binder:                                                                 *
      * Shared by all video player component whenever an event binder component is    *
      * needed                                                                        *
      *********************************************************************************/
-        
+
     fluid.defaults("fluid.videoPlayer.eventBinder", {
         gradeNames: ["fluid.eventedComponent", "autoInit"]
     });
@@ -578,7 +582,7 @@ var fluid_1_5 = fluid_1_5 || {};
     /*********************************************************************************
      * Demands blocks for event binding components                                   *
      *********************************************************************************/
-    
+
     fluid.demands("mediaEventBinder", ["fluid.videoPlayer.media", "fluid.videoPlayer"], {
         options: {
             listeners: {
@@ -602,9 +606,9 @@ var fluid_1_5 = fluid_1_5 || {};
         seconds = (seconds % 60).toFixed(3);
 
         // Return result of type HH:MM:SS.mmm
-        return (hours < 10 ? "0" + hours : hours) + ":"
-            + (minutes < 10 ? "0" + minutes : minutes) + ":"
-            + (seconds  < 10 ? "0" + seconds : seconds);
+        return (hours < 10 ? "0" + hours : hours) + ":" +
+            (minutes < 10 ? "0" + minutes : minutes) + ":" +
+            (seconds  < 10 ? "0" + seconds : seconds);
     };
 
     /******************************************************************************************************
@@ -633,13 +637,13 @@ var fluid_1_5 = fluid_1_5 || {};
             return;
         }
 
-        // Hard coded URL to amara here         
-        var url = encodeURI("https://www.amara.org/api/videos/?video_url=" + videoUrl);
+        // Hard coded URL to amara here; see http://amara.readthedocs.org/en/latest/api.html
+        var url = encodeURI("http://amara.org/api/videos/?video_url=" + videoUrl);
         $.getJSON(url, function( data ) {
-            var captionUrl = encodeURI("https://www.amara.org/api/videos/" + data.objects[0].id + "/languages/" + lang + "/subtitles");        
-            $.getJSON(captionUrl, callback);            
+            var captionUrl = encodeURI("http://amara.org/api/videos/"+data.objects[0].id+"/languages/" + lang + "/subtitles/");
+            $.getJSON(captionUrl, callback);
         });
-        
+
     };
 
     /*********
@@ -676,5 +680,5 @@ var fluid_1_5 = fluid_1_5 || {};
             }
         }
     });
-    
+
 })(jQuery, fluid_1_5);

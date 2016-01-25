@@ -7,13 +7,13 @@ Licenses.
 
 You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
- 
+
  */
 
 // Declare dependencies
 /*global fluid, jqUnit, jQuery*/
 
-// JSLint options 
+// JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
 
 (function ($) {
@@ -56,7 +56,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 }
             });
         });
-        
+
         var testVTTCaption = function (vttArray, index, captionObj) {
             jqUnit.assertEquals("First line is empty", "", vttArray[index]);
 
@@ -86,27 +86,32 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         });
 
         jqUnit.test("amaraJsonToVTT", function () {
-            var testJson = [{
-                "subtitle_id": "cseicmgnhp6334683",
+            var testJson = [ {
+                "start": 1777,
                 "text": "Eeny, meeny, miny, moe,",
-                "start": 1.7769230769230799,
-                "end": 4.0330000000000004,
-                "sub_order": 1.0,
-                "start_of_paragraph": false
-            }, {
-                "subtitle_id": "mgnplxysgb6342310",
+                "meta": {
+                    "new_paragraph": true
+                },
+                "end": 4033,
+                "position": 1
+            },
+            {
+                "start": 4033,
                 "text": "Catch a tiger by the toe",
-                "start": 4.0330000000000004,
-                "end": 5.9923076923076897,
-                "sub_order": 2.0,
-                "start_of_paragraph": false
-            }, {
-                "subtitle_id": "fdztnjtkic6348025",
+                "meta": {
+                    "new_paragraph": false
+                },
+                "end": 5992,
+                "position": 2
+            },
+            {
+                "start": 5992,
                 "text": "If he hollers let him go",
-                "start": 5.9923076923076897,
-                "end": 8.0560769230769207,
-                "sub_order": 3.0,
-                "start_of_paragraph": false
+                "meta": {
+                    "new_paragraph": false
+                },
+                "end": 8056,
+                "position": 3
             }];
 
             jqUnit.expect(2 + 3 * testJson.length);
