@@ -69,11 +69,9 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.html5Captionator.showCurrentTrack = function (currentCaptions, tracks, captionSources) {
         fluid.videoPlayer.html5Captionator.hideAllTracks(tracks);
+
         fluid.each(currentCaptions, function (capIndex, index) {
-            var id = captionSources[capIndex].id;
-            var track = fluid.find(tracks, function (track, index) {
-                return (track.id == id) ? track : undefined;
-            });
+            var track = fluid.byId(captionSources[capIndex].id);
             track.track.mode =  "showing";
         });
     };
