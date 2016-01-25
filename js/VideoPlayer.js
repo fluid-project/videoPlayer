@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5*/
+/*global jQuery*/
 
 // JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -606,9 +606,9 @@ var fluid_1_5 = fluid_1_5 || {};
         seconds = (seconds % 60).toFixed(3);
 
         // Return result of type HH:MM:SS.mmm
-        return (hours < 10 ? "0" + hours : hours) + ":"
-            + (minutes < 10 ? "0" + minutes : minutes) + ":"
-            + (seconds  < 10 ? "0" + seconds : seconds);
+        return (hours < 10 ? "0" + hours : hours) + ":" +
+            (minutes < 10 ? "0" + minutes : minutes) + ":" +
+            (seconds  < 10 ? "0" + seconds : seconds);
     };
 
     /******************************************************************************************************

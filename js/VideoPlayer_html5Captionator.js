@@ -11,7 +11,7 @@ You may obtain a copy of the ECL 2.0 License and BSD License at
 https://source.fluidproject.org/svn/LICENSE.txt
 */
 
-/*global jQuery, window, fluid_1_5, captionator*/
+/*global jQuery, fluid_1_5, captionator*/
 
 // JSLint options
 /*jslint white: true, funcinvoke: true, undef: true, newcap: true, nomen: true, regexp: true, bitwise: true, browser: true, forin: true, maxerr: 100, indent: 4 */
@@ -108,7 +108,7 @@ https://source.fluidproject.org/svn/LICENSE.txt
 
     fluid.videoPlayer.html5Captionator.createTrack = function (that, key, opts) {
         var trackEl = $("<track />");
-        var attrs = fluid.filterKeys(fluid.copy(opts), ["id", "kind", "src", /*"type",*/ "srclang", "label"], false);
+        var attrs = fluid.filterKeys(fluid.copy(opts), ["id", "kind", "src", "srclang", "label"], false);
 
         if ($.inArray(key, that.readIndirect("elPaths.currentCaptions")) !== -1 && that.readIndirect("elPaths.displayCaptions")) {
             attrs["default"] = "true";
