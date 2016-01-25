@@ -634,9 +634,9 @@ var fluid_1_5 = fluid_1_5 || {};
         }
 
         // Hard coded URL to amara here         
-        var url = encodeURI("http://www.universalsubtitles.org/api2/partners/videos/?video_url=" + videoUrl + "&callback=?");        
+        var url = encodeURI("https://www.amara.org/api/videos/?video_url=" + videoUrl);
         $.getJSON(url, function( data ) {
-            var captionUrl = encodeURI("http://www.universalsubtitles.org/api2/partners/videos/" + data.objects[0].id + "/languages/" + lang + "/subtitles/?callback=?");        
+            var captionUrl = encodeURI("https://www.amara.org/api/videos/" + data.objects[0].id + "/languages/" + lang + "/subtitles");        
             $.getJSON(captionUrl, callback);            
         });
         
