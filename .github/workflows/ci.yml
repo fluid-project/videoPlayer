@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build --tag test .
+
+      - name: Start container
+        run: docker run --detach -p 8080:80 test
+
+      - name: Wait
+        run: sleep 5
+
+      - name: Smoke test
+        run: curl --location --no-buffer --retry 120 --retry-delay 1 http://localhost:8080
