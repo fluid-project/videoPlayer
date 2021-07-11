@@ -4,7 +4,10 @@ https://wiki.fluidproject.org/display/fluid/Get+Involved
 What Is VideoPlayer?
 ====================
 
-VideoPlayer is an HTML5 video player, built with the Fluid Infusion framework.
+VideoPlayer is an HTML5 video player with accessibility enhancements, built with the Fluid Infusion framework. 
+These accessibility featurea are described and illustrated in the FLOE project handbook
+
+    http://handbook.floeproject.org/index.php?title=Video_content_and_learning#VII._Case_Study:_Floe_Video_Player
 
 
 Where Can I See a Demo?
